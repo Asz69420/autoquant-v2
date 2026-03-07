@@ -1,0 +1,87 @@
+{
+ "version": "daily-intel-v1",
+ "description": "Morning briefing from Oragorn. Delivered via Telegram.",
+ "delivery": {
+ "time_utc": "21:00",
+ "note": "21:00 UTC = 07:00 AEST next morning",
+ "channel": "asz_telegram_dm",
+ "sender": "oragorn",
+ "format": "monospace_with_emoji"
+ },
+ "sections": [
+ {
+ "id": "strategy_highlights",
+ "title": "Strategy Highlights",
+ "source": "leaderboard_promoted + leaderboard_watchlist",
+ "includes": [
+ "New promotions since last brief",
+ "Biggest QScore improvements",
+ "Top 3 strategies by QScore",
+ "Any strategies entering WATCH or HALT"
+ ]
+ },
+ {
+ "id": "quandalf_insights",
+ "title": "Quandalf Market Intel",
+ "source": "market_confidence + trade_blacklist + quandalf journal",
+ "includes": [
+ "Current regime assessment per asset",
+ "Active blacklists and why",
+ "News or events affecting markets",
+ "Quandalf confidence levels"
+ ]
+ },
+ {
+ "id": "market_data",
+ "title": "Market Data",
+ "source": "HyperLiquid API (when connected)",
+ "includes": [
+ "Liquidation levels for key assets",
+ "Market maker position changes",
+ "Funding rates",
+ "Notable OI shifts"
+ ],
+ "status": "pending_data_feed_integration"
+ },
+ {
+ "id": "system_health",
+ "title": "System Health",
+ "source": "event_log + pipeline_runs + memory_health + token_spend",
+ "includes": [
+ "Pipeline success/failure rates last 24h",
+ "Token spend vs budget",
+ "Memory health per agent",
+ "Any self-healed issues"
+ ]
+ },
+ {
+ "id": "agent_feedback",
+ "title": "Agent Feedback",
+ "source": "agent_feedback table",
+ "includes": [
+ "Unaddressed complaints or suggestions",
+ "Quandalf research observations",
+ "Logron anomaly flags"
+ ]
+ },
+ {
+ "id": "oragorn_suggestions",
+ "title": "Commander Notes",
+ "source": "oragorn reasoning over all above sections",
+ "includes": [
+ "Oragorn reads everything above and adds his take",
+ "Suggestions based on patterns he sees",
+ "Recommendations for what to focus on today",
+ "Escalations that need human decision"
+ ]
+ }
+ ],
+ "format_rules": {
+ "monospace": true,
+ "real_unicode_emoji": true,
+ "max_length_chars": 4000,
+ "natural_language": true,
+ "scannable": true,
+ "no_raw_ids_or_paths": true
+ }
+}

@@ -1,0 +1,66 @@
+{
+ "version": "principles-v1",
+ "description": "Architectural rules ALL agents must follow. Non-negotiable.",
+ "rules": [
+ {
+ "id": "P01",
+ "name": "no_quick_fixes",
+ "rule": "Never patch symptoms. Always fix root cause. Band-aid fixes create fragile systems.",
+ "enforcement": "All agents must diagnose root cause before proposing any fix. Frodex rejects patch-only PRs."
+ },
+ {
+ "id": "P02",
+ "name": "commander_delegates",
+ "rule": "Oragorn delegates, never does work himself. Spawn sub-agents or trigger pipelines.",
+ "enforcement": "Oragorn SOUL.md enforces. Logron monitors for commander doing execution work."
+ },
+ {
+ "id": "P03",
+ "name": "pipeline_owns_orchestration",
+ "rule": "Lobster pipelines decide step order. LLM never decides what comes next.",
+ "enforcement": "Pipeline YAML is the authority. Agents only participate at designated steps."
+ },
+ {
+ "id": "P04",
+ "name": "schema_validates_everything",
+ "rule": "Every artifact flowing between pipeline steps validates against JSON schema.",
+ "enforcement": "Balrog schema validation gate. Reject on extra fields, missing required."
+ },
+ {
+ "id": "P05",
+ "name": "evidence_not_claims",
+ "rule": "Something only happened if deterministic proof exists. Never trust an agent saying 'I did it'.",
+ "enforcement": "Pipeline verification steps check file exists, DB record written, API returned 200."
+ },
+ {
+ "id": "P06",
+ "name": "right_model_right_step",
+ "rule": "Opus for reasoning. Cheaper models for formatting/summarization. No waste.",
+ "enforcement": "Throttle config limits Quandalf calls. Parameter sweeps are deterministic."
+ },
+ {
+ "id": "P07",
+ "name": "quandalf_owns_strategy",
+ "rule": "Quandalf makes ALL strategy decisions. No other agent designs or modifies strategies.",
+ "enforcement": "Balrog agent boundaries. Frodex cannot write to strategy_specs or theses."
+ },
+ {
+ "id": "P08",
+ "name": "self_healing_first",
+ "rule": "Errors auto-fix when possible. Only escalate when auto-fix fails.",
+ "enforcement": "known_fixes registry. Logron matches errors, applies fixes, logs results."
+ },
+ {
+ "id": "P09",
+ "name": "memory_stays_lean",
+ "rule": "No unbounded context growth. Memory compressed on schedule. Dense data in SQLite.",
+ "enforcement": "Memory management pipeline. Logron monitors folder sizes."
+ },
+ {
+ "id": "P10",
+ "name": "immutable_security",
+ "rule": "Balrog rules cannot be modified by any agent. Only Asz changes firewall rules.",
+ "enforcement": "Balrog workspace read-only to all agents. rules.json is law."
+ }
+ ]
+}

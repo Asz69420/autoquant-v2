@@ -1,0 +1,107 @@
+{
+ "version": "model-routing-v2",
+ "description": "Verified against openclaw models list on 2026-03-07. OpenClaw 2026.3.2.",
+ "verified_available": {
+ "openai-codex/gpt-5.3-codex": "codex_oauth, 266k context, PRIMARY",
+ "anthropic/claude-haiku-4-5-20251001": "haiku_oauth, 195k context, FALLBACK",
+ "claude-opus-4-6": "claude_code_only, NOT via OpenClaw model routing"
+ },
+ "not_yet_available": {
+ "openai-codex/gpt-5.4": "PRs open in OpenClaw, not merged. Run: openclaw models list to check."
+ },
+ "opus_backup": {
+ "status": "working_unexpectedly",
+ "note": "Oragorn has anthropic/claude-opus-4-6 configured and it is currently working via auth-profiles.json in his agent dir. DO NOT TOUCH THIS CONFIG. Do not modify oragorn agent model setting. Do not delete auth-profiles.json. This access may stop working if Anthropic enforces ToS. Preserve as backup for future use.",
+ "location": "~/.openclaw/agents/oragorn/agent/auth-profiles.json",
+ "do_not_modify": true
+ },
+ "agent_assignments": {
+ "quandalf": {
+ "model": "claude-opus-4-6",
+ "access": "claude_code_bridge",
+ "note": "Runs via Claude Code, not OpenClaw model routing.",
+ "tier": "reasoning"
+ },
+ "oragorn": {
+ "model": "openai-codex/gpt-5.3-codex",
+ "access": "codex_oauth",
+ "note": "DEFAULT to GPT. Opus access exists as backup but do not switch to it unless deliberate. See opus_backup section.",
+ "tier": "execution",
+ "upgrade_to": "gpt-5.4 when available"
+ },
+ "frodex": {
+ "model": "openai-codex/gpt-5.3-codex",
+ "access": "codex_oauth",
+ "tier": "execution",
+ "upgrade_to": "gpt-5.4 when available"
+ },
+ "logron": {
+ "model": "anthropic/claude-haiku-4-5-20251001",
+ "access": "haiku_oauth",
+ "note": "Cheap fast model for mostly deterministic work.",
+ "tier": "fast"
+ },
+ "balrog": {
+ "model": "none",
+ "tier": "deterministic"
+ },
+ "smaug": {
+ "model": "openai-codex/gpt-5.3-codex",
+ "access": "codex_oauth",
+ "status": "not_active",
+ "tier": "execution"
+ }
+ },
+ "thinking_levels": {
+ "global_default": "medium",
+ "note": "Per-agent thinking config not yet supported in OpenClaw (feature request open). Global thinkingDefault in openclaw.json applies to all agents. Workaround: add thinking level instruction to each agent AGENTS.md.",
+ "desired_per_agent": {
+ "oragorn": "medium",
+ "quandalf": "high",
+ "frodex": "medium",
+ "logron": "low",
+ "smaug": "medium"
+ },
+ "subagent_thinking": "Can be set via agents.list[].subagents.thinking",
+ "cron_thinking": "Can be set per cron job via job.thinking",
+ "session_command": "/think <level> — sets for current session only, resets on /new"
+ },
+ "task_overrides": {
+ "strategy_design": "claude-opus-4-6 via claude_code",
+ "lesson_extraction": "claude-opus-4-6 via claude_code",
+ "market_intelligence": "claude-opus-4-6 via claude_code",
+ "parameter_sweep": "none — deterministic",
+ "schema_validation": "none — deterministic",
+ "daily_intel_synthesis": "openai-codex/gpt-5.3-codex",
+ "log_parsing": "anthropic/claude-haiku-4-5-20251001",
+ "journal_writing": "inherit from agent"
+ },
+ "council": {
+ "enabled": true,
+ "triggers": [
+ "strategy_promotion_to_live",
+ "architecture_change",
+ "circuit_breaker_override"
+ ],
+ "members": [
+ {"model": "claude-opus-4-6", "access": "claude_code", "role": "creative_evaluator"},
+ {"model": "openai-codex/gpt-5.3-codex", "access": "codex_oauth", "role": "analytical_evaluator"}
+ ],
+ "on_disagreement": "escalate_to_asz"
+ },
+ "cost_rules": {
+ "all_subscriptions_flat_rate": true,
+ "no_api_keys": true,
+ "prefer_codex_for_volume": true,
+ "use_haiku_for_simple_tasks": true,
+ "reserve_opus_for_genuine_reasoning": true
+ },"upgrade_checklist": {
+ "when_gpt54_lands": [
+ "openclaw update",
+ "openclaw models list — verify gpt-5.4 appears",
+ "Update oragorn + frodex model in openclaw.json agents.list",
+ "Update this file: move from not_yet_available to verified",
+ "Test each agent responds correctly"
+ ]
+ }
+}

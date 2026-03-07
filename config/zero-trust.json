@@ -1,0 +1,72 @@
+{
+ "version": "zero-trust-v1",
+ "description": "Zero trust security. Never trust, always verify. Assume breach.",
+ "core_principles": [
+ "Trust follows verification, never the reverse",
+ "Just-in-time access, not just-in-case",
+ "Security pervasive throughout, not just at perimeter",
+ "Assume breach: design for when, not just if"
+ ],
+ "non_human_identities": {
+ "description": "Each agent has exactly one identity. Never share credentials.",
+ "agents": {
+ "oragorn": {
+ "bot_token_ref": "ORAGORN_BOT_TOKEN (to be configured)",
+ "permitted_channels": ["asz_dm", "log_channel"],
+ "scope": "read_all, trigger_pipelines, send_messages"
+ },
+ "quandalf": {
+ "bot_token_ref": "CLAUDE_BRIDGE_BOT_TOKEN",
+ "permitted_channels": ["asz_dm"],
+ "scope": "research, strategy_design, market_analysis"
+ },
+ "frodex": {
+ "bot_token_ref": "TELEGRAM_BOT_TOKEN",
+ "permitted_channels": ["log_channel"],
+ "scope": "code_execution, data_ops, backtest_runs"
+ },
+ "logron": {
+ "bot_token_ref": "TELEGRAM_LOG_BOT_TOKEN",
+ "permitted_channels": ["log_channel"],
+ "scope": "log_monitoring, report_delivery"
+ },
+ "balrog": {
+ "bot_token_ref": "none",
+ "scope": "validation_only, no_external_access"
+ },
+ "smaug": {
+ "bot_token_ref": "SMAUG_BOT_TOKEN (future)",
+ "permitted_channels": ["asz_dm"],
+ "scope": "trade_execution_only",
+ "api_keys_note": "HyperLiquid keys MUST be vault-managed JIT when live"
+ }
+ },
+ "rules": [
+ "No agent may use another agents bot token",
+ "No credentials embedded in code or config",
+ "All credential refs point to .env files only",
+ "Smaug API keys vault-managed when live trading activates"
+ ]
+ },
+ "assume_breach_blast_radius": {
+ "quandalf": "Can only write theses/specs/lessons. Cannot trade or modify firewall. Bad suggestions caught by backtest validation.",
+ "frodex": "Can only write backtest results/research cards. Cannot design strategies or trade. Corrupted data caught by schema validation.",
+ "oragorn": "Can only write event log, trigger pipelines. Cannot write strategies or trade. Improper delegations caught by Balrog.",
+ "logron": "Can only write reports/known_fixes. Cannot modify strategies or trade. False reports caught by cross-referencing SQLite.",
+ "smaug": "Can only execute pre-approved trades. Requires Balrog pass AND human approval. Limited by circuit breakers."
+ },
+ "approved_tools_reference": {
+ "note": "Reference doc only. Balrog agent_boundaries handles runtime enforcement. Add runtime checks when Smaug goes live.",
+ "quandalf": ["sqlite_read", "sqlite_write_own_tables", "memory_folder_rw"],
+ "frodex": ["sqlite_rw", "hyperliquid_candle_api", "filesystem_workspace_only"],
+ "logron": ["sqlite_read", "telegram_api_log_channel_only"],
+ "balrog": ["sqlite_read_only", "schema_validation_local"],
+ "smaug": ["hyperliquid_trade_api", "sqlite_read"],
+ "oragorn": ["sqlite_read", "telegram_api", "agent_send", "lobster_trigger"]
+ },
+ "sub_agent_spawning": {
+ "note": "Sub-agent spawning is PIPELINE-DRIVEN, not agent-choice. Agents will not reliably spawn sub-agents on their own. Lobster pipeline steps dictate when a specialist sub-agent is spawned.",
+ "pattern": "Pipeline step defines: spawn sub-agent with this input, expect this schema output. Prime does not choose whether to delegate. Pipeline decides.",
+ "temporary_specialists": "Sub-agents are temporary. They get a narrow task, focused context, do the work, return result, terminate. Not permanent agents."
+ }
+}

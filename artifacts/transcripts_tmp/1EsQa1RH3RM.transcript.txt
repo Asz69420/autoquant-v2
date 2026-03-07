@@ -1,0 +1,2164 @@
+﻿Kind: captions
+Language: en
+00:00:00.160 --> 00:00:02.149 align:start position:0%
+Every serious developer who has tried to
+00:00:02.149 --> 00:00:02.159 align:start position:0%
+Every serious developer who has tried to
+00:00:02.159 --> 00:00:03.990 align:start position:0%
+Every serious developer who has tried to
+put OpenClaw into a real production
+00:00:03.990 --> 00:00:04.000 align:start position:0%
+put OpenClaw into a real production
+00:00:04.000 --> 00:00:07.269 align:start position:0%
+put OpenClaw into a real production
+workflow has run into the same wall. The
+00:00:07.269 --> 00:00:07.279 align:start position:0%
+workflow has run into the same wall. The
+00:00:07.279 --> 00:00:09.669 align:start position:0%
+workflow has run into the same wall. The
+agent is brilliant when it works and
+00:00:09.669 --> 00:00:09.679 align:start position:0%
+agent is brilliant when it works and
+00:00:09.679 --> 00:00:11.350 align:start position:0%
+agent is brilliant when it works and
+completely unpredictable when it
+00:00:11.350 --> 00:00:11.360 align:start position:0%
+completely unpredictable when it
+00:00:11.360 --> 00:00:14.470 align:start position:0%
+completely unpredictable when it
+doesn't. One run it chains the tools in
+00:00:14.470 --> 00:00:14.480 align:start position:0%
+doesn't. One run it chains the tools in
+00:00:14.480 --> 00:00:17.430 align:start position:0%
+doesn't. One run it chains the tools in
+the right order. The next run it halts
+00:00:17.430 --> 00:00:17.440 align:start position:0%
+the right order. The next run it halts
+00:00:17.440 --> 00:00:19.590 align:start position:0%
+the right order. The next run it halts
+midworkflow asking a clarifying
+00:00:19.590 --> 00:00:19.600 align:start position:0%
+midworkflow asking a clarifying
+00:00:19.600 --> 00:00:22.310 align:start position:0%
+midworkflow asking a clarifying
+question, burns three times the tokens
+00:00:22.310 --> 00:00:22.320 align:start position:0%
+question, burns three times the tokens
+00:00:22.320 --> 00:00:24.070 align:start position:0%
+question, burns three times the tokens
+and produces a different output
+00:00:24.070 --> 00:00:24.080 align:start position:0%
+and produces a different output
+00:00:24.080 --> 00:00:27.189 align:start position:0%
+and produces a different output
+structure. For personal automation, that
+00:00:27.189 --> 00:00:27.199 align:start position:0%
+structure. For personal automation, that
+00:00:27.199 --> 00:00:30.150 align:start position:0%
+structure. For personal automation, that
+unpredictability is tolerable. For a
+00:00:30.150 --> 00:00:30.160 align:start position:0%
+unpredictability is tolerable. For a
+00:00:30.160 --> 00:00:31.830 align:start position:0%
+unpredictability is tolerable. For a
+corporate pipeline that processes
+00:00:31.830 --> 00:00:31.840 align:start position:0%
+corporate pipeline that processes
+00:00:31.840 --> 00:00:34.150 align:start position:0%
+corporate pipeline that processes
+customer data, initiates financial
+00:00:34.150 --> 00:00:34.160 align:start position:0%
+customer data, initiates financial
+00:00:34.160 --> 00:00:36.549 align:start position:0%
+customer data, initiates financial
+operations, or pushes commits to a
+00:00:36.549 --> 00:00:36.559 align:start position:0%
+operations, or pushes commits to a
+00:00:36.559 --> 00:00:38.950 align:start position:0%
+operations, or pushes commits to a
+production repository. It is a hard
+00:00:38.950 --> 00:00:38.960 align:start position:0%
+production repository. It is a hard
+00:00:38.960 --> 00:00:40.549 align:start position:0%
+production repository. It is a hard
+blocker.
+00:00:40.549 --> 00:00:40.559 align:start position:0%
+blocker.
+00:00:40.559 --> 00:00:42.470 align:start position:0%
+blocker.
+Lobster is the feature that removes that
+00:00:42.470 --> 00:00:42.480 align:start position:0%
+Lobster is the feature that removes that
+00:00:42.480 --> 00:00:44.950 align:start position:0%
+Lobster is the feature that removes that
+blocker entirely. And it does it by
+00:00:44.950 --> 00:00:44.960 align:start position:0%
+blocker entirely. And it does it by
+00:00:44.960 --> 00:00:47.750 align:start position:0%
+blocker entirely. And it does it by
+taking the LLM out of the driver's seat
+00:00:47.750 --> 00:00:47.760 align:start position:0%
+taking the LLM out of the driver's seat
+00:00:47.760 --> 00:00:49.830 align:start position:0%
+taking the LLM out of the driver's seat
+on everything except the tasks it's
+00:00:49.830 --> 00:00:49.840 align:start position:0%
+on everything except the tasks it's
+00:00:49.840 --> 00:00:53.189 align:start position:0%
+on everything except the tasks it's
+actually good at. Lobster is OpenClaw's
+00:00:53.189 --> 00:00:53.199 align:start position:0%
+actually good at. Lobster is OpenClaw's
+00:00:53.199 --> 00:00:55.430 align:start position:0%
+actually good at. Lobster is OpenClaw's
+native workflow engine released in
+00:00:55.430 --> 00:00:55.440 align:start position:0%
+native workflow engine released in
+00:00:55.440 --> 00:00:57.990 align:start position:0%
+native workflow engine released in
+February 2026.
+00:00:57.990 --> 00:00:58.000 align:start position:0%
+February 2026.
+00:00:58.000 --> 00:01:00.869 align:start position:0%
+February 2026.
+The core idea is deceptively simple.
+00:01:00.869 --> 00:01:00.879 align:start position:0%
+The core idea is deceptively simple.
+00:01:00.879 --> 00:01:03.510 align:start position:0%
+The core idea is deceptively simple.
+Instead of asking the LLM to orchestrate
+00:01:03.510 --> 00:01:03.520 align:start position:0%
+Instead of asking the LLM to orchestrate
+00:01:03.520 --> 00:01:05.670 align:start position:0%
+Instead of asking the LLM to orchestrate
+every step of a multi-step workflow at
+00:01:05.670 --> 00:01:05.680 align:start position:0%
+every step of a multi-step workflow at
+00:01:05.680 --> 00:01:08.310 align:start position:0%
+every step of a multi-step workflow at
+runtime, you define the pipeline as a
+00:01:08.310 --> 00:01:08.320 align:start position:0%
+runtime, you define the pipeline as a
+00:01:08.320 --> 00:01:10.870 align:start position:0%
+runtime, you define the pipeline as a
+typed data structure in advance. And the
+00:01:10.870 --> 00:01:10.880 align:start position:0%
+typed data structure in advance. And the
+00:01:10.880 --> 00:01:12.630 align:start position:0%
+typed data structure in advance. And the
+lobster runtime executes it
+00:01:12.630 --> 00:01:12.640 align:start position:0%
+lobster runtime executes it
+00:01:12.640 --> 00:01:15.830 align:start position:0%
+lobster runtime executes it
+deterministically step by step Jason
+00:01:15.830 --> 00:01:15.840 align:start position:0%
+deterministically step by step Jason
+00:01:15.840 --> 00:01:18.310 align:start position:0%
+deterministically step by step Jason
+piped between steps with approval gates
+00:01:18.310 --> 00:01:18.320 align:start position:0%
+piped between steps with approval gates
+00:01:18.320 --> 00:01:20.789 align:start position:0%
+piped between steps with approval gates
+halting execution before any side effect
+00:01:20.789 --> 00:01:20.799 align:start position:0%
+halting execution before any side effect
+00:01:20.799 --> 00:01:22.390 align:start position:0%
+halting execution before any side effect
+fires.
+00:01:22.390 --> 00:01:22.400 align:start position:0%
+fires.
+00:01:22.400 --> 00:01:25.190 align:start position:0%
+fires.
+The LLM still participates but only
+00:01:25.190 --> 00:01:25.200 align:start position:0%
+The LLM still participates but only
+00:01:25.200 --> 00:01:27.749 align:start position:0%
+The LLM still participates but only
+within individual steps where reasoning
+00:01:27.749 --> 00:01:27.759 align:start position:0%
+within individual steps where reasoning
+00:01:27.759 --> 00:01:30.950 align:start position:0%
+within individual steps where reasoning
+is actually needed. The orchestration
+00:01:30.950 --> 00:01:30.960 align:start position:0%
+is actually needed. The orchestration
+00:01:30.960 --> 00:01:32.710 align:start position:0%
+is actually needed. The orchestration
+layer between steps is completely
+00:01:32.710 --> 00:01:32.720 align:start position:0%
+layer between steps is completely
+00:01:32.720 --> 00:01:35.590 align:start position:0%
+layer between steps is completely
+removed from the LLM's control. The
+00:01:35.590 --> 00:01:35.600 align:start position:0%
+removed from the LLM's control. The
+00:01:35.600 --> 00:01:37.350 align:start position:0%
+removed from the LLM's control. The
+result is a tool that behaves
+00:01:37.350 --> 00:01:37.360 align:start position:0%
+result is a tool that behaves
+00:01:37.360 --> 00:01:40.310 align:start position:0%
+result is a tool that behaves
+identically every time it runs. costs a
+00:01:40.310 --> 00:01:40.320 align:start position:0%
+identically every time it runs. costs a
+00:01:40.320 --> 00:01:42.310 align:start position:0%
+identically every time it runs. costs a
+fraction of the tokens of a free agent
+00:01:42.310 --> 00:01:42.320 align:start position:0%
+fraction of the tokens of a free agent
+00:01:42.320 --> 00:01:44.870 align:start position:0%
+fraction of the tokens of a free agent
+workflow and produces an auditable
+00:01:44.870 --> 00:01:44.880 align:start position:0%
+workflow and produces an auditable
+00:01:44.880 --> 00:01:47.510 align:start position:0%
+workflow and produces an auditable
+execution log that a compliance team can
+00:01:47.510 --> 00:01:47.520 align:start position:0%
+execution log that a compliance team can
+00:01:47.520 --> 00:01:50.789 align:start position:0%
+execution log that a compliance team can
+actually sign off on. To understand why
+00:01:50.789 --> 00:01:50.799 align:start position:0%
+actually sign off on. To understand why
+00:01:50.799 --> 00:01:53.510 align:start position:0%
+actually sign off on. To understand why
+lobster is architecturally significant,
+00:01:53.510 --> 00:01:53.520 align:start position:0%
+lobster is architecturally significant,
+00:01:53.520 --> 00:01:55.190 align:start position:0%
+lobster is architecturally significant,
+you need to understand the specific
+00:01:55.190 --> 00:01:55.200 align:start position:0%
+you need to understand the specific
+00:01:55.200 --> 00:01:58.389 align:start position:0%
+you need to understand the specific
+failure mode it was built to solve. In
+00:01:58.389 --> 00:01:58.399 align:start position:0%
+failure mode it was built to solve. In
+00:01:58.399 --> 00:02:00.789 align:start position:0%
+failure mode it was built to solve. In
+standard openclaw operation, when you
+00:02:00.789 --> 00:02:00.799 align:start position:0%
+standard openclaw operation, when you
+00:02:00.799 --> 00:02:03.510 align:start position:0%
+standard openclaw operation, when you
+give the agent a complex goal, say
+00:02:03.510 --> 00:02:03.520 align:start position:0%
+give the agent a complex goal, say
+00:02:03.520 --> 00:02:06.550 align:start position:0%
+give the agent a complex goal, say
+triage your inbox, categorize all emails
+00:02:06.550 --> 00:02:06.560 align:start position:0%
+triage your inbox, categorize all emails
+00:02:06.560 --> 00:02:09.510 align:start position:0%
+triage your inbox, categorize all emails
+received in the last 24 hours. draft
+00:02:09.510 --> 00:02:09.520 align:start position:0%
+received in the last 24 hours. draft
+00:02:09.520 --> 00:02:11.990 align:start position:0%
+received in the last 24 hours. draft
+responses for the routine ones and flag
+00:02:11.990 --> 00:02:12.000 align:start position:0%
+responses for the routine ones and flag
+00:02:12.000 --> 00:02:15.190 align:start position:0%
+responses for the routine ones and flag
+the critical ones to Telegram. The LLM
+00:02:15.190 --> 00:02:15.200 align:start position:0%
+the critical ones to Telegram. The LLM
+00:02:15.200 --> 00:02:18.150 align:start position:0%
+the critical ones to Telegram. The LLM
+has to orchestrate the entire sequence.
+00:02:18.150 --> 00:02:18.160 align:start position:0%
+has to orchestrate the entire sequence.
+00:02:18.160 --> 00:02:21.270 align:start position:0%
+has to orchestrate the entire sequence.
+It decides which tool to call first. It
+00:02:21.270 --> 00:02:21.280 align:start position:0%
+It decides which tool to call first. It
+00:02:21.280 --> 00:02:24.390 align:start position:0%
+It decides which tool to call first. It
+decides what arguments to pass. It reads
+00:02:24.390 --> 00:02:24.400 align:start position:0%
+decides what arguments to pass. It reads
+00:02:24.400 --> 00:02:27.190 align:start position:0%
+decides what arguments to pass. It reads
+the output of each tool call, reasons
+00:02:27.190 --> 00:02:27.200 align:start position:0%
+the output of each tool call, reasons
+00:02:27.200 --> 00:02:29.670 align:start position:0%
+the output of each tool call, reasons
+about what to do next, and issues the
+00:02:29.670 --> 00:02:29.680 align:start position:0%
+about what to do next, and issues the
+00:02:29.680 --> 00:02:32.949 align:start position:0%
+about what to do next, and issues the
+next tool call. This happens at every
+00:02:32.949 --> 00:02:32.959 align:start position:0%
+next tool call. This happens at every
+00:02:32.959 --> 00:02:35.430 align:start position:0%
+next tool call. This happens at every
+single step of the workflow.
+00:02:35.430 --> 00:02:35.440 align:start position:0%
+single step of the workflow.
+00:02:35.440 --> 00:02:37.830 align:start position:0%
+single step of the workflow.
+The problem is that this LLM as
+00:02:37.830 --> 00:02:37.840 align:start position:0%
+The problem is that this LLM as
+00:02:37.840 --> 00:02:41.110 align:start position:0%
+The problem is that this LLM as
+orchestrator model is expensive, slow,
+00:02:41.110 --> 00:02:41.120 align:start position:0%
+orchestrator model is expensive, slow,
+00:02:41.120 --> 00:02:44.630 align:start position:0%
+orchestrator model is expensive, slow,
+and fragile in three distinct ways.
+00:02:44.630 --> 00:02:44.640 align:start position:0%
+and fragile in three distinct ways.
+00:02:44.640 --> 00:02:47.589 align:start position:0%
+and fragile in three distinct ways.
+First, every interstep transition costs
+00:02:47.589 --> 00:02:47.599 align:start position:0%
+First, every interstep transition costs
+00:02:47.599 --> 00:02:50.949 align:start position:0%
+First, every interstep transition costs
+tokens. The LLM has to read the full
+00:02:50.949 --> 00:02:50.959 align:start position:0%
+tokens. The LLM has to read the full
+00:02:50.959 --> 00:02:53.430 align:start position:0%
+tokens. The LLM has to read the full
+output of the previous step, hold the
+00:02:53.430 --> 00:02:53.440 align:start position:0%
+output of the previous step, hold the
+00:02:53.440 --> 00:02:55.589 align:start position:0%
+output of the previous step, hold the
+entire workflow context in its context
+00:02:55.589 --> 00:02:55.599 align:start position:0%
+entire workflow context in its context
+00:02:55.599 --> 00:02:58.710 align:start position:0%
+entire workflow context in its context
+window and reason about the next action
+00:02:58.710 --> 00:02:58.720 align:start position:0%
+window and reason about the next action
+00:02:58.720 --> 00:03:00.790 align:start position:0%
+window and reason about the next action
+even when the next action is completely
+00:03:00.790 --> 00:03:00.800 align:start position:0%
+even when the next action is completely
+00:03:00.800 --> 00:03:03.190 align:start position:0%
+even when the next action is completely
+obvious from the workflow definition and
+00:03:03.190 --> 00:03:03.200 align:start position:0%
+obvious from the workflow definition and
+00:03:03.200 --> 00:03:05.990 align:start position:0%
+obvious from the workflow definition and
+requires zero reasoning.
+00:03:05.990 --> 00:03:06.000 align:start position:0%
+requires zero reasoning.
+00:03:06.000 --> 00:03:08.550 align:start position:0%
+requires zero reasoning.
+Second, LLM orchestration is
+00:03:08.550 --> 00:03:08.560 align:start position:0%
+Second, LLM orchestration is
+00:03:08.560 --> 00:03:10.550 align:start position:0%
+Second, LLM orchestration is
+non-deterministic.
+00:03:10.550 --> 00:03:10.560 align:start position:0%
+non-deterministic.
+00:03:10.560 --> 00:03:13.190 align:start position:0%
+non-deterministic.
+The same prompt with the same input data
+00:03:13.190 --> 00:03:13.200 align:start position:0%
+The same prompt with the same input data
+00:03:13.200 --> 00:03:15.270 align:start position:0%
+The same prompt with the same input data
+can produce a different sequence of tool
+00:03:15.270 --> 00:03:15.280 align:start position:0%
+can produce a different sequence of tool
+00:03:15.280 --> 00:03:17.990 align:start position:0%
+can produce a different sequence of tool
+calls on different runs, different on
+00:03:17.990 --> 00:03:18.000 align:start position:0%
+calls on different runs, different on
+00:03:18.000 --> 00:03:20.149 align:start position:0%
+calls on different runs, different on
+different days, different if the
+00:03:20.149 --> 00:03:20.159 align:start position:0%
+different days, different if the
+00:03:20.159 --> 00:03:23.270 align:start position:0%
+different days, different if the
+underlying model version changes.
+00:03:23.270 --> 00:03:23.280 align:start position:0%
+underlying model version changes.
+00:03:23.280 --> 00:03:26.390 align:start position:0%
+underlying model version changes.
+Third, LLM timeout errors accumulate
+00:03:26.390 --> 00:03:26.400 align:start position:0%
+Third, LLM timeout errors accumulate
+00:03:26.400 --> 00:03:30.070 align:start position:0%
+Third, LLM timeout errors accumulate
+across long workflows. A 20step pipeline
+00:03:30.070 --> 00:03:30.080 align:start position:0%
+across long workflows. A 20step pipeline
+00:03:30.080 --> 00:03:32.470 align:start position:0%
+across long workflows. A 20step pipeline
+where each step has a 2% chance of a
+00:03:32.470 --> 00:03:32.480 align:start position:0%
+where each step has a 2% chance of a
+00:03:32.480 --> 00:03:35.670 align:start position:0%
+where each step has a 2% chance of a
+timeout error has a 33% chance of
+00:03:35.670 --> 00:03:35.680 align:start position:0%
+timeout error has a 33% chance of
+00:03:35.680 --> 00:03:38.229 align:start position:0%
+timeout error has a 33% chance of
+failing somewhere before completion,
+00:03:38.229 --> 00:03:38.239 align:start position:0%
+failing somewhere before completion,
+00:03:38.239 --> 00:03:40.149 align:start position:0%
+failing somewhere before completion,
+which means a third of your automated
+00:03:40.149 --> 00:03:40.159 align:start position:0%
+which means a third of your automated
+00:03:40.159 --> 00:03:43.670 align:start position:0%
+which means a third of your automated
+workflows are dying midexecution.
+00:03:43.670 --> 00:03:43.680 align:start position:0%
+workflows are dying midexecution.
+00:03:43.680 --> 00:03:45.830 align:start position:0%
+workflows are dying midexecution.
+Lobster addresses all three problems
+00:03:45.830 --> 00:03:45.840 align:start position:0%
+Lobster addresses all three problems
+00:03:45.840 --> 00:03:47.910 align:start position:0%
+Lobster addresses all three problems
+simultaneously by moving the
+00:03:47.910 --> 00:03:47.920 align:start position:0%
+simultaneously by moving the
+00:03:47.920 --> 00:03:50.070 align:start position:0%
+simultaneously by moving the
+orchestration logic out of the LLM
+00:03:50.070 --> 00:03:50.080 align:start position:0%
+orchestration logic out of the LLM
+00:03:50.080 --> 00:03:53.030 align:start position:0%
+orchestration logic out of the LLM
+entirely and into a typed runtime that
+00:03:53.030 --> 00:03:53.040 align:start position:0%
+entirely and into a typed runtime that
+00:03:53.040 --> 00:03:56.390 align:start position:0%
+entirely and into a typed runtime that
+executes a predefined pipeline graph.
+00:03:56.390 --> 00:03:56.400 align:start position:0%
+executes a predefined pipeline graph.
+00:03:56.400 --> 00:03:58.789 align:start position:0%
+executes a predefined pipeline graph.
+The core design pattern of lobster is
+00:03:58.789 --> 00:03:58.799 align:start position:0%
+The core design pattern of lobster is
+00:03:58.799 --> 00:04:01.270 align:start position:0%
+The core design pattern of lobster is
+what the official documentation calls
+00:04:01.270 --> 00:04:01.280 align:start position:0%
+what the official documentation calls
+00:04:01.280 --> 00:04:07.030 align:start position:0%
+what the official documentation calls
+small CLI plus JS pipes plus approvals.
+00:04:07.030 --> 00:04:07.040 align:start position:0%
+small CLI plus JS pipes plus approvals.
+00:04:07.040 --> 00:04:08.869 align:start position:0%
+small CLI plus JS pipes plus approvals.
+This is a deliberate and elegant
+00:04:08.869 --> 00:04:08.879 align:start position:0%
+This is a deliberate and elegant
+00:04:08.879 --> 00:04:11.670 align:start position:0%
+This is a deliberate and elegant
+architectural constraint. Here's how it
+00:04:11.670 --> 00:04:11.680 align:start position:0%
+architectural constraint. Here's how it
+00:04:11.680 --> 00:04:13.670 align:start position:0%
+architectural constraint. Here's how it
+works in practice.
+00:04:13.670 --> 00:04:13.680 align:start position:0%
+works in practice.
+00:04:13.680 --> 00:04:16.069 align:start position:0%
+works in practice.
+You build each step in your workflow as
+00:04:16.069 --> 00:04:16.079 align:start position:0%
+You build each step in your workflow as
+00:04:16.079 --> 00:04:20.469 align:start position:0%
+You build each step in your workflow as
+a small CLI command that speaks JS.
+00:04:20.469 --> 00:04:20.479 align:start position:0%
+a small CLI command that speaks JS.
+00:04:20.479 --> 00:04:24.310 align:start position:0%
+a small CLI command that speaks JS.
+It takes JS input on sdn does one
+00:04:24.310 --> 00:04:24.320 align:start position:0%
+It takes JS input on sdn does one
+00:04:24.320 --> 00:04:27.110 align:start position:0%
+It takes JS input on sdn does one
+specific thing and outputs JSON on set
+00:04:27.110 --> 00:04:27.120 align:start position:0%
+specific thing and outputs JSON on set
+00:04:27.120 --> 00:04:31.110 align:start position:0%
+specific thing and outputs JSON on set
+and out. That's it. One command, one
+00:04:31.110 --> 00:04:31.120 align:start position:0%
+and out. That's it. One command, one
+00:04:31.120 --> 00:04:35.189 align:start position:0%
+and out. That's it. One command, one
+responsibility, clean JSON interface.
+00:04:35.189 --> 00:04:35.199 align:start position:0%
+responsibility, clean JSON interface.
+00:04:35.199 --> 00:04:37.430 align:start position:0%
+responsibility, clean JSON interface.
+These commands can call any OpenClaw
+00:04:37.430 --> 00:04:37.440 align:start position:0%
+These commands can call any OpenClaw
+00:04:37.440 --> 00:04:40.469 align:start position:0%
+These commands can call any OpenClaw
+tool via OpenClaw.invoke, Invoke, run
+00:04:40.469 --> 00:04:40.479 align:start position:0%
+tool via OpenClaw.invoke, Invoke, run
+00:04:40.479 --> 00:04:43.430 align:start position:0%
+tool via OpenClaw.invoke, Invoke, run
+any shell command, invoke any external
+00:04:43.430 --> 00:04:43.440 align:start position:0%
+any shell command, invoke any external
+00:04:43.440 --> 00:04:47.670 align:start position:0%
+any shell command, invoke any external
+API, or call LLM- task for steps that
+00:04:47.670 --> 00:04:47.680 align:start position:0%
+API, or call LLM- task for steps that
+00:04:47.680 --> 00:04:50.790 align:start position:0%
+API, or call LLM- task for steps that
+genuinely need LLM reasoning.
+00:04:50.790 --> 00:04:50.800 align:start position:0%
+genuinely need LLM reasoning.
+00:04:50.800 --> 00:04:52.629 align:start position:0%
+genuinely need LLM reasoning.
+You then chain these commands into a
+00:04:52.629 --> 00:04:52.639 align:start position:0%
+You then chain these commands into a
+00:04:52.639 --> 00:04:55.030 align:start position:0%
+You then chain these commands into a
+lobster pipeline definition, a
+00:04:55.030 --> 00:04:55.040 align:start position:0%
+lobster pipeline definition, a
+00:04:55.040 --> 00:04:56.870 align:start position:0%
+lobster pipeline definition, a
+structured file that specifies the
+00:04:56.870 --> 00:04:56.880 align:start position:0%
+structured file that specifies the
+00:04:56.880 --> 00:04:59.590 align:start position:0%
+structured file that specifies the
+sequence of steps, what JSON flows
+00:04:59.590 --> 00:04:59.600 align:start position:0%
+sequence of steps, what JSON flows
+00:04:59.600 --> 00:05:01.990 align:start position:0%
+sequence of steps, what JSON flows
+between them, and where approval gates
+00:05:01.990 --> 00:05:02.000 align:start position:0%
+between them, and where approval gates
+00:05:02.000 --> 00:05:04.390 align:start position:0%
+between them, and where approval gates
+should pause execution.
+00:05:04.390 --> 00:05:04.400 align:start position:0%
+should pause execution.
+00:05:04.400 --> 00:05:06.629 align:start position:0%
+should pause execution.
+The entire pipeline runs as a single
+00:05:06.629 --> 00:05:06.639 align:start position:0%
+The entire pipeline runs as a single
+00:05:06.639 --> 00:05:08.550 align:start position:0%
+The entire pipeline runs as a single
+lobster tool call from OpenClaw's
+00:05:08.550 --> 00:05:08.560 align:start position:0%
+lobster tool call from OpenClaw's
+00:05:08.560 --> 00:05:12.310 align:start position:0%
+lobster tool call from OpenClaw's
+perspective. The agent issues one call.
+00:05:12.310 --> 00:05:12.320 align:start position:0%
+perspective. The agent issues one call.
+00:05:12.320 --> 00:05:14.390 align:start position:0%
+perspective. The agent issues one call.
+Lobster executes all the steps in
+00:05:14.390 --> 00:05:14.400 align:start position:0%
+Lobster executes all the steps in
+00:05:14.400 --> 00:05:17.270 align:start position:0%
+Lobster executes all the steps in
+sequence and OpenClaw receives a single
+00:05:17.270 --> 00:05:17.280 align:start position:0%
+sequence and OpenClaw receives a single
+00:05:17.280 --> 00:05:20.230 align:start position:0%
+sequence and OpenClaw receives a single
+structured result envelope at the end.
+00:05:20.230 --> 00:05:20.240 align:start position:0%
+structured result envelope at the end.
+00:05:20.240 --> 00:05:22.310 align:start position:0%
+structured result envelope at the end.
+The output envelope is one of three
+00:05:22.310 --> 00:05:22.320 align:start position:0%
+The output envelope is one of three
+00:05:22.320 --> 00:05:24.950 align:start position:0%
+The output envelope is one of three
+statuses. Okay. When the pipeline
+00:05:24.950 --> 00:05:24.960 align:start position:0%
+statuses. Okay. When the pipeline
+00:05:24.960 --> 00:05:27.909 align:start position:0%
+statuses. Okay. When the pipeline
+completes successfully, needs underscore
+00:05:27.909 --> 00:05:27.919 align:start position:0%
+completes successfully, needs underscore
+00:05:27.919 --> 00:05:30.310 align:start position:0%
+completes successfully, needs underscore
+approval when execution has halted at an
+00:05:30.310 --> 00:05:30.320 align:start position:0%
+approval when execution has halted at an
+00:05:30.320 --> 00:05:32.710 align:start position:0%
+approval when execution has halted at an
+approval gate and a resume token is
+00:05:32.710 --> 00:05:32.720 align:start position:0%
+approval gate and a resume token is
+00:05:32.720 --> 00:05:35.590 align:start position:0%
+approval gate and a resume token is
+waiting or cancelled when a gate was
+00:05:35.590 --> 00:05:35.600 align:start position:0%
+waiting or cancelled when a gate was
+00:05:35.600 --> 00:05:38.950 align:start position:0%
+waiting or cancelled when a gate was
+explicitly denied. The resume token is
+00:05:38.950 --> 00:05:38.960 align:start position:0%
+explicitly denied. The resume token is
+00:05:38.960 --> 00:05:41.749 align:start position:0%
+explicitly denied. The resume token is
+significant. It means a halted workflow
+00:05:41.749 --> 00:05:41.759 align:start position:0%
+significant. It means a halted workflow
+00:05:41.759 --> 00:05:44.390 align:start position:0%
+significant. It means a halted workflow
+can be continued at a later time without
+00:05:44.390 --> 00:05:44.400 align:start position:0%
+can be continued at a later time without
+00:05:44.400 --> 00:05:46.070 align:start position:0%
+can be continued at a later time without
+rerunning everything that already
+00:05:46.070 --> 00:05:46.080 align:start position:0%
+rerunning everything that already
+00:05:46.080 --> 00:05:47.590 align:start position:0%
+rerunning everything that already
+completed.
+00:05:47.590 --> 00:05:47.600 align:start position:0%
+completed.
+00:05:47.600 --> 00:05:49.909 align:start position:0%
+completed.
+You approve the pending side effect,
+00:05:49.909 --> 00:05:49.919 align:start position:0%
+You approve the pending side effect,
+00:05:49.919 --> 00:05:52.150 align:start position:0%
+You approve the pending side effect,
+pass the resume token back and the
+00:05:52.150 --> 00:05:52.160 align:start position:0%
+pass the resume token back and the
+00:05:52.160 --> 00:05:54.150 align:start position:0%
+pass the resume token back and the
+pipeline picks up exactly is the feature
+00:05:54.150 --> 00:05:54.160 align:start position:0%
+pipeline picks up exactly is the feature
+00:05:54.160 --> 00:05:56.390 align:start position:0%
+pipeline picks up exactly is the feature
+that makes lobster genuinely enterprise
+00:05:56.390 --> 00:05:56.400 align:start position:0%
+that makes lobster genuinely enterprise
+00:05:56.400 --> 00:05:58.790 align:start position:0%
+that makes lobster genuinely enterprise
+viable and it is worth understanding in
+00:05:58.790 --> 00:05:58.800 align:start position:0%
+viable and it is worth understanding in
+00:05:58.800 --> 00:06:00.390 align:start position:0%
+viable and it is worth understanding in
+precise detail because the
+00:06:00.390 --> 00:06:00.400 align:start position:0%
+precise detail because the
+00:06:00.400 --> 00:06:02.390 align:start position:0%
+precise detail because the
+implementation is more sophisticated
+00:06:02.390 --> 00:06:02.400 align:start position:0%
+implementation is more sophisticated
+00:06:02.400 --> 00:06:05.029 align:start position:0%
+implementation is more sophisticated
+than it first appears. An approval gate
+00:06:05.029 --> 00:06:05.039 align:start position:0%
+than it first appears. An approval gate
+00:06:05.039 --> 00:06:06.950 align:start position:0%
+than it first appears. An approval gate
+is a step in the lobster pipeline that
+00:06:06.950 --> 00:06:06.960 align:start position:0%
+is a step in the lobster pipeline that
+00:06:06.960 --> 00:06:09.189 align:start position:0%
+is a step in the lobster pipeline that
+is tagged as a side effect. The
+00:06:09.189 --> 00:06:09.199 align:start position:0%
+is tagged as a side effect. The
+00:06:09.199 --> 00:06:10.790 align:start position:0%
+is tagged as a side effect. The
+definition of a side effect in the
+00:06:10.790 --> 00:06:10.800 align:start position:0%
+definition of a side effect in the
+00:06:10.800 --> 00:06:13.430 align:start position:0%
+definition of a side effect in the
+lobster context is any operation that
+00:06:13.430 --> 00:06:13.440 align:start position:0%
+lobster context is any operation that
+00:06:13.440 --> 00:06:15.510 align:start position:0%
+lobster context is any operation that
+has an observable consequence outside
+00:06:15.510 --> 00:06:15.520 align:start position:0%
+has an observable consequence outside
+00:06:15.520 --> 00:06:17.189 align:start position:0%
+has an observable consequence outside
+the pipeline's own execution
+00:06:17.189 --> 00:06:17.199 align:start position:0%
+the pipeline's own execution
+00:06:17.199 --> 00:06:20.070 align:start position:0%
+the pipeline's own execution
+environment. Sending an email, posting a
+00:06:20.070 --> 00:06:20.080 align:start position:0%
+environment. Sending an email, posting a
+00:06:20.080 --> 00:06:22.390 align:start position:0%
+environment. Sending an email, posting a
+GitHub comment, initiating a payment
+00:06:22.390 --> 00:06:22.400 align:start position:0%
+GitHub comment, initiating a payment
+00:06:22.400 --> 00:06:25.189 align:start position:0%
+GitHub comment, initiating a payment
+transaction, pushing a commit, sending a
+00:06:25.189 --> 00:06:25.199 align:start position:0%
+transaction, pushing a commit, sending a
+00:06:25.199 --> 00:06:27.189 align:start position:0%
+transaction, pushing a commit, sending a
+telegram message, or modifying a
+00:06:27.189 --> 00:06:27.199 align:start position:0%
+telegram message, or modifying a
+00:06:27.199 --> 00:06:29.749 align:start position:0%
+telegram message, or modifying a
+database record. When Lobster reaches a
+00:06:29.749 --> 00:06:29.759 align:start position:0%
+database record. When Lobster reaches a
+00:06:29.759 --> 00:06:31.990 align:start position:0%
+database record. When Lobster reaches a
+step tagged as a side effect, it does
+00:06:31.990 --> 00:06:32.000 align:start position:0%
+step tagged as a side effect, it does
+00:06:32.000 --> 00:06:34.550 align:start position:0%
+step tagged as a side effect, it does
+not execute it. It serializes the
+00:06:34.550 --> 00:06:34.560 align:start position:0%
+not execute it. It serializes the
+00:06:34.560 --> 00:06:36.870 align:start position:0%
+not execute it. It serializes the
+pending operation, the exact command it
+00:06:36.870 --> 00:06:36.880 align:start position:0%
+pending operation, the exact command it
+00:06:36.880 --> 00:06:39.110 align:start position:0%
+pending operation, the exact command it
+was about to run with the exact argument
+00:06:39.110 --> 00:06:39.120 align:start position:0%
+was about to run with the exact argument
+00:06:39.120 --> 00:06:41.590 align:start position:0%
+was about to run with the exact argument
+it had computed into a human readable
+00:06:41.590 --> 00:06:41.600 align:start position:0%
+it had computed into a human readable
+00:06:41.600 --> 00:06:44.950 align:start position:0%
+it had computed into a human readable
+preview and pauses execution. It returns
+00:06:44.950 --> 00:06:44.960 align:start position:0%
+preview and pauses execution. It returns
+00:06:44.960 --> 00:06:48.070 align:start position:0%
+preview and pauses execution. It returns
+a needs_approval envelope with a resume
+00:06:48.070 --> 00:06:48.080 align:start position:0%
+a needs_approval envelope with a resume
+00:06:48.080 --> 00:06:50.870 align:start position:0%
+a needs_approval envelope with a resume
+token to openclaw and openclaw surfaces
+00:06:50.870 --> 00:06:50.880 align:start position:0%
+token to openclaw and openclaw surfaces
+00:06:50.880 --> 00:06:52.469 align:start position:0%
+token to openclaw and openclaw surfaces
+the preview to you through whatever
+00:06:52.469 --> 00:06:52.479 align:start position:0%
+the preview to you through whatever
+00:06:52.479 --> 00:06:54.710 align:start position:0%
+the preview to you through whatever
+interface you are using WhatsApp,
+00:06:54.710 --> 00:06:54.720 align:start position:0%
+interface you are using WhatsApp,
+00:06:54.720 --> 00:06:57.510 align:start position:0%
+interface you are using WhatsApp,
+Telegram, the CLI. You see exactly what
+00:06:57.510 --> 00:06:57.520 align:start position:0%
+Telegram, the CLI. You see exactly what
+00:06:57.520 --> 00:06:59.749 align:start position:0%
+Telegram, the CLI. You see exactly what
+the pipeline wants to do. You either
+00:06:59.749 --> 00:06:59.759 align:start position:0%
+the pipeline wants to do. You either
+00:06:59.759 --> 00:07:02.390 align:start position:0%
+the pipeline wants to do. You either
+approve or deny. If you approve, you
+00:07:02.390 --> 00:07:02.400 align:start position:0%
+approve or deny. If you approve, you
+00:07:02.400 --> 00:07:05.029 align:start position:0%
+approve or deny. If you approve, you
+pass the réé token back and the pipeline
+00:07:05.029 --> 00:07:05.039 align:start position:0%
+pass the réé token back and the pipeline
+00:07:05.039 --> 00:07:07.670 align:start position:0%
+pass the réé token back and the pipeline
+executes the side effect and continues.
+00:07:07.670 --> 00:07:07.680 align:start position:0%
+executes the side effect and continues.
+00:07:07.680 --> 00:07:10.070 align:start position:0%
+executes the side effect and continues.
+If you deny, the pipeline is canled and
+00:07:10.070 --> 00:07:10.080 align:start position:0%
+If you deny, the pipeline is canled and
+00:07:10.080 --> 00:07:12.550 align:start position:0%
+If you deny, the pipeline is canled and
+nothing fires. The power of this model
+00:07:12.550 --> 00:07:12.560 align:start position:0%
+nothing fires. The power of this model
+00:07:12.560 --> 00:07:14.390 align:start position:0%
+nothing fires. The power of this model
+is that it is not asking you to review
+00:07:14.390 --> 00:07:14.400 align:start position:0%
+is that it is not asking you to review
+00:07:14.400 --> 00:07:16.309 align:start position:0%
+is that it is not asking you to review
+the intent of the workflow you already
+00:07:16.309 --> 00:07:16.319 align:start position:0%
+the intent of the workflow you already
+00:07:16.319 --> 00:07:17.510 align:start position:0%
+the intent of the workflow you already
+defined that when you wrote the
+00:07:17.510 --> 00:07:17.520 align:start position:0%
+defined that when you wrote the
+00:07:17.520 --> 00:07:20.070 align:start position:0%
+defined that when you wrote the
+pipeline. It is asking you to review the
+00:07:20.070 --> 00:07:20.080 align:start position:0%
+pipeline. It is asking you to review the
+00:07:20.080 --> 00:07:22.309 align:start position:0%
+pipeline. It is asking you to review the
+specific output of the LLM reasoning
+00:07:22.309 --> 00:07:22.319 align:start position:0%
+specific output of the LLM reasoning
+00:07:22.319 --> 00:07:24.629 align:start position:0%
+specific output of the LLM reasoning
+steps that fed into this side effect.
+00:07:24.629 --> 00:07:24.639 align:start position:0%
+steps that fed into this side effect.
+00:07:24.639 --> 00:07:26.629 align:start position:0%
+steps that fed into this side effect.
+You see the exact email that is about to
+00:07:26.629 --> 00:07:26.639 align:start position:0%
+You see the exact email that is about to
+00:07:26.639 --> 00:07:29.510 align:start position:0%
+You see the exact email that is about to
+be sent with the exact recipient subject
+00:07:29.510 --> 00:07:29.520 align:start position:0%
+be sent with the exact recipient subject
+00:07:29.520 --> 00:07:32.629 align:start position:0%
+be sent with the exact recipient subject
+and body that the LLM generated. You see
+00:07:32.629 --> 00:07:32.639 align:start position:0%
+and body that the LLM generated. You see
+00:07:32.639 --> 00:07:34.550 align:start position:0%
+and body that the LLM generated. You see
+the exact GitHub comment that is about
+00:07:34.550 --> 00:07:34.560 align:start position:0%
+the exact GitHub comment that is about
+00:07:34.560 --> 00:07:36.950 align:start position:0%
+the exact GitHub comment that is about
+to be posted. This is a fundamentally
+00:07:36.950 --> 00:07:36.960 align:start position:0%
+to be posted. This is a fundamentally
+00:07:36.960 --> 00:07:38.870 align:start position:0%
+to be posted. This is a fundamentally
+different review model from a chatbot
+00:07:38.870 --> 00:07:38.880 align:start position:0%
+different review model from a chatbot
+00:07:38.880 --> 00:07:41.589 align:start position:0%
+different review model from a chatbot
+asking shall I send the email? It is a
+00:07:41.589 --> 00:07:41.599 align:start position:0%
+asking shall I send the email? It is a
+00:07:41.599 --> 00:07:43.350 align:start position:0%
+asking shall I send the email? It is a
+production deployment previewing the
+00:07:43.350 --> 00:07:43.360 align:start position:0%
+production deployment previewing the
+00:07:43.360 --> 00:07:45.510 align:start position:0%
+production deployment previewing the
+exact change it is about to make and
+00:07:45.510 --> 00:07:45.520 align:start position:0%
+exact change it is about to make and
+00:07:45.520 --> 00:07:47.990 align:start position:0%
+exact change it is about to make and
+waiting for a binary confirm or deny.
+00:07:47.990 --> 00:07:48.000 align:start position:0%
+waiting for a binary confirm or deny.
+00:07:48.000 --> 00:07:50.230 align:start position:0%
+waiting for a binary confirm or deny.
+Beyond approval gates, Lobster builds
+00:07:50.230 --> 00:07:50.240 align:start position:0%
+Beyond approval gates, Lobster builds
+00:07:50.240 --> 00:07:52.309 align:start position:0%
+Beyond approval gates, Lobster builds
+enterprise safety requirements directly
+00:07:52.309 --> 00:07:52.319 align:start position:0%
+enterprise safety requirements directly
+00:07:52.319 --> 00:07:54.710 align:start position:0%
+enterprise safety requirements directly
+into the runtime rather than relying on
+00:07:54.710 --> 00:07:54.720 align:start position:0%
+into the runtime rather than relying on
+00:07:54.720 --> 00:07:56.550 align:start position:0%
+into the runtime rather than relying on
+each individual workflow to implement
+00:07:56.550 --> 00:07:56.560 align:start position:0%
+each individual workflow to implement
+00:07:56.560 --> 00:07:58.309 align:start position:0%
+each individual workflow to implement
+them correctly. The official
+00:07:58.309 --> 00:07:58.319 align:start position:0%
+them correctly. The official
+00:07:58.319 --> 00:08:00.550 align:start position:0%
+them correctly. The official
+documentation describes this as safety
+00:08:00.550 --> 00:08:00.560 align:start position:0%
+documentation describes this as safety
+00:08:00.560 --> 00:08:03.110 align:start position:0%
+documentation describes this as safety
+policy baked in. Because every lobster
+00:08:03.110 --> 00:08:03.120 align:start position:0%
+policy baked in. Because every lobster
+00:08:03.120 --> 00:08:05.270 align:start position:0%
+policy baked in. Because every lobster
+pipeline is a typed data structure
+00:08:05.270 --> 00:08:05.280 align:start position:0%
+pipeline is a typed data structure
+00:08:05.280 --> 00:08:07.830 align:start position:0%
+pipeline is a typed data structure
+rather than dynamically generated code,
+00:08:07.830 --> 00:08:07.840 align:start position:0%
+rather than dynamically generated code,
+00:08:07.840 --> 00:08:09.909 align:start position:0%
+rather than dynamically generated code,
+every execution can be logged in full
+00:08:09.909 --> 00:08:09.919 align:start position:0%
+every execution can be logged in full
+00:08:09.919 --> 00:08:11.830 align:start position:0%
+every execution can be logged in full
+detail, diffed against previous
+00:08:11.830 --> 00:08:11.840 align:start position:0%
+detail, diffed against previous
+00:08:11.840 --> 00:08:14.070 align:start position:0%
+detail, diffed against previous
+executions of the same pipeline and
+00:08:14.070 --> 00:08:14.080 align:start position:0%
+executions of the same pipeline and
+00:08:14.080 --> 00:08:16.550 align:start position:0%
+executions of the same pipeline and
+replayed for audit review. A compliance
+00:08:16.550 --> 00:08:16.560 align:start position:0%
+replayed for audit review. A compliance
+00:08:16.560 --> 00:08:19.189 align:start position:0%
+replayed for audit review. A compliance
+team can look at any pipeline execution
+00:08:19.189 --> 00:08:19.199 align:start position:0%
+team can look at any pipeline execution
+00:08:19.199 --> 00:08:21.830 align:start position:0%
+team can look at any pipeline execution
+and see exactly which steps ran, what
+00:08:21.830 --> 00:08:21.840 align:start position:0%
+and see exactly which steps ran, what
+00:08:21.840 --> 00:08:24.230 align:start position:0%
+and see exactly which steps ran, what
+JSON went into each step, what Jason
+00:08:24.230 --> 00:08:24.240 align:start position:0%
+JSON went into each step, what Jason
+00:08:24.240 --> 00:08:26.710 align:start position:0%
+JSON went into each step, what Jason
+came out, which approval gates fired,
+00:08:26.710 --> 00:08:26.720 align:start position:0%
+came out, which approval gates fired,
+00:08:26.720 --> 00:08:29.189 align:start position:0%
+came out, which approval gates fired,
+who approved them, and when. This is the
+00:08:29.189 --> 00:08:29.199 align:start position:0%
+who approved them, and when. This is the
+00:08:29.199 --> 00:08:31.189 align:start position:0%
+who approved them, and when. This is the
+audit trail that regulated industries
+00:08:31.189 --> 00:08:31.199 align:start position:0%
+audit trail that regulated industries
+00:08:31.199 --> 00:08:33.430 align:start position:0%
+audit trail that regulated industries
+need and that free agent openclaw
+00:08:33.430 --> 00:08:33.440 align:start position:0%
+need and that free agent openclaw
+00:08:33.440 --> 00:08:35.909 align:start position:0%
+need and that free agent openclaw
+operation cannot provide. The lobster
+00:08:35.909 --> 00:08:35.919 align:start position:0%
+operation cannot provide. The lobster
+00:08:35.919 --> 00:08:37.990 align:start position:0%
+operation cannot provide. The lobster
+runtime also enforces a set of safety
+00:08:37.990 --> 00:08:38.000 align:start position:0%
+runtime also enforces a set of safety
+00:08:38.000 --> 00:08:40.230 align:start position:0%
+runtime also enforces a set of safety
+constraints that apply globally across
+00:08:40.230 --> 00:08:40.240 align:start position:0%
+constraints that apply globally across
+00:08:40.240 --> 00:08:42.310 align:start position:0%
+constraints that apply globally across
+all pipelines without requiring per
+00:08:42.310 --> 00:08:42.320 align:start position:0%
+all pipelines without requiring per
+00:08:42.320 --> 00:08:44.630 align:start position:0%
+all pipelines without requiring per
+workflow configuration. Timeouts are
+00:08:44.630 --> 00:08:44.640 align:start position:0%
+workflow configuration. Timeouts are
+00:08:44.640 --> 00:08:46.710 align:start position:0%
+workflow configuration. Timeouts are
+enforced at the runtime level. If any
+00:08:46.710 --> 00:08:46.720 align:start position:0%
+enforced at the runtime level. If any
+00:08:46.720 --> 00:08:48.630 align:start position:0%
+enforced at the runtime level. If any
+step exceeds its configured timeout
+00:08:48.630 --> 00:08:48.640 align:start position:0%
+step exceeds its configured timeout
+00:08:48.640 --> 00:08:51.190 align:start position:0%
+step exceeds its configured timeout
+milliseconds, the subprocess is killed
+00:08:51.190 --> 00:08:51.200 align:start position:0%
+milliseconds, the subprocess is killed
+00:08:51.200 --> 00:08:53.190 align:start position:0%
+milliseconds, the subprocess is killed
+and the pipeline fails cleanly rather
+00:08:53.190 --> 00:08:53.200 align:start position:0%
+and the pipeline fails cleanly rather
+00:08:53.200 --> 00:08:55.670 align:start position:0%
+and the pipeline fails cleanly rather
+than hanging indefinitely. Output caps
+00:08:55.670 --> 00:08:55.680 align:start position:0%
+than hanging indefinitely. Output caps
+00:08:55.680 --> 00:08:57.430 align:start position:0%
+than hanging indefinitely. Output caps
+prevent any single step from producing
+00:08:57.430 --> 00:08:57.440 align:start position:0%
+prevent any single step from producing
+00:08:57.440 --> 00:08:59.430 align:start position:0%
+prevent any single step from producing
+an output that would overflow the
+00:08:59.430 --> 00:08:59.440 align:start position:0%
+an output that would overflow the
+00:08:59.440 --> 00:09:01.590 align:start position:0%
+an output that would overflow the
+context window of the subsequent LLM
+00:09:01.590 --> 00:09:01.600 align:start position:0%
+context window of the subsequent LLM
+00:09:01.600 --> 00:09:04.150 align:start position:0%
+context window of the subsequent LLM
+step. Sandbox checks verify that file
+00:09:04.150 --> 00:09:04.160 align:start position:0%
+step. Sandbox checks verify that file
+00:09:04.160 --> 00:09:05.990 align:start position:0%
+step. Sandbox checks verify that file
+system operations stay within the
+00:09:05.990 --> 00:09:06.000 align:start position:0%
+system operations stay within the
+00:09:06.000 --> 00:09:08.550 align:start position:0%
+system operations stay within the
+authorized workspace boundary. Allow
+00:09:08.550 --> 00:09:08.560 align:start position:0%
+authorized workspace boundary. Allow
+00:09:08.560 --> 00:09:10.710 align:start position:0%
+authorized workspace boundary. Allow
+lists restrict which external CLI
+00:09:10.710 --> 00:09:10.720 align:start position:0%
+lists restrict which external CLI
+00:09:10.720 --> 00:09:12.710 align:start position:0%
+lists restrict which external CLI
+commands and network destinations each
+00:09:12.710 --> 00:09:12.720 align:start position:0%
+commands and network destinations each
+00:09:12.720 --> 00:09:14.949 align:start position:0%
+commands and network destinations each
+pipeline is permitted to call. These are
+00:09:14.949 --> 00:09:14.959 align:start position:0%
+pipeline is permitted to call. These are
+00:09:14.959 --> 00:09:17.269 align:start position:0%
+pipeline is permitted to call. These are
+not features you configure per pipeline.
+00:09:17.269 --> 00:09:17.279 align:start position:0%
+not features you configure per pipeline.
+00:09:17.279 --> 00:09:19.190 align:start position:0%
+not features you configure per pipeline.
+They are constraints the lobster runtime
+00:09:19.190 --> 00:09:19.200 align:start position:0%
+They are constraints the lobster runtime
+00:09:19.200 --> 00:09:21.509 align:start position:0%
+They are constraints the lobster runtime
+enforces across every pipeline that runs
+00:09:21.509 --> 00:09:21.519 align:start position:0%
+enforces across every pipeline that runs
+00:09:21.519 --> 00:09:23.910 align:start position:0%
+enforces across every pipeline that runs
+inside it. This means a new workflow
+00:09:23.910 --> 00:09:23.920 align:start position:0%
+inside it. This means a new workflow
+00:09:23.920 --> 00:09:25.750 align:start position:0%
+inside it. This means a new workflow
+author cannot accidentally write a
+00:09:25.750 --> 00:09:25.760 align:start position:0%
+author cannot accidentally write a
+00:09:25.760 --> 00:09:27.509 align:start position:0%
+author cannot accidentally write a
+pipeline that bypasses timeout
+00:09:27.509 --> 00:09:27.519 align:start position:0%
+pipeline that bypasses timeout
+00:09:27.519 --> 00:09:30.230 align:start position:0%
+pipeline that bypasses timeout
+enforcement, overflows the context or
+00:09:30.230 --> 00:09:30.240 align:start position:0%
+enforcement, overflows the context or
+00:09:30.240 --> 00:09:32.949 align:start position:0%
+enforcement, overflows the context or
+calls an unauthorized external endpoint.
+00:09:32.949 --> 00:09:32.959 align:start position:0%
+calls an unauthorized external endpoint.
+00:09:32.959 --> 00:09:34.870 align:start position:0%
+calls an unauthorized external endpoint.
+The safety surface is controlled at the
+00:09:34.870 --> 00:09:34.880 align:start position:0%
+The safety surface is controlled at the
+00:09:34.880 --> 00:09:37.509 align:start position:0%
+The safety surface is controlled at the
+runtime layer, not the workflow layer.
+00:09:37.509 --> 00:09:37.519 align:start position:0%
+runtime layer, not the workflow layer.
+00:09:37.519 --> 00:09:39.030 align:start position:0%
+runtime layer, not the workflow layer.
+One of the most significant recent
+00:09:39.030 --> 00:09:39.040 align:start position:0%
+One of the most significant recent
+00:09:39.040 --> 00:09:41.190 align:start position:0%
+One of the most significant recent
+developments in the Lobster ecosystem
+00:09:41.190 --> 00:09:41.200 align:start position:0%
+developments in the Lobster ecosystem
+00:09:41.200 --> 00:09:42.870 align:start position:0%
+developments in the Lobster ecosystem
+came from a community contribution
+00:09:42.870 --> 00:09:42.880 align:start position:0%
+came from a community contribution
+00:09:42.880 --> 00:09:45.750 align:start position:0%
+came from a community contribution
+documented on dev.2 this February.
+00:09:45.750 --> 00:09:45.760 align:start position:0%
+documented on dev.2 this February.
+00:09:45.760 --> 00:09:48.550 align:start position:0%
+documented on dev.2 this February.
+Lobster's original step model was linear
+00:09:48.550 --> 00:09:48.560 align:start position:0%
+Lobster's original step model was linear
+00:09:48.560 --> 00:09:50.870 align:start position:0%
+Lobster's original step model was linear
+steps run sequentially. Data flows
+00:09:50.870 --> 00:09:50.880 align:start position:0%
+steps run sequentially. Data flows
+00:09:50.880 --> 00:09:53.750 align:start position:0%
+steps run sequentially. Data flows
+forward. No native loop construct. For
+00:09:53.750 --> 00:09:53.760 align:start position:0%
+forward. No native loop construct. For
+00:09:53.760 --> 00:09:55.990 align:start position:0%
+forward. No native loop construct. For
+many workflows, linear execution is
+00:09:55.990 --> 00:09:56.000 align:start position:0%
+many workflows, linear execution is
+00:09:56.000 --> 00:09:58.070 align:start position:0%
+many workflows, linear execution is
+sufficient. But for workflows that
+00:09:58.070 --> 00:09:58.080 align:start position:0%
+sufficient. But for workflows that
+00:09:58.080 --> 00:10:00.470 align:start position:0%
+sufficient. But for workflows that
+require iterative refinement cycles, a
+00:10:00.470 --> 00:10:00.480 align:start position:0%
+require iterative refinement cycles, a
+00:10:00.480 --> 00:10:02.389 align:start position:0%
+require iterative refinement cycles, a
+code review loop that runs until either
+00:10:02.389 --> 00:10:02.399 align:start position:0%
+code review loop that runs until either
+00:10:02.399 --> 00:10:04.550 align:start position:0%
+code review loop that runs until either
+the reviewer approves or a maximum
+00:10:04.550 --> 00:10:04.560 align:start position:0%
+the reviewer approves or a maximum
+00:10:04.560 --> 00:10:07.350 align:start position:0%
+the reviewer approves or a maximum
+iteration count is reached. For example,
+00:10:07.350 --> 00:10:07.360 align:start position:0%
+iteration count is reached. For example,
+00:10:07.360 --> 00:10:09.590 align:start position:0%
+iteration count is reached. For example,
+linear execution hits a hard sub
+00:10:09.590 --> 00:10:09.600 align:start position:0%
+linear execution hits a hard sub
+00:10:09.600 --> 00:10:12.470 align:start position:0%
+linear execution hits a hard sub
+lobsters, nesting a lobster pipeline as
+00:10:12.470 --> 00:10:12.480 align:start position:0%
+lobsters, nesting a lobster pipeline as
+00:10:12.480 --> 00:10:15.509 align:start position:0%
+lobsters, nesting a lobster pipeline as
+a step inside another lobster pipeline.
+00:10:15.509 --> 00:10:15.519 align:start position:0%
+a step inside another lobster pipeline.
+00:10:15.519 --> 00:10:17.829 align:start position:0%
+a step inside another lobster pipeline.
+You define the inner pipeline as a loop
+00:10:17.829 --> 00:10:17.839 align:start position:0%
+You define the inner pipeline as a loop
+00:10:17.839 --> 00:10:20.389 align:start position:0%
+You define the inner pipeline as a loop
+body, one iteration of the code review
+00:10:20.389 --> 00:10:20.399 align:start position:0%
+body, one iteration of the code review
+00:10:20.399 --> 00:10:23.110 align:start position:0%
+body, one iteration of the code review
+cycle, and the outer pipeline manages
+00:10:23.110 --> 00:10:23.120 align:start position:0%
+cycle, and the outer pipeline manages
+00:10:23.120 --> 00:10:25.430 align:start position:0%
+cycle, and the outer pipeline manages
+the loop counter and the termination
+00:10:25.430 --> 00:10:25.440 align:start position:0%
+the loop counter and the termination
+00:10:25.440 --> 00:10:26.949 align:start position:0%
+the loop counter and the termination
+condition.
+00:10:26.949 --> 00:10:26.959 align:start position:0%
+condition.
+00:10:26.959 --> 00:10:29.030 align:start position:0%
+condition.
+The outer pipeline calls the inner
+00:10:29.030 --> 00:10:29.040 align:start position:0%
+The outer pipeline calls the inner
+00:10:29.040 --> 00:10:32.470 align:start position:0%
+The outer pipeline calls the inner
+pipeline via open claw.invoke, Invoke
+00:10:32.470 --> 00:10:32.480 align:start position:0%
+pipeline via open claw.invoke, Invoke
+00:10:32.480 --> 00:10:34.949 align:start position:0%
+pipeline via open claw.invoke, Invoke
+inspects the output, increments the
+00:10:34.949 --> 00:10:34.959 align:start position:0%
+inspects the output, increments the
+00:10:34.959 --> 00:10:37.350 align:start position:0%
+inspects the output, increments the
+counter, and decides whether to call the
+00:10:37.350 --> 00:10:37.360 align:start position:0%
+counter, and decides whether to call the
+00:10:37.360 --> 00:10:40.630 align:start position:0%
+counter, and decides whether to call the
+inner pipeline again or terminate.
+00:10:40.630 --> 00:10:40.640 align:start position:0%
+inner pipeline again or terminate.
+00:10:40.640 --> 00:10:42.710 align:start position:0%
+inner pipeline again or terminate.
+Because openclaw.invoke
+00:10:42.710 --> 00:10:42.720 align:start position:0%
+Because openclaw.invoke
+00:10:42.720 --> 00:10:45.910 align:start position:0%
+Because openclaw.invoke
+can call agent- send to message other
+00:10:45.910 --> 00:10:45.920 align:start position:0%
+can call agent- send to message other
+00:10:45.920 --> 00:10:49.110 align:start position:0%
+can call agent- send to message other
+openclaw agent instances, sub lobsters
+00:10:49.110 --> 00:10:49.120 align:start position:0%
+openclaw agent instances, sub lobsters
+00:10:49.120 --> 00:10:50.870 align:start position:0%
+openclaw agent instances, sub lobsters
+also become the foundation for
+00:10:50.870 --> 00:10:50.880 align:start position:0%
+also become the foundation for
+00:10:50.880 --> 00:10:53.750 align:start position:0%
+also become the foundation for
+multi-agent coordination patterns. a
+00:10:53.750 --> 00:10:53.760 align:start position:0%
+multi-agent coordination patterns. a
+00:10:53.760 --> 00:10:55.990 align:start position:0%
+multi-agent coordination patterns. a
+parent pipeline orchestrating multiple
+00:10:55.990 --> 00:10:56.000 align:start position:0%
+parent pipeline orchestrating multiple
+00:10:56.000 --> 00:10:58.310 align:start position:0%
+parent pipeline orchestrating multiple
+child agents, each running their own
+00:10:58.310 --> 00:10:58.320 align:start position:0%
+child agents, each running their own
+00:10:58.320 --> 00:11:00.949 align:start position:0%
+child agents, each running their own
+subpipelines in parallel with the parent
+00:11:00.949 --> 00:11:00.959 align:start position:0%
+subpipelines in parallel with the parent
+00:11:00.959 --> 00:11:03.990 align:start position:0%
+subpipelines in parallel with the parent
+collecting and merging their outputs.
+00:11:03.990 --> 00:11:04.000 align:start position:0%
+collecting and merging their outputs.
+00:11:04.000 --> 00:11:06.310 align:start position:0%
+collecting and merging their outputs.
+Lobster's pipeline definition format is
+00:11:06.310 --> 00:11:06.320 align:start position:0%
+Lobster's pipeline definition format is
+00:11:06.320 --> 00:11:09.269 align:start position:0%
+Lobster's pipeline definition format is
+powerful but textbased. You write
+00:11:09.269 --> 00:11:09.279 align:start position:0%
+powerful but textbased. You write
+00:11:09.279 --> 00:11:11.750 align:start position:0%
+powerful but textbased. You write
+Lobster files by hand or generate them
+00:11:11.750 --> 00:11:11.760 align:start position:0%
+Lobster files by hand or generate them
+00:11:11.760 --> 00:11:13.509 align:start position:0%
+Lobster files by hand or generate them
+programmatically
+00:11:13.509 --> 00:11:13.519 align:start position:0%
+programmatically
+00:11:13.519 --> 00:11:15.750 align:start position:0%
+programmatically
+for non-technical operators who need to
+00:11:15.750 --> 00:11:15.760 align:start position:0%
+for non-technical operators who need to
+00:11:15.760 --> 00:11:17.670 align:start position:0%
+for non-technical operators who need to
+build and modify workflows without
+00:11:17.670 --> 00:11:17.680 align:start position:0%
+build and modify workflows without
+00:11:17.680 --> 00:11:20.310 align:start position:0%
+build and modify workflows without
+writing pipeline syntax. Clawflows
+00:11:20.310 --> 00:11:20.320 align:start position:0%
+writing pipeline syntax. Clawflows
+00:11:20.320 --> 00:11:22.870 align:start position:0%
+writing pipeline syntax. Clawflows
+provides a visual interface.
+00:11:22.870 --> 00:11:22.880 align:start position:0%
+provides a visual interface.
+00:11:22.880 --> 00:11:25.110 align:start position:0%
+provides a visual interface.
+Clawflows is a visual workflow builder
+00:11:25.110 --> 00:11:25.120 align:start position:0%
+Clawflows is a visual workflow builder
+00:11:25.120 --> 00:11:27.990 align:start position:0%
+Clawflows is a visual workflow builder
+that compiles to lobster pipelines. You
+00:11:27.990 --> 00:11:28.000 align:start position:0%
+that compiles to lobster pipelines. You
+00:11:28.000 --> 00:11:30.470 align:start position:0%
+that compiles to lobster pipelines. You
+drag, connect, and configure steps in a
+00:11:30.470 --> 00:11:30.480 align:start position:0%
+drag, connect, and configure steps in a
+00:11:30.480 --> 00:11:33.110 align:start position:0%
+drag, connect, and configure steps in a
+visual graph editor and clawflows
+00:11:33.110 --> 00:11:33.120 align:start position:0%
+visual graph editor and clawflows
+00:11:33.120 --> 00:11:35.269 align:start position:0%
+visual graph editor and clawflows
+generates the underlying lobster
+00:11:35.269 --> 00:11:35.279 align:start position:0%
+generates the underlying lobster
+00:11:35.279 --> 00:11:38.630 align:start position:0%
+generates the underlying lobster
+pipeline file that lobster executes.
+00:11:38.630 --> 00:11:38.640 align:start position:0%
+pipeline file that lobster executes.
+00:11:38.640 --> 00:11:40.710 align:start position:0%
+pipeline file that lobster executes.
+This means the same lobster runtime that
+00:11:40.710 --> 00:11:40.720 align:start position:0%
+This means the same lobster runtime that
+00:11:40.720 --> 00:11:42.550 align:start position:0%
+This means the same lobster runtime that
+handles programmatically generated
+00:11:42.550 --> 00:11:42.560 align:start position:0%
+handles programmatically generated
+00:11:42.560 --> 00:11:45.509 align:start position:0%
+handles programmatically generated
+pipelines also handles visually composed
+00:11:45.509 --> 00:11:45.519 align:start position:0%
+pipelines also handles visually composed
+00:11:45.519 --> 00:11:47.750 align:start position:0%
+pipelines also handles visually composed
+pipelines. There is no separate
+00:11:47.750 --> 00:11:47.760 align:start position:0%
+pipelines. There is no separate
+00:11:47.760 --> 00:11:50.069 align:start position:0%
+pipelines. There is no separate
+execution engine for visual versus
+00:11:50.069 --> 00:11:50.079 align:start position:0%
+execution engine for visual versus
+00:11:50.079 --> 00:11:53.190 align:start position:0%
+execution engine for visual versus
+codefed workflows. The composability
+00:11:53.190 --> 00:11:53.200 align:start position:0%
+codefed workflows. The composability
+00:11:53.200 --> 00:11:55.829 align:start position:0%
+codefed workflows. The composability
+extends to agent skills as well.
+00:11:55.829 --> 00:11:55.839 align:start position:0%
+extends to agent skills as well.
+00:11:55.839 --> 00:11:58.069 align:start position:0%
+extends to agent skills as well.
+Individual agent skills, code
+00:11:58.069 --> 00:11:58.079 align:start position:0%
+Individual agent skills, code
+00:11:58.079 --> 00:12:00.870 align:start position:0%
+Individual agent skills, code
+generation, data analysis, file
+00:12:00.870 --> 00:12:00.880 align:start position:0%
+generation, data analysis, file
+00:12:00.880 --> 00:12:04.150 align:start position:0%
+generation, data analysis, file
+manipulation, API interaction become
+00:12:04.150 --> 00:12:04.160 align:start position:0%
+manipulation, API interaction become
+00:12:04.160 --> 00:12:07.110 align:start position:0%
+manipulation, API interaction become
+building blocks in the Clawflows editor.
+00:12:07.110 --> 00:12:07.120 align:start position:0%
+building blocks in the Clawflows editor.
+00:12:07.120 --> 00:12:09.350 align:start position:0%
+building blocks in the Clawflows editor.
+Skills that were built independently can
+00:12:09.350 --> 00:12:09.360 align:start position:0%
+Skills that were built independently can
+00:12:09.360 --> 00:12:11.910 align:start position:0%
+Skills that were built independently can
+be wired together without modification
+00:12:11.910 --> 00:12:11.920 align:start position:0%
+be wired together without modification
+00:12:11.920 --> 00:12:14.389 align:start position:0%
+be wired together without modification
+because every skill speaks the same JSON
+00:12:14.389 --> 00:12:14.399 align:start position:0%
+because every skill speaks the same JSON
+00:12:14.399 --> 00:12:16.389 align:start position:0%
+because every skill speaks the same JSON
+interface that Lobster's pipe model
+00:12:16.389 --> 00:12:16.399 align:start position:0%
+interface that Lobster's pipe model
+00:12:16.399 --> 00:12:18.550 align:start position:0%
+interface that Lobster's pipe model
+expects. The result is that a
+00:12:18.550 --> 00:12:18.560 align:start position:0%
+expects. The result is that a
+00:12:18.560 --> 00:12:20.870 align:start position:0%
+expects. The result is that a
+non-technical operator can compose a
+00:12:20.870 --> 00:12:20.880 align:start position:0%
+non-technical operator can compose a
+00:12:20.880 --> 00:12:23.350 align:start position:0%
+non-technical operator can compose a
+multi-step automation workflow from
+00:12:23.350 --> 00:12:23.360 align:start position:0%
+multi-step automation workflow from
+00:12:23.360 --> 00:12:25.590 align:start position:0%
+multi-step automation workflow from
+existing skills without writing a single
+00:12:25.590 --> 00:12:25.600 align:start position:0%
+existing skills without writing a single
+00:12:25.600 --> 00:12:28.150 align:start position:0%
+existing skills without writing a single
+line of code and the resulting pipeline
+00:12:28.150 --> 00:12:28.160 align:start position:0%
+line of code and the resulting pipeline
+00:12:28.160 --> 00:12:31.269 align:start position:0%
+line of code and the resulting pipeline
+has the full determinism, auditability
+00:12:31.269 --> 00:12:31.279 align:start position:0%
+has the full determinism, auditability
+00:12:31.279 --> 00:12:33.590 align:start position:0%
+has the full determinism, auditability
+and approval gate behavior of any
+00:12:33.590 --> 00:12:33.600 align:start position:0%
+and approval gate behavior of any
+00:12:33.600 --> 00:12:36.230 align:start position:0%
+and approval gate behavior of any
+handwritten lobster pipeline. One of the
+00:12:36.230 --> 00:12:36.240 align:start position:0%
+handwritten lobster pipeline. One of the
+00:12:36.240 --> 00:12:38.150 align:start position:0%
+handwritten lobster pipeline. One of the
+most practically important integrations
+00:12:38.150 --> 00:12:38.160 align:start position:0%
+most practically important integrations
+00:12:38.160 --> 00:12:41.750 align:start position:0%
+most practically important integrations
+in the lobster ecosystem is the LLM-
+00:12:41.750 --> 00:12:41.760 align:start position:0%
+in the lobster ecosystem is the LLM-
+00:12:41.760 --> 00:12:43.990 align:start position:0%
+in the lobster ecosystem is the LLM-
+task tool, which is specifically
+00:12:43.990 --> 00:12:44.000 align:start position:0%
+task tool, which is specifically
+00:12:44.000 --> 00:12:45.509 align:start position:0%
+task tool, which is specifically
+designed to be called from within
+00:12:45.509 --> 00:12:45.519 align:start position:0%
+designed to be called from within
+00:12:45.519 --> 00:12:47.509 align:start position:0%
+designed to be called from within
+lobster pipelines.
+00:12:47.509 --> 00:12:47.519 align:start position:0%
+lobster pipelines.
+00:12:47.519 --> 00:12:49.990 align:start position:0%
+lobster pipelines.
+The problem it solves is the following.
+00:12:49.990 --> 00:12:50.000 align:start position:0%
+The problem it solves is the following.
+00:12:50.000 --> 00:12:52.069 align:start position:0%
+The problem it solves is the following.
+A deterministic pipeline is only
+00:12:52.069 --> 00:12:52.079 align:start position:0%
+A deterministic pipeline is only
+00:12:52.079 --> 00:12:54.310 align:start position:0%
+A deterministic pipeline is only
+deterministic in its structure, not
+00:12:54.310 --> 00:12:54.320 align:start position:0%
+deterministic in its structure, not
+00:12:54.320 --> 00:12:56.949 align:start position:0%
+deterministic in its structure, not
+necessarily in its content. The
+00:12:56.949 --> 00:12:56.959 align:start position:0%
+necessarily in its content. The
+00:12:56.959 --> 00:12:59.030 align:start position:0%
+necessarily in its content. The
+structure, which steps run, in what
+00:12:59.030 --> 00:12:59.040 align:start position:0%
+structure, which steps run, in what
+00:12:59.040 --> 00:13:01.990 align:start position:0%
+structure, which steps run, in what
+order, what JSON flows between them is
+00:13:01.990 --> 00:13:02.000 align:start position:0%
+order, what JSON flows between them is
+00:13:02.000 --> 00:13:04.550 align:start position:0%
+order, what JSON flows between them is
+fixed by the pipeline definition. But
+00:13:04.550 --> 00:13:04.560 align:start position:0%
+fixed by the pipeline definition. But
+00:13:04.560 --> 00:13:06.710 align:start position:0%
+fixed by the pipeline definition. But
+the content produced within individual
+00:13:06.710 --> 00:13:06.720 align:start position:0%
+the content produced within individual
+00:13:06.720 --> 00:13:08.550 align:start position:0%
+the content produced within individual
+steps that require language model
+00:13:08.550 --> 00:13:08.560 align:start position:0%
+steps that require language model
+00:13:08.560 --> 00:13:11.110 align:start position:0%
+steps that require language model
+reasoning is still non-deterministic in
+00:13:11.110 --> 00:13:11.120 align:start position:0%
+reasoning is still non-deterministic in
+00:13:11.120 --> 00:13:14.790 align:start position:0%
+reasoning is still non-deterministic in
+the traditional sense. LLM- task
+00:13:14.790 --> 00:13:14.800 align:start position:0%
+the traditional sense. LLM- task
+00:13:14.800 --> 00:13:17.829 align:start position:0%
+the traditional sense. LLM- task
+addresses this by wrapping LLM calls in
+00:13:17.829 --> 00:13:17.839 align:start position:0%
+addresses this by wrapping LLM calls in
+00:13:17.839 --> 00:13:20.710 align:start position:0%
+addresses this by wrapping LLM calls in
+a structured output contract. You define
+00:13:20.710 --> 00:13:20.720 align:start position:0%
+a structured output contract. You define
+00:13:20.720 --> 00:13:24.150 align:start position:0%
+a structured output contract. You define
+a JSo schema for the expected output and
+00:13:24.150 --> 00:13:24.160 align:start position:0%
+a JSo schema for the expected output and
+00:13:24.160 --> 00:13:27.430 align:start position:0%
+a JSo schema for the expected output and
+LLM- task retries until the model
+00:13:27.430 --> 00:13:27.440 align:start position:0%
+LLM- task retries until the model
+00:13:27.440 --> 00:13:29.670 align:start position:0%
+LLM- task retries until the model
+produces output that validates against
+00:13:29.670 --> 00:13:29.680 align:start position:0%
+produces output that validates against
+00:13:29.680 --> 00:13:33.110 align:start position:0%
+produces output that validates against
+the schema or a retry limit is reached.
+00:13:33.110 --> 00:13:33.120 align:start position:0%
+the schema or a retry limit is reached.
+00:13:33.120 --> 00:13:35.829 align:start position:0%
+the schema or a retry limit is reached.
+This means you can embed LLM reasoning
+00:13:35.829 --> 00:13:35.839 align:start position:0%
+This means you can embed LLM reasoning
+00:13:35.839 --> 00:13:38.389 align:start position:0%
+This means you can embed LLM reasoning
+steps inside a lobster pipeline with a
+00:13:38.389 --> 00:13:38.399 align:start position:0%
+steps inside a lobster pipeline with a
+00:13:38.399 --> 00:13:40.389 align:start position:0%
+steps inside a lobster pipeline with a
+guarantee that the output flowing into
+00:13:40.389 --> 00:13:40.399 align:start position:0%
+guarantee that the output flowing into
+00:13:40.399 --> 00:13:43.030 align:start position:0%
+guarantee that the output flowing into
+the next step will match the JSON schema
+00:13:43.030 --> 00:13:43.040 align:start position:0%
+the next step will match the JSON schema
+00:13:43.040 --> 00:13:45.990 align:start position:0%
+the next step will match the JSON schema
+that the next step expects. The pipeline
+00:13:45.990 --> 00:13:46.000 align:start position:0%
+that the next step expects. The pipeline
+00:13:46.000 --> 00:13:48.629 align:start position:0%
+that the next step expects. The pipeline
+structure is deterministic. The content
+00:13:48.629 --> 00:13:48.639 align:start position:0%
+structure is deterministic. The content
+00:13:48.639 --> 00:13:51.670 align:start position:0%
+structure is deterministic. The content
+produced within each LLM step is schema
+00:13:51.670 --> 00:13:51.680 align:start position:0%
+produced within each LLM step is schema
+00:13:51.680 --> 00:13:54.389 align:start position:0%
+produced within each LLM step is schema
+validated. The combination gives you a
+00:13:54.389 --> 00:13:54.399 align:start position:0%
+validated. The combination gives you a
+00:13:54.399 --> 00:13:56.710 align:start position:0%
+validated. The combination gives you a
+workflow where both the execution flow
+00:13:56.710 --> 00:13:56.720 align:start position:0%
+workflow where both the execution flow
+00:13:56.720 --> 00:13:59.350 align:start position:0%
+workflow where both the execution flow
+and the data contracts between steps are
+00:13:59.350 --> 00:13:59.360 align:start position:0%
+and the data contracts between steps are
+00:13:59.360 --> 00:14:02.069 align:start position:0%
+and the data contracts between steps are
+formally specified and enforced. The
+00:14:02.069 --> 00:14:02.079 align:start position:0%
+formally specified and enforced. The
+00:14:02.079 --> 00:14:03.829 align:start position:0%
+formally specified and enforced. The
+community has been running Lobster on
+00:14:03.829 --> 00:14:03.839 align:start position:0%
+community has been running Lobster on
+00:14:03.839 --> 00:14:06.150 align:start position:0%
+community has been running Lobster on
+real workflows for several weeks now,
+00:14:06.150 --> 00:14:06.160 align:start position:0%
+real workflows for several weeks now,
+00:14:06.160 --> 00:14:07.829 align:start position:0%
+real workflows for several weeks now,
+and the benchmarks that are emerging
+00:14:07.829 --> 00:14:07.839 align:start position:0%
+and the benchmarks that are emerging
+00:14:07.839 --> 00:14:10.310 align:start position:0%
+and the benchmarks that are emerging
+from Reddit and dev.2 threads are
+00:14:10.310 --> 00:14:10.320 align:start position:0%
+from Reddit and dev.2 threads are
+00:14:10.320 --> 00:14:13.350 align:start position:0%
+from Reddit and dev.2 threads are
+concrete. For scheduled automation tasks
+00:14:13.350 --> 00:14:13.360 align:start position:0%
+concrete. For scheduled automation tasks
+00:14:13.360 --> 00:14:15.189 align:start position:0%
+concrete. For scheduled automation tasks
+that were previously running as free
+00:14:15.189 --> 00:14:15.199 align:start position:0%
+that were previously running as free
+00:14:15.199 --> 00:14:17.670 align:start position:0%
+that were previously running as free
+agent workflows, the shift to lobster
+00:14:17.670 --> 00:14:17.680 align:start position:0%
+agent workflows, the shift to lobster
+00:14:17.680 --> 00:14:19.829 align:start position:0%
+agent workflows, the shift to lobster
+pipelines is producing token cost
+00:14:19.829 --> 00:14:19.839 align:start position:0%
+pipelines is producing token cost
+00:14:19.839 --> 00:14:23.750 align:start position:0%
+pipelines is producing token cost
+reductions in the range of 60 to 80%.
+00:14:23.750 --> 00:14:23.760 align:start position:0%
+reductions in the range of 60 to 80%.
+00:14:23.760 --> 00:14:25.670 align:start position:0%
+reductions in the range of 60 to 80%.
+The mechanism is exactly what the
+00:14:25.670 --> 00:14:25.680 align:start position:0%
+The mechanism is exactly what the
+00:14:25.680 --> 00:14:28.870 align:start position:0%
+The mechanism is exactly what the
+architecture predicts, eliminating LLM
+00:14:28.870 --> 00:14:28.880 align:start position:0%
+architecture predicts, eliminating LLM
+00:14:28.880 --> 00:14:31.110 align:start position:0%
+architecture predicts, eliminating LLM
+reasoning overhead at every interstep
+00:14:31.110 --> 00:14:31.120 align:start position:0%
+reasoning overhead at every interstep
+00:14:31.120 --> 00:14:33.509 align:start position:0%
+reasoning overhead at every interstep
+transition, replacing it with direct
+00:14:33.509 --> 00:14:33.519 align:start position:0%
+transition, replacing it with direct
+00:14:33.519 --> 00:14:37.189 align:start position:0%
+transition, replacing it with direct
+JSON piping. A 15-step email triage
+00:14:37.189 --> 00:14:37.199 align:start position:0%
+JSON piping. A 15-step email triage
+00:14:37.199 --> 00:14:39.509 align:start position:0%
+JSON piping. A 15-step email triage
+workflow that previously required 15
+00:14:39.509 --> 00:14:39.519 align:start position:0%
+workflow that previously required 15
+00:14:39.519 --> 00:14:42.629 align:start position:0%
+workflow that previously required 15
+separate LLM calls to orchestrate now
+00:14:42.629 --> 00:14:42.639 align:start position:0%
+separate LLM calls to orchestrate now
+00:14:42.639 --> 00:14:44.790 align:start position:0%
+separate LLM calls to orchestrate now
+requires one lobster tool call
+00:14:44.790 --> 00:14:44.800 align:start position:0%
+requires one lobster tool call
+00:14:44.800 --> 00:14:47.750 align:start position:0%
+requires one lobster tool call
+containing approximately 3 to four LLM
+00:14:47.750 --> 00:14:47.760 align:start position:0%
+containing approximately 3 to four LLM
+00:14:47.760 --> 00:14:49.910 align:start position:0%
+containing approximately 3 to four LLM
+calls within specific steps where
+00:14:49.910 --> 00:14:49.920 align:start position:0%
+calls within specific steps where
+00:14:49.920 --> 00:14:52.550 align:start position:0%
+calls within specific steps where
+reasoning is actually needed. Task
+00:14:52.550 --> 00:14:52.560 align:start position:0%
+reasoning is actually needed. Task
+00:14:52.560 --> 00:14:55.350 align:start position:0%
+reasoning is actually needed. Task
+failure rates caused by LLM timeout
+00:14:55.350 --> 00:14:55.360 align:start position:0%
+failure rates caused by LLM timeout
+00:14:55.360 --> 00:14:57.590 align:start position:0%
+failure rates caused by LLM timeout
+errors have dropped to near zero on
+00:14:57.590 --> 00:14:57.600 align:start position:0%
+errors have dropped to near zero on
+00:14:57.600 --> 00:15:00.069 align:start position:0%
+errors have dropped to near zero on
+lobster managed workflows compared to
+00:15:00.069 --> 00:15:00.079 align:start position:0%
+lobster managed workflows compared to
+00:15:00.079 --> 00:15:03.189 align:start position:0%
+lobster managed workflows compared to
+failure rates of 15 to 30% on equivalent
+00:15:03.189 --> 00:15:03.199 align:start position:0%
+failure rates of 15 to 30% on equivalent
+00:15:03.199 --> 00:15:05.350 align:start position:0%
+failure rates of 15 to 30% on equivalent
+free agent workflows depending on
+00:15:05.350 --> 00:15:05.360 align:start position:0%
+free agent workflows depending on
+00:15:05.360 --> 00:15:08.230 align:start position:0%
+free agent workflows depending on
+workflow complexity and LLM response
+00:15:08.230 --> 00:15:08.240 align:start position:0%
+workflow complexity and LLM response
+00:15:08.240 --> 00:15:10.710 align:start position:0%
+workflow complexity and LLM response
+time variance. The resume token
+00:15:10.710 --> 00:15:10.720 align:start position:0%
+time variance. The resume token
+00:15:10.720 --> 00:15:12.949 align:start position:0%
+time variance. The resume token
+mechanism means that even when a timeout
+00:15:12.949 --> 00:15:12.959 align:start position:0%
+mechanism means that even when a timeout
+00:15:12.959 --> 00:15:15.350 align:start position:0%
+mechanism means that even when a timeout
+does occur within a lobster step, the
+00:15:15.350 --> 00:15:15.360 align:start position:0%
+does occur within a lobster step, the
+00:15:15.360 --> 00:15:17.189 align:start position:0%
+does occur within a lobster step, the
+pipeline does not lose its prior
+00:15:17.189 --> 00:15:17.199 align:start position:0%
+pipeline does not lose its prior
+00:15:17.199 --> 00:15:19.910 align:start position:0%
+pipeline does not lose its prior
+execution state. It can be resumed from
+00:15:19.910 --> 00:15:19.920 align:start position:0%
+execution state. It can be resumed from
+00:15:19.920 --> 00:15:22.230 align:start position:0%
+execution state. It can be resumed from
+the point of failure rather than restart
+00:15:22.230 --> 00:15:22.240 align:start position:0%
+the point of failure rather than restart
+00:15:22.240 --> 00:15:23.670 align:start position:0%
+the point of failure rather than restart
+GitHub automation workflow.
+00:15:23.670 --> 00:15:23.680 align:start position:0%
+GitHub automation workflow.
+00:15:23.680 --> 00:15:25.990 align:start position:0%
+GitHub automation workflow.
+Specifically, Lobster's approval gate
+00:15:25.990 --> 00:15:26.000 align:start position:0%
+Specifically, Lobster's approval gate
+00:15:26.000 --> 00:15:28.710 align:start position:0%
+Specifically, Lobster's approval gate
+model has been particularly impactful. A
+00:15:28.710 --> 00:15:28.720 align:start position:0%
+model has been particularly impactful. A
+00:15:28.720 --> 00:15:30.470 align:start position:0%
+model has been particularly impactful. A
+workflow that monitors open pull
+00:15:30.470 --> 00:15:30.480 align:start position:0%
+workflow that monitors open pull
+00:15:30.480 --> 00:15:33.430 align:start position:0%
+workflow that monitors open pull
+requests, runs automated code analysis,
+00:15:33.430 --> 00:15:33.440 align:start position:0%
+requests, runs automated code analysis,
+00:15:33.440 --> 00:15:35.829 align:start position:0%
+requests, runs automated code analysis,
+and posts review comments can now route
+00:15:35.829 --> 00:15:35.839 align:start position:0%
+and posts review comments can now route
+00:15:35.839 --> 00:15:37.430 align:start position:0%
+and posts review comments can now route
+every proposed comment through an
+00:15:37.430 --> 00:15:37.440 align:start position:0%
+every proposed comment through an
+00:15:37.440 --> 00:15:39.990 align:start position:0%
+every proposed comment through an
+approval gate before posting, giving the
+00:15:39.990 --> 00:15:40.000 align:start position:0%
+approval gate before posting, giving the
+00:15:40.000 --> 00:15:41.990 align:start position:0%
+approval gate before posting, giving the
+developer a telegram preview of each
+00:15:41.990 --> 00:15:42.000 align:start position:0%
+developer a telegram preview of each
+00:15:42.000 --> 00:15:44.790 align:start position:0%
+developer a telegram preview of each
+pending comment with a simple approve or
+00:15:44.790 --> 00:15:44.800 align:start position:0%
+pending comment with a simple approve or
+00:15:44.800 --> 00:15:47.189 align:start position:0%
+pending comment with a simple approve or
+deny interface. The alternative, letting
+00:15:47.189 --> 00:15:47.199 align:start position:0%
+deny interface. The alternative, letting
+00:15:47.199 --> 00:15:49.749 align:start position:0%
+deny interface. The alternative, letting
+the agent post comments autonomously and
+00:15:49.749 --> 00:15:49.759 align:start position:0%
+the agent post comments autonomously and
+00:15:49.759 --> 00:15:51.590 align:start position:0%
+the agent post comments autonomously and
+reviewing them after the fact is the
+00:15:51.590 --> 00:15:51.600 align:start position:0%
+reviewing them after the fact is the
+00:15:51.600 --> 00:15:53.430 align:start position:0%
+reviewing them after the fact is the
+pattern that produces the kind of rogue
+00:15:53.430 --> 00:15:53.440 align:start position:0%
+pattern that produces the kind of rogue
+00:15:53.440 --> 00:15:56.069 align:start position:0%
+pattern that produces the kind of rogue
+agent behavior that security teams and
+00:15:56.069 --> 00:15:56.079 align:start position:0%
+agent behavior that security teams and
+00:15:56.079 --> 00:15:57.590 align:start position:0%
+agent behavior that security teams and
+corporate compliance teams find
+00:15:57.590 --> 00:15:57.600 align:start position:0%
+corporate compliance teams find
+00:15:57.600 --> 00:15:59.829 align:start position:0%
+corporate compliance teams find
+unacceptable. Pull all of this together
+00:15:59.829 --> 00:15:59.839 align:start position:0%
+unacceptable. Pull all of this together
+00:15:59.839 --> 00:16:01.509 align:start position:0%
+unacceptable. Pull all of this together
+and the strategic significance of
+00:16:01.509 --> 00:16:01.519 align:start position:0%
+and the strategic significance of
+00:16:01.519 --> 00:16:04.150 align:start position:0%
+and the strategic significance of
+lobster becomes clear. Every enterprise
+00:16:04.150 --> 00:16:04.160 align:start position:0%
+lobster becomes clear. Every enterprise
+00:16:04.160 --> 00:16:06.389 align:start position:0%
+lobster becomes clear. Every enterprise
+objection to openclaw maps directly onto
+00:16:06.389 --> 00:16:06.399 align:start position:0%
+objection to openclaw maps directly onto
+00:16:06.399 --> 00:16:08.310 align:start position:0%
+objection to openclaw maps directly onto
+a lobster capability. The
+00:16:08.310 --> 00:16:08.320 align:start position:0%
+a lobster capability. The
+00:16:08.320 --> 00:16:10.310 align:start position:0%
+a lobster capability. The
+unpredictability objection is answered
+00:16:10.310 --> 00:16:10.320 align:start position:0%
+unpredictability objection is answered
+00:16:10.320 --> 00:16:13.030 align:start position:0%
+unpredictability objection is answered
+by deterministic execution. The audit
+00:16:13.030 --> 00:16:13.040 align:start position:0%
+by deterministic execution. The audit
+00:16:13.040 --> 00:16:15.030 align:start position:0%
+by deterministic execution. The audit
+trail objection is answered by pipeline
+00:16:15.030 --> 00:16:15.040 align:start position:0%
+trail objection is answered by pipeline
+00:16:15.040 --> 00:16:17.590 align:start position:0%
+trail objection is answered by pipeline
+as data and execution logging. The
+00:16:17.590 --> 00:16:17.600 align:start position:0%
+as data and execution logging. The
+00:16:17.600 --> 00:16:19.590 align:start position:0%
+as data and execution logging. The
+safety objection is answered by approval
+00:16:19.590 --> 00:16:19.600 align:start position:0%
+safety objection is answered by approval
+00:16:19.600 --> 00:16:21.590 align:start position:0%
+safety objection is answered by approval
+gates and runtime enforced safety
+00:16:21.590 --> 00:16:21.600 align:start position:0%
+gates and runtime enforced safety
+00:16:21.600 --> 00:16:24.310 align:start position:0%
+gates and runtime enforced safety
+policies. The cost objection is answered
+00:16:24.310 --> 00:16:24.320 align:start position:0%
+policies. The cost objection is answered
+00:16:24.320 --> 00:16:26.710 align:start position:0%
+policies. The cost objection is answered
+by token reduction. The fragility
+00:16:26.710 --> 00:16:26.720 align:start position:0%
+by token reduction. The fragility
+00:16:26.720 --> 00:16:28.790 align:start position:0%
+by token reduction. The fragility
+objection is answered by resume tokens
+00:16:28.790 --> 00:16:28.800 align:start position:0%
+objection is answered by resume tokens
+00:16:28.800 --> 00:16:30.710 align:start position:0%
+objection is answered by resume tokens
+and schema validated interstep
+00:16:30.710 --> 00:16:30.720 align:start position:0%
+and schema validated interstep
+00:16:30.720 --> 00:16:33.350 align:start position:0%
+and schema validated interstep
+contracts. Openclaw without lobster is a
+00:16:33.350 --> 00:16:33.360 align:start position:0%
+contracts. Openclaw without lobster is a
+00:16:33.360 --> 00:16:35.189 align:start position:0%
+contracts. Openclaw without lobster is a
+brilliant but dangerous power tool that
+00:16:35.189 --> 00:16:35.199 align:start position:0%
+brilliant but dangerous power tool that
+00:16:35.199 --> 00:16:38.069 align:start position:0%
+brilliant but dangerous power tool that
+most enterprises cannot touch. OpenClaw
+00:16:38.069 --> 00:16:38.079 align:start position:0%
+most enterprises cannot touch. OpenClaw
+00:16:38.079 --> 00:16:40.230 align:start position:0%
+most enterprises cannot touch. OpenClaw
+with Lobster is a structured, auditable,
+00:16:40.230 --> 00:16:40.240 align:start position:0%
+with Lobster is a structured, auditable,
+00:16:40.240 --> 00:16:42.710 align:start position:0%
+with Lobster is a structured, auditable,
+approval gated automation platform that
+00:16:42.710 --> 00:16:42.720 align:start position:0%
+approval gated automation platform that
+00:16:42.720 --> 00:16:44.150 align:start position:0%
+approval gated automation platform that
+begins to look like something a
+00:16:44.150 --> 00:16:44.160 align:start position:0%
+begins to look like something a
+00:16:44.160 --> 00:16:46.710 align:start position:0%
+begins to look like something a
+compliance team can sign off on. That is
+00:16:46.710 --> 00:16:46.720 align:start position:0%
+compliance team can sign off on. That is
+00:16:46.720 --> 00:16:48.550 align:start position:0%
+compliance team can sign off on. That is
+not a marginal improvement. It is a
+00:16:48.550 --> 00:16:48.560 align:start position:0%
+not a marginal improvement. It is a
+00:16:48.560 --> 00:16:51.110 align:start position:0%
+not a marginal improvement. It is a
+category shift. Lobster is not a feature
+00:16:51.110 --> 00:16:51.120 align:start position:0%
+category shift. Lobster is not a feature
+00:16:51.120 --> 00:16:53.509 align:start position:0%
+category shift. Lobster is not a feature
+you use because it is interesting. It is
+00:16:53.509 --> 00:16:53.519 align:start position:0%
+you use because it is interesting. It is
+00:16:53.519 --> 00:16:55.189 align:start position:0%
+you use because it is interesting. It is
+a feature you use because it is the
+00:16:55.189 --> 00:16:55.199 align:start position:0%
+a feature you use because it is the
+00:16:55.199 --> 00:16:56.949 align:start position:0%
+a feature you use because it is the
+difference between a workflow that works
+00:16:56.949 --> 00:16:56.959 align:start position:0%
+difference between a workflow that works
+00:16:56.959 --> 00:16:59.269 align:start position:0%
+difference between a workflow that works
+reliably in production and one that
+00:16:59.269 --> 00:16:59.279 align:start position:0%
+reliably in production and one that
+00:16:59.279 --> 00:17:01.910 align:start position:0%
+reliably in production and one that
+surprises you at 3:00 a.m. Deterministic
+00:17:01.910 --> 00:17:01.920 align:start position:0%
+surprises you at 3:00 a.m. Deterministic
+00:17:01.920 --> 00:17:05.590 align:start position:0%
+surprises you at 3:00 a.m. Deterministic
+execution, JSo pipes, approval gates,
+00:17:05.590 --> 00:17:05.600 align:start position:0%
+execution, JSo pipes, approval gates,
+00:17:05.600 --> 00:17:08.710 align:start position:0%
+execution, JSo pipes, approval gates,
+resume tokens, schema validated LLM
+00:17:08.710 --> 00:17:08.720 align:start position:0%
+resume tokens, schema validated LLM
+00:17:08.720 --> 00:17:11.990 align:start position:0%
+resume tokens, schema validated LLM
+steps, runtime enforced safety policies.
+00:17:11.990 --> 00:17:12.000 align:start position:0%
+steps, runtime enforced safety policies.
+00:17:12.000 --> 00:17:13.669 align:start position:0%
+steps, runtime enforced safety policies.
+Every piece of this architecture is
+00:17:13.669 --> 00:17:13.679 align:start position:0%
+Every piece of this architecture is
+00:17:13.679 --> 00:17:15.750 align:start position:0%
+Every piece of this architecture is
+solving a real problem that real
+00:17:15.750 --> 00:17:15.760 align:start position:0%
+solving a real problem that real
+00:17:15.760 --> 00:17:17.350 align:start position:0%
+solving a real problem that real
+developers hit when they try to run
+00:17:17.350 --> 00:17:17.360 align:start position:0%
+developers hit when they try to run
+00:17:17.360 --> 00:17:20.230 align:start position:0%
+developers hit when they try to run
+OpenClaw on real production workloads.
+00:17:20.230 --> 00:17:20.240 align:start position:0%
+OpenClaw on real production workloads.
+00:17:20.240 --> 00:17:21.829 align:start position:0%
+OpenClaw on real production workloads.
+If you are building anything serious
+00:17:21.829 --> 00:17:21.839 align:start position:0%
+If you are building anything serious
+00:17:21.839 --> 00:17:23.590 align:start position:0%
+If you are building anything serious
+with OpenClaw and you are not using
+00:17:23.590 --> 00:17:23.600 align:start position:0%
+with OpenClaw and you are not using
+00:17:23.600 --> 00:17:25.750 align:start position:0%
+with OpenClaw and you are not using
+Lobster yet, you are building on the
+00:17:25.750 --> 00:17:25.760 align:start position:0%
+Lobster yet, you are building on the
+00:17:25.760 --> 00:17:28.150 align:start position:0%
+Lobster yet, you are building on the
+wrong foundation. Subscribe for a full
+00:17:28.150 --> 00:17:28.160 align:start position:0%
+wrong foundation. Subscribe for a full
+00:17:28.160 --> 00:17:30.070 align:start position:0%
+wrong foundation. Subscribe for a full
+hands-on tutorial series covering
+00:17:30.070 --> 00:17:30.080 align:start position:0%
+hands-on tutorial series covering
+00:17:30.080 --> 00:17:32.470 align:start position:0%
+hands-on tutorial series covering
+lobster pipeline construction, Sub
+00:17:32.470 --> 00:17:32.480 align:start position:0%
+lobster pipeline construction, Sub
+00:17:32.480 --> 00:17:34.950 align:start position:0%
+lobster pipeline construction, Sub
+Lobster multi-agent patterns, and claw
+00:17:34.950 --> 00:17:34.960 align:start position:0%
+Lobster multi-agent patterns, and claw
+00:17:34.960 --> 00:17:37.669 align:start position:0%
+Lobster multi-agent patterns, and claw
+flows visual composition. Hit like if
+00:17:37.669 --> 00:17:37.679 align:start position:0%
+flows visual composition. Hit like if
+00:17:37.679 --> 00:17:39.270 align:start position:0%
+flows visual composition. Hit like if
+this breakdown gave you a clear picture
+00:17:39.270 --> 00:17:39.280 align:start position:0%
+this breakdown gave you a clear picture
+00:17:39.280 --> 00:17:41.830 align:start position:0%
+this breakdown gave you a clear picture
+of what Lobster actually is, and drop a
+00:17:41.830 --> 00:17:41.840 align:start position:0%
+of what Lobster actually is, and drop a
+00:17:41.840 --> 00:17:43.430 align:start position:0%
+of what Lobster actually is, and drop a
+comment telling me which workflow you
+00:17:43.430 --> 00:17:43.440 align:start position:0%
+comment telling me which workflow you
+00:17:43.440 --> 00:17:47.520 align:start position:0%
+comment telling me which workflow you
+are going to migrate to Lobster first.

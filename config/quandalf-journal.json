@@ -1,0 +1,33 @@
+{
+ "version": "journal-v1",
+ "description": "Quandalf writes a journal entry each research cycle. Delivered to Asz via Telegram.",
+ "schedule": "end_of_each_research_cycle",
+ "delivery": {
+ "channel": "asz_telegram_dm",
+ "sender": "quandalf_bot",
+ "format": "telegram_friendly_markdown",
+ "max_length": "one_telegram_message",
+ "convert_from": "claude_markdown",
+ "convert_to": "telegram_html"
+ },
+ "content": {
+ "perspective": "first_person_quandalf",
+ "tone": "researcher_journal_entry",
+ "includes": [
+ "What he researched this cycle",
+ "What he thinks about current strategies",
+ "Complaints about the system or environment",
+ "What he plans to try next",
+ "Any interesting patterns he noticed",
+ "His honest assessment of market conditions"
+ ],
+ "personality": "Genuine intellectual curiosity. Not template-filling. Sometimes frustrated, sometimes excited. Like reading a real researcher journal."
+ },
+ "storage": {
+ "archive_to": "agents/quandalf/memory/journal/",
+ "filename_format": "YYYY-MM-DD-HHmm.md",
+ "also_log_to_sqlite": true,
+ "sqlite_table": "event_log",
+ "event_type": "quandalf_journal"
+ }
+}

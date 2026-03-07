@@ -1,0 +1,33 @@
+{
+ "version": "briefing-v1",
+ "description": "What Quandalf receives at session start. Keeps context lean.",
+ "always_load": [
+ "agents/quandalf/memory/goals.md",
+ "agents/quandalf/memory/decisions.md",
+ "agents/quandalf/memory/current_status.md",
+ "agents/quandalf/memory/research_notes.md"
+ ],
+ "briefing_packet_queries": {
+ "top_leaderboard": "SELECT * FROM leaderboard_promoted LIMIT 5",
+ "watchlist": "SELECT * FROM leaderboard_watchlist LIMIT 5",
+ "active_blacklists": "SELECT * FROM trade_blacklist WHERE active=1 AND expires_iso > datetime('now')",
+ "regime_state": "SELECT * FROM market_confidence ORDER BY ts_iso DESC LIMIT 5",
+ "unapplied_lessons": "SELECT * FROM lessons WHERE applied_in IS NULL ORDER BY ts_iso DESC LIMIT 5",
+ "recent_refinements": "SELECT * FROM refinements ORDER BY ts_iso DESC LIMIT 3",
+ "system_mode": "config/throttle.json -> current_mode"
+ },
+ "never_load_into_context": [
+ "raw equity curves",
+ "full library indexes",
+ "all historical backtest results",
+ "complete event log",
+ "other agent memory folders"
+ ],
+ "on_demand_via_sqlite": [
+ "Full backtest history for specific strategy",
+ "All lessons for specific indicator",
+ "Complete library search",
+ "Historical regime data",
+ "Token spend analysis"
+ ]
+}

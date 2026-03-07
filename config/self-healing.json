@@ -1,0 +1,45 @@
+{
+ "version": "self-healing-v1",
+ "description": "Three-tier self-healing. Auto-fix first, agent-diagnose second, escalate last.",
+ "level_1_auto_fix": {
+ "enabled": true,
+ "source": "known_fixes table in SQLite",
+ "max_retries_before_escalation": 3,
+ "retry_backoff_seconds": [30, 120, 300],
+ "auto_fixable_patterns": [
+ "stale_lock_file",
+ "pipeline_timeout_retry",
+ "temporary_api_timeout",
+ "ndjson_parse_error_skip_line",
+ "sqlite_busy_retry",
+ "cron_missed_schedule_rerun"
+ ],
+ "notify_on_auto_fix": false,
+ "log_all_fixes": true
+ },
+ "level_2_agent_diagnosed": {
+ "enabled": true,
+ "coordinator": "oragorn",
+ "diagnosis_delegation": {
+ "code_issues": "frodex",
+ "strategy_issues": "quandalf",
+ "security_issues": "balrog_rules_check",
+ "log_anomalies": "logron"
+ },
+ "require_root_cause": true,
+ "add_to_known_fixes_on_success": true,
+ "notify_on_fix": false
+ },
+ "level_3_escalation": {
+ "enabled": true,
+ "escalate_to": "asz_telegram_dm",
+ "escalation_includes": [
+ "what_broke",
+ "what_was_tried",
+ "why_it_failed",
+ "recommended_action"
+ ],
+ "log_human_decision": true,
+ "feed_back_to_known_fixes": true
+ }
+}

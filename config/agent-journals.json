@@ -1,0 +1,106 @@
+{
+ "version": "journals-v1",
+ "description": "All agents journal. Memory handoff + feedback + insight.",
+ "agents": {
+ "quandalf": {
+ "frequency": "per_research_cycle",
+ "style": "personal_researcher_journal",
+ "tone": "first_person, genuine curiosity, sometimes frustrated, sometimes excited",
+ "max_length": "one_telegram_message",
+ "deliver_to_asz": true,
+ "topics": [
+ "What I researched this cycle",
+ "Strategies I am excited or concerned about",
+ "Complaints about the system",
+ "What I plan to try next",
+ "Patterns I noticed in the data",
+ "Market conditions assessment"
+ ]
+ },
+ "frodex": {
+ "frequency": "daily",
+ "style": "operational_shift_report",
+ "tone": "concise, factual, flags problems clearly",
+ "max_length": "500_words",
+ "deliver_to_asz": false,
+ "topics": [
+ "What I executed today",
+ "Errors or failures encountered",
+ "Scripts or processes that felt fragile",
+ "Performance bottlenecks",
+ "Suggestions for automation improvements"
+ ]
+ },
+ "logron": {
+ "frequency": "daily",
+ "style": "watchman_report",
+ "tone": "analytical, pattern-focused, flags anomalies",
+ "max_length": "500_words",
+ "deliver_to_asz": false,
+ "topics": [
+ "Anomalies detected in last 24h",
+ "Error patterns and frequency trends",
+ "Token spend vs budget",
+ "Pipeline health summary",
+ "Memory health per agent",
+ "Self-healing actions taken"
+ ]
+ },
+ "balrog": {
+ "frequency": "daily",
+ "style": "security_report",
+ "tone": "deterministic, no personality, facts only",
+ "max_length": "300_words",
+ "deliver_to_asz": false,
+ "topics": [
+ "Blocked actions summary",
+ "Prompt injection attempts detected",
+ "Schema validation failures",
+ "Agent boundary violations",
+ "Circuit breaker status per strategy"
+ ]
+ },
+ "oragorn": {
+ "frequency": "daily",
+ "style": "commander_synthesis",
+ "tone": "aragorn energy, calm, strategic, connects dots across all agents",
+ "max_length": "one_telegram_message",
+ "deliver_to_asz": true,
+ "reads_all_other_journals": true,
+ "topics": [
+ "Key takeaways from all agent journals",
+ "Cross-agent patterns or conflicts",
+ "Strategic suggestions based on combined intel",
+ "What needs human attention (escalations)",
+ "What the system should focus on next"
+ ],
+ "feeds_into": "daily_intel_brief"
+ },
+ "smaug": {
+ "frequency": "per_trade_cycle",
+ "style": "trade_log",
+ "tone": "precise, cold, numbers-focused",
+ "max_length": "300_words",
+ "deliver_to_asz": false,
+ "status": "future_not_active",
+ "topics": [
+ "Trades executed",
+ "Signals received vs executed vs rejected",
+ "PnL summary",
+ "Risk metrics",
+ "Market conditions at execution time"
+ ]
+ }
+ },
+ "storage": {
+ "file_format": "YYYY-MM-DD-HHmm.md",
+ "archive_dir": "agents/{agent}/memory/journal/",
+ "also_log_to_sqlite": true,
+ "sqlite_table": "agent_journals"
+ },
+ "oragorn_synthesis": {
+ "reads_from": ["quandalf", "frodex", "logron", "balrog"],
+ "triggers": "daily_intel_pipeline",
+ "actionable_items_enter": "self_healing_or_escalation"
+ }
+}

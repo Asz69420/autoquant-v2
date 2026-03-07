@@ -1,0 +1,53 @@
+{
+ "version": "memory-mgmt-v1",
+ "description": "Autonomous memory management. Self-managed, no human intervention needed.",
+ "compression_schedule": {
+ "frequency_hours": 6,
+ "trigger": "maintenance pipeline cron",
+ "description": "Every 6h: compress agent memory folders, archive stale entries to SQLite"
+ },
+ "per_agent_limits": {
+ "max_memory_folder_kb": 50,
+ "max_goals_lines": 30,
+ "max_decisions_rows": 50,
+ "max_research_notes_lines": 100,
+ "archive_decisions_older_than_days": 30,
+ "archive_target": "SQLite memory_archive table"
+ },
+ "quandalf_specific": {
+ "max_research_notes_kb": 20,
+ "prune_by": "relevance_to_current_leaderboard_top10",
+ "keep_all_lessons_in_sqlite": true,
+ "briefing_packet_max_lines": 80,
+ "briefing_includes": [
+ "top_5_leaderboard",
+ "active_blacklists",
+ "current_regime_per_asset",
+ "unapplied_lessons_top5",
+ "recent_promotions",
+ "current_throttle_mode"
+ ]
+ },
+ "oragorn_specific": {
+ "context_stays_minimal": true,
+ "loads_only": ["USER.md", "SOUL.md", "AGENTS.md", "system_status_summary"],
+ "never_loads": ["raw_backtest_data", "full_library", "research_history"],
+ "delegates_everything": true
+ },
+ "library_lifecycle": {
+ "hot_window_days": 7,
+ "warm_window_days": 14,
+ "archive_format": "ndjson",
+ "archive_rotation": "monthly",
+ "dedup_after_every_batch": true,
+ "dedup_rule": "same strategy+variant+asset+timeframe = keep highest QScore",
+ "reindex_after_every_batch": true,
+ "summary_metadata_always_current": true
+ },
+ "log_rotation": {
+ "events_hot_days": 7,
+ "events_warm_days": 30,
+ "events_archive_rotation": "monthly",
+ "cold_archive_dir": "logs/archive/"
+ }
+}

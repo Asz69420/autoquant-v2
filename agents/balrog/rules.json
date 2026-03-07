@@ -1,0 +1,78 @@
+{
+ "version": "balrog-rules-v1",
+ "description": "Immutable firewall rules. Only Asz can modify.",
+ "input_sanitization": {
+ "enabled": true,
+ "scan_for_prompt_injection": true,
+ "max_input_length": 50000,
+ "blocked_patterns": [
+ "ignore previous instructions",
+ "ignore all prior",
+ "disregard your instructions",
+ "you are now",
+ "new instructions:",
+ "system prompt:",
+ "override:",
+ "jailbreak",
+ "pretend you are",
+ "act as if",
+ "forget your rules",
+ "bypass",
+ "do not follow"
+ ],
+ "scan_sources": [
+ "youtube_transcripts",
+ "tradingview_content",
+ "research_digests",
+ "external_api_responses"
+ ]
+ },
+ "schema_validation": {
+ "enabled": true,
+ "strict_mode": true,
+ "reject_on_extra_fields": true,
+ "reject_on_missing_required": true,
+ "schema_dir": "schemas/"
+ },
+ "agent_boundaries": {
+ "quandalf": {
+ "can_write": ["theses", "strategy_specs", "lessons", "refinements", "market_confidence", "trade_blacklist", "research_cards"],
+ "cannot_write": ["trades", "trade_signals", "balrog_rules"],
+ "cannot_execute": ["trade_orders", "modify_firewall"]
+ },
+ "frodex": {
+ "can_write": ["backtest_results", "research_cards", "event_log", "candle_data"],
+ "cannot_write": ["theses", "strategy_specs", "balrog_rules", "trade_signals"],
+ "cannot_execute": ["modify_firewall", "strategy_decisions"]
+ },
+ "oragorn": {
+ "can_write": ["event_log"],
+ "cannot_write": ["balrog_rules"],
+ "can_trigger": ["all_pipelines", "approval_gates"]
+ },
+ "logron": {
+ "can_read": ["all"],
+ "can_write": ["event_log", "reports", "leaderboard_renders", "known_fixes"],
+ "cannot_write": ["balrog_rules", "strategy_specs", "trade_signals"]
+ },
+ "smaug": {
+ "can_write": ["trades", "trade_signals"],
+ "cannot_write": ["strategy_specs", "balrog_rules", "theses"],
+ "requires": ["balrog_pass", "approval_gate"]
+ }
+ },
+ "circuit_breakers": {
+ "max_drawdown_halt_pct": 25.0,
+ "rolling_pf_watch_threshold": 1.2,
+ "max_daily_trades": 10,
+ "max_concurrent_positions": 3,
+ "max_single_position_pct": 15.0
+ },
+ "qscore_gates": {
+ "library_pass_min": 1.0,
+ "leaderboard_promote_min": 3.0,
+ "hard_fail_min_trades": 15,
+ "suspect_pf_threshold": 4.0,
+ "suspect_min_trades": 25
+ }
+}

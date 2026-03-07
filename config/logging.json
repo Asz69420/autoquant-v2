@@ -1,0 +1,64 @@
+{
+ "version": "logging-v1",
+ "description": "Logging format carried forward from V1. Bundled cards per cycle.",
+ "agent_emoji": {
+ "oragorn": "🗡️",
+ "quandalf": "🧙",
+ "frodex": "⚡",
+ "balrog": "🛡️",
+ "logron": "👁️",
+ "smaug": "🐉",
+ "pipeline": "⚙️",
+ "system": "🤖"
+ },
+ "status_emoji": {
+ "OK": "✅",
+ "WARN": "⚠️",
+ "FAIL": "❌",
+ "BLOCKED": "⛔",
+ "START": "▶️",
+ "INFO": "ℹ️",
+ "PROMOTE": "🏆",
+ "PASS": "📋",
+ "HEAL": "🔧"
+ },
+ "card_format": {
+ "bundle_per_cycle": true,
+ "one_telegram_message_per_cycle": true,
+ "format": "monospace_with_emoji",
+ "line_format": "{status_emoji} {agent_emoji} {agent} {status} ({reason})\n → {summary}",
+ "attach_banner_if_available": true,
+ "parse_mode": "HTML"
+ },
+ "routing": {
+ "pipeline_logs": {
+ "channel": "log_channel",
+ "bot": "logron_bot_token"
+ },
+ "journal_entries": {
+ "channel": "asz_dm",
+ "bot": "quandalf_bot_token"
+ },
+ "daily_intel": {
+ "channel": "asz_dm",
+ "bot": "oragorn_bot_token"
+ },
+ "approval_gates": {
+ "channel": "asz_dm",
+ "bot": "oragorn_bot_token"
+ },
+ "escalations": {
+ "channel": "asz_dm",
+ "bot": "oragorn_bot_token"
+ }
+ },
+ "telegram_credentials_ref": {
+ "note": "Actual tokens live in .env files, never in config",
+ "gateway_bot": "TELEGRAM_BOT_TOKEN in workspace/.env",
+ "logron_bot": "TELEGRAM_LOG_BOT_TOKEN in workspace/.env",
+ "quandalf_bot": "CLAUDE_BRIDGE_BOT_TOKEN in scripts/claude-bridge/.env",
+ "oragorn_bot": "to_be_configured",
+ "log_channel": "-5038734156",
+ "noodle_group": "-1003841245720"
+ }
+}
