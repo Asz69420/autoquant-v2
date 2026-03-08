@@ -80,7 +80,7 @@ def send_photo(photo_path, caption, chat_id, bot_token, parse_mode="HTML"):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--message", required=True)
-    p.add_argument("--channel", choices=["dm", "log"], default="dm")
+    p.add_argument("--channel", choices=["dm", "log", "hades"], default="dm")
     p.add_argument("--bot", choices=["oragorn", "quandalf", "frodex", "logron"], default="oragorn")
     p.add_argument("--chat-id", default=None)
     p.add_argument("--photo", default=None)
@@ -95,7 +95,12 @@ def main():
 
     chat_id = a.chat_id
     if not chat_id:
-        chat_id = env.get("LOG_CHANNEL_ID", "-5133891354") if a.channel == "log" else env.get("ASZ_CHAT_ID", "1801759510")
+        if a.channel == "log":
+            chat_id = env.get("LOG_CHANNEL_ID", "-5038734156")
+        elif a.channel == "hades":
+            chat_id = env.get("HADES_CHANNEL_ID", "-5133891354")
+        else:
+            chat_id = env.get("ASZ_CHAT_ID", "1801759510")
 
     if a.photo and os.path.exists(a.photo):
         ok = send_photo(a.photo, a.message, chat_id, token, a.parse_mode)
