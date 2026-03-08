@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-AXS-CHANNEL-SHORTBIAS-v10",
+  "ts_iso": "2026-03-08T13:24:30Z",
+  "thesis_id": "cycle_20260308_axs_channel_anti_range_relax_v10",
+  "name": "AXS EMA Channel Short-Bias Anti-Range Relax v10",
+  "version": "10.0",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "indicators": [
+    "EMA_20",
+    "EMA_100",
+    "RSI_14",
+    "ATR_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "RSI_14 crosses_above 51",
+      "ADX_14 >= 18"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "RSI_14 crosses_below 49",
+      "ADX_14 >= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 4.2 * ATR_14 above entry",
+      "Early exit if RSI_14 crosses_below 48",
+      "Time stop: 20 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 4.2 * ATR_14 below entry",
+      "Early exit if RSI_14 crosses_above 52",
+      "Time stop: 20 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Fallback continuity branch with ADX floor relaxed from 19 to 18 to recover density if v9 still over-filters"
+  },
+  "variants": [
+    {
+      "name": "axs_channel_shortbias_anti_range_relax_v10",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        { "name": "ema_fast", "value": 20 },
+        { "name": "ema_slow", "value": 100 },
+        { "name": "rsi_long_trigger", "value": 51 },
+        { "name": "rsi_short_trigger", "value": 49 },
+        { "name": "adx_min", "value": 18 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 4.2,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 20
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

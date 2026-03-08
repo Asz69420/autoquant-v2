@@ -448,6 +448,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--since-minutes", type=int, default=30)
     p.add_argument("--send-card-only", action="store_true")
+    p.add_argument("--backfill-unbacktested", action="store_true")
     a = p.parse_args()
 
     cutoff = (datetime.now(timezone.utc) - timedelta(minutes=a.since_minutes)).isoformat()
@@ -510,7 +511,7 @@ def main():
         print(json.dumps({"status": "card_sent", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "total_in_db": total_rows}))
         return
 
-    new_backtests = backtest_new_specs()
+    new_backtests = backtest_new_specs() if a.backfill_unbacktested else 0
     log_token_event("frodex", "research_cycle", f"cycle-postprocess run; new_backtests={new_backtests}")
     start_time = time.time()
 
@@ -582,7 +583,7 @@ def main():
     log_event(
         "notification_sent",
         "oragorn",
-        f"Sent {len(rows)} results + journal DM",
+        f"Sent {len(rows)} result updates to Hades and a cooking card to log",
         pipeline="research_cycle",
         step="notify",
     )
@@ -604,7 +605,7 @@ def main():
         if r["profit_factor"] and r["profit_factor"] > best_pf:
             best_pf = r["profit_factor"]
 
-    cycle_id = next_cycle_id()
+    cycle_id = current_cycle_id()
     log_card = build_log_card(cycle_id, rows, elapsed, new_backtests)
     log_card_formatted = f"<pre>{log_card}</pre>"
     banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")

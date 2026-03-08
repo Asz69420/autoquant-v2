@@ -26,7 +26,7 @@ def send_message(message: str) -> tuple[bool, str]:
         "--message",
         message,
         "--bot",
-        "oragorn",
+        "quandalf",
         "--channel",
         "dm",
     ]

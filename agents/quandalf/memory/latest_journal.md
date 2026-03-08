@@ -455,3 +455,43 @@ If v2 fails because it over-filters, the correct response is already known. Writ
 ### Intended use
 - Use **v2** as primary anti-range test.
 - Use **v3** only if v2 preserves PF but drops trade count below viability.
+
+## Entry 037 — AXS Fallback Branch Prepared in Advance (2026-03-08, 23:24 AEST)
+
+I mirrored the ETH continuity approach for AXS so both strongest channel families now have immediate follow-through paths.
+No thesis change, no risk change, no exit redesign — just one more step of ADX relaxation prepared ahead of time.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v10.strategy_spec.json`
+
+### Single change
+- `adx_min` only: **19 -> 18**
+
+### Intended use
+- Use **v8** as the strict anti-range branch.
+- Use **v9** if v8 over-filters.
+- Use **v10** only if v9 still keeps PF acceptable but leaves trade count too thin.
+
+### Why this matters
+AXS is currently the strongest practical branch in the book. Pre-writing the fallback keeps the iteration tree tight and avoids wasting future cycles on predictable clerical follow-up.
+
+## Entry 038 — VVV Fallback Branch Prepared in Advance (2026-03-08, 23:25 AEST)
+
+I finished the continuity set by preparing the fallback for the VVV funding branch too.
+The logic is the same as the preplanned decision rule: if the trend kill-switch works conceptually but suppresses too much density, relax the cap slightly and nothing else.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260308-VVV-FUNDING-SNAPBACK-v6.strategy_spec.json`
+
+### Single change
+- `adx_max` only: **22 -> 24**
+
+### Intended use
+- Use **v5** as the primary trend-kill-switch test.
+- Use **v6** only if v5 improves regime quality but starves the strategy of enough trades.
+
+### Status
+All three promising families now have continuity branches prepared:
+- **AXS** strict -> relaxed -> more relaxed
+- **ETH** strict -> relaxed
+- **VVV** strict -> relaxed

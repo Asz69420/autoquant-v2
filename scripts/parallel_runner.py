@@ -13,6 +13,7 @@ ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 THROTTLE = os.path.join(ROOT, "config", "throttle.json")
 BACKTESTER = r"C:\Users\Clamps\.openclaw\skills\autoquant-backtester\engine.py"
+CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
 
 
 def now_iso():
@@ -30,6 +31,43 @@ def read_throttle():
 def load_spec(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_manifest(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def resolve_spec_path(spec_arg):
+    if not spec_arg:
+        raise ValueError("missing spec path")
+    if spec_arg != "LATEST_SPEC":
+        return spec_arg
+    if not os.path.exists(CURRENT_CYCLE_SPECS):
+        raise FileNotFoundError(f"LATEST_SPEC requested but manifest missing: {CURRENT_CYCLE_SPECS}")
+    manifest = load_manifest(CURRENT_CYCLE_SPECS)
+    latest = (manifest.get("latest_spec_path") or "").strip()
+    if not latest:
+        raise ValueError(f"LATEST_SPEC requested but latest_spec_path missing in manifest: {CURRENT_CYCLE_SPECS}")
+    return latest
+
+
+def expand_manifest_specs(manifest_path):
+    manifest = load_manifest(manifest_path)
+    spec_paths = manifest.get("spec_paths") or []
+    if not isinstance(spec_paths, list) or not spec_paths:
+        raise ValueError(f"manifest has no spec_paths: {manifest_path}")
+    normalized = []
+    for item in spec_paths:
+        path = str(item).strip()
+        if not path:
+            continue
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"manifest spec path missing: {path}")
+        normalized.append(path)
+    if not normalized:
+        raise ValueError(f"manifest resolved to zero existing spec paths: {manifest_path}")
+    return normalized
 
 
 def log_event(conn, event_type, agent, message, severity="info", pipeline="parallel_runner", step=None, artifact_id=None, metadata=None):
@@ -132,16 +170,7 @@ def build_jobs_for_spec(spec_path, variant_mode):
     spec_id = os.path.basename(spec_path).replace(".strategy_spec.json", "")
 
     if not os.path.exists(spec_path):
-        # allow dry-run planning even when spec path is placeholder
-        return [
-            {
-                "spec_path": spec_path,
-                "strategy_spec_id": spec_id or "unknown_spec",
-                "variant": (variant_mode if variant_mode and variant_mode != "all" else "default"),
-                "asset": "ETH",
-                "timeframe": "4h",
-            }
-        ]
+        raise FileNotFoundError(f"strategy spec not found: {spec_path}")
 
     spec = load_spec(spec_path)
     asset = spec.get("asset", "ETH")
@@ -248,6 +277,7 @@ def main():
     ap.add_argument("--spec", help="Single strategy spec path")
     ap.add_argument("--variant", default=None, help="Variant name or 'all'")
     ap.add_argument("--batch", nargs="*", help="Multiple spec paths")
+    ap.add_argument("--manifest", help="Manifest JSON containing spec_paths/latest_spec_path")
     ap.add_argument("--grind", help="Spec path for iterative grind")
     ap.add_argument("--max-iters", type=int, default=5)
     ap.add_argument("--dry-run", action="store_true")
@@ -257,23 +287,32 @@ def main():
     parent_run_id = f"parallel_{uuid.uuid4().hex[:8]}"
 
     jobs = []
-    if args.spec:
-        jobs.extend(build_jobs_for_spec(args.spec, args.variant))
-    elif args.batch:
-        for sp in args.batch:
-            jobs.extend(build_jobs_for_spec(sp, None))
-    elif args.grind:
-        # Simplified grind: repeat same spec job graph up to max-iters
-        for _ in range(max(1, args.max_iters)):
-            jobs.extend(build_jobs_for_spec(args.grind, "all"))
-    else:
-        ap.error("Use one of --spec, --batch, or --grind")
+    try:
+        if args.manifest:
+            for sp in expand_manifest_specs(args.manifest):
+                jobs.extend(build_jobs_for_spec(sp, args.variant))
+        elif args.spec:
+            jobs.extend(build_jobs_for_spec(resolve_spec_path(args.spec), args.variant))
+        elif args.batch:
+            for sp in args.batch:
+                jobs.extend(build_jobs_for_spec(resolve_spec_path(sp), None))
+        elif args.grind:
+            # Simplified grind: repeat same spec job graph up to max-iters
+            resolved_grind = resolve_spec_path(args.grind)
+            for _ in range(max(1, args.max_iters)):
+                jobs.extend(build_jobs_for_spec(resolved_grind, "all"))
+        else:
+            ap.error("Use one of --spec, --batch, --manifest, or --grind")
+    except Exception as e:
+        print(json.dumps({"status": "error", "message": str(e)}))
+        return 1
 
     out = run_parallel(jobs, max_parallel=max_parallel, dry_run=args.dry_run, parent_run_id=parent_run_id)
     out["mode"] = mode
     out["max_parallel"] = max_parallel
     print(json.dumps(out, indent=2))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

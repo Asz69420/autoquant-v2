@@ -12,8 +12,11 @@ steps:
   - id: quandalf-design
     command: 'openclaw agent --agent quandalf --message "Read your cycle orders at agents/quandalf/memory/cycle_orders.json. Follow Oragorn''s direction exactly. Use Claude Code via exec for strategy design — do not design strategies with your Codex brain alone. Write your strategy spec to artifacts/strategy_specs/ and your journal entry to memory/." --timeout 300000'
 
-  - id: postprocess
-    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\parallel_runner.py --spec LATEST_SPEC --variant all'
+  - id: capture-cycle-specs
+    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\capture_cycle_specs.py'
+
+  - id: backtest
+    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\parallel_runner.py --manifest C:\Users\Clamps\.openclaw\workspace-oragorn\data\state\current_cycle_specs.json --variant all'
 
   - id: reflection
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\build-reflection-packet.py'

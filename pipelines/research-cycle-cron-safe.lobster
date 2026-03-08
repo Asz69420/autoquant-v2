@@ -1,4 +1,4 @@
-name: research-cycle-cron-safe
+name: research-cycle-cron-safe-legacy-noncanonical
 steps:
   - id: cycle-start
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-start.py'
