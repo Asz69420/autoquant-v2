@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-ETH-VTX-CHOP-TRANS-v1",
+  "ts_iso": "2026-03-08T06:26:00Z",
+  "thesis_id": "cycle_20260308_1626_aest",
+  "name": "ETH Vortex Choppiness Transition",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": [
+    "VTXP_14",
+    "VTXM_14",
+    "CHOP_14_1_100",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "VTXP_14 crosses_above VTXM_14",
+      "CHOP_14_1_100 < 50"
+    ],
+    "short": [
+      "VTXP_14 crosses_below VTXM_14",
+      "CHOP_14_1_100 < 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 8.0 * ATR_14 above entry",
+      "Early exit if VTXP_14 crosses_below VTXM_14",
+      "Time stop: 30 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 8.0 * ATR_14 below entry",
+      "Early exit if VTXP_14 crosses_above VTXM_14",
+      "Time stop: 30 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.007
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "CHOP_14_1_100 below 50 to avoid deep range conditions"
+  },
+  "variants": [
+    {
+      "name": "eth_vtx_chop_trans_balanced",
+      "template_name": "vortex_transition",
+      "parameters": [
+        {
+          "name": "vortex_length",
+          "value": 14
+        },
+        {
+          "name": "chop_max",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 8.0,
+        "risk_per_trade_pct": 0.007,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 30
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 5,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_92"
+      ]
+    }
+  ],
+  "complexity_score": 2.1,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
