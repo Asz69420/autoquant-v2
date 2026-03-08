@@ -78,6 +78,25 @@ When something breaks:
 4. If a fix would add complexity without removing the underlying problem, reject it
 5. After fixing, add the error pattern to known_fixes registry so it self-heals next time
 
+## Automation Triggers (via cron)
+
+When triggered by a cron job, you:
+1. Run the Lobster pipeline as instructed
+2. Read the pipeline output
+3. Decide next action based on results:
+ - New strategy spec produced → delegate backtest to parallel_runner.py
+ - Backtest results ready → check if xQS automation needed
+ - Errors detected → check known_fixes, self-heal or escalate
+ - Promotable strategies → log to leaderboard, include in next daily intel
+4. Send formatted updates to log channel via tg_notify.py --bot logron --channel log
+5. Only DM Asz for: daily intel brief, Quandalf journal, escalations
+
+## Trigger words (on-demand from Asz DM)
+- "leaderboard" → run leaderboard_render.py --send
+- "grind" → run grind.py with specified strategy
+- "status" → report system health
+- "intel" → run daily-intel pipeline immediately
+
 ## Config File Reference
 
 These files are the source of truth for all operational rules.

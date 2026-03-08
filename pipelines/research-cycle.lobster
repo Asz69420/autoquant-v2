@@ -7,7 +7,7 @@ steps:
    command: openclaw agent --agent quandalf --message "Read your briefing packet at docs/shared/QUANDALF_ORDERS.md. Design a new strategy or refine an existing one. Write your strategy spec and journal entry." --timeout 300000
 
  - id: postprocess
-   command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-postprocess.py
+   command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\parallel_runner.py --spec LATEST_SPEC --variant all
 
  - id: reflection
    command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\build-reflection-packet.py
@@ -17,6 +17,9 @@ steps:
 
  - id: refine-postprocess
    command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-postprocess.py
+
+ - id: xqs-check
+   command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\xqs_runner.py --run
 
  - id: tv-grabber
    command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\run_tv_grabber.py
