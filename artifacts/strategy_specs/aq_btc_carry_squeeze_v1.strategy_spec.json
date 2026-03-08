@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0",
+  "id": "aq_btc_carry_squeeze_v1",
+  "ts_iso": "2026-03-08T05:06:13Z",
+  "thesis_id": "cycle_20260308_050613",
+  "name": "BTC Carry-Squeeze Pullback",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "indicators": [
+    "EMA_50",
+    "EMA_200",
+    "RSI_14",
+    "ATR_14",
+    "FundingRate"
+  ],
+  "entry_rules": {
+    "long": [
+      "EMA_50 > EMA_200 (trend filter)",
+      "Close pulls back to within 0.75 * ATR_14 of EMA_50",
+      "RSI_14 crosses above 40 after being below 40 within last 3 bars",
+      "FundingRate <= -0.00001",
+      "Close > EMA_50 on trigger bar"
+    ],
+    "short": [
+      "EMA_50 < EMA_200 (trend filter)",
+      "Close rallies to within 0.75 * ATR_14 of EMA_50",
+      "RSI_14 crosses below 60 after being above 60 within last 3 bars",
+      "FundingRate >= 0.00001",
+      "Close < EMA_50 on trigger bar"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss at 1.8 * ATR_14 below entry",
+      "Take profit at 2.7 * ATR_14 above entry",
+      "Early exit if RSI_14 > 72 and closes back below 70",
+      "Time stop after 30 bars"
+    ],
+    "short": [
+      "Stop loss at 1.8 * ATR_14 above entry",
+      "Take profit at 2.7 * ATR_14 below entry",
+      "Early exit if RSI_14 < 28 and closes back above 30",
+      "Time stop after 30 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0075
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "EMA_50/EMA_200 slope + ATR_14 percentile (20-85%)"
+  },
+  "variants": [
+    {
+      "name": "btc_carry_squeeze_balanced",
+      "template_name": "ema_rsi_atr",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 50
+        },
+        {
+          "name": "ema_slow",
+          "value": 200
+        },
+        {
+          "name": "rsi_length",
+          "value": 14
+        },
+        {
+          "name": "long_rsi_reclaim",
+          "value": 40
+        },
+        {
+          "name": "short_rsi_reject",
+          "value": 60
+        },
+        {
+          "name": "pullback_atr_mult",
+          "value": 0.75
+        },
+        {
+          "name": "funding_long_max",
+          "value": -1e-05
+        },
+        {
+          "name": "funding_short_min",
+          "value": 1e-05
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.8,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.7,
+        "risk_per_trade_pct": 0.0075,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 30
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 8,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "Skip new entries when ATR percentile > 90% (event volatility filter)",
+        "Cooldown 2 bars after stop-out"
+      ]
+    },
+    {
+      "name": "btc_carry_squeeze_long_bias",
+      "template_name": "ema_rsi_atr",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 55
+        },
+        {
+          "name": "ema_slow",
+          "value": 200
+        },
+        {
+          "name": "rsi_length",
+          "value": 14
+        },
+        {
+          "name": "long_rsi_reclaim",
+          "value": 42
+        },
+        {
+          "name": "pullback_atr_mult",
+          "value": 0.9
+        },
+        {
+          "name": "funding_long_max",
+          "value": -1.5e-05
+        },
+        {
+          "name": "shorts_enabled",
+          "value": false
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.6,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.006,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 24
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 6,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "Disable entries if 3 consecutive losing trades occur (session lock until next day)",
+        "No trade if trigger bar range > 2.5 * ATR_14"
+      ]
+    }
+  ],
+  "complexity_score": 3.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "id": "SS-20260308-QD01",
+  "ts_iso": "2026-03-08T05:59:00Z",
+  "thesis_id": "cycle_20260308_055800",
+  "name": "BTC Choppy Carry Fade",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "indicators": [
+    "CHOP_14_1_100",
+    "Donchian Channels (20)",
+    "RSI_14",
+    "ATR_14",
+    "FundingRate"
+  ],
+  "entry_rules": {
+    "long": [
+      "CHOP_14_1_100 > 60 (range regime confirmation)",
+      "close <= DCL_20_20 (lower Donchian touch)",
+      "RSI_14 < 36 (oversold)",
+      "FundingRate <= 0.00000 (avoid paying long carry)"
+    ],
+    "short": [
+      "CHOP_14_1_100 > 60 (range regime confirmation)",
+      "close >= DCU_20_20 (upper Donchian touch)",
+      "RSI_14 > 64 (overbought)",
+      "FundingRate >= -0.00005 (avoid extreme short-crowding fades)"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.7 * ATR_14 below entry",
+      "Take profit: 2.3 * ATR_14 above entry",
+      "Early exit if RSI_14 > 58 and close >= DCM_20_20",
+      "Time stop: 18 bars"
+    ],
+    "short": [
+      "Stop loss: 1.7 * ATR_14 above entry",
+      "Take profit: 2.3 * ATR_14 below entry",
+      "Early exit if RSI_14 < 42 and close <= DCM_20_20",
+      "Time stop: 18 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.006
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "ranging",
+      "transitional"
+    ],
+    "detection_method": "CHOP_14_1_100 > threshold, Donchian edge-touch mean reversion"
+  },
+  "variants": [
+    {
+      "name": "btc_chop_fade_balanced",
+      "template_name": "choppiness_donchian_fade",
+      "parameters": [
+        {
+          "name": "chop_min",
+          "default": 60.0,
+          "value": 60.0
+        },
+        {
+          "name": "rsi_os",
+          "default": 36.0,
+          "value": 36.0
+        },
+        {
+          "name": "rsi_ob",
+          "default": 64.0,
+          "value": 64.0
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.7,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.3,
+        "risk_per_trade_pct": 0.006,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 18
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 3,
+        "fee_bps": 4.5
+      },
+      "risk_rules": [
+        "atr_period=14",
+        "cooldown_bars=1"
+      ]
+    },
+    {
+      "name": "btc_chop_fade_defensive",
+      "template_name": "choppiness_donchian_fade",
+      "parameters": [
+        {
+          "name": "chop_min",
+          "default": 62.5,
+          "value": 62.5
+        },
+        {
+          "name": "rsi_os",
+          "default": 34.0,
+          "value": 34.0
+        },
+        {
+          "name": "rsi_ob",
+          "default": 66.0,
+          "value": 66.0
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.5,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.0,
+        "risk_per_trade_pct": 0.005,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 14
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 3,
+        "fee_bps": 4.5
+      },
+      "risk_rules": [
+        "atr_period=14",
+        "cooldown_bars=2"
+      ]
+    }
+  ],
+  "complexity_score": 2.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
