@@ -1,7 +1,43 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import sqlite3
 import sys
+from datetime import datetime, timezone, timedelta
+
+
+def check_circuit_breakers():
+    warnings = []
+    try:
+        conn = sqlite3.connect(r"C:\Users\Clamps\.openclaw\workspace-oragorn\db\autoquant.db")
+        cutoff_7d = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+
+        recent = conn.execute(
+            """
+            SELECT AVG(profit_factor) as avg_pf, MAX(max_drawdown_pct) as max_dd, COUNT(*) as cnt
+            FROM backtest_results
+            WHERE ts_iso >= ? AND total_trades > 0
+            """,
+            (cutoff_7d,),
+        ).fetchone()
+
+        if recent and recent[0] is not None:
+            if recent[0] < 0.8:
+                warnings.append(f"CIRCUIT_BREAKER: Rolling 7d avg PF is {recent[0]:.3f} (below 0.8 threshold)")
+            if recent[1] and recent[1] > 25:
+                warnings.append(f"CIRCUIT_BREAKER: Max DD in 7d is {recent[1]:.1f}% (above 25% threshold)")
+
+        all_fail = conn.execute(
+            "SELECT COUNT(*) FROM backtest_results WHERE ts_iso >= ? AND score_total >= 1.0",
+            (cutoff_7d,),
+        ).fetchone()[0]
+        if all_fail == 0 and recent and recent[2] > 10:
+            warnings.append("CIRCUIT_BREAKER: Zero strategies passed QScore >= 1.0 in 7 days with 10+ backtests")
+
+        conn.close()
+    except Exception:
+        pass
+    return warnings
 
 
 def validate_spec(spec_path):
@@ -52,6 +88,9 @@ def validate_spec(spec_path):
     valid_tfs = ["1m", "5m", "15m", "1h", "4h", "1d"]
     if tf and tf not in valid_tfs:
         warnings.append(f"Non-standard timeframe: {tf}")
+
+    cb_warnings = check_circuit_breakers()
+    warnings.extend(cb_warnings)
 
     passed = len(errors) == 0
     return {"passed": passed, "errors": errors, "warnings": warnings}

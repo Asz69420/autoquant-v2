@@ -105,6 +105,58 @@ def post_agent_message(from_agent, to_agent, msg_type, message):
         json.dump(board, f, indent=2)
 
 
+def log_event(event_type, agent, message, severity="info", artifact_id=None, pipeline=None, step=None):
+    try:
+        conn = sqlite3.connect(DB)
+        conn.execute(
+            """
+            INSERT INTO event_log (ts_iso, event_type, agent, pipeline, step, artifact_id, severity, message, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                datetime.now(timezone.utc).isoformat(),
+                event_type,
+                agent,
+                pipeline,
+                step,
+                artifact_id,
+                severity,
+                message,
+                None,
+            ),
+        )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
+def log_token_event(agent, pipeline, description):
+    try:
+        conn = sqlite3.connect(DB)
+        conn.execute(
+            """
+            INSERT INTO token_spend (ts_iso, agent, pipeline, run_id, input_tokens, output_tokens, total_tokens, model, cost_usd)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                datetime.now(timezone.utc).isoformat(),
+                agent,
+                pipeline,
+                description,
+                0,
+                0,
+                0,
+                "tracked_externally",
+                0,
+            ),
+        )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
 def build_log_card(phase, status, run_id, runtime_sec, activity_dict, note):
     phase_emoji = PHASE_EMOJIS.get(phase, "📋")
     status_emoji = STATUS_EMOJIS.get(status, "✅")
@@ -192,9 +244,12 @@ def backtest_new_specs():
                     if balrog_result.returncode != 0:
                         try:
                             balrog_out = json.loads(balrog_result.stdout or "{}")
-                            print(f"Balrog BLOCKED {f}: {balrog_out.get('errors', [])}", file=sys.stderr)
+                            errors = balrog_out.get("errors", [])
+                            print(f"Balrog BLOCKED {f}: {errors}", file=sys.stderr)
+                            log_event("balrog_block", "balrog", f"Blocked spec {spec_id}: {errors}", severity="warn", artifact_id=spec_id, pipeline="research_cycle", step="validation")
                         except Exception:
                             print(f"Balrog BLOCKED {f}: validation failed", file=sys.stderr)
+                            log_event("balrog_block", "balrog", f"Blocked spec {spec_id}: validation failed", severity="warn", artifact_id=spec_id, pipeline="research_cycle", step="validation")
                         continue
 
                     existing_variant = conn.execute(
@@ -226,6 +281,26 @@ def backtest_new_specs():
                     )
                     if result.returncode == 0:
                         backtested += 1
+                        bt_row = conn.execute(
+                            """
+                            SELECT id, profit_factor, score_total
+                            FROM backtest_results
+                            WHERE strategy_spec_id = ? AND variant_id = ? AND asset = ? AND timeframe = ?
+                            ORDER BY ts_iso DESC LIMIT 1
+                            """,
+                            (spec_id, vname, asset, timeframe),
+                        ).fetchone()
+                        result_id = bt_row[0] if bt_row else None
+                        pf = bt_row[1] if bt_row and bt_row[1] is not None else 0
+                        qs = bt_row[2] if bt_row and bt_row[2] is not None else 0
+                        log_event(
+                            "backtest_complete",
+                            "frodex",
+                            f"Backtested {spec_id} variant {vname}: PF {pf}, QS {qs}",
+                            artifact_id=result_id,
+                            pipeline="research_cycle",
+                            step="backtest",
+                        )
                     else:
                         print(f"Backtest failed for {vname}: {result.stderr[:200]}", file=sys.stderr)
                 except Exception as e:
@@ -308,6 +383,7 @@ def main():
     a = p.parse_args()
 
     new_backtests = backtest_new_specs()
+    log_token_event("frodex", "research_cycle", f"cycle-postprocess run; new_backtests={new_backtests}")
     cutoff = (datetime.now(timezone.utc) - timedelta(minutes=a.since_minutes)).isoformat()
     start_time = time.time()
 
@@ -376,6 +452,14 @@ def main():
             header = "🧙 <b>Quandalf's Journal</b>\n\n" if i == 0 else ""
             send_tg_as(header + part, "dm", "quandalf")
 
+    log_event(
+        "notification_sent",
+        "oragorn",
+        f"Sent {len(rows)} results + journal DM",
+        pipeline="research_cycle",
+        step="notify",
+    )
+
     elapsed = round(time.time() - start_time, 1)
 
     best_pf = 0
@@ -443,6 +527,13 @@ def main():
     )
 
     lessons_added = extract_lessons(rows)
+    log_event(
+        "lessons_extracted",
+        "logron",
+        f"Extracted {lessons_added} lessons",
+        pipeline="research_cycle",
+        step="postprocess",
+    )
 
     print(
         json.dumps(

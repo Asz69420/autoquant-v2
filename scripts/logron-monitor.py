@@ -83,6 +83,32 @@ def post_agent_message(from_agent, to_agent, msg_type, message):
         json.dump(board, f, indent=2)
 
 
+def log_event(event_type, agent, message, severity="info", artifact_id=None, pipeline=None, step=None):
+    try:
+        conn = sqlite3.connect(DB)
+        conn.execute(
+            """
+            INSERT INTO event_log (ts_iso, event_type, agent, pipeline, step, artifact_id, severity, message, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                datetime.now(timezone.utc).isoformat(),
+                event_type,
+                agent,
+                pipeline,
+                step,
+                artifact_id,
+                severity,
+                message,
+                None,
+            ),
+        )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
+
+
 def table_exists(conn, table_name):
     row = conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
@@ -272,17 +298,66 @@ def check_health():
     return status, stats, issues
 
 
-def attempt_auto_resolve(issues):
-    """Placeholder deterministic auto-fix hooks keyed by known issue phrases."""
-    applied = []
-    remaining = []
+def seed_known_fixes_if_empty():
+    conn = sqlite3.connect(DB)
+    count = conn.execute("SELECT COUNT(*) FROM known_fixes").fetchone()[0]
+    if count == 0:
+        seeds = [
+            ("stale briefing", "python " + os.path.join(ROOT, "scripts", "research-cycle.py"), "auto"),
+            ("journal missing", "echo 'No auto-fix for missing journal — Quandalf cron may need manual trigger'", "manual"),
+            ("workspace large", "python " + os.path.join(ROOT, "scripts", "data-cleanup.py"), "auto"),
+        ]
+        for pattern, action, fix_type in seeds:
+            conn.execute(
+                "INSERT INTO known_fixes (ts_iso_created, error_pattern, fix_action, fix_type) VALUES (?, ?, ?, ?)",
+                (datetime.now(timezone.utc).isoformat(), pattern, action, fix_type),
+            )
+        conn.commit()
+    conn.close()
+
+
+def attempt_auto_fixes(issues):
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    fixes_applied = []
 
     for issue in issues:
-        # Add deterministic auto-fixes here when known patterns are formalized.
-        # For now, we only classify and pass through.
-        remaining.append(issue)
+        matches = conn.execute(
+            """
+            SELECT id, error_pattern, fix_action, fix_type, times_applied
+            FROM known_fixes
+            WHERE active = 1 AND ? LIKE '%' || error_pattern || '%'
+            """,
+            (issue,),
+        ).fetchall()
 
-    return applied, remaining
+        for fix in matches:
+            fix_action = fix["fix_action"]
+            try:
+                result = subprocess.run(fix_action, shell=True, capture_output=True, text=True, timeout=30, cwd=ROOT)
+                success = result.returncode == 0
+                conn.execute(
+                    """
+                    UPDATE known_fixes
+                    SET times_applied = times_applied + 1,
+                        last_applied = ?,
+                        success_rate = CASE
+                            WHEN ? = 1 THEN COALESCE(success_rate, 0) * 0.9 + 0.1
+                            ELSE COALESCE(success_rate, 1.0) * 0.9
+                        END
+                    WHERE id = ?
+                    """,
+                    (datetime.now(timezone.utc).isoformat(), 1 if success else 0, fix["id"]),
+                )
+                conn.commit()
+                fix_row = {"pattern": fix["error_pattern"], "action": fix_action, "success": success}
+                fixes_applied.append(fix_row)
+            except Exception as e:
+                fix_row = {"pattern": fix["error_pattern"], "action": fix_action, "success": False, "error": str(e)}
+                fixes_applied.append(fix_row)
+
+    conn.close()
+    return fixes_applied
 
 
 def build_health_card(status, stats, issues, auto_fixes):
@@ -304,7 +379,9 @@ def build_health_card(status, stats, issues, auto_fixes):
     if auto_fixes:
         lines.append("○──autofix──────────────────────")
         for fix in auto_fixes:
-            lines.append(f"🛠️ {fix}")
+            pattern = fix.get("pattern", "?")
+            success = "ok" if fix.get("success") else "fail"
+            lines.append(f"🛠️ {pattern} ({success})")
 
     if issues:
         lines.append("○──issues──────────────────────")
@@ -318,10 +395,30 @@ def build_health_card(status, stats, issues, auto_fixes):
 
 
 def main():
-    status, stats, issues = check_health()
-    auto_fixes, issues = attempt_auto_resolve(issues)
+    seed_known_fixes_if_empty()
 
-    # Recompute final status if all issues were auto-resolved
+    status, stats, issues = check_health()
+    log_event("health_check", "logron", f"Status: {status}, issues: {len(issues)}", pipeline="health", step="check")
+
+    auto_fixes = attempt_auto_fixes(issues)
+    for fx in auto_fixes:
+        log_event(
+            "auto_fix",
+            "logron",
+            f"Applied fix for: {fx.get('pattern', '?')}, success: {fx.get('success', False)}",
+            severity="info" if fx.get("success") else "warn",
+            pipeline="health",
+            step="autofix",
+        )
+
+    # Recompute unresolved issues after auto-fix attempts
+    unresolved = []
+    for issue in issues:
+        matched = any((fx.get("pattern") or "").lower() in issue.lower() for fx in auto_fixes)
+        if not matched:
+            unresolved.append(issue)
+    issues = unresolved
+
     if not issues and status != "ok":
         status = "warn" if auto_fixes else "ok"
 
@@ -336,7 +433,7 @@ def main():
         if auto_fixes:
             alert += "\nAuto-fixes applied:\n"
             for fx in auto_fixes:
-                alert += f"• {fx}\n"
+                alert += f"• {fx.get('pattern', '?')} (success={fx.get('success', False)})\n"
         alert += "\nCheck the log channel for details."
         send_alert(alert)
 

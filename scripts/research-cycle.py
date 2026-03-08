@@ -12,6 +12,7 @@ ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 PY = sys.executable
 SKILLS_DIR = Path.home() / ".openclaw" / "skills"
 BRIEFING_PATH = ROOT / "agents" / "quandalf" / "memory" / "briefing_packet.json"
+DB_PATH = ROOT / "db" / "autoquant.db"
 
 
 def _run_skill(cmd: list[str]):
@@ -47,6 +48,32 @@ def _count_items(obj, key_hints: list[str]) -> int:
             if isinstance(v, list):
                 return len(v)
     return 0
+
+
+def log_event(event_type, agent, message, severity="info", artifact_id=None, pipeline=None, step=None):
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.execute(
+            """
+            INSERT INTO event_log (ts_iso, event_type, agent, pipeline, step, artifact_id, severity, message, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                datetime.now(timezone.utc).isoformat(),
+                event_type,
+                agent,
+                pipeline,
+                step,
+                artifact_id,
+                severity,
+                message,
+                None,
+            ),
+        )
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
 
 
 def main() -> int:
@@ -115,16 +142,29 @@ def main() -> int:
             if isinstance(first, dict):
                 top_opportunity = first.get("asset") or first.get("symbol") or first.get("name")
 
+    leaderboard_count = _count_items(leaderboard, ["strategies", "items", "rows", "data"])
+    lesson_count = _count_items(lessons, ["lessons", "items", "rows", "data"])
+    research_count = _count_items(digest, ["items", "entries", "results", "data"])
+    scan_count = _count_items(scan, ["top_opportunities", "opportunities", "items", "data"])
+
     summary = {
         "status": "briefing_ready",
         "cycle_id": cycle_id,
         "briefing_path": str(BRIEFING_PATH),
-        "leaderboard_count": _count_items(leaderboard, ["strategies", "items", "rows", "data"]),
-        "lesson_count": _count_items(lessons, ["lessons", "items", "rows", "data"]),
-        "research_count": _count_items(digest, ["items", "entries", "results", "data"]),
-        "scan_count": _count_items(scan, ["top_opportunities", "opportunities", "items", "data"]),
+        "leaderboard_count": leaderboard_count,
+        "lesson_count": lesson_count,
+        "research_count": research_count,
+        "scan_count": scan_count,
         "top_opportunity": top_opportunity,
     }
+
+    log_event(
+        "briefing_built",
+        "oragorn",
+        f"Cycle {cycle_id}: leaderboard={leaderboard_count}, lessons={lesson_count}, research={research_count}",
+        pipeline="research_cycle",
+        step="briefing",
+    )
 
     print(json.dumps(summary, indent=2))
     return 0
