@@ -832,3 +832,86 @@ If VVV's residual weakness is mostly coming from weak-trend bleed, then a tighte
 
 ### Next step
 Backtest v7 first. If it preserves range PF but kills too much density, I would fall back to the v6 branch. If it preserves density but trending drag still survives, the next lever should be a faster failure exit, not another entry rewrite.
+
+## Entry 049 — New Family: BABY Bollinger Reclaim Compression (2026-03-09)
+
+I read the new cycle orders and took the hint seriously: stay on BABY, but stop repeating both failed shapes. That means no raw stochastic flush logic and no broad ADX-based rebound logic. So I designed a much tighter branch around a narrower question: can BABY produce a profitable **washout-and-reclaim inside compressed/ranging structure** when funding is still meaningfully negative?
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-BABY-BB-RECLAIM-COMPRESSION-v1.strategy_spec.json
+
+### Thesis
+This branch is deliberately range-biased rather than trend-biased. I only want entries when BABY flushes through the lower Bollinger band, then decisively reclaims back above a fast EMA and the Bollinger midline while ADX stays low enough to reject the weak transitional drift that killed the prior BABY variants.
+
+The key distinction is that this is not buying a rebound because trend might improve. It is buying a **post-washout mean snapback only after structure is already recovered inside a low-trend regime**.
+
+### Why this shape fits the order
+- **Washout low:** low <= BBL_20_2.0
+- **Fast reclaim:** Close crosses_above EMA_13
+- **Structure confirmation:** Close > BBM_20_2.0
+- **Recovery confirmation:** CCI_20 crosses_above -80
+- **Transitional bleed filter:** ADX_14 <= 20
+
+That last condition is the most important. The order explicitly asked for ranging PF to stay above 1.05 while transitional bleed is actively filtered out. So instead of allowing a broad post-flush rebound, I forced the branch into lower-trend structure only.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.1 ATR
+- TP: 2.7 ATR
+- Early exit on EMA_13 failure
+- Time stop: 14 bars
+- Cooldown: 2 bars
+
+### What I expect
+This should trade less than the broad BABY branches, but the trade-off should be better regime purity. If this works, it will work because it finally stops treating all negative-funding rebounds as the same shape.
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Ranging PF >= 1.05
+- Transitional PF >= 0.95
+- Max DD <= 8.0%
+- If trades < 15, quarantine as too selective
+
+### Next step
+Backtest v1 immediately. If trade count is fine but PF is marginal, the first refinement should be faster failure exit, not looser entry. If it under-trades, relax funding threshold from -0.0022 to -0.0020 before changing the structural filters.
+
+## Entry 050 — New Family: BABY Keltner Reclaim Persistence (2026-03-09)
+
+I read the new cycle orders and kept the core constraint front and center: stay on BABY, but stop repeating the failed shapes. The order wanted a tighter liquidation-reclaim long after a washout low, reclaim above a fast anchor, and explicit protection for ranging PF while transitional bleed gets filtered out. So I pushed even harder into regime purity.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-BABY-KELTNER-RECLAIM-PERSISTENCE-v1.strategy_spec.json
+
+### Thesis
+This branch is a low-trend washout-recovery model. I want BABY to flush through the lower Keltner channel, then recover above both a very fast anchor (EMA_9) and a slower control anchor (EMA_21), and also reclaim the Keltner midline. That gives me three layers of confirmation that the washout is over and the recovery is holding, not just bouncing for one candle.
+
+The key anti-bleed decision is ADX_14 <= 18. That is stricter than the Bollinger branch. I am no longer trying to allow "some" transition. I am trying to remove it as much as possible and let this branch live or die as a true ranging reclaim system.
+
+### Why this is different
+- Keltner washout + midline reclaim, not Bollinger snapback
+- Dual-anchor persistence (EMA_9 and EMA_21), not single-anchor rebound
+- Narrow RSI recovery band (44 to 60) to reject both weak dribble rebounds and overheated chase
+- Faster failure logic and shorter holding window to keep a mean-reverting shape from bleeding into trend continuation
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.05 ATR
+- TP: 2.6 ATR
+- Early exit on EMA_9 failure
+- Time stop: 12 bars
+- Cooldown: 2 bars
+
+### What I expect
+If BABY can support a real ranging reclaim edge, this structure should be cleaner than the broad Bollinger version because it requires persistence, not just recovery. If it still leaks transitional loss, then that is another strong piece of evidence that BABY is not rewarding this family of mean-reverting post-flush ideas.
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Ranging PF >= 1.05
+- Transitional PF >= 0.95
+- Max DD <= 8.0%
+- If trades < 15, quarantine as too selective
+
+### Next step
+Backtest v1 immediately. If ranging PF is acceptable but total PF still lags, the next refinement should be a slightly faster failed-reclaim exit, not a looser entry filter. If it under-trades, relax funding threshold from -0.0022 to -0.0020 before changing structure.

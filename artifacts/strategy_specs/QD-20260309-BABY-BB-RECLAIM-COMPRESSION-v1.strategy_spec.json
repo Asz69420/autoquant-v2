@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-BB-RECLAIM-COMPRESSION-v1",
+  "ts_iso": "2026-03-09T22:01:00Z",
+  "thesis_id": "cycle_20260309_baby_bb_reclaim_compression_v1",
+  "name": "BABY Bollinger Reclaim Compression v1",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "BBL_20_2.0",
+    "BBM_20_2.0",
+    "BBU_20_2.0",
+    "BBW_20_2.0",
+    "EMA_13",
+    "CCI_20",
+    "ADX_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.0022",
+      "low <= BBL_20_2.0",
+      "Close crosses_above EMA_13",
+      "Close > BBM_20_2.0",
+      "CCI_20 crosses_above -80",
+      "ADX_14 <= 20"
+    ],
+    "short": [
+      "FundingRate >= 0.0022",
+      "high >= BBU_20_2.0",
+      "Close crosses_below EMA_13",
+      "Close < BBM_20_2.0",
+      "CCI_20 crosses_below 80",
+      "ADX_14 <= 20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 2.7 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_13",
+      "Time stop: 14 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 2.7 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_13",
+      "Time stop: 14 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "ranging"
+    ],
+    "detection_method": "This branch explicitly targets washout-and-reclaim inside compressed/ranging structure: price must flush through the Bollinger lower band, then reclaim both EMA_13 and the Bollinger midline on the same recovery sequence while ADX_14 stays at or below 20. That directly filters transitional bleed and avoids broad trend-rebound logic."
+  },
+  "variants": [
+    {
+      "name": "baby_bb_reclaim_compression_v1",
+      "template_name": "bollinger_reclaim_compression",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.0022 },
+        { "name": "funding_extreme_pos", "value": 0.0022 },
+        { "name": "bb_period", "value": 20 },
+        { "name": "bb_std", "value": 2.0 },
+        { "name": "ema_fast", "value": 13 },
+        { "name": "cci_period", "value": 20 },
+        { "name": "cci_reclaim", "value": -80 },
+        { "name": "adx_max", "value": 20 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.7,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 14
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=2",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

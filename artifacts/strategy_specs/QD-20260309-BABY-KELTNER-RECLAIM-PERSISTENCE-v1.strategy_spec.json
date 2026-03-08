@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-KELTNER-RECLAIM-PERSISTENCE-v1",
+  "ts_iso": "2026-03-09T22:06:00Z",
+  "thesis_id": "cycle_20260309_baby_keltner_reclaim_persistence_v1",
+  "name": "BABY Keltner Reclaim Persistence v1",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "KCL_20_1.5",
+    "KCM_20_1.5",
+    "KCU_20_1.5",
+    "EMA_9",
+    "EMA_21",
+    "RSI_14",
+    "ADX_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.0022",
+      "low <= KCL_20_1.5",
+      "Close > EMA_9",
+      "Close > EMA_21",
+      "Close > KCM_20_1.5",
+      "RSI_14 >= 44",
+      "RSI_14 <= 60",
+      "ADX_14 <= 18"
+    ],
+    "short": [
+      "FundingRate >= 0.0022",
+      "high >= KCU_20_1.5",
+      "Close < EMA_9",
+      "Close < EMA_21",
+      "Close < KCM_20_1.5",
+      "RSI_14 <= 56",
+      "RSI_14 >= 40",
+      "ADX_14 <= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.05 * ATR_14 below entry",
+      "Take profit: 2.6 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_9",
+      "Time stop: 12 bars"
+    ],
+    "short": [
+      "Stop loss: 1.05 * ATR_14 above entry",
+      "Take profit: 2.6 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_9",
+      "Time stop: 12 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "ranging"
+    ],
+    "detection_method": "This branch only accepts post-washout reclaim inside low-trend structure. Price must flush through the lower Keltner channel, then recover above both EMA_9 and EMA_21 and also back above the Keltner midline, while ADX_14 stays at or below 18. That combination is meant to preserve ranging PF and actively reject transitional drift masquerading as recovery."
+  },
+  "variants": [
+    {
+      "name": "baby_keltner_reclaim_persistence_v1",
+      "template_name": "keltner_reclaim_persistence",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.0022 },
+        { "name": "funding_extreme_pos", "value": 0.0022 },
+        { "name": "kc_period", "value": 20 },
+        { "name": "kc_mult", "value": 1.5 },
+        { "name": "ema_fast", "value": 9 },
+        { "name": "ema_anchor", "value": 21 },
+        { "name": "rsi_floor", "value": 44 },
+        { "name": "rsi_ceiling", "value": 60 },
+        { "name": "adx_max", "value": 18 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.05,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.6,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 12
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=2",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

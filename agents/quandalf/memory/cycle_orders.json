@@ -1,9 +1,9 @@
 {
-  "target_asset": "VVV",
+  "target_asset": "BABY",
   "target_timeframe": "1h",
-  "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "vvv_funding_snapback",
-  "thesis_hint": "Recent cycle quality is declining after the VVV plateau: strongest live branch held at 0.5323, then the last two BABY exploration cycles both collapsed to 0.0, so stop exploring and return to the best-performing family. Use v5/v6 trend-killswitch as the base on VVV 1h and improve edge without losing grade: keep ranging PF >= 1.20, but specifically cut the remaining trending drag (current trending PF ~0.95) with one lever per variant only — stricter trend veto, faster exit on failed snapback, or minimum funding-extreme threshold.",
+  "research_direction": "explore_new",
+  "specific_family_to_iterate": null,
+  "thesis_hint": "Recent 3-cycle quality is improving again (BABY stoch flush 0.0000 -> BABY adx reclaim 0.0000 -> VVV v7 0.5323), so exploration is allowed. Stay on BABY 1h because funding is still deeply negative (-0.00210) with strong volume and OI, but avoid both failed BABY shapes: no raw stoch flush momentum and no broad ADX reclaim. Design a tighter liquidation-reclaim long that only triggers after a washout low, reclaim above a fast anchor, and confirmation that ranging PF can stay above 1.05 while transitional bleed is actively filtered out.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.15 and max_drawdown_pct <= 8.5; abort any variant with total_trades < 180, ranging profit_factor < 1.20, or trending profit_factor <= 0.95."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with >= 20 trades and max_drawdown_pct <= 8.0; abort any variant with total_trades < 15, profit_factor < 1.08, ranging profit_factor < 1.05, or transitional profit_factor < 0.95."
 }
