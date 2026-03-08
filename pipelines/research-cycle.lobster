@@ -26,3 +26,6 @@ steps:
 
  - id: tv-grabber
    command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\run_tv_grabber.py
+
+ - id: chain-next
+   command: openclaw cron run b87f5776-64fa-4f4b-823d-e24cc8110925
