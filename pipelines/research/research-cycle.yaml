@@ -1,0 +1,98 @@
+name: research-cycle
+version: 1
+description: Main AutoQuant research cycle pipeline.
+
+steps:
+  - id: fetch-research
+    run: python ~/.openclaw/skills/autoquant-research-fetch/query.py --limit 5 --unprocessed
+
+  - id: build-briefing
+    run: |
+      python - <<'PY'
+      import json
+      import subprocess
+
+      commands = {
+          "leaderboard": "python ~/.openclaw/skills/autoquant-leaderboard/query.py --limit 5",
+          "kpi": "python ~/.openclaw/skills/autoquant-kpi/query.py --days 7",
+          "lessons": "python ~/.openclaw/skills/autoquant-lessons/query.py --limit 5",
+          "regime": "python ~/.openclaw/skills/autoquant-regime/query.py --confidence --blacklist",
+      }
+
+      briefing = {}
+      for key, cmd in commands.items():
+          proc = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+          out = proc.stdout.strip()
+          if not out:
+              briefing[key] = None
+              continue
+          try:
+              briefing[key] = json.loads(out)
+          except json.JSONDecodeError:
+              briefing[key] = {"raw": out}
+
+      print(json.dumps(briefing))
+      PY
+
+  - id: quandalf-design
+    type: llm-task
+    stdin:
+      from:
+        - fetch-research
+        - build-briefing
+    prompt: |
+      You are Quandalf. Review this briefing and research digest.
+      Design one strategy spec.
+      Return valid JSON matching the strategy_specs schema.
+
+  - id: balrog-validate
+    stdin:
+      from: quandalf-design
+    run: |
+      python - <<'PY'
+      import json
+      import pathlib
+      import sys
+
+      import jsonschema
+
+      schema_path = pathlib.Path("schemas/strategy-spec.schema.json")
+      schema = json.loads(schema_path.read_text(encoding="utf-8"))
+      strategy_spec = json.load(sys.stdin)
+
+      jsonschema.validate(instance=strategy_spec, schema=schema)
+      print(json.dumps(strategy_spec))
+      PY
+
+  - id: backtest
+    stdin:
+      from: balrog-validate
+    run: python ~/.openclaw/skills/autoquant-backtest-request/submit.py
+
+  - id: log-cycle
+    stdin:
+      from: backtest
+    run: |
+      python - <<'PY'
+      import datetime
+      import json
+      import sqlite3
+      import sys
+
+      payload = json.load(sys.stdin)
+
+      conn = sqlite3.connect("db/autoquant.db")
+      cur = conn.cursor()
+      cur.execute(
+          "INSERT INTO event_log (ts_iso, event_type, payload_json) VALUES (?, ?, ?)",
+          (
+              datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "research_cycle",
+              json.dumps(payload),
+          ),
+      )
+      conn.commit()
+      conn.close()
+
+      print(json.dumps({"logged": True, "event_type": "research_cycle"}))
+      PY
