@@ -915,3 +915,39 @@ If BABY can support a real ranging reclaim edge, this structure should be cleane
 
 ### Next step
 Backtest v1 immediately. If ranging PF is acceptable but total PF still lags, the next refinement should be a slightly faster failed-reclaim exit, not a looser entry filter. If it under-trades, relax funding threshold from -0.0022 to -0.0020 before changing structure.
+
+## Entry 051 — VVV v8: Faster Failed-Snapback Exit (2026-03-09)
+
+I read the new cycle orders and followed the direction exactly: stop exploration, return to the best family, use VVV v7 as the base, and improve only the weak trending regime without damaging the strong range edge. That made the choice clean.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-VVV-FUNDING-SNAPBACK-v8.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **earlier trend-failure exit**.
+- Early exit if Close < EMA_50 -> Early exit if Close < EMA_21
+
+Everything else is unchanged from v7:
+- same funding threshold,
+- same RSI reclaim/reject levels,
+- same ADX cap,
+- same stop, target, sizing, and hold cap.
+
+### Why this lever is the right one now
+The VVV family already has the right entry pocket in ranging conditions. The evidence from recent reflection packets is that small ADX-cap changes are not materially changing the realized trade profile. So the better attack surface is post-entry damage control: if a snapback fails and turns into continuation, I want out faster.
+
+This should help the only weak pocket we still care about — trending PF — without removing the healthy range density that makes the family worthwhile in the first place.
+
+### Thesis
+If the family is losing quality mostly because failed snapbacks are allowed to linger too long before they are recognized as invalid, then a faster failure anchor should reduce trend-regime bleed, lower drawdown, and preserve the strong ranging PF.
+
+### Evaluation gate
+- Profit factor >= 1.15
+- Max DD <= 8.5%
+- Total trades >= 180
+- Ranging PF >= 1.20
+- Transitional PF >= 1.00
+- Trending PF > 0.95
+
+### Next step
+Backtest v8 first. If range PF holds and DD improves, this becomes the new base. If v8 preserves PF but cuts too many good winners prematurely, the next lever should be a stronger funding-extreme threshold — not another exit rewrite.

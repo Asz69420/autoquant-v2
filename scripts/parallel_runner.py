@@ -9,6 +9,20 @@ import sys
 import uuid
 from datetime import datetime, timezone
 
+
+def parse_json_from_output(text):
+    if not text:
+        return None
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    for line in reversed(lines):
+        if not line.startswith("{"):
+            continue
+        try:
+            return json.loads(line)
+        except Exception:
+            continue
+    return None
+
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 THROTTLE = os.path.join(ROOT, "config", "throttle.json")
@@ -117,7 +131,6 @@ def worker(job):
     tf = job["timeframe"]
     spec_id = job["strategy_spec_id"]
 
-    start_ts = now_iso()
     cmd = [
         sys.executable,
         BACKTESTER,
@@ -136,31 +149,86 @@ def worker(job):
     except Exception as e:
         return {"ok": False, "job": job, "error": str(e)}
 
+    stdout_text = (proc.stdout or "").strip()
+    stderr_text = (proc.stderr or "").strip()
+
     if proc.returncode != 0:
-        return {"ok": False, "job": job, "stderr": (proc.stderr or "")[:1000], "returncode": proc.returncode}
+        return {
+            "ok": False,
+            "job": job,
+            "stdout": stdout_text[:1000],
+            "stderr": stderr_text[:1000],
+            "returncode": proc.returncode,
+        }
 
-    conn = sqlite3.connect(DB)
-    row = conn.execute(
-        """
-        SELECT id, score_total, max_drawdown_pct, profit_factor
-        FROM backtest_results
-        WHERE strategy_spec_id = ? AND variant_id = ? AND asset = ? AND timeframe = ? AND ts_iso >= ?
-        ORDER BY ts_iso DESC LIMIT 1
-        """,
-        (spec_id, variant, asset, tf, start_ts),
-    ).fetchone()
-    conn.close()
+    payload = parse_json_from_output(stdout_text)
+    if not payload:
+        return {
+            "ok": False,
+            "job": job,
+            "error": "engine_output_json_not_found",
+            "stdout": stdout_text[:1000],
+            "stderr": stderr_text[:1000],
+        }
 
-    if not row:
-        return {"ok": False, "job": job, "error": "result_row_not_found"}
+    result_path = payload.get("backtest_result")
+    trade_list_path = payload.get("trade_list")
+    if not result_path or not os.path.exists(result_path):
+        return {
+            "ok": False,
+            "job": job,
+            "error": "backtest_result_file_missing",
+            "stdout": stdout_text[:1000],
+            "stderr": stderr_text[:1000],
+            "payload": payload,
+        }
+
+    try:
+        with open(result_path, "r", encoding="utf-8") as f:
+            result_doc = json.load(f)
+    except Exception as e:
+        return {
+            "ok": False,
+            "job": job,
+            "error": f"backtest_result_parse_failed: {e}",
+            "result_path": result_path,
+        }
+
+    qscore = (((result_doc.get("qscore") or {}).get("score")) if isinstance(result_doc.get("qscore"), dict) else None)
+    max_dd = (((result_doc.get("results") or {}).get("max_drawdown_pct")) if isinstance(result_doc.get("results"), dict) else None)
+    pf = (((result_doc.get("results") or {}).get("profit_factor")) if isinstance(result_doc.get("results"), dict) else None)
+    result_id = result_doc.get("id")
+
+    db_result_id = None
+    try:
+        conn = sqlite3.connect(DB)
+        row = conn.execute(
+            """
+            SELECT id
+            FROM backtest_results
+            WHERE strategy_spec_id = ? AND variant_id = ? AND asset = ? AND timeframe = ?
+            ORDER BY ts_iso DESC LIMIT 1
+            """,
+            (spec_id, variant, asset, tf),
+        ).fetchone()
+        conn.close()
+        if row:
+            db_result_id = row[0]
+    except Exception:
+        db_result_id = None
 
     return {
         "ok": True,
         "job": job,
-        "result_id": row[0],
-        "qscore": row[1],
-        "max_dd": row[2],
-        "pf": row[3],
+        "result_id": db_result_id or result_id,
+        "artifact_result_id": result_id,
+        "backtest_result_path": result_path,
+        "trade_list_path": trade_list_path,
+        "qscore": qscore,
+        "max_dd": max_dd,
+        "pf": pf,
+        "stdout": stdout_text[:1000],
+        "stderr": stderr_text[:1000],
     }
 
 
