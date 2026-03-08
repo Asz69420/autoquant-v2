@@ -574,3 +574,73 @@ Mirror logic for positive funding extremes (longs crowded). Primary thesis is th
 
 ### Next step
 Backtest v1 immediately. If trade count is healthy but PF is marginal, first refinement target is exit shape only. If trade count collapses, relax funding threshold from -0.0025 to -0.0020 and nothing else.
+
+## Entry 042 — New Family: BABY Vortex Funding Snapback (2026-03-09)
+
+I followed the cycle orders with a second explore_new BABY branch and used Claude Code for the actual strategy design.
+This one is deliberately distinct from the EMA-reclaim liquidation-squeeze family.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260309-BABY-VORTEX-FUNDING-SNAPBACK-v1.strategy_spec.json`
+
+### Thesis
+BABY funding remains deeply negative with high OI and expanding volume, but instead of using a price-vs-fast-EMA reclaim trigger, this branch waits for the directional-force balance itself to flip. The entry event is a **VTXP_14 crosses above VTXM_14** momentum reversal, while price also has to be back above **EMA_50** and funding must still be extreme at entry.
+
+### Why this is meaningfully different
+- Reclaim signal is **vortex crossover**, not EMA reclaim.
+- Trend veto is **CHOP >= 45** (trend exhaustion required), not ADX cap.
+- Structure anchor is **EMA_50**, requiring a deeper recovery before entry.
+- RSI uses a band (**38 to 62**) to reject both freefall catches and overextended chases.
+- Exit mirrors the same force-balance logic with a reverse vortex crossover.
+
+### Anti-passive-dip-buying / anti-continuation logic
+This does not buy weakness blindly. It waits for a confirmed momentum flip plus structural recovery. In a clean continuation downtrend, CHOP should stay too low and the strategy should remain flat.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.4 ATR
+- TP: 3.5 ATR
+- Time stop: 20 bars
+- Cooldown: 2 bars
+- Conservative alt cost model retained
+
+### Next step
+Backtest v1 immediately. If count is healthy but PF is marginal, refine exit shape first. If trade count is too low, relax funding threshold from -0.0030 to -0.0025 and change nothing else.
+
+## Entry 043 — New Family: BABY Supertrend Flush Reclaim (2026-03-09)
+
+Read cycle orders first. Direction is explore_new on BABY 1h. This is the third distinct BABY family, deliberately separated from both the EMA-reclaim liquidation-squeeze branch and the vortex-funding-snapback branch.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260309-BABY-SUPERTREND-FLUSH-RECLAIM-v1.strategy_spec.json`
+
+### Thesis
+Supertrend direction flip captures structural reversal after a liquidation flush. When shorts are crowded (FundingRate <= -0.003) and SUPERTREND_10_3 flips bullish, price has recovered enough to reverse the ATR-based trailing regime — this is an active structural event, not passive weakness buying. DEMA_13 as fast structure anchor confirms reclaim. MFI_14 >= 30 uses volume-weighted momentum to confirm real buying flow is returning, not dead-volume drift.
+
+### Why this is distinct from both existing BABY families
+- Entry trigger: **Supertrend flip** (not EMA reclaim, not Vortex crossover)
+- Structure anchor: **DEMA_13**
+- Momentum filter: **MFI_14** instead of RSI
+- Downtrend veto: **MINUS_DI_14 <= 35** / **PLUS_DI_14 <= 35** directional force cap
+
+### Hard downtrend veto
+This directly blocks entries when adverse directional force is still overwhelming. It is more targeted than aggregate trend-strength filters because it asks whether sellers are still dominating directional movement.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.3 ATR
+- TP: 3.2 ATR
+- Early exit on DEMA_13 reclaim failure
+- Time stop: 16 bars
+- Cooldown: 2 bars
+- Conservative alt cost model retained
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Max DD <= 8.0%
+- Trending regime PF >= 0.95
+- If trades < 15, quarantine as sparse
+
+### Next step
+Backtest v1 immediately. If PF is marginal with healthy count, refine exit shape first. If trade count collapses, relax funding threshold from -0.0030 to -0.0025 and nothing else.

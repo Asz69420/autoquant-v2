@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-SUPERTREND-FLUSH-RECLAIM-v1",
+  "ts_iso": "2026-03-09T10:00:00Z",
+  "thesis_id": "cycle_20260309_baby_supertrend_flush_reclaim_v1",
+  "name": "BABY Supertrend Flush Reclaim v1",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "SUPERTREND_10_3",
+    "DEMA_13",
+    "MFI_14",
+    "MINUS_DI_14",
+    "PLUS_DI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.003",
+      "SUPERTREND_10_3 flips_bullish",
+      "Close > DEMA_13",
+      "MFI_14 >= 30",
+      "MFI_14 <= 65",
+      "MINUS_DI_14 <= 35"
+    ],
+    "short": [
+      "FundingRate >= 0.003",
+      "SUPERTREND_10_3 flips_bearish",
+      "Close < DEMA_13",
+      "MFI_14 <= 70",
+      "MFI_14 >= 35",
+      "PLUS_DI_14 <= 35"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.3 * ATR_14 below entry",
+      "Take profit: 3.2 * ATR_14 above entry",
+      "Early exit if Close crosses_below DEMA_13",
+      "Time stop: 16 bars"
+    ],
+    "short": [
+      "Stop loss: 1.3 * ATR_14 above entry",
+      "Take profit: 3.2 * ATR_14 below entry",
+      "Early exit if Close crosses_above DEMA_13",
+      "Time stop: 16 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "MINUS_DI_14 <= 35 (long) / PLUS_DI_14 <= 35 (short) vetoes entries when adverse directional force is overwhelming, targeting the post-flush recovery window where directional dominance has weakened; Supertrend flip confirms structural reversal after ATR-based trailing regime change, not passive drift; DEMA_13 fast anchor plus MFI volume-weighted momentum confirm active reclaim with real buying flow, distinct from EMA-cross or vortex-crossover families"
+  },
+  "variants": [
+    {
+      "name": "baby_supertrend_flush_reclaim_v1",
+      "template_name": "supertrend_flush_reclaim",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.003 },
+        { "name": "funding_extreme_pos", "value": 0.003 },
+        { "name": "supertrend_period", "value": 10 },
+        { "name": "supertrend_mult", "value": 3 },
+        { "name": "dema_period", "value": 13 },
+        { "name": "mfi_floor", "value": 30 },
+        { "name": "mfi_ceiling", "value": 65 },
+        { "name": "di_veto", "value": 35 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.3,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.2,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 16
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=2",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
