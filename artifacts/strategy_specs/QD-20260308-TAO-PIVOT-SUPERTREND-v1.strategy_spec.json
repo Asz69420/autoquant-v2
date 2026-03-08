@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-TAO-PIVOT-SUPERTREND-v1",
+  "ts_iso": "2026-03-08T10:08:00Z",
+  "thesis_id": "cycle_20260308_tao_pivot_supertrend_transition_v1",
+  "name": "TAO Pivot Supertrend Transition Capture v1",
+  "version": "1.0",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "indicators": [
+    "Supertrend",
+    "RSI_14",
+    "EMA_100",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Supertrend flips bullish",
+      "RSI_14 > 50",
+      "Close > EMA_100"
+    ],
+    "short": [
+      "Supertrend flips bearish",
+      "RSI_14 < 50",
+      "Close < EMA_100"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 5.0 * ATR_14 above entry",
+      "Early exit if Supertrend flips bearish",
+      "Time stop: 30 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 5.0 * ATR_14 below entry",
+      "Early exit if Supertrend flips bullish",
+      "Time stop: 30 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.005
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "research digest highlighted pivot-supertrend; this variant targets transition breakouts in a high-opportunity, high-negative-funding asset"
+  },
+  "variants": [
+    {
+      "name": "tao_pivot_supertrend_transition_v1",
+      "template_name": "supertrend_momentum_flip",
+      "parameters": [
+        { "name": "supertrend_length", "value": 10 },
+        { "name": "supertrend_mult", "value": 3.0 },
+        { "name": "ema_filter", "value": 100 },
+        { "name": "rsi_bias", "value": 50 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 5.0,
+        "risk_per_trade_pct": 0.005,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 30
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 12,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0",
+        "skip_entry_if_atr_percentile_gt_98"
+      ]
+    }
+  ],
+  "complexity_score": 2.4,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

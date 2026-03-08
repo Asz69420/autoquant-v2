@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-AXS-CHANNEL-SHORTBIAS-v3",
+  "ts_iso": "2026-03-08T10:06:00Z",
+  "thesis_id": "cycle_20260308_axs_channel_density_tune_v3",
+  "name": "AXS EMA Channel Short-Bias Range-Gated v3",
+  "version": "3.0",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "indicators": [
+    "EMA_20",
+    "EMA_80",
+    "RSI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "EMA_20 > EMA_80",
+      "RSI_14 crosses_above 50"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "EMA_20 < EMA_80",
+      "RSI_14 crosses_below 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 3.8 * ATR_14 above entry",
+      "Early exit if Close < EMA_20",
+      "Time stop: 24 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 3.8 * ATR_14 below entry",
+      "Early exit if Close > EMA_20",
+      "Time stop: 24 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0055
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "ranging"
+    ],
+    "detection_method": "v1-v2 only showed viable edge in ranging; this version increases signal density via 50-line RSI cross and faster channel"
+  },
+  "variants": [
+    {
+      "name": "axs_channel_shortbias_range_density_v3",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        { "name": "ema_fast", "value": 20 },
+        { "name": "ema_slow", "value": 80 },
+        { "name": "rsi_long_trigger", "value": 50 },
+        { "name": "rsi_short_trigger", "value": 50 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.8,
+        "risk_per_trade_pct": 0.0055,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 24
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 9,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_96"
+      ]
+    }
+  ],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

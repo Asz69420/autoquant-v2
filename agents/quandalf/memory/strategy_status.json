@@ -3,72 +3,82 @@
     {
       "family_id": "axs_channel_shortbias",
       "status": "active",
-      "iterations": 2,
-      "best_pf": 0.715,
-      "thesis": "Channel-style continuation has edge only in ranging regime; isolate that regime to remove trend bleed."
+      "iterations": 5,
+      "best_pf": 1.0576,
+      "thesis": "Channel-switch short bias has tradable density; failure is concentrated in ranging regime, so regime restriction is now the key lever."
     },
     {
-      "family_id": "sol_funding_reversion",
+      "family_id": "vvv_funding_snapback",
       "status": "active",
-      "iterations": 3,
-      "best_pf": 999.0,
-      "thesis": "Funding mean reversion mechanism remains plausible but current bottleneck is trade density; test relaxed threshold before retiring."
+      "iterations": 2,
+      "best_pf": 1.1011,
+      "thesis": "Funding-extreme snapback shows real edge with high trade count; objective is to push net edge above cost drag via reward-shape refinement."
+    },
+    {
+      "family_id": "tao_pivot_supertrend_transition",
+      "status": "active",
+      "iterations": 2,
+      "best_pf": 0.9013,
+      "thesis": "TAO pivot-supertrend is regime-fragile, with positive edge in transitional windows; isolate transitional regime before abandoning."
     },
     {
       "family_id": "eth_funding_reversion",
       "status": "active",
-      "iterations": 1,
+      "iterations": 2,
       "best_pf": 0.0,
-      "thesis": "Transfer the SOL funding-reversion structure to ETH 1h to test whether deeper liquidity improves signal frequency and execution quality."
+      "thesis": "v1 produced zero trades; density-unlock refinement lowers funding threshold to validate whether ETH can support this architecture."
+    },
+    {
+      "family_id": "btc_carry_squeeze",
+      "status": "active_probe",
+      "iterations": 5,
+      "best_pf": 0.991,
+      "thesis": "Aggregate edge is negative, but range-specific PF is >1.4 in long-bias branch; one final regime-isolation probe determines retirement."
     }
   ],
   "abandoned_this_cycle": [
     {
-      "family_id": "aq_btc_carry_squeeze",
-      "reason": "Stagnant after 3+ iterations; PF remains sub-1 after cost despite high trade counts."
+      "family_id": "banana_funding_reversion",
+      "reason": "Three-plus iterations with persistent one-trade outcomes; PF is non-inferential and non-scalable."
     },
     {
-      "family_id": "banana_funding_reversion",
-      "reason": "Three iterations with only one trade each; PF is low-N artifact, not durable edge."
+      "family_id": "sol_funding_reversion",
+      "reason": "Three-plus iterations with one-trade pathology despite threshold relaxations."
     },
     {
       "family_id": "eth_vtx_counterswing",
-      "reason": "Repeated anti-edge outcomes with PF ~0 and no regime showing viability."
+      "reason": "Repeated anti-edge with PF=0 and <15 trades across variants; entry logic does not map to observed market behavior."
     },
     {
       "family_id": "eth_vtx_chop_trans",
-      "reason": "Severe density failure and no profitable regime behavior."
+      "reason": "Very low density (2 trades) with PF=0; architecture is too restrictive and low quality."
     },
     {
-      "family_id": "SS-20260308-QD01_btc_chop_fade",
-      "reason": "Repeated zero-trade outcomes indicate structurally over-constrained entry logic."
+      "family_id": "ss-20260308-qd01_btc_chop_fade",
+      "reason": "Structural zero-trade failure after defensive and balanced variants."
     },
     {
       "family_id": "test_ema_cross",
-      "reason": "Too few trades and persistent underperformance with no credible improvement trajectory."
+      "reason": "Low density (<15 trades), PF 0.28, and no regime where PF exceeds 1.0."
     },
     {
       "family_id": "sol_pivot_supertrend_momentum",
-      "reason": "Adequate sample size but deeply negative PF; no profitable regime in current architecture."
-    },
-    {
-      "family_id": "eth_pivot_supertrend_adaptive",
-      "reason": "Immediate transfer failure on ETH with PF 0 and low density; pivot-supertrend branch deprioritized."
+      "reason": "Two variants both deeply negative (PF 0.23, DD 19.6%); transitional pocket is still sub-1 and does not justify further capital."
     }
   ],
   "new_this_cycle": [
     {
-      "family_id": "eth_funding_reversion",
-      "thesis": "Asset-transfer test of funding-reversion logic from SOL to ETH to improve liquidity-adjusted signal quality.",
-      "asset": "ETH",
-      "timeframe": "1h"
+      "family_id": "btc_carry_squeeze_range_isolation",
+      "thesis": "Rescue attempt by isolating the only profitable regime slice (ranging) seen in long-bias carry-squeeze results.",
+      "asset": "BTC",
+      "timeframe": "4h"
     }
   ],
-  "pass_this_cycle": [],
-  "promote_this_cycle": [],
   "specs_written": [
-    "artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v2.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260308-SOL-FUNDING-REVERSION-v3.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260308-ETH-FUNDING-REVERSION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v5.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260308-VVV-FUNDING-SNAPBACK-v2.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260308-TAO-PIVOT-SUPERTREND-v2.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260308-ETH-FUNDING-REVERSION-v2.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260308-BTC-CARRY-SQUEEZE-v5.strategy_spec.json"
   ]
 }
