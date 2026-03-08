@@ -153,19 +153,24 @@ def split_message(text, max_len=4000):
 def backtest_new_specs():
     if not os.path.exists(SPECS_DIR):
         return 0
+
     conn = sqlite3.connect(DB)
-    existing = set()
-    for r in conn.execute("SELECT DISTINCT strategy_spec_id FROM backtest_results").fetchall():
-        existing.add(r[0])
-    conn.close()
     backtested = 0
+
     for f in os.listdir(SPECS_DIR):
         if not f.endswith(".strategy_spec.json"):
             continue
+
         spec_path = os.path.join(SPECS_DIR, f)
         spec_id = f.replace(".strategy_spec.json", "")
-        if spec_id in existing:
+
+        existing_for_spec = conn.execute(
+            "SELECT COUNT(*) FROM backtest_results WHERE strategy_spec_id = ?",
+            (spec_id,),
+        ).fetchone()[0]
+        if existing_for_spec > 0:
             continue
+
         try:
             with open(spec_path, "r", encoding="utf-8") as fh:
                 spec = json.load(fh)
@@ -174,6 +179,7 @@ def backtest_new_specs():
             variants = spec.get("variants", [])
             if not variants:
                 continue
+
             for v in variants:
                 vname = v.get("name", "default")
                 try:
@@ -189,6 +195,16 @@ def backtest_new_specs():
                             print(f"Balrog BLOCKED {f}: {balrog_out.get('errors', [])}", file=sys.stderr)
                         except Exception:
                             print(f"Balrog BLOCKED {f}: validation failed", file=sys.stderr)
+                        continue
+
+                    existing_variant = conn.execute(
+                        """
+                        SELECT COUNT(*) FROM backtest_results
+                        WHERE strategy_spec_id = ? AND variant_id = ? AND asset = ? AND timeframe = ?
+                        """,
+                        (spec_id, vname, asset, timeframe),
+                    ).fetchone()[0]
+                    if existing_variant > 0:
                         continue
 
                     result = subprocess.run(
@@ -216,7 +232,74 @@ def backtest_new_specs():
                     print(f"Backtest error for {vname}: {e}", file=sys.stderr)
         except Exception as e:
             print(f"Spec read failed for {f}: {e}", file=sys.stderr)
+
+    conn.close()
     return backtested
+
+
+def extract_lessons(rows):
+    conn = sqlite3.connect(DB)
+    lessons_added = 0
+
+    for r in rows:
+        if not r["total_trades"] or r["total_trades"] == 0:
+            continue
+
+        pf = r["profit_factor"] or 0
+        dd = r["max_drawdown_pct"] or 0
+        trades = r["total_trades"]
+        qs = r["score_total"] or 0
+        decision = r["score_decision"] or "?"
+        spec_id = r["strategy_spec_id"] or "unknown"
+        result_id = r["id"]
+
+        existing = conn.execute("SELECT id FROM lessons WHERE backtest_result_id = ?", (result_id,)).fetchone()
+        if existing:
+            continue
+
+        if pf < 0.5:
+            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} has very low PF ({pf:.3f}). Entry logic may be anti-correlated with price movement."
+            implication = "Consider inverting entry conditions or switching to a different indicator combination."
+        elif pf < 1.0:
+            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} is slightly losing (PF {pf:.3f}). Edge exists but costs eat it."
+            implication = "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
+        elif pf >= 1.0 and trades < 15:
+            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} shows edge (PF {pf:.3f}) but too few trades ({trades}). Signal is too rare."
+            implication = "Relax entry conditions slightly to increase trade frequency while monitoring if PF holds."
+        elif pf >= 1.5:
+            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} shows strong edge (PF {pf:.3f}, {trades} trades). Worth iterating."
+            implication = "Test across multiple assets for robustness. If PF holds, candidate for promotion."
+        else:
+            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']}: PF {pf:.3f}, DD {dd:.1f}%, {trades} trades, QScore {qs:.2f} ({decision})."
+            implication = "Marginal edge. Consider parameter optimization or regime filtering."
+
+        lesson_id = f"lesson_{result_id}"
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO lessons (
+                id, ts_iso, backtest_result_id, strategy_spec_id, lesson_type,
+                observation, implication, actionable, suggested_action, confidence
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                lesson_id,
+                datetime.now(timezone.utc).isoformat(),
+                result_id,
+                spec_id,
+                "backtest_analysis",
+                observation,
+                implication,
+                1,
+                implication,
+                "medium",
+            ),
+        )
+        lessons_added += 1
+
+    conn.commit()
+    conn.close()
+    return lessons_added
 
 
 def main():
@@ -237,6 +320,7 @@ def main():
                score_total, score_decision, ts_iso
         FROM backtest_results
         WHERE ts_iso >= ?
+        GROUP BY id
         ORDER BY ts_iso DESC
         """,
         (cutoff,),
@@ -358,6 +442,8 @@ def main():
         f"Cycle postprocess: {len(rows)} backtests, best PF {best_pf:.3f}, best QS {best_qscore:.2f}, {sum(1 for r in rows if r['score_total'] and r['score_total'] >= 3.0)} promotions",
     )
 
+    lessons_added = extract_lessons(rows)
+
     print(
         json.dumps(
             {
@@ -369,6 +455,7 @@ def main():
                 "dm_sent": True,
                 "log_card_sent": True,
                 "journal_sent": bool(journal_text),
+                "lessons_added": lessons_added,
             }
         )
     )

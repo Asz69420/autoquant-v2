@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -57,6 +58,37 @@ def main() -> int:
     scan = _run_skill([PY, str(SKILLS_DIR / "autoquant-market-data" / "market.py"), "--scan"])
     funding = _run_skill([PY, str(SKILLS_DIR / "autoquant-market-data" / "market.py"), "--funding"])
 
+    db_path = ROOT / "db" / "autoquant.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    recent_results = conn.execute(
+        """
+        SELECT id, strategy_spec_id, variant_id, asset, timeframe,
+               profit_factor, max_drawdown_pct, total_trades, win_rate_pct,
+               total_return_pct, avg_trade_pct, score_total, score_decision,
+               score_edge, score_resilience, score_grade, score_flags,
+               metrics, regime_metrics, period_start, period_end
+        FROM backtest_results
+        ORDER BY ts_iso DESC LIMIT 10
+        """
+    ).fetchall()
+    conn.close()
+
+    backtest_details = []
+    for r in recent_results:
+        detail = dict(r)
+        if detail.get("metrics"):
+            try:
+                detail["metrics"] = json.loads(detail["metrics"])
+            except Exception:
+                pass
+        if detail.get("regime_metrics"):
+            try:
+                detail["regime_metrics"] = json.loads(detail["regime_metrics"])
+            except Exception:
+                pass
+        backtest_details.append(detail)
+
     now = datetime.now(timezone.utc)
     cycle_id = f"cycle_{now.strftime('%Y%m%d_%H%M%S')}"
 
@@ -69,6 +101,7 @@ def main() -> int:
         "research_digest": digest,
         "market_scan": scan,
         "funding_rates": funding,
+        "recent_backtest_details": backtest_details,
     }
 
     BRIEFING_PATH.parent.mkdir(parents=True, exist_ok=True)
