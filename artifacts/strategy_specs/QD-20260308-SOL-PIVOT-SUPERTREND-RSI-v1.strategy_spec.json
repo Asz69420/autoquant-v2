@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-SOL-PIVOT-SUPERTREND-RSI-v1",
+  "ts_iso": "2026-03-08T10:32:00Z",
+  "thesis_id": "cycle_20260308_sol_pivot_supertrend_rsi_reclaim_v1",
+  "name": "SOL Pivot-Supertrend RSI Reclaim v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "indicators": [
+    "Supertrend",
+    "RSI_14",
+    "ATR_14",
+    "EMA_100"
+  ],
+  "entry_rules": {
+    "long": [
+      "Supertrend flips bullish",
+      "RSI_14 > 52"
+    ],
+    "short": [
+      "Supertrend flips bearish",
+      "RSI_14 < 48"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 4.8 * ATR_14 above entry",
+      "Early exit if Close < EMA_100",
+      "Time stop: 28 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 4.8 * ATR_14 below entry",
+      "Early exit if Close > EMA_100",
+      "Time stop: 28 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.005
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Research digest flagged pivot-point supertrend; SOL has top-tier liquidity and mild negative funding, so trend-transition continuation is a better fit than prior pure momentum versions"
+  },
+  "variants": [
+    {
+      "name": "sol_pivot_supertrend_rsi_reclaim_v1",
+      "template_name": "pivot_supertrend_transition",
+      "parameters": [
+        { "name": "supertrend_length", "value": 10 },
+        { "name": "supertrend_mult", "value": 2.8 },
+        { "name": "rsi_long_trigger", "value": 52 },
+        { "name": "rsi_short_trigger", "value": 48 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.2,
+        "tp_type": "atr",
+        "tp_atr_mult": 4.8,
+        "risk_per_trade_pct": 0.005,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 28
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0",
+        "skip_entry_if_atr_percentile_gt_98"
+      ]
+    }
+  ],
+  "complexity_score": 2.3,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -129,3 +129,210 @@ No strategy reached PASS (QScore >= 1.0). No PROMOTE candidates.
 - Cost drag is the central bottleneck on BTC carry ideas: nominal signal exists, but slippage+fees erase it unless regime-isolated.
 - Recommend a hard policy check in scoring: **if trades < 15, cap strategy to exploratory status regardless of PF**.
 
+## Entry 030 â€” Orders Read, Regime Isolation Over More Guessing (2026-03-08, 20:31 AEST)
+
+I read the current orders packet and the message is clear: controlled adaptability, not chaos.
+That lines up with what the data is already telling me â€” my edge isnâ€™t dead everywhere, itâ€™s hidden inside regime slices.
+
+### Why I refined instead of starting another family
+- TAO v1/v2 had weak aggregate PF (~0.90), but **transitional regime PF was strong (~1.63)**.
+- The failure came from mixing trending exposure back in.
+- So this is not a thesis replacement. Itâ€™s a regime isolation refinement.
+
+### Strategy written this cycle
+- `artifacts/strategy_specs/QD-20260308-TAO-TRANSITION-SUPERTREND-v3.strategy_spec.json`
+
+### What changed (single strategic move)
+- I converted the logic into an explicit **ADX band-pass**: `20 <= ADX_14 <= 25` plus Supertrend direction flip.
+- This directly targets the transitional pocket instead of letting trending bars dilute expectancy.
+
+### Risk posture
+- Kept risk per trade conservative (0.45%).
+- Tightened stop to 1.0 ATR and TP 2.8 ATR.
+- No reverse flips, single position, short max hold.
+
+### Self-assessment
+Iâ€™ve been too willing to trust aggregate PF too early and too slow to hard-code regime isolation when regime diagnostics clearly show asymmetric edge. This revision corrects that.
+
+### Next step
+Backtest this v3 against TAO 4h first. If trade count collapses below viability, relax only one variable next cycle (ADX upper bound from 25 -> 27) and nothing else.
+
+## Entry 031 â€” Executed the Planned Single-Variable Relaxation (2026-03-08, 20:41 AEST)
+
+I re-read the orders packet before touching anything: adapt, but keep risk controlled.
+So I did exactly one change on the TAO transition branch and left everything else untouched.
+
+### Strategy written this cycle
+- `artifacts/strategy_specs/QD-20260308-TAO-TRANSITION-SUPERTREND-v4.strategy_spec.json`
+
+### What changed
+- **Only one variable changed:** ADX upper bound widened from **25 -> 27**.
+- Core thesis unchanged: Supertrend direction flips inside a transitional ADX band.
+- Risk/execution unchanged: same stop, take-profit, sizing, hold cap, no reversal.
+
+### Why this change
+v3 improved quality (PF > 1, low drawdown), but sample size was too low for promotion confidence.
+This is a pure density unlock attempt, not a redesign.
+
+### Self-check against the order
+- Controlled adaptation: yes (single-parameter refinement).
+- Risk bounded: yes (no leverage/sizing increase, no protection removal).
+- Freshness slice intent: satisfied by creating a new, fresh candidate variant this cycle.
+
+### Next step
+Run v4 and compare directly against v3 on:
+1) trade count lift,
+2) PF retention,
+3) drawdown drift.
+If trade count rises but PF breaks below 1.0, revert and explore exit-shape adjustments instead of widening regime further.
+
+## Entry 031 â€” Cycle Reset with Portfolio Diversification (2026-03-08, 20:32 AEST)
+
+This cycle I followed the workflow end-to-end: briefing packet, recent journal, V1 journal, leaderboard, market scan, KPI, lessons, and research digest.
+The conclusion is still uncomfortable but useful: we have a few families with evidence, and too many branches pretending sparse/fragile results are progress.
+
+### KPI + market read
+- 7d KPI is still weak: **183 tested, 2 pass/promote, 181 fail**.
+- Opportunity scan remains liquidity-heavy in **BTC, ETH, SOL**, with tradable secondary outliers in **VVV** and **VIRTUAL**.
+- Funding outliers (BANANA/BABY/ACE) still look tempting, but prior cycles show static threshold funding strategies easily collapse into sparse-signal artifacts.
+
+### Lifecycle decisions
+
+#### ITERATE
+1. `axs_channel_shortbias` (best PF 1.058, 77 trades)
+   - Reason: real trade density and positive PF in the right regimes; still needs expectancy lift.
+2. `vvv_funding_snapback` (best PF 1.101, 216 trades)
+   - Reason: tradable density and marginal edge; objective is to lift net expectancy after fees/slippage.
+
+#### ABANDON
+1. `banana_funding_reversion`
+   - Reason: 3+ iterations with one-trade pathology; non-inferential PF.
+2. `sol_funding_reversion`
+   - Reason: same one-trade pathology across multiple variants.
+3. `ss-20260308-qd01_btc_chop_fade`
+   - Reason: structural zero-trade failure.
+4. `test_ema_cross`
+   - Reason: low trade count + anti-edge profile.
+
+#### HOLD
+1. `tao_pivot_supertrend_transition`
+   - Reason: not dead, but currently regime-fragile and awaiting cleaner transition-only evidence.
+2. `eth_funding_reversion`
+   - Reason: still unresolved due low activation; needs single-variable unlock testing, not full redesign.
+
+#### START (new families)
+1. `sol_pivot_supertrend_rsi_reclaim`
+   - Thesis: apply pivot-supertrend research concept on a liquid alt (SOL) with cleaner transition/trend continuation logic.
+2. `btc_gchannel_switch`
+   - Thesis: test explicit long/short channel-switch behavior inspired by shorting-enabled channel research, on deepest liquidity venue (BTC).
+
+### Strategies designed this cycle (4)
+
+1. **QD-20260308-AXS-CHANNEL-SHORTBIAS-v6.strategy_spec.json**
+   - Type: refinement
+   - Asset/TF: AXS 1h
+   - Thesis: keep proven transition/trend filter, extend tail capture (higher TP multiple) to improve PF above cost drag.
+
+2. **QD-20260308-VVV-FUNDING-SNAPBACK-v3.strategy_spec.json**
+   - Type: refinement
+   - Asset/TF: VVV 1h
+   - Thesis: unlock more valid events (lighter funding threshold) while preserving RSI reclaim/reject structure for crowding snapbacks.
+
+3. **QD-20260308-SOL-PIVOT-SUPERTREND-RSI-v1.strategy_spec.json**
+   - Type: new family
+   - Asset/TF: SOL 4h
+   - Thesis: pivot/supertrend flips plus RSI bias should capture continuation after transition in a high-liquidity alt.
+
+4. **QD-20260308-BTC-GCHANNEL-SWITCH-v1.strategy_spec.json**
+   - Type: new family
+   - Asset/TF: BTC 1h
+   - Thesis: bidirectional channel-switch logic (including shorts) should be most robust where liquidity and execution quality are highest.
+
+### Self-assessment
+Iâ€™m improving at cutting dead branches, but I still feel the temptation to over-interpret borderline PF values. I need to keep enforcing the same discipline: density first, regime diagnostics second, optimization last.
+
+### Next cycle plan
+- Backtest all four specs immediately.
+- Hard fail condition: any new family with <10 trades goes into sparse-evidence quarantine, not â€œpromising.â€
+- If VVV v3 improves PF but worsens DD materially, next revision changes only stop geometry.
+
+
+## Entry 032 — Reflection Cycle: Density Discipline, Regime Isolation, and One-Change Refinements (2026-03-08, 20:42 AEST)
+
+I processed the full reflection packet and deduplicated repeated records.
+- Raw rows: 189
+- Unique backtest results reviewed: 37
+- PASS (QScore >= 1.0): 0
+- PROMOTE (QScore >= 3.0): 0
+
+### Per-result evaluation (all unique variants)
+
+1. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v1` / `axs_channel_shortbias_balanced` — 48 trades, PF 0.7147. Adequate trades but anti-edge. Regime split: ranging works better than trending. **Iterate historically; superseded by later variants.**
+2. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v2` / `axs_channel_shortbias_range_only` — 48 trades, PF 0.7147. No improvement vs v1. **Stagnant, superseded.**
+3. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v3` / `axs_channel_shortbias_range_density_v3` — 50 trades, PF 0.7852. Closer to viability, still sub-0.8. **Continue lineage via newer v6+.**
+4. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v4` / `axs_channel_shortbias_transition_probe_v4` — 77 trades, PF 1.0576. Marginal edge with good density; transitional strongest. **Iterate.**
+5. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v5` / `axs_channel_shortbias_regime_restrict_v5` — 77 trades, PF 1.0576. Same as v4. **Iterate.**
+6. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v6` / `axs_channel_shortbias_tail_extension_v6` — 74 trades, PF 1.0805, QScore 0.445. Better PF than v5. **Improved -> keep iterating.**
+
+7. `QD-20260308-BANANA-FUNDING-REVERSION-v1` — 1 trade, PF 999 artifact. **Too restrictive (non-inferential), abandon.**
+8. `QD-20260308-BANANA-FUNDING-REVERSION-v2` — 1 trade, PF 999 artifact. **Abandon.**
+9. `QD-20260308-BANANA-FUNDING-REVERSION-v3` — 1 trade, PF 999 artifact. **Abandon (3+ stagnant sparse iterations).**
+
+10. `QD-20260308-BTC-CARRY-SQUEEZE-v2` — 79 trades, PF 0.7587. Good density but no regime >1 except weak pockets. **Abandon branch.**
+11. `QD-20260308-BTC-CARRY-SQUEEZE-v3` — 79 trades, PF 0.7587. Stagnant. **Abandon.**
+12. `QD-20260308-BTC-CARRY-SQUEEZE-v4` — 88 trades, PF 0.6969. Worse. **Abandon.**
+13. `QD-20260308-BTC-CARRY-SQUEEZE-v5` — 143 trades, PF 0.9910. Marginal but still failing score due cost drag. **Final rescue already attempted; retire for now.**
+14. `aq_btc_carry_squeeze_v1` / balanced — 125 trades, PF 0.9372. **No durable edge. Abandon.**
+15. `aq_btc_carry_squeeze_v1` / long_bias — 143 trades, PF 0.9910. **Near breakeven but still negative after costs. Abandon.**
+
+16. `QD-20260308-BTC-GCHANNEL-SWITCH-v1` — 217 trades, PF 0.6026, deep drawdown. High density but structurally wrong edge sign. **Abandon.**
+
+17. `QD-20260308-ETH-FUNDING-REVERSION-v1` — 0 trades. Entry logic inactive. **Fundamentally broken; abandon this architecture.**
+18. `QD-20260308-ETH-FUNDING-REVERSION-v2` — 0 trades after threshold relax. **No activation; abandon.**
+
+19. `QD-20260308-ETH-PIVOT-SUPERTREND-ADAPTIVE-v1` — 6 trades, PF 0.00. Too restrictive + anti-edge. **Abandon.**
+20. `QD-20260308-ETH-VTX-CHOP-TRANS-v1` — 2 trades, PF 0.00. Too restrictive. **Abandon.**
+21. `QD-20260308-ETH-VTX-COUNTERSWING-v2` — 9 trades, PF 0.00. Anti-edge. **Abandon.**
+22. `QD-20260308-ETH-VTX-COUNTERSWING-v3` — 9 trades, PF 0.00. No improvement. **Abandon.**
+23. `test_ema_cross` — 10 trades, PF 0.2843. Low N + anti-edge. **Abandon.**
+
+24. `QD-20260308-SOL-FUNDING-REVERSION-v1` — 1 trade, PF 999 artifact. **Abandon.**
+25. `QD-20260308-SOL-FUNDING-REVERSION-v2` — 1 trade, PF 999 artifact. **Abandon.**
+26. `QD-20260308-SOL-FUNDING-REVERSION-v3` — 1 trade, PF 999 artifact. **Abandon (3+ sparse iterations).**
+
+27. `QD-20260308-SOL-PIVOT-SUPERTREND-RSI-v1` — 39 trades, PF 0.4121. Enough trades, edge clearly negative in dominant regime. **Abandon.**
+28. `QD-20260308-SOL-PIVOT-SUPERTREND-v1` — 36 trades, PF 0.2329. **Abandon.**
+29. `QD-20260308-SOL-PIVOT-SUPERTREND-v2` — 36 trades, PF 0.2329. **Abandon.**
+
+30. `QD-20260308-TAO-PIVOT-SUPERTREND-v1` — 26 trades, PF 0.9013. Transitional PF good, trending bad. **Superseded by transition-only branch.**
+31. `QD-20260308-TAO-PIVOT-SUPERTREND-v2` — 26 trades, PF 0.9013. No improvement. **Superseded/retired.**
+32. `QD-20260308-TAO-TRANSITION-SUPERTREND-v3` — 13 trades, PF 1.3374, QScore 0.9073. Strong PF pocket but <15 trades -> entry still too restrictive. **Iterate by relaxing one gate.**
+
+33. `QD-20260308-VVV-FUNDING-SNAPBACK-v1` — 216 trades, PF 1.1011, QScore 0.5323. Best VVV variant so far. **Iterate.**
+34. `QD-20260308-VVV-FUNDING-SNAPBACK-v2` — 214 trades, PF 0.9961. Marginal/flat. **Iterate with risk tuning.**
+35. `QD-20260308-VVV-FUNDING-SNAPBACK-v3` — 214 trades, PF 1.0236, QScore 0.09. Marginal edge with cost pressure. **Iterate with one risk change.**
+
+36. `SS-20260308-QD01` / `btc_chop_fade_defensive` — 0 trades. Logic broken. **Abandon.**
+37. `SS-20260308-QD01` / `btc_chop_fade_balanced` — 0 trades. Logic broken. **Abandon.**
+
+### Lifecycle decisions
+- **Continue iterating:** `axs_channel_shortbias`, `vvv_funding_snapback`, `tao_transition_supertrend`
+- **Abandon now:** banana/sol funding-reversion families, ETH funding reversion family, BTC carry families (including `aq_`), BTC gchannel switch, ETH VTX/pivot branches, SOL pivot branches, SS chop fade, test EMA
+- **PASS:** none
+- **PROMOTE:** none
+
+### Refined strategy specs written (one-variable changes)
+1. `artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v7.strategy_spec.json`
+   - Change: TP ATR multiple only (`3.8 -> 4.2`)
+2. `artifacts/strategy_specs/QD-20260308-VVV-FUNDING-SNAPBACK-v4.strategy_spec.json`
+   - Change: stop ATR multiple only (`1.1 -> 1.0`)
+3. `artifacts/strategy_specs/QD-20260308-TAO-TRANSITION-SUPERTREND-v5.strategy_spec.json`
+   - Change: ADX upper band only (`25 -> 27`) to relax low-trade restriction
+4. `artifacts/strategy_specs/QD-20260308-ETH-CHANNEL-SHORTBIAS-v1.strategy_spec.json`
+   - Change: asset transfer only (`AXS -> ETH`) to test asset-agnostic thesis portability
+
+### Observations for Oragorn
+- The dedupe problem is real: reflection packet included many repeated rows; decision logic should evaluate unique `(strategy_spec_id, variant_id, asset, timeframe)` combinations.
+- Low-trade PF mirages remain a major ranking hazard. I strongly recommend auto-labeling `<15 trades` as exploratory-only.
+- Regime diagnostics continue to be the only reason marginal families are salvageable (AXS/TAO/VVV) instead of discarded with aggregate-only views.
+- ETH funding branch failed even after threshold relax; this looks like a structural mismatch between trigger logic and ETH funding distribution at 1h.

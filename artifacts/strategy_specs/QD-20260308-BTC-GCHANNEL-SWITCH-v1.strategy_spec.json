@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-BTC-GCHANNEL-SWITCH-v1",
+  "ts_iso": "2026-03-08T10:32:00Z",
+  "thesis_id": "cycle_20260308_btc_channel_shorting_extension_v1",
+  "name": "BTC Gaussian-Channel Switch v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "indicators": [
+    "EMA_55",
+    "EMA_200",
+    "RSI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_55",
+      "RSI_14 crosses_above 50"
+    ],
+    "short": [
+      "Close < EMA_55",
+      "RSI_14 crosses_below 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 3.6 * ATR_14 above entry",
+      "Early exit if Close < EMA_200",
+      "Time stop: 24 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 3.6 * ATR_14 below entry",
+      "Early exit if Close > EMA_200",
+      "Time stop: 24 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0038
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Research digest highlighted channel strategy with explicit shorting; BTC has the deepest liquidity in scan, making bidirectional breakout-follow behavior testable with low execution distortion"
+  },
+  "variants": [
+    {
+      "name": "btc_gchannel_switch_v1",
+      "template_name": "channel_shorting_switch",
+      "parameters": [
+        { "name": "ema_trend", "value": 55 },
+        { "name": "ema_guard", "value": 200 },
+        { "name": "rsi_trigger", "value": 50 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.6,
+        "risk_per_trade_pct": 0.0038,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 24
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "cooldown_bars=0",
+        "skip_entry_if_atr_percentile_gt_99"
+      ]
+    }
+  ],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

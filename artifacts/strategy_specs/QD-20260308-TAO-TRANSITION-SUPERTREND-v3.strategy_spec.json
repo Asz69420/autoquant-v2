@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-TAO-TRANSITION-SUPERTREND-v3",
+  "ts_iso": "2026-03-08T10:31:00Z",
+  "thesis_id": "cycle_20260308_tao_transition_supertrend_v3",
+  "name": "TAO Transition Supertrend Regime-Isolation v3",
+  "version": "3.0",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "indicators": [
+    "SUPERTd_7_3.0",
+    "ADX_14",
+    "ATR_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "SUPERTd_7_3.0 crosses_above 0",
+      "ADX_14 >= 20",
+      "ADX_14 <= 25"
+    ],
+    "short": [
+      "SUPERTd_7_3.0 crosses_below 0",
+      "ADX_14 >= 20",
+      "ADX_14 <= 25"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Early exit if RSI_14 crosses_below 48",
+      "Time stop: 16 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Early exit if RSI_14 crosses_above 52",
+      "Time stop: 16 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional"
+    ],
+    "detection_method": "Explicit ADX band-pass (20 to 25) to isolate transitional regime where TAO v1/v2 showed positive regime PF"
+  },
+  "variants": [
+    {
+      "name": "tao_transition_supertrend_bandpass_v3",
+      "template_name": "supertrend_follow",
+      "entry_long": [
+        "SUPERTd_7_3.0 crosses_above 0",
+        "ADX_14 >= 20",
+        "ADX_14 <= 25"
+      ],
+      "entry_short": [
+        "SUPERTd_7_3.0 crosses_below 0",
+        "ADX_14 >= 20",
+        "ADX_14 <= 25"
+      ],
+      "parameters": [
+        { "name": "adx_lower", "value": 20 },
+        { "name": "adx_upper", "value": 25 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.8,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 16
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 8,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "atr_period=14",
+        "cooldown_bars=1"
+      ]
+    }
+  ],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
