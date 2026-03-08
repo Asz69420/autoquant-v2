@@ -10,14 +10,20 @@ PREFS_PATH = os.path.join(ROOT, "data", "state", "lobsterboard_prefs.json")
 HOST = "0.0.0.0"
 PORT = 8787
 
+DEFAULT_LAYOUT = [
+    {"id": "w_stats", "type": "stats", "title": "Top Stats", "x": 1, "y": 1, "w": 12, "h": 2, "visible": True},
+    {"id": "w_health", "type": "health", "title": "System Health", "x": 1, "y": 3, "w": 4, "h": 2, "visible": True},
+    {"id": "w_pipes", "type": "pipelines", "title": "Pipeline Runs", "x": 5, "y": 3, "w": 8, "h": 3, "visible": True},
+    {"id": "w_events", "type": "events", "title": "Recent Events", "x": 1, "y": 5, "w": 8, "h": 5, "visible": True},
+    {"id": "w_hippo", "type": "hippo", "title": "Hippo Widget", "x": 9, "y": 6, "w": 4, "h": 2, "visible": True},
+    {"id": "w_leaders", "type": "leaders", "title": "Leaderboard", "x": 1, "y": 10, "w": 12, "h": 5, "visible": True},
+]
+
 DEFAULT_PREFS = {
     "theme": "dark",
     "fontScale": 100,
     "refreshMs": 10000,
-    "showHealth": True,
-    "showPipelines": True,
-    "showEvents": True,
-    "showLeaderboard": True,
+    "layout": DEFAULT_LAYOUT,
 }
 
 HTML = """<!doctype html>
@@ -25,224 +31,216 @@ HTML = """<!doctype html>
 <head>
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <title>LobsterBoard</title>
+  <title>LobsterBoard Builder</title>
   <style>
-    :root{
-      --bg:#0a0f1f; --bg2:#0f1730; --panel:#101a33; --line:#263454;
-      --text:#eaf1ff; --muted:#9fb2d6; --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-      --card:#0f1730;
-    }
-    [data-theme='light']{
-      --bg:#eff4ff; --bg2:#f7faff; --panel:#ffffff; --line:#cdd9ef;
-      --text:#0d1b37; --muted:#54698f; --card:#ffffff;
-    }
+    :root{--bg:#0a0f1f;--panel:#101a33;--line:#263454;--txt:#eaf1ff;--muted:#9fb2d6;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444}
+    [data-theme='light']{--bg:#eef3ff;--panel:#fff;--line:#cad7ef;--txt:#0f1f41;--muted:#586d94}
     *{box-sizing:border-box}
-    body{margin:0;padding:16px;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:radial-gradient(1200px 700px at 80% -10%,var(--bg2) 0%, var(--bg) 55%);color:var(--text);font-size:calc(14px * var(--scale,1));}
-    .wrap{max-width:1220px;margin:0 auto}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-    .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:6px 10px;cursor:pointer}
-    .sub{color:var(--muted);font-size:12px}
-    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
-    .k{font-size:12px;color:var(--muted);margin-bottom:6px}
-    .v{font-size:24px;font-weight:700;line-height:1}
-    .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
-    .panel h2{font-size:15px;margin:0 0 10px 0}
-    .two{display:grid;grid-template-columns:2fr 1fr;gap:12px}
-    table{width:100%;border-collapse:collapse;font-size:12.5px}
-    th,td{padding:8px 6px;border-bottom:1px solid var(--line)}
-    th{text-align:left;color:var(--muted)}
-    tr:last-child td{border-bottom:none}
+    body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--txt);font-size:calc(14px * var(--scale,1));}
+    .top{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:10}
+    .btn{border:1px solid var(--line);background:var(--panel);color:var(--txt);border-radius:10px;padding:6px 10px;cursor:pointer}
+    .muted{color:var(--muted)}
+    .shell{display:grid;grid-template-columns:280px 1fr;gap:10px;padding:10px}
+    #sidebar{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;max-height:calc(100vh - 80px);overflow:auto}
+    #sidebar h3{margin:6px 0 8px 0}
+    .row{display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px}
+    .row input,.row select{width:120px;background:#0000;border:1px solid var(--line);color:var(--txt);padding:4px 6px;border-radius:8px}
+    .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:74px;gap:8px;min-height:80vh}
+    .widget{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;overflow:auto}
+    .widget.selected{outline:2px solid #60a5fa}
+    .wh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:600}
     .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;border:1px solid transparent}
-    .ok{background:#153522;color:#9ef0be;border-color:#1e6f3f}
-    .warn{background:#3a2a10;color:#ffd083;border-color:#8b5a12}
-    .bad{background:#3c1218;color:#ff9aa8;border-color:#812333}
-    [data-theme='light'] .ok{background:#eafbee;color:#166534;border-color:#86efac}
-    [data-theme='light'] .warn{background:#fff7e8;color:#92400e;border-color:#fcd34d}
-    [data-theme='light'] .bad{background:#ffedf0;color:#991b1b;border-color:#fda4af}
-    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-    .hidden{display:none!important}
-    #prefs{display:none;position:fixed;top:12px;right:12px;width:min(420px,92vw);z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
-    #prefs h3{margin:0 0 8px 0}
-    .row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0}
-    .row label{color:var(--muted)}
-    .row input[type='range']{width:150px}
-    @media (max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+    .ok{background:#163b27;color:#9ef0be;border-color:#2b8f58}
+    .warn{background:#3b2b12;color:#ffd083;border-color:#9a6518}
+    .bad{background:#41131b;color:#ff9aa8;border-color:#8f2738}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+    th{color:var(--muted)}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .card{border:1px solid var(--line);border-radius:10px;padding:8px}
+    .v{font-size:22px;font-weight:700}
+    @media (max-width:1100px){.shell{grid-template-columns:1fr} #sidebar{order:2}}
   </style>
 </head>
 <body>
-  <div id='prefs'>
-    <h3>⚙️ Customize</h3>
-    <div class='row'><label>Theme</label><select id='pTheme'><option value='dark'>Dark</option><option value='light'>Light</option></select></div>
-    <div class='row'><label>Font size</label><input id='pScale' type='range' min='85' max='130' step='5'></div>
-    <div class='row'><label>Refresh (sec)</label><input id='pRefresh' type='number' min='5' max='120' step='1' style='width:80px'></div>
-    <div class='row'><label>Show Health</label><input id='pHealth' type='checkbox'></div>
-    <div class='row'><label>Show Pipelines</label><input id='pPipes' type='checkbox'></div>
-    <div class='row'><label>Show Events</label><input id='pEvents' type='checkbox'></div>
-    <div class='row'><label>Show Leaderboard</label><input id='pLeaders' type='checkbox'></div>
-    <div class='row'>
+  <div class='top'>
+    <div><b>🦞 LobsterBoard Builder</b> <span class='muted'>live grid layout</span></div>
+    <div style='display:flex;gap:8px;align-items:center'>
+      <span id='updated' class='muted'>Updated: —</span>
+      <button class='btn' id='toggleEdit' onclick='toggleEdit()'>Edit Mode</button>
       <button class='btn' onclick='savePrefs()'>Save</button>
-      <button class='btn' onclick='resetPrefs()'>Reset</button>
-      <button class='btn' onclick='togglePrefs(false)'>Close</button>
     </div>
   </div>
 
-  <div class='wrap'>
-    <div class='top'>
-      <div>
-        <h2 style='margin:0'>🦞 LobsterBoard</h2>
-        <div class='sub'>AutoQuant V2 live operations board</div>
-      </div>
-      <div style='display:flex;gap:8px;align-items:center'>
-        <span class='sub' id='updated'>Updated: —</span>
-        <button class='btn' onclick='togglePrefs(true)'>Customize</button>
-      </div>
-    </div>
+  <div class='shell'>
+    <aside id='sidebar'>
+      <h3>⚙️ Dashboard Builder</h3>
+      <div class='row'><label>Theme</label><select id='theme'><option value='dark'>Dark</option><option value='light'>Light</option></select></div>
+      <div class='row'><label>Font %</label><input id='font' type='number' min='80' max='140' step='5'></div>
+      <div class='row'><label>Refresh sec</label><input id='refresh' type='number' min='5' max='120'></div>
+      <hr style='border-color:var(--line)'>
+      <div class='row'><label><b>Sacred Select</b></label><select id='selectedWidget'></select></div>
+      <div class='row'><button class='btn' onclick='moveSel(0,-1)'>↑</button><button class='btn' onclick='moveSel(-1,0)'>←</button><button class='btn' onclick='moveSel(1,0)'>→</button><button class='btn' onclick='moveSel(0,1)'>↓</button></div>
+      <div class='row'><button class='btn' onclick='resizeSel(1,0)'>W+</button><button class='btn' onclick='resizeSel(-1,0)'>W-</button><button class='btn' onclick='resizeSel(0,1)'>H+</button><button class='btn' onclick='resizeSel(0,-1)'>H-</button></div>
+      <div class='row'><button class='btn' onclick='toggleSelVis()'>Show/Hide</button><button class='btn' onclick='removeSel()'>Delete</button></div>
+      <hr style='border-color:var(--line)'>
+      <h3>Add Widget</h3>
+      <div class='row'><button class='btn' onclick="addWidget('health')">Health</button><button class='btn' onclick="addWidget('events')">Events</button></div>
+      <div class='row'><button class='btn' onclick="addWidget('pipelines')">Pipelines</button><button class='btn' onclick="addWidget('leaders')">Leaderboard</button></div>
+      <div class='row'><button class='btn' onclick="addWidget('stats')">Stats</button><button class='btn' onclick="addWidget('hippo')">Hippo</button></div>
+      <p class='muted'>Tip: click a widget on the grid, then move/resize with controls.</p>
+    </aside>
 
-    <div class='grid'>
-      <div class='card'><div class='k'>Backtests</div><div id='bt' class='v'>0</div></div>
-      <div class='card'><div class='k'>Lessons</div><div id='ls' class='v'>0</div></div>
-      <div class='card'><div class='k'>Research Cards</div><div id='rc' class='v'>0</div></div>
-      <div class='card'><div class='k'>Event Log</div><div id='ev' class='v'>0</div></div>
-    </div>
-
-    <div id='secHealth' class='panel'>
-      <h2>System Health</h2>
-      <div><span id='healthStatus' class='badge warn'>WARN</span> <span id='healthText' class='sub'>Loading…</span></div>
-    </div>
-
-    <div class='two'>
-      <div id='secEvents' class='panel'>
-        <h2>Recent Events</h2>
-        <table>
-          <thead><tr><th>When</th><th>Severity</th><th>Event</th><th>Agent</th><th>Message</th></tr></thead>
-          <tbody id='runs'></tbody>
-        </table>
-      </div>
-
-      <div id='secPipes' class='panel'>
-        <h2>Pipeline Runs</h2>
-        <table>
-          <thead><tr><th>Run</th><th>Status</th><th>Progress</th><th>Started</th></tr></thead>
-          <tbody id='pipes'></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id='secLeaders' class='panel'>
-      <h2>Leaderboard (QS ≥ 1.0)</h2>
-      <table>
-        <thead><tr><th>Asset</th><th>TF</th><th>Variant</th><th>QS</th><th>PF</th><th>DD</th><th>Trades</th></tr></thead>
-        <tbody id='leaders'></tbody>
-      </table>
-    </div>
+    <main>
+      <div id='grid' class='grid'></div>
+    </main>
   </div>
 
 <script>
-let prefs = {};
+let prefs = null;
+let data = null;
+let selectedId = null;
+let editMode = false;
 let timer = null;
 
-function defaults(){ return {theme:'dark',fontScale:100,refreshMs:10000,showHealth:true,showPipelines:true,showEvents:true,showLeaderboard:true}; }
-
-function fmtAgo(ts){
-  if(!ts) return '—';
-  const d = new Date(ts); if(isNaN(d)) return ts;
-  const s = Math.floor((Date.now()-d.getTime())/1000);
-  if(s<60) return s+'s ago'; if(s<3600) return Math.floor(s/60)+'m ago'; if(s<86400) return Math.floor(s/3600)+'h ago';
-  return Math.floor(s/86400)+'d ago';
-}
-
-function togglePrefs(show){ document.getElementById('prefs').style.display = show ? 'block' : 'none'; }
+const defaults = () => ({theme:'dark', fontScale:100, refreshMs:10000, layout:[]});
+const titleByType = (t) => ({stats:'Top Stats', health:'System Health', events:'Recent Events', pipelines:'Pipeline Runs', leaders:'Leaderboard', hippo:'Hippo Widget'}[t] || t);
 
 function applyPrefs(){
   document.documentElement.setAttribute('data-theme', prefs.theme || 'dark');
   document.body.style.setProperty('--scale', String((prefs.fontScale||100)/100));
-  document.getElementById('secHealth').classList.toggle('hidden', !prefs.showHealth);
-  document.getElementById('secPipes').classList.toggle('hidden', !prefs.showPipelines);
-  document.getElementById('secEvents').classList.toggle('hidden', !prefs.showEvents);
-  document.getElementById('secLeaders').classList.toggle('hidden', !prefs.showLeaderboard);
-
-  document.getElementById('pTheme').value = prefs.theme;
-  document.getElementById('pScale').value = prefs.fontScale;
-  document.getElementById('pRefresh').value = Math.floor((prefs.refreshMs||10000)/1000);
-  document.getElementById('pHealth').checked = !!prefs.showHealth;
-  document.getElementById('pPipes').checked = !!prefs.showPipelines;
-  document.getElementById('pEvents').checked = !!prefs.showEvents;
-  document.getElementById('pLeaders').checked = !!prefs.showLeaderboard;
-
-  if(timer) clearInterval(timer);
-  timer = setInterval(refresh, Math.max(5000, prefs.refreshMs || 10000));
+  document.getElementById('theme').value = prefs.theme;
+  document.getElementById('font').value = prefs.fontScale;
+  document.getElementById('refresh').value = Math.floor((prefs.refreshMs||10000)/1000);
+  renderGrid();
+  if (timer) clearInterval(timer);
+  timer = setInterval(refreshData, Math.max(5000, prefs.refreshMs||10000));
 }
 
-async function loadPrefs(){
-  const local = localStorage.getItem('lobsterboard_prefs');
-  if(local){
-    try{ prefs = {...defaults(), ...JSON.parse(local)}; applyPrefs(); return; }catch{}
+function widgetHTML(w){
+  if (!data) return '<div class="muted">Loading…</div>';
+  if (w.type === 'stats') {
+    const s = data.stats || {};
+    return `<div class='stats'>
+      <div class='card'><div class='muted'>Backtests</div><div class='v'>${s.backtests||0}</div></div>
+      <div class='card'><div class='muted'>Lessons</div><div class='v'>${s.lessons||0}</div></div>
+      <div class='card'><div class='muted'>Research</div><div class='v'>${s.research_cards||0}</div></div>
+      <div class='card'><div class='muted'>Events</div><div class='v'>${s.events||0}</div></div>
+    </div>`;
   }
-  try{
-    const r = await fetch('/prefs', {cache:'no-store'});
-    const p = await r.json();
-    prefs = {...defaults(), ...(p||{})};
-  }catch{
-    prefs = defaults();
+  if (w.type === 'health') {
+    const h = data.health || {status:'warn',summary:'No data'};
+    const cls = h.status==='ok'?'ok':h.status==='warn'?'warn':'bad';
+    return `<p><span class='badge ${cls}'>${(h.status||'warn').toUpperCase()}</span></p><p class='muted'>${h.summary||''}</p>`;
   }
-  applyPrefs();
+  if (w.type === 'events') {
+    const arr = data.runs || [];
+    if (!arr.length) return '<div class="muted">No events</div>';
+    return `<table><thead><tr><th>When</th><th>Event</th><th>Agent</th></tr></thead><tbody>${arr.slice(0,14).map(x=>`<tr><td class='muted'>${x.ts?.slice(11,19)||''}</td><td>${x.event||''}</td><td>${x.agent||''}</td></tr>`).join('')}</tbody></table>`;
+  }
+  if (w.type === 'pipelines') {
+    const arr = data.pipelines || [];
+    if (!arr.length) return '<div class="muted">No pipeline runs</div>';
+    return `<table><thead><tr><th>Run</th><th>Status</th><th>Progress</th></tr></thead><tbody>${arr.map(x=>`<tr><td class='mono'>${x.name||''}</td><td>${x.status||''}</td><td>${x.completed||0}/${x.total||0}</td></tr>`).join('')}</tbody></table>`;
+  }
+  if (w.type === 'leaders') {
+    const arr = data.leaders || [];
+    if (!arr.length) return '<div class="muted">No QS ≥ 1.0 yet</div>';
+    return `<table><thead><tr><th>Asset</th><th>TF</th><th>Variant</th><th>QS</th><th>PF</th></tr></thead><tbody>${arr.slice(0,18).map(x=>`<tr><td>${x.asset}</td><td>${x.tf}</td><td class='mono'>${x.variant}</td><td>${x.qs.toFixed(2)}</td><td>${x.pf.toFixed(2)}</td></tr>`).join('')}</tbody></table>`;
+  }
+  if (w.type === 'hippo') {
+    return `<div style='font-size:26px'>🦛</div><div class='muted'>Hippo says: stay calm, iterate hard, trust the data.</div>`;
+  }
+  return '<div class="muted">Unknown widget</div>';
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  const layout = (prefs.layout||[]).filter(w=>w.visible!==false);
+  layout.forEach(w=>{
+    const d = document.createElement('div');
+    d.className = 'widget'+(w.id===selectedId?' selected':'');
+    d.style.gridColumn = `${w.x} / span ${w.w}`;
+    d.style.gridRow = `${w.y} / span ${w.h}`;
+    d.dataset.id = w.id;
+    d.onclick = () => { if(editMode){ selectedId = w.id; refreshSelect(); renderGrid(); } };
+    d.innerHTML = `<div class='wh'><span>${w.title || titleByType(w.type)}</span>${editMode?'<span class="muted mono">'+w.id+'</span>':''}</div>${widgetHTML(w)}`;
+    grid.appendChild(d);
+  });
+  refreshSelect();
+}
+
+function refreshSelect(){
+  const sel = document.getElementById('selectedWidget');
+  sel.innerHTML = (prefs.layout||[]).map(w=>`<option value='${w.id}'>${w.title || w.type} (${w.id})</option>`).join('');
+  if(selectedId){ sel.value = selectedId; }
+  sel.onchange = () => { selectedId = sel.value; renderGrid(); };
+}
+
+function getSel(){
+  if(!selectedId) return null;
+  return (prefs.layout||[]).find(x=>x.id===selectedId) || null;
+}
+
+function clampWidget(w){
+  w.w = Math.max(2, Math.min(12, w.w));
+  w.h = Math.max(1, Math.min(10, w.h));
+  w.x = Math.max(1, Math.min(13-w.w, w.x));
+  w.y = Math.max(1, Math.min(40, w.y));
+}
+
+function moveSel(dx,dy){ const w=getSel(); if(!w) return; w.x+=dx; w.y+=dy; clampWidget(w); renderGrid(); }
+function resizeSel(dw,dh){ const w=getSel(); if(!w) return; w.w+=dw; w.h+=dh; clampWidget(w); renderGrid(); }
+function toggleSelVis(){ const w=getSel(); if(!w) return; w.visible = !(w.visible!==false); renderGrid(); }
+function removeSel(){ if(!selectedId) return; prefs.layout = (prefs.layout||[]).filter(x=>x.id!==selectedId); selectedId=null; renderGrid(); }
+
+function addWidget(type){
+  const id = 'w_'+type+'_'+Math.random().toString(16).slice(2,6);
+  const w = {id, type, title:titleByType(type), x:1, y:1, w: type==='stats'?12:6, h: type==='leaders'?4: (type==='events'||type==='pipelines'?3:2), visible:true};
+  prefs.layout.push(w);
+  selectedId=id;
+  renderGrid();
+}
+
+function toggleEdit(){
+  editMode = !editMode;
+  document.getElementById('toggleEdit').textContent = editMode ? 'Exit Edit' : 'Edit Mode';
+  document.getElementById('sidebar').style.display = editMode ? 'block' : 'none';
+  renderGrid();
 }
 
 async function savePrefs(){
-  prefs.theme = document.getElementById('pTheme').value;
-  prefs.fontScale = parseInt(document.getElementById('pScale').value || '100', 10);
-  prefs.refreshMs = Math.max(5000, parseInt(document.getElementById('pRefresh').value || '10', 10) * 1000);
-  prefs.showHealth = document.getElementById('pHealth').checked;
-  prefs.showPipelines = document.getElementById('pPipes').checked;
-  prefs.showEvents = document.getElementById('pEvents').checked;
-  prefs.showLeaderboard = document.getElementById('pLeaders').checked;
+  prefs.theme = document.getElementById('theme').value;
+  prefs.fontScale = parseInt(document.getElementById('font').value||'100',10);
+  prefs.refreshMs = Math.max(5000, parseInt(document.getElementById('refresh').value||'10',10)*1000);
   localStorage.setItem('lobsterboard_prefs', JSON.stringify(prefs));
   applyPrefs();
-  try{ await fetch('/prefs', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(prefs)});}catch{}
-  togglePrefs(false);
+  await fetch('/prefs', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(prefs)});
 }
 
-function resetPrefs(){
-  prefs = defaults();
-  localStorage.removeItem('lobsterboard_prefs');
-  applyPrefs();
-}
-
-function setBadge(el, status){
-  el.className='badge '+(status==='ok'?'ok':status==='warn'?'warn':'bad');
-  el.textContent=status.toUpperCase();
-}
-
-async function refresh(){
+async function refreshData(){
   const r = await fetch('/data', {cache:'no-store'});
-  const d = await r.json();
-  document.getElementById('bt').textContent = d.stats.backtests;
-  document.getElementById('ls').textContent = d.stats.lessons;
-  document.getElementById('rc').textContent = d.stats.research_cards;
-  document.getElementById('ev').textContent = d.stats.events;
+  data = await r.json();
   document.getElementById('updated').textContent = 'Updated: '+new Date().toLocaleTimeString();
-
-  setBadge(document.getElementById('healthStatus'), d.health.status || 'warn');
-  document.getElementById('healthText').textContent = d.health.summary || '';
-
-  const runs = d.runs || [];
-  document.getElementById('runs').innerHTML = runs.length ? runs.map(x=>
-    `<tr><td class='sub'>${fmtAgo(x.ts)}</td><td><span class='badge ${x.sev==='warn'?'warn':x.sev==='error'?'bad':'ok'}'>${(x.sev||'info').toUpperCase()}</span></td><td class='mono'>${x.event||''}</td><td>${x.agent||''}</td><td>${x.msg||''}</td></tr>`
-  ).join('') : '<tr><td colspan="5" class="sub">No recent events</td></tr>';
-
-  const leaders = d.leaders || [];
-  document.getElementById('leaders').innerHTML = leaders.length ? leaders.map(x=>
-    `<tr><td>${x.asset}</td><td>${x.tf}</td><td class='mono'>${x.variant}</td><td>${x.qs.toFixed(2)}</td><td>${x.pf.toFixed(2)}</td><td>${x.dd.toFixed(1)}%</td><td>${x.tc}</td></tr>`
-  ).join('') : '<tr><td colspan="7" class="sub">No qualified leaders yet</td></tr>';
-
-  const pipes = d.pipelines || [];
-  document.getElementById('pipes').innerHTML = pipes.length ? pipes.map(x=>
-    `<tr><td class='mono'>${x.name}</td><td>${x.status}</td><td>${x.completed}/${x.total}</td><td class='sub'>${fmtAgo(x.start)}</td></tr>`
-  ).join('') : '<tr><td colspan="4" class="sub">No pipeline runs yet</td></tr>';
+  renderGrid();
 }
 
-window.onload = async () => { await loadPrefs(); await refresh(); };
+async function init(){
+  let p = null;
+  try{ p = JSON.parse(localStorage.getItem('lobsterboard_prefs')||'null'); }catch{}
+  if(!p){
+    try{ p = await (await fetch('/prefs',{cache:'no-store'})).json(); }catch{ p = null; }
+  }
+  prefs = {...defaults(), ...(p||{})};
+  if(!prefs.layout || !prefs.layout.length) prefs.layout = JSON.parse(JSON.stringify((defaults().layout||[])));
+  applyPrefs();
+  await refreshData();
+  toggleEdit(); toggleEdit();
+}
+
+window.onload = init;
 </script>
 </body>
 </html>
@@ -255,7 +253,10 @@ def load_prefs():
             with open(PREFS_PATH, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
-                    return {**DEFAULT_PREFS, **data}
+                    merged = {**DEFAULT_PREFS, **data}
+                    if not merged.get("layout"):
+                        merged["layout"] = DEFAULT_LAYOUT
+                    return merged
     except Exception:
         pass
     return dict(DEFAULT_PREFS)
@@ -263,6 +264,8 @@ def load_prefs():
 
 def save_prefs(data):
     prefs = {**DEFAULT_PREFS, **(data or {})}
+    if not prefs.get("layout"):
+        prefs["layout"] = DEFAULT_LAYOUT
     os.makedirs(os.path.dirname(PREFS_PATH), exist_ok=True)
     with open(PREFS_PATH, "w", encoding="utf-8") as f:
         json.dump(prefs, f, indent=2)
@@ -283,12 +286,7 @@ def fetch_data():
     runs = [
         dict(r)
         for r in conn.execute(
-            """
-            SELECT ts_iso as ts, event_type as event, agent, severity as sev, substr(message,1,140) as msg
-            FROM event_log
-            ORDER BY ts_iso DESC
-            LIMIT 16
-            """
+            "SELECT ts_iso as ts, event_type as event, agent, severity as sev, substr(message,1,140) as msg FROM event_log ORDER BY ts_iso DESC LIMIT 20"
         ).fetchall()
     ]
 
@@ -303,17 +301,11 @@ def fetch_data():
             "tc": int(r["total_trades"] or 0),
         }
         for r in conn.execute(
-            """
-            SELECT asset, timeframe, variant_id, score_total, profit_factor, max_drawdown_pct, total_trades
-            FROM backtest_results
-            WHERE COALESCE(score_total,0) >= 1.0
-            ORDER BY COALESCE(xqscore_total, score_total, 0) DESC
-            LIMIT 24
-            """
+            "SELECT asset,timeframe,variant_id,score_total,profit_factor,max_drawdown_pct,total_trades FROM backtest_results WHERE COALESCE(score_total,0)>=1.0 ORDER BY COALESCE(xqscore_total,score_total,0) DESC LIMIT 30"
         ).fetchall()
     ]
 
-    pipes = [
+    pipelines = [
         {
             "name": r["pipeline_name"] or r["run_id"],
             "status": r["status"],
@@ -322,12 +314,7 @@ def fetch_data():
             "start": r["ts_iso_start"],
         }
         for r in conn.execute(
-            """
-            SELECT pipeline_name, run_id, status, steps_completed, steps_total, ts_iso_start
-            FROM pipeline_runs
-            ORDER BY ts_iso_start DESC
-            LIMIT 8
-            """
+            "SELECT pipeline_name,run_id,status,steps_completed,steps_total,ts_iso_start FROM pipeline_runs ORDER BY ts_iso_start DESC LIMIT 10"
         ).fetchall()
     ]
 
@@ -335,7 +322,7 @@ def fetch_data():
     health = {"status": "warn", "summary": issues[0]} if issues else {"status": "ok", "summary": "No recent warning/error events."}
 
     conn.close()
-    return {"stats": stats, "runs": runs, "leaders": leaders, "pipelines": pipes, "health": health}
+    return {"stats": stats, "runs": runs, "leaders": leaders, "pipelines": pipelines, "health": health}
 
 
 class H(BaseHTTPRequestHandler):
