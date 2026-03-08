@@ -2,60 +2,107 @@
 import argparse
 import json
 import os
-import urllib.parse
+import sys
 import urllib.request
+import urllib.parse
+
+ENV_PATH = r"C:\Users\Clamps\.openclaw\workspace-oragorn\.env"
+BANNERS_DIR = r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners"
 
 
-def send_telegram(text, chat_id=None, bot_token=None, parse_mode="HTML"):
-    if not bot_token:
-        env_path = r"C:\Users\Clamps\.openclaw\workspace\.env"
-        if os.path.exists(env_path):
-            with open(env_path, "r", encoding="utf-8") as f:
-                for line in f:
-                    if line.strip().startswith("TELEGRAM_BOT_TOKEN="):
-                        bot_token = line.strip().split("=", 1)[1].strip().strip('"')
-                        break
+def load_env():
+    env = {}
+    if os.path.exists(ENV_PATH):
+        with open(ENV_PATH, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if "=" in line and not line.startswith("#"):
+                    k, v = line.split("=", 1)
+                    env[k.strip()] = v.strip().strip('"')
+    return env
 
-    if not chat_id:
-        chat_id = "1801759510"
 
-    if not bot_token:
-        print(json.dumps({"status": "error", "message": "No bot token found"}))
-        return False
+BOT_TOKENS = {
+    "oragorn": "ORAGORN_BOT_TOKEN",
+    "quandalf": "QUANDALF_BOT_TOKEN",
+    "frodex": "FRODEX_BOT_TOKEN",
+    "logron": "LOGRON_BOT_TOKEN",
+}
 
+
+def get_token(bot_name, env):
+    key = BOT_TOKENS.get(bot_name, "ORAGORN_BOT_TOKEN")
+    token = env.get(key, "")
+    if not token:
+        token = env.get("ORAGORN_BOT_TOKEN", "")
+    return token
+
+
+def send_message(text, chat_id, bot_token, parse_mode="HTML"):
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-    data = urllib.parse.urlencode(
-        {
-            "chat_id": chat_id,
-            "text": text,
-            "parse_mode": parse_mode,
-        }
-    ).encode()
-
+    data = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": parse_mode,
+    }).encode()
     try:
         req = urllib.request.Request(url, data=data)
-        resp = urllib.request.urlopen(req, timeout=10)
-        result = json.loads(resp.read().decode("utf-8"))
-        return result.get("ok", False)
+        resp = urllib.request.urlopen(req, timeout=15)
+        return json.loads(resp.read().decode("utf-8")).get("ok", False)
     except Exception as e:
-        print(json.dumps({"status": "error", "message": str(e)}))
+        print(f"Send failed: {e}", file=sys.stderr)
+        return False
+
+
+def send_photo(photo_path, caption, chat_id, bot_token, parse_mode="HTML"):
+    url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+    boundary = "----AutoQuantBoundary"
+    body_parts = []
+    for name, value in [("chat_id", chat_id), ("parse_mode", parse_mode), ("caption", caption)]:
+        body_parts.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"{name}\"\r\n\r\n{value}".encode())
+    with open(photo_path, "rb") as f:
+        photo_data = f.read()
+    body_parts.append(
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"{os.path.basename(photo_path)}\"\r\nContent-Type: image/jpeg\r\n\r\n".encode() + photo_data
+    )
+    body_parts.append(f"--{boundary}--\r\n".encode())
+    body = b"\r\n".join(body_parts)
+    try:
+        req = urllib.request.Request(url, data=body)
+        req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
+        resp = urllib.request.urlopen(req, timeout=15)
+        return json.loads(resp.read().decode("utf-8")).get("ok", False)
+    except Exception as e:
+        print(f"Photo send failed: {e}", file=sys.stderr)
         return False
 
 
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--message", required=True)
-    p.add_argument("--chat-id", default="1801759510")
     p.add_argument("--channel", choices=["dm", "log"], default="dm")
+    p.add_argument("--bot", choices=["oragorn", "quandalf", "frodex", "logron"], default="oragorn")
+    p.add_argument("--chat-id", default=None)
+    p.add_argument("--photo", default=None)
     p.add_argument("--parse-mode", default="HTML")
     a = p.parse_args()
 
-    cid = a.chat_id
-    if a.channel == "log":
-        cid = "-5038734156"
+    env = load_env()
+    token = get_token(a.bot, env)
+    if not token:
+        print(json.dumps({"status": "error", "message": "No bot token found"}))
+        return
 
-    ok = send_telegram(a.message, chat_id=cid, parse_mode=a.parse_mode)
-    print(json.dumps({"status": "sent" if ok else "failed"}))
+    chat_id = a.chat_id
+    if not chat_id:
+        chat_id = env.get("LOG_CHANNEL_ID", "-5038734156") if a.channel == "log" else env.get("ASZ_CHAT_ID", "1801759510")
+
+    if a.photo and os.path.exists(a.photo):
+        ok = send_photo(a.photo, a.message, chat_id, token, a.parse_mode)
+    else:
+        ok = send_message(a.message, chat_id, token, a.parse_mode)
+
+    print(json.dumps({"status": "sent" if ok else "failed", "bot": a.bot, "channel": a.channel}))
 
 
 if __name__ == "__main__":

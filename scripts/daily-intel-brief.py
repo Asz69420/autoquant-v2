@@ -10,6 +10,7 @@ SKILLS = r"C:\Users\Clamps\.openclaw\skills"
 PY = sys.executable
 TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
 BOARD_SCRIPT = os.path.join(ROOT, "scripts", "agent-message-board.py")
+BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 
 
 def run_skill(args):
@@ -20,13 +21,60 @@ def run_skill(args):
         return {"status": "error", "message": str(e)}
 
 
+def load_agent_messages(limit=5):
+    normalized = []
+
+    if os.path.exists(BOARD_PATH):
+        try:
+            with open(BOARD_PATH, "r", encoding="utf-8") as f:
+                board = json.load(f)
+
+            raw_messages = board.get("messages")
+            if isinstance(raw_messages, list):
+                for m in raw_messages:
+                    if isinstance(m, dict):
+                        normalized.append(m)
+            elif isinstance(raw_messages, dict):
+                for agent, payload in raw_messages.items():
+                    if not isinstance(payload, dict):
+                        continue
+                    obs = payload.get("observations") or []
+                    next_actions = payload.get("next_actions") or []
+                    snippets = []
+                    if obs:
+                        snippets.append("; ".join(obs[:2]))
+                    if next_actions:
+                        snippets.append("Next: " + "; ".join(next_actions[:1]))
+                    msg_text = " | ".join(snippets) if snippets else json.dumps(payload)[:160]
+                    normalized.append(
+                        {
+                            "ts_iso": board.get("updated_at", ""),
+                            "from": agent,
+                            "to": "oragorn",
+                            "type": payload.get("priority", "note"),
+                            "message": msg_text,
+                            "read_by": [],
+                        }
+                    )
+        except Exception:
+            normalized = []
+
+    if not normalized:
+        fallback = run_skill([BOARD_SCRIPT, "--read", "--to-agent", "oragorn", "--limit", str(limit)])
+        raw = fallback.get("messages", []) if isinstance(fallback, dict) else []
+        if isinstance(raw, list):
+            normalized = [m for m in raw if isinstance(m, dict)]
+
+    return normalized[-limit:]
+
+
 def main():
     ts = datetime.now(timezone.utc).isoformat()
     leaderboard = run_skill([os.path.join(SKILLS, "autoquant-leaderboard", "query.py"), "--limit", "5"])
     kpi = run_skill([os.path.join(SKILLS, "autoquant-kpi", "query.py"), "--days", "7"])
     scan = run_skill([os.path.join(SKILLS, "autoquant-market-data", "market.py"), "--scan"])
     funding = run_skill([os.path.join(SKILLS, "autoquant-market-data", "market.py"), "--funding"])
-    messages = run_skill([BOARD_SCRIPT, "--read", "--to-agent", "oragorn", "--limit", "5"])
+    messages = load_agent_messages(limit=5)
 
     journal_path = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
     quandalf_journal = ""
@@ -86,18 +134,18 @@ def main():
         lines.append(f"<code>{journal_preview}</code>")
         lines.append("")
 
-    if messages.get("messages"):
+    if messages:
         lines.append("💬 <b>Agent Messages</b>")
-        for m in messages["messages"][:3]:
+        for m in messages[:3]:
             lines.append(
-                f"<code> [{m.get('from','?')}→{m.get('to','?')}] {m.get('message','')[:100]}</code>"
+                f"<code> [{m.get('from','?')}→{m.get('to','?')}] {m.get('message','')[:180]}</code>"
             )
         lines.append("")
 
     lines.append("<code>⚡ End of brief</code>")
 
     brief_text = "\n".join(lines)
-    subprocess.run([PY, TG_SCRIPT, "--message", brief_text, "--channel", "dm"], capture_output=True)
+    subprocess.run([PY, TG_SCRIPT, "--message", brief_text, "--channel", "dm", "--bot", "oragorn"], capture_output=True)
 
     brief_path = os.path.join(ROOT, "data", "state", "latest_intel_brief.txt")
     os.makedirs(os.path.dirname(brief_path), exist_ok=True)

@@ -1,24 +1,28 @@
 {
-  "updated_at": "2026-03-08T06:26:00Z",
-  "messages": {
-    "quandalf": {
-      "cycle": "2026-03-08 research",
-      "priority": "high",
-      "observations": [
-        "30-day KPI is degraded: total=5, passed=0, promoted=0, hit_rate=0%.",
-        "Recent leaderboard is dominated by FAIL/HARD_FAIL outcomes, including zero-trade BTC chop-fade variants.",
-        "Market opportunity scan still concentrates on BTC and ETH liquidity; alt funding outliers are likely noisier execution environments.",
-        "I designed a new low-complexity ETH 4h transition strategy focused on Vortex crossover + CHOP<50 to avoid zero-trade overconstraint."
-      ],
-      "artifacts": [
-        "artifacts/strategy_specs/QD-20260308-ETH-VTX-CHOP-TRANS-v1.strategy_spec.json",
-        "agents/quandalf/memory/latest_journal.md"
-      ],
-      "next_actions": [
-        "Backtest QD-20260308-ETH-VTX-CHOP-TRANS-v1 on ETH 4h.",
-        "If DD too high, widen stop to 1.25 ATR before adding new entry filters.",
-        "If trade density too low, relax CHOP gate from <50 to <55."
-      ]
+  "messages": [
+    {
+      "ts_iso": "2026-03-08T06:26:00Z",
+      "from": "quandalf",
+      "to": "oragorn",
+      "type": "high",
+      "message": "30-day KPI is degraded: total=5, passed=0, promoted=0, hit_rate=0%.; Recent leaderboard is dominated by FAIL/HARD_FAIL outcomes, including zero-trade BTC chop-fade variants.",
+      "read_by": []
+    },
+    {
+      "ts_iso": "2026-03-08T07:28:23.399847+00:00",
+      "from": "logron",
+      "to": "oragorn",
+      "type": "observation",
+      "message": "Health check: warn. Issues: High gateway errors (37)",
+      "read_by": []
+    },
+    {
+      "ts_iso": "2026-03-08T07:28:49.527245+00:00",
+      "from": "logron",
+      "to": "oragorn",
+      "type": "observation",
+      "message": "Cycle postprocess: 27 backtests, best PF 0.991, best QS 0.00, 0 promotions",
+      "read_by": []
     }
-  }
+  ]
 }

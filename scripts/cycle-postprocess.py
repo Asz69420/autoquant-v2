@@ -12,6 +12,10 @@ ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
 JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
+BACKTESTER = r"C:\Users\Clamps\.openclaw\skills\autoquant-backtester\engine.py"
+BALROG = r"C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\balrog-validate.py"
+SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
+BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 
 PHASE_EMOJIS = {
     "briefing": "📋",
@@ -44,6 +48,63 @@ def send_tg(message, channel="dm"):
         print(f"TG send failed: {e}", file=sys.stderr)
 
 
+def send_tg_as(message, channel="dm", bot="oragorn"):
+    try:
+        subprocess.run(
+            [sys.executable, TG_SCRIPT, "--message", message, "--channel", channel, "--bot", bot],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception as e:
+        print(f"TG send failed: {e}", file=sys.stderr)
+
+
+def post_agent_message(from_agent, to_agent, msg_type, message):
+    board = {"messages": []}
+    if os.path.exists(BOARD_PATH):
+        try:
+            with open(BOARD_PATH, "r", encoding="utf-8") as f:
+                current = json.load(f)
+            if isinstance(current.get("messages"), list):
+                board = current
+            elif isinstance(current.get("messages"), dict):
+                board = {"messages": []}
+                for legacy_agent, payload in current["messages"].items():
+                    if not isinstance(payload, dict):
+                        continue
+                    observations = payload.get("observations") or []
+                    msg_text = "; ".join(observations[:2]) if observations else json.dumps(payload)[:160]
+                    board["messages"].append(
+                        {
+                            "ts_iso": current.get("updated_at", datetime.now(timezone.utc).isoformat()),
+                            "from": legacy_agent,
+                            "to": "oragorn",
+                            "type": payload.get("priority", "note"),
+                            "message": msg_text,
+                            "read_by": [],
+                        }
+                    )
+        except Exception:
+            board = {"messages": []}
+
+    entry = {
+        "ts_iso": datetime.now(timezone.utc).isoformat(),
+        "from": from_agent,
+        "to": to_agent,
+        "type": msg_type,
+        "message": message,
+        "read_by": [],
+    }
+    board.setdefault("messages", []).append(entry)
+    if len(board["messages"]) > 100:
+        board["messages"] = board["messages"][-100:]
+
+    os.makedirs(os.path.dirname(BOARD_PATH), exist_ok=True)
+    with open(BOARD_PATH, "w", encoding="utf-8") as f:
+        json.dump(board, f, indent=2)
+
+
 def build_log_card(phase, status, run_id, runtime_sec, activity_dict, note):
     phase_emoji = PHASE_EMOJIS.get(phase, "📋")
     status_emoji = STATUS_EMOJIS.get(status, "✅")
@@ -62,11 +123,108 @@ def build_log_card(phase, status, run_id, runtime_sec, activity_dict, note):
     return "\n".join(lines)
 
 
+def format_journal_html(raw_text):
+    import re
+
+    text = raw_text
+    text = re.sub(r'^### (.+)$', r'<b>\1</b>', text, flags=re.MULTILINE)
+    text = re.sub(r'^## (.+)$', r'<b>\1</b>', text, flags=re.MULTILINE)
+    text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+    text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
+    return text
+
+
+def split_message(text, max_len=4000):
+    if len(text) <= max_len:
+        return [text]
+    parts = []
+    while text:
+        if len(text) <= max_len:
+            parts.append(text)
+            break
+        split_at = text.rfind('\n', 0, max_len)
+        if split_at == -1:
+            split_at = max_len
+        parts.append(text[:split_at])
+        text = text[split_at:].lstrip('\n')
+    return parts
+
+
+def backtest_new_specs():
+    if not os.path.exists(SPECS_DIR):
+        return 0
+    conn = sqlite3.connect(DB)
+    existing = set()
+    for r in conn.execute("SELECT DISTINCT strategy_spec_id FROM backtest_results").fetchall():
+        existing.add(r[0])
+    conn.close()
+    backtested = 0
+    for f in os.listdir(SPECS_DIR):
+        if not f.endswith(".strategy_spec.json"):
+            continue
+        spec_path = os.path.join(SPECS_DIR, f)
+        spec_id = f.replace(".strategy_spec.json", "")
+        if spec_id in existing:
+            continue
+        try:
+            with open(spec_path, "r", encoding="utf-8") as fh:
+                spec = json.load(fh)
+            asset = spec.get("asset", "ETH")
+            timeframe = spec.get("timeframe", "4h")
+            variants = spec.get("variants", [])
+            if not variants:
+                continue
+            for v in variants:
+                vname = v.get("name", "default")
+                try:
+                    balrog_result = subprocess.run(
+                        [sys.executable, BALROG, "--spec", spec_path],
+                        capture_output=True,
+                        text=True,
+                        timeout=30,
+                    )
+                    if balrog_result.returncode != 0:
+                        try:
+                            balrog_out = json.loads(balrog_result.stdout or "{}")
+                            print(f"Balrog BLOCKED {f}: {balrog_out.get('errors', [])}", file=sys.stderr)
+                        except Exception:
+                            print(f"Balrog BLOCKED {f}: validation failed", file=sys.stderr)
+                        continue
+
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            BACKTESTER,
+                            "--asset",
+                            asset,
+                            "--tf",
+                            timeframe,
+                            "--strategy-spec",
+                            spec_path,
+                            "--variant",
+                            vname,
+                        ],
+                        capture_output=True,
+                        text=True,
+                        timeout=120,
+                    )
+                    if result.returncode == 0:
+                        backtested += 1
+                    else:
+                        print(f"Backtest failed for {vname}: {result.stderr[:200]}", file=sys.stderr)
+                except Exception as e:
+                    print(f"Backtest error for {vname}: {e}", file=sys.stderr)
+        except Exception as e:
+            print(f"Spec read failed for {f}: {e}", file=sys.stderr)
+    return backtested
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--since-minutes", type=int, default=30)
     a = p.parse_args()
 
+    new_backtests = backtest_new_specs()
     cutoff = (datetime.now(timezone.utc) - timedelta(minutes=a.since_minutes)).isoformat()
     start_time = time.time()
 
@@ -88,7 +246,7 @@ def main():
     conn.close()
 
     if not rows:
-        print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows}))
+        print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests}))
         return
 
     dm_lines = []
@@ -115,7 +273,9 @@ def main():
     dm_lines.append(f"<code>Total in DB: {total_rows} | New this cycle: {len(rows)}</code>")
 
     dm_text = "\n".join(dm_lines)
-    send_tg(dm_text, "dm")
+    dm_parts = split_message(dm_text, 4000)
+    for part in dm_parts:
+        send_tg_as(part, "dm", "oragorn")
 
     journal_text = ""
     if os.path.exists(JOURNAL_PATH):
@@ -126,11 +286,11 @@ def main():
             pass
 
     if journal_text:
-        journal_preview = journal_text[:500]
-        if len(journal_text) > 500:
-            journal_preview += "..."
-        journal_msg = f"🧙 <b>Quandalf's Journal</b>\n\n<code>{journal_preview}</code>"
-        send_tg(journal_msg, "dm")
+        formatted = format_journal_html(journal_text)
+        journal_parts = split_message(formatted, 4000)
+        for i, part in enumerate(journal_parts):
+            header = "🧙 <b>Quandalf's Journal</b>\n\n" if i == 0 else ""
+            send_tg_as(header + part, "dm", "quandalf")
 
     elapsed = round(time.time() - start_time, 1)
 
@@ -168,12 +328,41 @@ def main():
         },
         note,
     )
-    send_tg(f"<pre>{log_card}</pre>", "log")
+    log_card_formatted = f"<pre>{log_card}</pre>"
+    banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
+    if os.path.exists(banner_path):
+        subprocess.run(
+            [
+                sys.executable,
+                TG_SCRIPT,
+                "--message",
+                log_card_formatted,
+                "--channel",
+                "log",
+                "--bot",
+                "logron",
+                "--photo",
+                banner_path,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    else:
+        send_tg_as(log_card_formatted, "log", "logron")
+
+    post_agent_message(
+        "logron",
+        "oragorn",
+        "observation",
+        f"Cycle postprocess: {len(rows)} backtests, best PF {best_pf:.3f}, best QS {best_qscore:.2f}, {sum(1 for r in rows if r['score_total'] and r['score_total'] >= 3.0)} promotions",
+    )
 
     print(
         json.dumps(
             {
                 "status": "processed",
+                "new_backtests": new_backtests,
                 "new_results": len(rows),
                 "total_in_db": total_rows,
                 "best_qscore": best_qscore,
