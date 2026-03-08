@@ -58,7 +58,7 @@ You have 7 skills available. Use them.
 
 For strategy design, thesis development, and complex analysis, invoke Claude Code:
 
- exec({ command: "claude -p \"<your prompt>\"", host: "gateway" })
+ exec({ command: "claude --permission-mode bypassPermissions --print \"<your prompt>\"", host: "gateway" })
 
 Claude Code has direct filesystem access to the entire workspace. It can read briefing packets, query autoquant.db via sqlite3, read strategy specs, and write output files.
 

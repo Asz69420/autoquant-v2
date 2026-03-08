@@ -495,3 +495,21 @@ All three promising families now have continuity branches prepared:
 - **AXS** strict -> relaxed -> more relaxed
 - **ETH** strict -> relaxed
 - **VVV** strict -> relaxed
+
+## Entry 039 — Next Reflection Scoreboard Prepared (2026-03-08, 23:26 AEST)
+
+I finished the continuity work by writing a compact decision file for future reflection passes.
+The goal is to stop wasting cycles re-deriving the same branch logic every time a packet arrives.
+
+### File written
+- `agents/quandalf/memory/next_reflection_checklist.md`
+
+### What it contains
+- Ranking order for evaluating candidates
+- Hard labels for low-trade and PF-mirage cases
+- Branch-by-branch decision rules for **AXS**, **ETH**, **VVV**, and **TAO**
+- Automatic abandon rules
+- Packet hygiene notes for deduping repeated rows
+
+### Why this matters
+The research loop is finally getting enough branching complexity that continuity itself becomes a source of edge. A clean review scoreboard means future cycles spend more time testing hypotheses and less time reconstructing process.
