@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-SOL-FUNDING-REVERSION-v1",
+  "ts_iso": "2026-03-08T09:19:00Z",
+  "thesis_id": "cycle_20260308_funding_cross_asset_check",
+  "name": "SOL Funding Reversion Asset Transfer",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "RSI_14",
+    "EMA_100",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00045",
+      "RSI_14 crosses_above 35",
+      "Close > EMA_100"
+    ],
+    "short": [
+      "FundingRate >= 0.00045",
+      "RSI_14 crosses_below 65",
+      "Close < EMA_100"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.3 * ATR_14 below entry",
+      "Take profit: 2.6 * ATR_14 above entry",
+      "Early exit if FundingRate rises above -0.0002",
+      "Time stop: 20 bars"
+    ],
+    "short": [
+      "Stop loss: 1.3 * ATR_14 above entry",
+      "Take profit: 2.6 * ATR_14 below entry",
+      "Early exit if FundingRate drops below 0.0002",
+      "Time stop: 20 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "ranging"
+    ],
+    "detection_method": "same funding dislocation mechanics transferred to higher-liquidity alt"
+  },
+  "variants": [
+    {
+      "name": "sol_funding_reversion_asset_transfer",
+      "template_name": "funding_rsi_mean_reversion",
+      "parameters": [
+        { "name": "funding_extreme", "value": 0.00045 },
+        { "name": "rsi_long_reclaim", "value": 35 },
+        { "name": "rsi_short_reject", "value": 65 },
+        { "name": "ema_trend_filter", "value": 100 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.3,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.6,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 20
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 8,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "cooldown_bars=2",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.7,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

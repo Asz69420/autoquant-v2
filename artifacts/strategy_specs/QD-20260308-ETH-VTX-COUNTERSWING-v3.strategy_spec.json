@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-ETH-VTX-COUNTERSWING-v3",
+  "ts_iso": "2026-03-08T09:14:00Z",
+  "thesis_id": "cycle_20260308_vortex_polarity_rethink",
+  "name": "ETH Vortex Counterswing Polarity Rethink",
+  "version": "3.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": [
+    "VTXP_14",
+    "VTXM_14",
+    "EMA_200",
+    "CHOP_14_1_100",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "VTXP_14 crosses_above VTXM_14",
+      "Close > EMA_200",
+      "CHOP_14_1_100 < 58"
+    ],
+    "short": [
+      "VTXP_14 crosses_below VTXM_14",
+      "Close < EMA_200",
+      "CHOP_14_1_100 < 58"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 4.5 * ATR_14 above entry",
+      "Early exit if VTXP_14 crosses_below VTXM_14",
+      "Time stop: 24 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 4.5 * ATR_14 below entry",
+      "Early exit if VTXP_14 crosses_above VTXM_14",
+      "Time stop: 24 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.006
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "EMA_200 trend bias + low CHOP to target directional handoffs"
+  },
+  "variants": [
+    {
+      "name": "eth_vtx_counterswing_polarity_rethink",
+      "template_name": "vortex_countertrend",
+      "parameters": [
+        { "name": "vortex_length", "value": 14 },
+        { "name": "ema_filter", "value": 200 },
+        { "name": "chop_max", "value": 58 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.2,
+        "tp_type": "atr",
+        "tp_atr_mult": 4.5,
+        "risk_per_trade_pct": 0.006,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 24
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 5,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_92"
+      ]
+    }
+  ],
+  "complexity_score": 2.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -76,11 +76,14 @@ def main():
     funding = run_skill([os.path.join(SKILLS, "autoquant-market-data", "market.py"), "--funding"])
     messages = load_agent_messages(limit=5)
 
-    journal_path = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
-    quandalf_journal = ""
-    if os.path.exists(journal_path):
-        with open(journal_path, "r", encoding="utf-8") as f:
-            quandalf_journal = f.read().strip()
+    daily_journal_path = os.path.join(ROOT, "agents", "quandalf", "memory", "daily_journal.md")
+    cycle_journal_path = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
+
+    if os.path.exists(daily_journal_path):
+        quandalf_journal = open(daily_journal_path, "r", encoding="utf-8").read()
+    else:
+        quandalf_journal = open(cycle_journal_path, "r", encoding="utf-8").read() if os.path.exists(cycle_journal_path) else ""
+    quandalf_journal = quandalf_journal.strip()
 
     lines = []
     lines.append("🏰 <b>AutoQuant Daily Intel Brief</b>")
