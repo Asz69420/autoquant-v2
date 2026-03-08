@@ -752,3 +752,83 @@ Reasoning:
 
 ### Next action
 Focus on refining **AXS channel family** (v9/v10 density tests) and **VVV snapback** (trend kill-switch tests). These have real edges with improving trajectories. Return to BABY family expansion only if primary families plateau.
+
+## Entry 047 — New Family: BABY ADX Reclaim Impulse (2026-03-09)
+
+Read cycle orders first. This time the instruction was sharper: stay on BABY 1h, keep the liquidation-reclaim idea, but explicitly avoid the failed stochastic shape that bled in transitional regime. So I designed this one myself in-session around a simple principle: **do not buy the rebound unless trend structure is already improving**.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-BABY-ADX-RECLAIM-IMPULSE-v1.strategy_spec.json
+
+### Thesis
+The previous BABY failure taught me that a flush-plus-crossover setup can fire constantly in weak transitional chop and die by fees. So this branch refuses that regime entirely. It only enters after:
+- funding is still deeply negative,
+- price reclaims a very fast intraday anchor (HMA_9),
+- price is also back above a slower control anchor (EMA_21),
+- ADX_14 is already above 22 **and rising**,
+- directional balance has actually flipped (PLUS_DI_14 > MINUS_DI_14),
+- and short-term impulse has turned non-negative (ROC_5 >= 0).
+
+That is the whole point of the branch: not just rebound, but rebound with improving structure.
+
+### Why this is different
+- It is **trend-improvement gated**, not oscillator-cross gated.
+- It explicitly hard-restricts to **trending** regime only.
+- The hard filter against weak transitional drift is built into both the regime filter and the entry logic.
+- HMA reclaim gives me the fast post-flush arm, while EMA_21 stops me from buying the first dead-cat uptick.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.15 ATR
+- TP: 3.1 ATR
+- Early exit on EMA_21 failure
+- Time stop: 16 bars
+- Cooldown: 2 bars
+
+### What I expect
+This should trade much less than the stochastic branch, and that is fine. The goal is not density for its own sake. The goal is to remove the low-quality transitional bleed that destroyed the prior BABY attempt.
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Transitional regime PF >= 0.95
+- Max DD <= 12.0%
+- If trades < 15, quarantine it as too selective
+
+### Next step
+Backtest v1 immediately. If trade count is good but PF is only marginal, the first refinement should be exit shape only. If it is too selective, relax the funding threshold from -0.0030 to -0.0025 before changing anything else.
+
+## Entry 048 — Return to the Best Family: VVV Stricter Trend Veto (2026-03-09)
+
+I read the new cycle orders and stopped exploring. That is the right call. BABY gave me information, but not convergence. VVV is still the best live family, and the instruction was precise: use the v5/v6 trend-killswitch line as the base and improve edge without losing grade.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-VVV-FUNDING-SNAPBACK-v7.strategy_spec.json
+
+### Chosen lever
+I used exactly one lever: **stricter trend veto**.
+- ADX_14 <= 22 -> ADX_14 <= 20
+
+Everything else stays unchanged from the proven v5 structure:
+- same funding threshold,
+- same RSI reclaim/reject levels,
+- same EMA_50 failure exit,
+- same stop / TP / hold cap / sizing.
+
+### Why this is the right first refinement
+The family already works best in ranging conditions, and the order explicitly says to keep ranging PF >= 1.20 while cutting remaining trending drag. Tightening the ADX cap is the cleanest way to do that without disturbing the underlying snapback logic.
+
+I did not choose faster exit first because that risks harming the good range captures before I know whether the remaining damage is mostly entry-side. I did not choose tighter funding threshold first because the stop condition requires trade count to stay healthy (>= 180), and VVV's strength is that it already has real density.
+
+### Thesis
+If VVV's residual weakness is mostly coming from weak-trend bleed, then a tighter ADX ceiling should improve aggregate PF and trending PF without destroying the range pocket. This is a purity refinement, not a redesign.
+
+### Evaluation gate
+- Profit factor >= 1.15
+- Max DD <= 8.5
+- Total trades >= 180
+- Ranging PF >= 1.20
+- Trending PF > 0.95
+
+### Next step
+Backtest v7 first. If it preserves range PF but kills too much density, I would fall back to the v6 branch. If it preserves density but trending drag still survives, the next lever should be a faster failure exit, not another entry rewrite.
