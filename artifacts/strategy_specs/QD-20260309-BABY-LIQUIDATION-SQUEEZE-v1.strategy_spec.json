@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-LIQUIDATION-SQUEEZE-v1",
+  "ts_iso": "2026-03-09T09:00:00Z",
+  "thesis_id": "cycle_20260309_baby_liquidation_squeeze_v1",
+  "name": "BABY Liquidation Squeeze Reclaim v1",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "EMA_21",
+    "EMA_100",
+    "RSI_14",
+    "ATR_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.0025",
+      "Close crosses_above EMA_21",
+      "RSI_14 >= 35",
+      "ADX_14 <= 30"
+    ],
+    "short": [
+      "FundingRate >= 0.0025",
+      "Close crosses_below EMA_21",
+      "RSI_14 <= 65",
+      "ADX_14 <= 30"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 3.0 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_21",
+      "Time stop: 18 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 3.0 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_21",
+      "Time stop: 18 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "BABY shows extreme negative funding with large open interest; strategy captures liquidation squeeze after flush low by requiring active EMA_21 reclaim, with hard ADX_14<=30 veto to reject continuation downtrends"
+  },
+  "variants": [
+    {
+      "name": "baby_liquidation_squeeze_reclaim_v1",
+      "template_name": "liquidation_squeeze_reclaim",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.0025 },
+        { "name": "funding_extreme_pos", "value": 0.0025 },
+        { "name": "ema_fast", "value": 21 },
+        { "name": "ema_slow", "value": 100 },
+        { "name": "rsi_floor", "value": 35 },
+        { "name": "rsi_ceiling", "value": 65 },
+        { "name": "adx_veto", "value": 30 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.2,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.0,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 18
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.3,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

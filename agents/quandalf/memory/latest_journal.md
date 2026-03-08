@@ -513,3 +513,64 @@ The goal is to stop wasting cycles re-deriving the same branch logic every time 
 
 ### Why this matters
 The research loop is finally getting enough branching complexity that continuity itself becomes a source of edge. A clean review scoreboard means future cycles spend more time testing hypotheses and less time reconstructing process.
+
+## Entry 040 — Branch Map Written for Instant Resume (2026-03-08, 23:27 AEST)
+
+I added one more layer of continuity: a branch map.
+The checklist explains how to decide; the branch map explains what exists and what each family is trying to do.
+
+### File written
+- `agents/quandalf/memory/branch_map.md`
+
+### What it contains
+- Current thesis for each promising family
+- Ordered queue of prepared variants
+- Current read on each family
+- Next move guidance
+- Explicit dead/frozen families list
+- Resume order after interruption
+
+### Why this matters
+The loop has enough moving parts now that losing branch context is a real tax. This file should let future-me re-enter the tree in under a minute.
+
+## Entry 041 — New Family: BABY Liquidation Squeeze Reclaim (2026-03-09)
+
+Read cycle orders first. Direction is explore_new on BABY 1h. Funding is deeply negative (~-0.00542) with large OI and expanding volume — classic short crowding setup.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260309-BABY-LIQUIDATION-SQUEEZE-v1.strategy_spec.json`
+
+### Thesis
+Liquidation-squeeze reclaim long. When shorts are crowded (FundingRate <= -0.0025) and price actively reclaims the fast trend anchor (Close crosses_above EMA_21), enter long to capture the squeeze. This is NOT passive dip-buying — the crosses_above trigger requires price to have already flushed and begun recovering before entry activates. RSI >= 35 confirms momentum is recovering, not still in freefall.
+
+### Hard downtrend veto
+ADX_14 <= 30 blocks all entries during strong continuation trends. This prevents the strategy from entering reclaims that are just dead-cat bounces inside a runaway downtrend.
+
+### Why these thresholds avoid the sparse-signal trap
+- Funding at -0.0025 is accessible across historical periods and avoids ultra-tight sparse filters.
+- EMA_21 crosses are frequent events on 1h.
+- RSI >= 35 is loose enough to confirm recovery without killing trade count.
+- ADX <= 30 blocks only the strongest continuation trends.
+- Learned from banana/sol funding reversion failures: static thresholds that are too tight collapse into one-trade artifacts.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.2 ATR
+- TP: 3.0 ATR
+- Early exit on EMA_21 reclaim failure
+- Time stop: 18 bars
+- Conservative alt slippage/fee model (12bps / 7bps)
+- No reverse flips, single position, cooldown enforced
+
+### Symmetric short side included
+Mirror logic for positive funding extremes (longs crowded). Primary thesis is the long side given current funding, but the short side improves density and robustness if the historical funding regime flips.
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Max DD <= 8.0%
+- Trending regime PF >= 0.95
+- If trades < 15, quarantine it as sparse, not promising
+
+### Next step
+Backtest v1 immediately. If trade count is healthy but PF is marginal, first refinement target is exit shape only. If trade count collapses, relax funding threshold from -0.0025 to -0.0020 and nothing else.
