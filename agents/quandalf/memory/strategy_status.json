@@ -1,73 +1,74 @@
 {
   "active_families": [
     {
-      "family_id": "aq_btc_carry_squeeze",
-      "status": "active",
-      "iterations": 3,
-      "best_pf": 0.991,
-      "thesis": "Near-breakeven carry squeeze can become profitable if confined to favorable regimes and cost drag is reduced."
-    },
-    {
-      "family_id": "eth_vtx_counterswing",
-      "status": "active",
-      "iterations": 3,
-      "best_pf": 0.0,
-      "thesis": "Current polarity likely wrong; v3 flips VTX crossover direction while preserving EMA+CHOP context to test signal polarity cleanly."
-    },
-    {
-      "family_id": "sol_pivot_supertrend_momentum",
+      "family_id": "axs_channel_shortbias",
       "status": "active",
       "iterations": 2,
-      "best_pf": 0.233,
-      "thesis": "Signal has adequate trade density but loses in trend regime; isolate transitional regime before touching risk geometry."
-    },
-    {
-      "family_id": "banana_funding_reversion",
-      "status": "active",
-      "iterations": 2,
-      "best_pf": 999.0,
-      "thesis": "Edge signal remains unproven due to N=1 trade; relaxed funding threshold should increase sample size without changing core logic."
+      "best_pf": 0.715,
+      "thesis": "Channel-style continuation has edge only in ranging regime; isolate that regime to remove trend bleed."
     },
     {
       "family_id": "sol_funding_reversion",
       "status": "active",
+      "iterations": 3,
+      "best_pf": 999.0,
+      "thesis": "Funding mean reversion mechanism remains plausible but current bottleneck is trade density; test relaxed threshold before retiring."
+    },
+    {
+      "family_id": "eth_funding_reversion",
+      "status": "active",
       "iterations": 1,
       "best_pf": 0.0,
-      "thesis": "Funding-reversion thesis is asset-agnostic; transfer to SOL for higher liquidity and better sample frequency."
+      "thesis": "Transfer the SOL funding-reversion structure to ETH 1h to test whether deeper liquidity improves signal frequency and execution quality."
     }
   ],
   "abandoned_this_cycle": [
     {
+      "family_id": "aq_btc_carry_squeeze",
+      "reason": "Stagnant after 3+ iterations; PF remains sub-1 after cost despite high trade counts."
+    },
+    {
+      "family_id": "banana_funding_reversion",
+      "reason": "Three iterations with only one trade each; PF is low-N artifact, not durable edge."
+    },
+    {
+      "family_id": "eth_vtx_counterswing",
+      "reason": "Repeated anti-edge outcomes with PF ~0 and no regime showing viability."
+    },
+    {
+      "family_id": "eth_vtx_chop_trans",
+      "reason": "Severe density failure and no profitable regime behavior."
+    },
+    {
       "family_id": "SS-20260308-QD01_btc_chop_fade",
-      "reason": "Multiple variants produced zero trades; Donchian touch architecture remains over-constrained and non-informative."
+      "reason": "Repeated zero-trade outcomes indicate structurally over-constrained entry logic."
     },
     {
       "family_id": "test_ema_cross",
-      "reason": "Persistent weak edge with anti-correlation signs and no compelling improvement path relative to stronger families."
+      "reason": "Too few trades and persistent underperformance with no credible improvement trajectory."
     },
     {
-      "family_id": "eth_vtx_chop_transition",
-      "reason": "Two consecutive hard fails with very low trade count and PF=0; replaced by counterswing polarity branch."
+      "family_id": "sol_pivot_supertrend_momentum",
+      "reason": "Adequate sample size but deeply negative PF; no profitable regime in current architecture."
+    },
+    {
+      "family_id": "eth_pivot_supertrend_adaptive",
+      "reason": "Immediate transfer failure on ETH with PF 0 and low density; pivot-supertrend branch deprioritized."
     }
   ],
   "new_this_cycle": [
     {
-      "family_id": "sol_funding_reversion",
-      "thesis": "Transfer funding dislocation logic to SOL to test whether BANANA scarcity is a market-specific sample issue.",
-      "asset": "SOL",
+      "family_id": "eth_funding_reversion",
+      "thesis": "Asset-transfer test of funding-reversion logic from SOL to ETH to improve liquidity-adjusted signal quality.",
+      "asset": "ETH",
       "timeframe": "1h"
     }
   ],
-  "lifecycle_outcomes": {
-    "pass_count": 0,
-    "promote_count": 0,
-    "notes": "No strategy reached QScore >= 1.0 this reflection cycle."
-  },
+  "pass_this_cycle": [],
+  "promote_this_cycle": [],
   "specs_written": [
-    "artifacts/strategy_specs/QD-20260308-BTC-CARRY-SQUEEZE-v3.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260308-ETH-VTX-COUNTERSWING-v3.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260308-SOL-PIVOT-SUPERTREND-v2.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260308-BANANA-FUNDING-REVERSION-v2.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260308-SOL-FUNDING-REVERSION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v2.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260308-SOL-FUNDING-REVERSION-v3.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260308-ETH-FUNDING-REVERSION-v1.strategy_spec.json"
   ]
 }

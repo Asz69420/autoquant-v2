@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-BANANA-FUNDING-REVERSION-v3",
+  "ts_iso": "2026-03-08T09:29:00Z",
+  "thesis_id": "cycle_20260308_banana_density_unlock",
+  "name": "BANANA Funding Reversion Density Unlock v3",
+  "version": "3.0",
+  "asset": "BANANA",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "RSI_14",
+    "EMA_100",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00030",
+      "RSI_14 crosses_above 40",
+      "Close > EMA_100"
+    ],
+    "short": [
+      "FundingRate >= 0.00030",
+      "RSI_14 crosses_below 60",
+      "Close < EMA_100"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.4 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Early exit if FundingRate rises above -0.00012",
+      "Time stop: 18 bars"
+    ],
+    "short": [
+      "Stop loss: 1.4 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Early exit if FundingRate drops below 0.00012",
+      "Time stop: 18 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "ranging"
+    ],
+    "detection_method": "funding dislocation mean reversion with lighter threshold to increase signal count"
+  },
+  "variants": [
+    {
+      "name": "banana_funding_reversion_density_unlock",
+      "template_name": "funding_rsi_mean_reversion",
+      "parameters": [
+        { "name": "funding_extreme", "value": 0.00030 },
+        { "name": "rsi_long_reclaim", "value": 40 },
+        { "name": "rsi_short_reject", "value": 60 },
+        { "name": "ema_trend_filter", "value": 100 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.4,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.8,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 18
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_96"
+      ]
+    }
+  ],
+  "complexity_score": 2.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

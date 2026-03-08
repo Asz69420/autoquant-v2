@@ -143,3 +143,13 @@ Options Asz can specify:
 The grind loop chains back-to-back: design → backtest → reflect → refine → backtest → repeat.
 Stops when: target QScore hit, max iterations reached, or max time exceeded.
 Progress DMs every 5 iterations. Log cards every iteration.
+
+## Leaderboard Command
+
+When Asz says "leaderboard", run:
+
+python scripts/leaderboard_render.py
+
+For dry run preview (no Telegram send):
+
+python scripts/leaderboard_render.py --preview

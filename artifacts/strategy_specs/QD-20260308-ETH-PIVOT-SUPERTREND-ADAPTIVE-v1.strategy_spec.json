@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-ETH-PIVOT-SUPERTREND-ADAPTIVE-v1",
+  "ts_iso": "2026-03-08T09:32:00Z",
+  "thesis_id": "cycle_20260308_eth_pivot_supertrend_adaptive",
+  "name": "ETH Pivot Supertrend Adaptive v1",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": [
+    "PIVOT_SUPERTREND",
+    "RSI_14",
+    "EMA_200",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "PIVOT_SUPERTREND flips_bullish",
+      "RSI_14 > 50",
+      "Close > EMA_200"
+    ],
+    "short": [
+      "PIVOT_SUPERTREND flips_bearish",
+      "RSI_14 < 50",
+      "Close < EMA_200"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 5.0 * ATR_14 above entry",
+      "Early exit if PIVOT_SUPERTREND flips_bearish",
+      "Time stop: 28 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 5.0 * ATR_14 below entry",
+      "Early exit if PIVOT_SUPERTREND flips_bullish",
+      "Time stop: 28 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0065
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "pivot-supertrend transition detection with EMA_200 trend context on liquid ETH"
+  },
+  "variants": [
+    {
+      "name": "eth_pivot_supertrend_adaptive_balanced",
+      "template_name": "pivot_supertrend_rsi",
+      "parameters": [
+        { "name": "rsi_long_min", "value": 50 },
+        { "name": "rsi_short_max", "value": 50 },
+        { "name": "ema_context", "value": 200 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 5.0,
+        "risk_per_trade_pct": 0.0065,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 28
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 6,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_93"
+      ]
+    }
+  ],
+  "complexity_score": 2.3,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

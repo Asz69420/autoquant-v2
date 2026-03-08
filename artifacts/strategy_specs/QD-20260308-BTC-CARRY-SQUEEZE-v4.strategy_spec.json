@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-BTC-CARRY-SQUEEZE-v4",
+  "ts_iso": "2026-03-08T09:28:00Z",
+  "thesis_id": "cycle_20260308_carry_cost_compression_v4",
+  "name": "BTC Carry Squeeze Cost-Compression v4",
+  "version": "4.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "indicators": [
+    "EMA_50",
+    "EMA_200",
+    "RSI_14",
+    "CHOP_14_1_100",
+    "ATR_14",
+    "FundingRate"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00011",
+      "RSI_14 crosses_above 44",
+      "Close > EMA_50"
+    ],
+    "short": [
+      "FundingRate >= 0.00011",
+      "RSI_14 crosses_below 56",
+      "Close < EMA_50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 4.0 * ATR_14 above entry",
+      "Early exit if RSI_14 > 68 and turns_down",
+      "Time stop: 24 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 4.0 * ATR_14 below entry",
+      "Early exit if RSI_14 < 32 and turns_up",
+      "Time stop: 24 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0055
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "ranging",
+      "transitional"
+    ],
+    "detection_method": "retain only regimes with historically near-viable PF and avoid pure trend bleed"
+  },
+  "variants": [
+    {
+      "name": "btc_carry_cost_compression_v4",
+      "template_name": "funding_rsi_reversion",
+      "parameters": [
+        { "name": "funding_long_max", "value": -0.00011 },
+        { "name": "funding_short_min", "value": 0.00011 },
+        { "name": "rsi_reclaim_long", "value": 44 },
+        { "name": "rsi_reject_short", "value": 56 },
+        { "name": "ema_filter", "value": 50 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 4.0,
+        "risk_per_trade_pct": 0.0055,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 24
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 5,
+        "fee_bps": 5
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_92"
+      ]
+    }
+  ],
+  "complexity_score": 2.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
