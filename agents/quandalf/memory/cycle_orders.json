@@ -1,9 +1,9 @@
 {
-  "target_asset": "VVV",
-  "target_timeframe": "1h",
-  "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "vvv_funding_snapback",
-  "thesis_hint": "Use v5 trend-killswitch as the base. It is still the top live candidate by total score (QScore 0.5323 vs TAO 0.5313) with full grade, acceptable DD, and strong ranging PF 1.2216. Improve edge only: cut weak trending/transitional entries via one lever per variant — stronger funding-extreme gate, minimum snapback-distance filter, or faster trend-failure exit.",
+  "target_asset": "TAO",
+  "target_timeframe": "4h",
+  "research_direction": "explore_new",
+  "specific_family_to_iterate": null,
+  "thesis_hint": "Recent quality is improving on the strongest active branch (VVV funding snapback QScore 0.0900 -> 0.3182 -> 0.5323), so use this cycle to explore a fresh TAO 4h idea around persistent negative funding plus transitional-strength continuation. Design a TAO long-bias setup that only activates when funding is materially negative and price reclaims trend structure after a pullback; avoid pure mean-reversion and avoid low-trade ultra-strict filters.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.15 and max_drawdown_pct <= 9.0; reject any variant with ranging profit_factor < 1.20, trending profit_factor <= 0.95, or total_trades < 180."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with >= 18 trades and max_drawdown_pct <= 6.0; abort any variant with total_trades < 15, profit_factor < 1.08, or dominant trending regime profit_factor < 1.0."
 }

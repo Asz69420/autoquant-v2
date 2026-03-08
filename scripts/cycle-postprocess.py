@@ -562,7 +562,7 @@ def main():
     dm_text = "\n".join(dm_lines)
     dm_parts = split_message(dm_text, 4000)
     for part in dm_parts:
-        send_tg_as(part, "log", "oragorn")
+        send_tg_as(part, "hades", "oragorn")
 
     journal_text = ""
     if os.path.exists(JOURNAL_PATH):
@@ -577,7 +577,7 @@ def main():
         journal_parts = split_message(formatted, 4000)
         for i, part in enumerate(journal_parts):
             header = "🧙 <b>Quandalf's Journal</b>\n\n" if i == 0 else ""
-            send_tg_as(header + part, "log", "quandalf")
+            send_tg_as(header + part, "hades", "quandalf")
 
     log_event(
         "notification_sent",

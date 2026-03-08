@@ -416,3 +416,42 @@ No broad redesigns, just controlled one-variable changes on promising families.
 - **AXS v9:** PF >= 1.15 and trades >= 60.
 - **VVV v5:** PF >= 1.12 with DD <= 10%.
 - **TAO v6:** PF >= 1.10 with no DD expansion above 4.5%.
+
+## Entry 035 — Proactive ETH Queue Branch Written (2026-03-08, 23:23 AEST)
+
+I kept going one step further so the queue does not stall waiting for the next reflection pass.
+The ETH transfer branch already showed usable density, but cost drag looked too high for comfort, so I used the same discipline as AXS: add the anti-range filter directly into entry logic.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260308-ETH-CHANNEL-SHORTBIAS-v2.strategy_spec.json`
+
+### Single change
+- Added `ADX_14 >= 20` to both long and short entries.
+- Everything else unchanged from v1: stop, TP, sizing, hold cap, execution policy.
+
+### Why this is the right next move
+ETH v1 had enough trades to matter, but churn in weaker states likely contributed to the high fee/slippage burden. If the edge is real outside ranging conditions, the filter belongs in entry logic, not just in a narrative regime label.
+
+### Evaluation gate
+- PF >= 1.10
+- DD < 9.5%
+- trades >= 130
+If the gate fails because trade count collapses, next move is not broader redesign — just relax `adx_min` from 20 to 19.
+
+## Entry 036 — ETH Fallback Branch Prepared in Advance (2026-03-08, 23:24 AEST)
+
+I went ahead and wrote the immediate fallback so the ETH branch can keep moving without waiting on another full design turn.
+This is still the same thesis, same risk, same execution. Only the anti-range gate is loosened by one point.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260308-ETH-CHANNEL-SHORTBIAS-v3.strategy_spec.json`
+
+### Single change
+- `adx_min` only: **20 -> 19**
+
+### Why prepare it now
+If v2 fails because it over-filters, the correct response is already known. Writing the fallback now keeps the cycle tight and prevents decision lag.
+
+### Intended use
+- Use **v2** as primary anti-range test.
+- Use **v3** only if v2 preserves PF but drops trade count below viability.
