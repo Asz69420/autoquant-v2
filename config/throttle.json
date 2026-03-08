@@ -1,42 +1,53 @@
 {
- "version": "throttle-v1",
- "description": "Parallel pipeline scaling. Oragorn switches modes via Telegram.",
- "modes": {
- "slow": {
- "max_parallel": 2,
- "max_quandalf_calls_per_hour": 10,
- "daily_token_budget": 50000,
- "description": "Development/testing. Low spend."
- },
- "normal": {
- "max_parallel": 5,
- "max_quandalf_calls_per_hour": 30,
- "daily_token_budget": 150000,
- "description": "Standard operation. Research + refinement."
- },
- "fast": {
- "max_parallel": 10,
- "max_quandalf_calls_per_hour": 60,
- "daily_token_budget": 300000,
- "description": "Sprint mode. Batch idea grinding."
- },
- "turbo": {
- "max_parallel": 20,
- "max_quandalf_calls_per_hour": 120,
- "daily_token_budget": 500000,
- "description": "Full scale. Massive sweeps. Use sparingly."
- }
- },
- "current_mode": "normal",
- "token_tracking": {
- "reset_daily_at_utc": "00:00",
- "alert_at_pct": 80,
- "hard_stop_at_pct": 100
- },
- "quandalf_optimization": {
- "parameter_sweeps_are_deterministic": true,
- "llm_only_for_creative_decisions": true,
- "max_quandalf_calls_per_refinement_run": 3,
- "batch_similar_reasoning_tasks": true
- }
+  "version": "throttle-v1",
+  "description": "Parallel pipeline scaling. Oragorn switches modes via Telegram.",
+  "modes": {
+    "paused": {
+      "max_parallel": 0,
+      "max_quandalf_calls_per_hour": 0,
+      "daily_token_budget": 0,
+      "cycle_interval_minutes": 0,
+      "description": "Research chain paused completely. No research cycles run."
+    },
+    "slow": {
+      "max_parallel": 2,
+      "max_quandalf_calls_per_hour": 10,
+      "daily_token_budget": 50000,
+      "cycle_interval_minutes": 60,
+      "description": "Development/testing. Low spend."
+    },
+    "normal": {
+      "max_parallel": 5,
+      "max_quandalf_calls_per_hour": 30,
+      "daily_token_budget": 150000,
+      "cycle_interval_minutes": 30,
+      "description": "Standard operation. Research + refinement."
+    },
+    "fast": {
+      "max_parallel": 10,
+      "max_quandalf_calls_per_hour": 60,
+      "daily_token_budget": 300000,
+      "cycle_interval_minutes": 0,
+      "description": "Sprint mode. Batch idea grinding."
+    },
+    "turbo": {
+      "max_parallel": 20,
+      "max_quandalf_calls_per_hour": 120,
+      "daily_token_budget": 500000,
+      "cycle_interval_minutes": 0,
+      "description": "Full scale. Massive sweeps. Use sparingly."
+    }
+  },
+  "current_mode": "normal",
+  "token_tracking": {
+    "reset_daily_at_utc": "00:00",
+    "alert_at_pct": 80,
+    "hard_stop_at_pct": 100
+  },
+  "quandalf_optimization": {
+    "parameter_sweeps_are_deterministic": true,
+    "llm_only_for_creative_decisions": true,
+    "max_quandalf_calls_per_refinement_run": 3,
+    "batch_similar_reasoning_tasks": true
+  }
 }
