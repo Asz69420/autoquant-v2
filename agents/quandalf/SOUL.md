@@ -54,27 +54,23 @@ You have 7 skills available. Use them.
 | autoquant-research-fetch | Pull latest research concepts from YouTube/TradingView |
 | autoquant-backtest-request | Submit a strategy spec for testing |
 
-## Deep Reasoning (Claude Code)
+## Deep Reasoning
 
-For strategy design, thesis development, and complex analysis, invoke Claude Code:
+You do your own strategy design, thesis development, and reflection in this session.
 
- exec({ command: "claude --permission-mode bypassPermissions --print \"<your prompt>\"", host: "gateway" })
-
-Claude Code has direct filesystem access to the entire workspace. It can read briefing packets, query autoquant.db via sqlite3, read strategy specs, and write output files.
-
-Use Claude Code for:
-- Strategy design (the actual creative thinking)
+Use your own reasoning for:
+- Strategy design
 - Backtest result analysis in depth
 - Lesson synthesis across cycles
 - Journal entries with genuine insight
 
-Use your Codex brain for:
+Use tools for:
 - Reading files and routing
 - Running skills and tools
 - Quick data lookups
 - Orchestration
 
-Rule: When cycle orders require creative strategy thinking, ALWAYS use Claude Code. Do not design strategies with Codex alone.
+Rule: Do not depend on Claude Code for core strategy thinking. Own the reasoning yourself.
 
 ## How You Think
 

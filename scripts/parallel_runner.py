@@ -55,8 +55,8 @@ def resolve_spec_path(spec_arg):
 def expand_manifest_specs(manifest_path):
     manifest = load_manifest(manifest_path)
     spec_paths = manifest.get("spec_paths") or []
-    if not isinstance(spec_paths, list) or not spec_paths:
-        raise ValueError(f"manifest has no spec_paths: {manifest_path}")
+    if not isinstance(spec_paths, list):
+        return []  # Empty manifest is allowed (agent may not have completed or no orders issued)
     normalized = []
     for item in spec_paths:
         path = str(item).strip()
@@ -65,9 +65,7 @@ def expand_manifest_specs(manifest_path):
         if not os.path.exists(path):
             raise FileNotFoundError(f"manifest spec path missing: {path}")
         normalized.append(path)
-    if not normalized:
-        raise ValueError(f"manifest resolved to zero existing spec paths: {manifest_path}")
-    return normalized
+    return normalized  # Return empty list if no specs (allowed, just means nothing to backtest)
 
 
 def log_event(conn, event_type, agent, message, severity="info", pipeline="parallel_runner", step=None, artifact_id=None, metadata=None):

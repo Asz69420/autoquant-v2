@@ -61,18 +61,25 @@ def main() -> int:
 
     discovered.sort(key=lambda item: (item["mtime_epoch"], item["name"]))
     if not discovered:
-        print(
-            json.dumps(
-                {
-                    "status": "error",
-                    "message": "no strategy specs created/updated since cycle start",
-                    "cycle_id": cycle_id,
-                    "started_at_epoch": started_at_epoch,
-                    "started_at_iso": start_payload.get("started_at_iso"),
-                }
-            )
-        )
-        return 1
+        # No new specs in this cycle — this is allowed (agent may not have completed, dry-run, or no orders issued).
+        # Return empty manifest so pipeline can continue. Backtest step will be skipped.
+        manifest = {
+            "status": "empty",
+            "message": "no new strategy specs in this cycle",
+            "cycle_id": cycle_id,
+            "started_at_epoch": started_at_epoch,
+            "started_at_iso": start_payload.get("started_at_iso"),
+            "captured_at_epoch": time.time(),
+            "captured_at_iso": datetime.now(timezone.utc).isoformat(),
+            "spec_count": 0,
+            "latest_spec_path": None,
+            "spec_paths": [],
+            "specs": [],
+        }
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        MANIFEST_PATH.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        print(json.dumps(manifest, indent=2))
+        return 0
 
     manifest = {
         "status": "ready",
