@@ -95,7 +95,7 @@ def main():
 
     chat_id = a.chat_id
     if not chat_id:
-        chat_id = env.get("LOG_CHANNEL_ID", "-5038734156") if a.channel == "log" else env.get("ASZ_CHAT_ID", "1801759510")
+        chat_id = env.get("LOG_CHANNEL_ID", "-5133891354") if a.channel == "log" else env.get("ASZ_CHAT_ID", "1801759510")
 
     if a.photo and os.path.exists(a.photo):
         ok = send_photo(a.photo, a.message, chat_id, token, a.parse_mode)
