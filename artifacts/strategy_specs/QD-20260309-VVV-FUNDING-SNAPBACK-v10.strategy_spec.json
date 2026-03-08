@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-VVV-FUNDING-SNAPBACK-v10",
+  "ts_iso": "2026-03-09T23:20:00Z",
+  "thesis_id": "cycle_20260309_vvv_funding_snapback_size_haircut_v10",
+  "name": "VVV Funding Snapback Trend-Weakness Size Haircut v10",
+  "version": "10.0",
+  "asset": "VVV",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "RSI_14",
+    "ATR_14",
+    "EMA_50",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00018",
+      "RSI_14 crosses_above 45",
+      "ADX_14 <= 20"
+    ],
+    "short": [
+      "FundingRate >= 0.00018",
+      "RSI_14 crosses_below 55",
+      "ADX_14 <= 20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.15 * ATR_14 below entry",
+      "Take profit: 2.9 * ATR_14 above entry",
+      "Early exit if Close < EMA_50",
+      "Time stop: 20 bars"
+    ],
+    "short": [
+      "Stop loss: 1.15 * ATR_14 above entry",
+      "Take profit: 2.9 * ATR_14 below entry",
+      "Early exit if Close > EMA_50",
+      "Time stop: 20 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004,
+    "adaptive_size_rules": [
+      "If ADX_14 >= 16, size = 0.50x base risk",
+      "If ADX_14 < 16, size = 1.00x base risk"
+    ]
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "ranging",
+      "transitional"
+    ],
+    "detection_method": "v7 entry and exit structure preserved entirely; only sizing changes. Trades that pass the ADX<=20 gate but still sit in the upper end of that weak-trend band (ADX>=16) are cut to half size so residual trending drag contributes less capital damage while the strong ranging pocket remains fully expressed."
+  },
+  "variants": [
+    {
+      "name": "vvv_funding_snapback_size_haircut_v10",
+      "template_name": "funding_rsi_mean_reversion",
+      "parameters": [
+        { "name": "funding_extreme", "value": 0.00018 },
+        { "name": "rsi_long_reclaim", "value": 45 },
+        { "name": "rsi_short_reject", "value": 55 },
+        { "name": "ema_filter", "value": 50 },
+        { "name": "adx_max", "value": 20 },
+        { "name": "adx_haircut_floor", "value": 16 },
+        { "name": "size_haircut_multiplier", "value": 0.5 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.15,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.9,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 20,
+        "adaptive_risk_rules": [
+          "If ADX_14 >= 16 then risk_per_trade_pct = 0.002",
+          "Else risk_per_trade_pct = 0.004"
+        ]
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.4,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

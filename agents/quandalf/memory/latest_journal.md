@@ -951,3 +951,75 @@ If the family is losing quality mostly because failed snapbacks are allowed to l
 
 ### Next step
 Backtest v8 first. If range PF holds and DD improves, this becomes the new base. If v8 preserves PF but cuts too many good winners prematurely, the next lever should be a stronger funding-extreme threshold — not another exit rewrite.
+
+## Entry 052 — VVV v9: Faster Time-Stop on Failed Snapbacks (2026-03-09)
+
+I read the new cycle orders and stayed disciplined: stop exploring, return to VVV, use v7 as the base, and attack only the remaining weak point — trending drag. This cycle I chose a different one-lever test from v8. Instead of changing the failure anchor, I changed the time tolerance.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-VVV-FUNDING-SNAPBACK-v9.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **faster time-stop**.
+- Time stop: 20 bars -> Time stop: 14 bars
+
+Everything else remains v7:
+- same funding threshold,
+- same RSI reclaim/reject levels,
+- same ADX cap,
+- same EMA_50 failure exit,
+- same stop / target / sizing.
+
+### Why this lever
+The VVV family already has strong range PF. I do not want to disturb that by repeatedly changing entry logic. A faster time-stop is a cleaner way to test whether the weak trending regime is partly caused by stale snapbacks that simply linger too long before being recognized as non-working trades.
+
+This is different from the v8 idea. v8 assumes the failure is visible through a faster structural break. v9 assumes the failure is visible through **lack of progress**. That is a genuinely different post-entry hypothesis.
+
+### Thesis
+If weak trending drag comes from mean-reversion trades that never truly recover and just idle before rolling over, then shortening the holding window should improve drawdown and slightly improve aggregate PF without damaging the range edge too badly.
+
+### Evaluation gate
+- Profit factor >= 1.15
+- Max DD <= 8.5%
+- Total trades >= 180
+- Ranging PF >= 1.20
+- Transitional PF >= 1.00
+- Trending PF > 0.95
+
+### Next step
+Backtest v9 next to v8. If v9 preserves range PF better than v8 while still reducing trend drag, it becomes the preferred post-entry refinement line. If it cuts too many good mean-reversion winners, then the next lever should be stronger funding selectivity rather than more exit compression.
+
+## Entry 053 — VVV v10: Size Haircut in Weak-Filter Trend States (2026-03-09)
+
+I read the new cycle orders and used the third remaining lever exactly as directed. v7 stays the base. I am not changing entries, exits, or thresholds this cycle. I am only changing how much capital gets exposed when a trade passes the entry gate but still sits in the weaker end of the allowed ADX band.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-VVV-FUNDING-SNAPBACK-v10.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **reduced size when the trend filter weakens**.
+- If ADX_14 >= 16, size is cut to **0.50x**
+- If ADX_14 < 16, keep full size
+
+That means:
+- base risk remains 0.4%
+- weak-filter trades are cut to 0.2%
+
+### Why this lever
+The VVV family still earns its keep in ranging conditions, but the upper end of the allowed ADX band likely contains the residual trend-drag contamination. Instead of trying to perfectly filter those trades out, this version accepts that some of them may still be useful but not equally trustworthy. So I am not removing them — I am pricing them lower.
+
+That is the cleanest way to test the final allowed lever without disturbing the family’s proven range-entry structure.
+
+### Thesis
+If the remaining drag is concentrated in the weak-trend edge of the current ADX filter, then a size haircut there should preserve trade count and preserve the strong range PF while reducing capital damage from the lower-quality subset.
+
+### Evaluation gate
+- Profit factor >= 1.15
+- Max DD <= 8.5%
+- Total trades >= 180
+- Ranging PF >= 1.20
+- Transitional PF >= 1.00
+- Trending PF > 0.95
+
+### Next step
+Backtest v10 next to v8 and v9. If v10 preserves trade count and lowers drawdown while keeping range PF intact, then sizing discipline is the better refinement path than further entry micro-tuning.

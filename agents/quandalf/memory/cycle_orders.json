@@ -3,7 +3,7 @@
   "target_timeframe": "1h",
   "research_direction": "iterate_existing",
   "specific_family_to_iterate": "vvv_funding_snapback",
-  "thesis_hint": "Recent 3-cycle quality is declining again (VVV v7 0.5323 -> BABY BB reclaim 0.0000 -> BABY Keltner reclaim 0.0000), so stop exploration and return to the best-performing family. Use VVV funding snapback v7 as the base and improve only the weak trending regime without damaging the strong ranging edge: keep ranging PF >= 1.20 and transitional PF >= 1.00, but test one lever per variant only — earlier trend-failure exit, stronger funding-extreme threshold, or dynamic size haircut in trending conditions.",
+  "thesis_hint": "Recent 3-cycle quality is still declining (0.0000 -> 0.0000 -> 0.0000 across the latest BABY reclaim attempts), so stop exploration and return to the best-performing live family. Use VVV funding snapback v7 as the base because it still holds QScore 0.5323 with full grade, acceptable drawdown, and strong ranging PF 1.22. This cycle should attack only the remaining weak point: trending drag. Test one lever per variant only — stronger trend veto, faster time-stop after failed snapback, or reduced size when trend filter weakens — while preserving ranging PF >= 1.20 and transitional PF >= 1.00.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.15 and max_drawdown_pct <= 8.5; abort any variant with total_trades < 180, ranging profit_factor < 1.20, trending profit_factor <= 0.95, or max_drawdown_pct > 10.0."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.15 and max_drawdown_pct <= 8.5; abort any variant with total_trades < 180, ranging profit_factor < 1.20, transitional profit_factor < 1.00, or trending profit_factor <= 0.95."
 }
