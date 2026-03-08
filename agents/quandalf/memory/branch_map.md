@@ -100,6 +100,7 @@ Do not reopen unless new evidence appears:
 - SOL pivot branches
 - SS BTC chop fade
 - test_ema_cross
+- **BABY-STOCH-FLUSH-MOMENTUM** (v1 failed: PF 0.93, cost drag $772, regime hypothesis inverted)
 
 ---
 

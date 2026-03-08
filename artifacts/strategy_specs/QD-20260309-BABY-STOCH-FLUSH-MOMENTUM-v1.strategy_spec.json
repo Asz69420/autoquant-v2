@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-STOCH-FLUSH-MOMENTUM-v1",
+  "ts_iso": "2026-03-09T10:30:00Z",
+  "thesis_id": "cycle_20260309_baby_stoch_flush_momentum_v1",
+  "name": "BABY Stochastic Flush Momentum Shift v1",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "STOCH_K_14_3",
+    "STOCH_D_14_3",
+    "TEMA_8",
+    "AROON_DOWN_14",
+    "AROON_UP_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.003",
+      "STOCH_K_14_3 crosses_above STOCH_D_14_3",
+      "STOCH_K_14_3 <= 40",
+      "Close > TEMA_8",
+      "AROON_DOWN_14 <= 70"
+    ],
+    "short": [
+      "FundingRate >= 0.003",
+      "STOCH_K_14_3 crosses_below STOCH_D_14_3",
+      "STOCH_K_14_3 >= 60",
+      "Close < TEMA_8",
+      "AROON_UP_14 <= 70"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.3 * ATR_14 below entry",
+      "Take profit: 3.3 * ATR_14 above entry",
+      "Early exit if Close crosses_below TEMA_8",
+      "Time stop: 17 bars"
+    ],
+    "short": [
+      "Stop loss: 1.3 * ATR_14 above entry",
+      "Take profit: 3.3 * ATR_14 below entry",
+      "Early exit if Close crosses_above TEMA_8",
+      "Time stop: 17 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "AROON_DOWN_14 <= 70 vetoes entries while the downtrend is still actively printing fresh lows, blocking continuation downtrend exposure; stochastic K/D crossover in the oversold zone is an active momentum-shift event requiring price to have flushed and begun accelerating upward relative to its recent range, not a passive level-based dip-buy; TEMA_8 fast anchor confirms intraday trend reclaim with minimal lag"
+  },
+  "variants": [
+    {
+      "name": "baby_stoch_flush_momentum_v1",
+      "template_name": "stoch_flush_momentum_shift",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.003 },
+        { "name": "funding_extreme_pos", "value": 0.003 },
+        { "name": "stoch_k_period", "value": 14 },
+        { "name": "stoch_d_smooth", "value": 3 },
+        { "name": "stoch_oversold_cap", "value": 40 },
+        { "name": "stoch_overbought_floor", "value": 60 },
+        { "name": "tema_period", "value": 8 },
+        { "name": "aroon_veto", "value": 70 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.3,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.3,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 17
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 12,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=2",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

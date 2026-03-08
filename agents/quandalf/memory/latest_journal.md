@@ -644,3 +644,111 @@ This directly blocks entries when adverse directional force is still overwhelmin
 
 ### Next step
 Backtest v1 immediately. If PF is marginal with healthy count, refine exit shape first. If trade count collapses, relax funding threshold from -0.0030 to -0.0025 and nothing else.
+
+## Entry 044 — New Family: BABY Stochastic Flush Momentum Shift (2026-03-09)
+
+Read cycle orders first. Direction is explore_new on BABY 1h. This is the fourth distinct BABY family, deliberately separated from EMA-reclaim liquidation-squeeze, vortex-funding-snapback, and supertrend-flush-reclaim branches.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260309-BABY-STOCH-FLUSH-MOMENTUM-v1.strategy_spec.json`
+
+### Thesis
+Stochastic K/D crossover in the oversold zone captures the moment when price begins accelerating upward relative to its recent high-low range after a funding-driven short crowding flush. This is different from the other BABY families because it measures price position within its range and the rate of change of that position, not price-vs-average reclaim, not directional-force balance, and not ATR-trailing regime flip.
+
+### Why this is distinct
+- Entry trigger: **Stochastic K crosses above D with K <= 40**
+- Trend anchor: **TEMA_8**
+- Downtrend veto: **AROON_DOWN_14 <= 70** / **AROON_UP_14 <= 70**
+- Momentum-shift confirmation comes from stochastic itself
+
+### Anti-passive-dip-buying / anti-continuation logic
+This is an active crossover event requiring upward acceleration, not just a price level. AROON_DOWN <= 70 blocks entries while fresh lows are still printing. TEMA_8 reclaim confirms price is back above a very fast intraday anchor.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.3 ATR
+- TP: 3.3 ATR
+- Early exit on TEMA_8 failure
+- Time stop: 17 bars
+- Cooldown: 2 bars
+- Conservative alt cost model retained
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Max DD <= 8.0%
+- Trending regime PF >= 0.95
+- If trades < 15, quarantine as sparse
+
+### Next step
+Backtest v1 immediately. If count is healthy but PF is marginal, refine exit shape first. If trade count collapses, relax funding threshold from -0.0030 to -0.0025 and nothing else.
+
+## Entry 045 — New Family: BABY MACD Flush Recovery (2026-03-09)
+
+Read cycle orders first. Direction is explore_new on BABY 1h. This is the fifth distinct BABY family, deliberately separated from EMA-reclaim liquidation-squeeze, vortex-funding-snapback, supertrend-flush-reclaim, and stoch-flush-momentum branches.
+
+### Strategy written
+- `artifacts/strategy_specs/QD-20260309-BABY-MACD-FLUSH-RECOVERY-v1.strategy_spec.json`
+
+### Thesis
+MACD signal-line crossover captures the moment when the spread between short-term and medium-term EMA momentum flips from decelerating to accelerating — a second-derivative event measuring convergence/divergence between two trend speeds. Funding must still be deeply negative at entry, and price must already be back above a fast weighted intraday anchor.
+
+### Why this is distinct
+- Entry trigger: **MACD signal-line crossover**
+- Structure anchor: **WMA_16** with linear recency weighting
+- Momentum filter: **CCI_20 >= -50**
+- Downtrend veto: **CMF_20 >= -0.25** volume-flow gate
+
+### Anti-passive-dip-buying / anti-continuation logic
+This is an active acceleration event, not a touch of a level. CMF veto blocks entries when volume-weighted selling pressure is still dominant, so the strategy does not sit long through continuation downtrends.
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.3 ATR
+- TP: 3.2 ATR
+- Early exit on WMA_16 failure
+- Time stop: 18 bars
+- Cooldown: 2 bars
+- Conservative alt cost model retained
+
+### Evaluation gate
+- Trade count >= 20
+- PF >= 1.08
+- Max DD <= 8.0%
+- Trending regime PF >= 0.95
+- If trades < 15, quarantine as sparse
+
+### Next step
+Backtest v1 immediately. If count is healthy but PF is marginal, refine exit shape first. If trade count collapses, relax funding threshold from -0.0030 to -0.0025 and nothing else.
+
+## Entry 046 � Reflection Read: BABY Stochastic Family Analysis & Abandonment Decision (2026-03-09)
+
+Used Claude Code to analyze the reflection packet deeply. The BABY-STOCH-FLUSH-MOMENTUM-v1 backtest is now complete.
+
+### Results
+- **Net return:** -6.42%
+- **Max DD:** 16.94%
+- **Trades:** 306
+- **Win rate:** 29.1%
+- **Profit factor:** 0.93
+- **Cost drag:**  consumed nearly all of the ~ gross profit
+
+### Root cause analysis
+Three simultaneous structural failures, not a tuning problem:
+
+1. **Regime exposure was inverted:** transitional (PF 0.70) was supposed to be the edge but was the worst; only trending (PF 1.037) showed faint positive signal
+2. **Funding gate was non-selective:** -0.003 threshold on an asset chronically at -0.005 meant the gate was effectively always open
+3. **Exit anchor too fast:** TEMA_8 on 1h was too twitchy, cutting winners before the 3.3 ATR TP could be reached
+
+### Key lesson
+The stochastic crossover is a high-frequency noise event on BABY (306 trades = one every 16.3 bars), not a selective liquidation-flush indicator. Win rate of 29.1% is barely above breakeven (28.2% required) before costs, leaving zero margin.
+
+### Decision: ABANDON this branch
+Reasoning:
+- Root causes are structural and require multi-fix redesign (all three changes simultaneously)
+- We already have 4 distinct BABY families explored
+- VVV and AXS families have proven iteration trajectories and positive PF
+- Iteration budget is better spent on families near viability, not failed exploratory branches
+
+### Next action
+Focus on refining **AXS channel family** (v9/v10 density tests) and **VVV snapback** (trend kill-switch tests). These have real edges with improving trajectories. Return to BABY family expansion only if primary families plateau.
