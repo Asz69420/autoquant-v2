@@ -172,6 +172,16 @@ def next_cycle_id():
     return data["last_cycle_id"]
 
 
+def current_cycle_id():
+    counter_path = os.path.join(ROOT, "data", "state", "cycle_counter.json")
+    try:
+        with open(counter_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return int(data.get("last_cycle_id", 0))
+    except Exception:
+        return 0
+
+
 def build_log_card(cycle_id, rows, elapsed_seconds, new_backtests):
     status_path = os.path.join(ROOT, "agents", "quandalf", "memory", "strategy_status.json")
     status = {}
@@ -437,11 +447,71 @@ def extract_lessons(rows):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--since-minutes", type=int, default=30)
+    p.add_argument("--send-card-only", action="store_true")
     a = p.parse_args()
+
+    cutoff = (datetime.now(timezone.utc) - timedelta(minutes=a.since_minutes)).isoformat()
+
+    if a.send_card_only:
+        conn = sqlite3.connect(DB)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            """
+            SELECT id, strategy_spec_id, variant_id, asset, timeframe,
+                   profit_factor, max_drawdown_pct, total_trades, win_rate_pct,
+                   score_total, score_decision, ts_iso
+            FROM backtest_results
+            WHERE ts_iso >= ?
+            GROUP BY id
+            ORDER BY ts_iso DESC
+            """,
+            (cutoff,),
+        ).fetchall()
+        total_rows = conn.execute("SELECT COUNT(*) FROM backtest_results").fetchone()[0]
+        conn.close()
+
+        elapsed_seconds = 0
+        start_marker = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
+        try:
+            if os.path.exists(start_marker):
+                with open(start_marker, "r", encoding="utf-8") as f:
+                    marker = json.load(f)
+                started = float(marker.get("started_at_epoch", 0) or 0)
+                if started > 0:
+                    elapsed_seconds = max(0, time.time() - started)
+        except Exception:
+            elapsed_seconds = 0
+
+        cycle_id = current_cycle_id()
+        log_card = build_log_card(cycle_id, rows, elapsed_seconds, 0)
+        log_card_formatted = f"<pre>{log_card}</pre>"
+        banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
+        if os.path.exists(banner_path):
+            subprocess.run(
+                [
+                    sys.executable,
+                    TG_SCRIPT,
+                    "--message",
+                    log_card_formatted,
+                    "--channel",
+                    "log",
+                    "--bot",
+                    "logron",
+                    "--photo",
+                    banner_path,
+                ],
+                capture_output=True,
+                text=True,
+                timeout=15,
+            )
+        else:
+            send_tg_as(log_card_formatted, "log", "logron")
+
+        print(json.dumps({"status": "card_sent", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "total_in_db": total_rows}))
+        return
 
     new_backtests = backtest_new_specs()
     log_token_event("frodex", "research_cycle", f"cycle-postprocess run; new_backtests={new_backtests}")
-    cutoff = (datetime.now(timezone.utc) - timedelta(minutes=a.since_minutes)).isoformat()
     start_time = time.time()
 
     conn = sqlite3.connect(DB)
@@ -518,6 +588,16 @@ def main():
     )
 
     elapsed = round(time.time() - start_time, 1)
+    start_marker = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
+    try:
+        if os.path.exists(start_marker):
+            with open(start_marker, "r", encoding="utf-8") as f:
+                marker = json.load(f)
+            started = float(marker.get("started_at_epoch", 0) or 0)
+            if started > 0:
+                elapsed = round(max(0, time.time() - started), 1)
+    except Exception:
+        pass
 
     best_pf = 0
     for r in rows:

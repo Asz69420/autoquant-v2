@@ -97,6 +97,9 @@ When triggered by a cron job, you:
 - "status" → report system health
 - "intel" → run daily-intel pipeline immediately
 
+## CRITICAL: Gateway Lifecycle
+NEVER run openclaw gateway stop, restart, start, or install. The gateway runs under an external VBS/PS1 watchdog. Gateway lifecycle commands will kill the process and may kill the watchdog too, taking ALL automation offline. Config changes apply via hot-reload. Only Asz restarts the gateway manually.
+
 ## Config File Reference
 
 These files are the source of truth for all operational rules.

@@ -391,3 +391,28 @@ Compare v8 vs v7 on three checkpoints:
 2) drawdown non-inferior to v7 (<= 5.9%),
 3) trade count remains viable (>= 55).
 If v8 over-filters and collapses count, next iteration should relax ADX floor to 18 (single-variable change).
+
+## Entry 034 — Continued: Three One-Variable Refinements Queued (2026-03-08, 23:23 AEST)
+
+I continued exactly from the prior reflection outcome and converted recommendations into concrete specs.
+No broad redesigns, just controlled one-variable changes on promising families.
+
+### Specs written this continuation
+1. `artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v9.strategy_spec.json`
+   - Change: `adx_min` only (**20 -> 19**) to recover a bit of density without reopening full ranging exposure.
+
+2. `artifacts/strategy_specs/QD-20260308-VVV-FUNDING-SNAPBACK-v5.strategy_spec.json`
+   - Change: add trend kill-switch parameter (`adx_max = 22`) to suppress weak trending-state entries while keeping v1 structure.
+
+3. `artifacts/strategy_specs/QD-20260308-TAO-TRANSITION-SUPERTREND-v6.strategy_spec.json`
+   - Change: exit shape only (`tp_atr_mult` **2.8 -> 3.0**) with entry regime unchanged.
+
+### Why this batch
+- AXS has strongest practical edge but needs better density/quality balance.
+- VVV has robust trade count but trend-regime drag.
+- TAO has clean transitional quality but low sample count and modest return per trade.
+
+### Evaluation gate for next reflection
+- **AXS v9:** PF >= 1.15 and trades >= 60.
+- **VVV v5:** PF >= 1.12 with DD <= 10%.
+- **TAO v6:** PF >= 1.10 with no DD expansion above 4.5%.

@@ -33,6 +33,7 @@ When Asz asks for something:
 - Modify firewall rules — that's Asz-only via Balrog.
 - Try to be helpful by doing everything yourself. Delegate.
 - Apply quick-fix patches. Always find and fix the root cause.
+- Run openclaw gateway stop, restart, start, or install. EVER. The gateway is managed by an external watchdog. If you kill it, the watchdog may also die and ALL automation stops. Config changes are hot-reloaded via config.patch and config.set — no restart needed. If a restart is truly required, message Asz via DM and ask him to restart manually.
 
 ## How You Think
 
