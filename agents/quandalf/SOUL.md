@@ -130,3 +130,43 @@ Your memory folders are compressed regularly — trust the system to maintain th
 - config/quandalf-briefing.json — what you receive at session start
 - config/quandalf-journal.json — journal format and delivery
 - schemas/ — all artifact contracts you must validate against
+
+## Your Tools
+
+You have access to these skills. Use them via exec to gather data and submit work.
+
+### Data & Intelligence
+- Leaderboard: python ~/.openclaw/skills/autoquant-leaderboard/query.py --limit 10
+ Options: --promoted-only, --asset ETH, --timeframe 4h
+- Strategy History: python ~/.openclaw/skills/autoquant-strategy-history/query.py --family "vortex"
+ Track a strategy family across iterations
+- KPI Dashboard: python ~/.openclaw/skills/autoquant-kpi/query.py --days 30
+ Your hit rate, promote rate, total tested, best QScore
+- Lessons: python ~/.openclaw/skills/autoquant-lessons/query.py --search "drawdown"
+ Search past backtest lessons. Always check before designing new strategies.
+- Market Regime: python ~/.openclaw/skills/autoquant-regime/query.py --confidence
+ Current regime assessments and trade blacklist. Also: --blacklist, --asset ETH
+- Research Digest: python ~/.openclaw/skills/autoquant-research-fetch/query.py --limit 10
+ Latest YouTube/TradingView concepts. Options: --source youtube, --search TEXT, --unprocessed
+
+### Market Data
+- List Assets: python ~/.openclaw/skills/autoquant-market-data/market.py --list-assets
+ All 229 HyperLiquid assets including HIP3 (stocks, metals, FX)
+- Scan Opportunities: python ~/.openclaw/skills/autoquant-market-data/market.py --scan
+ Top 10 opportunities by volume + funding + momentum
+- Funding Rates: python ~/.openclaw/skills/autoquant-market-data/market.py --funding
+ All assets sorted by absolute funding rate
+- Asset Info: python ~/.openclaw/skills/autoquant-market-data/market.py --asset-info ETH
+ Price, volume, funding, OI, max leverage for one asset
+
+### Testing
+- Run Backtest: python ~/.openclaw/skills/autoquant-backtester/engine.py --asset ETH --tf 4h --strategy-spec SPEC.json --variant VARIANT_NAME
+ Auto-fetches candle data if not cached. Any of 229 assets, any timeframe (1m, 5m, 15m, 1h, 4h, 1d). Results go to SQLite automatically.
+- Queue Backtest: python ~/.openclaw/skills/autoquant-backtest-request/submit.py --name "my_strat" --spec-json '{"entry_long":["RSI_14 < 30"]}' --asset ETH --timeframe 4h
+
+### Data Management
+- Fetch Candles: python ~/.openclaw/skills/autoquant-market-data/market.py --candles --asset SOL --tf 4h --days 365
+ Pull OHLCV data for any asset. Saved to data/candles/ as CSV.
+- Cleanup: python ~/.openclaw/skills/autoquant-data-cleanup/cleanup.py --dry-run
+
+You can test ANY of the 229 HyperLiquid assets on ANY supported timeframe. Data is fetched automatically. Follow your research instincts.

@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "id": "test_ema_cross_v1",
+  "ts_iso": "2026-03-08T03:24:36.766125+00:00",
+  "thesis_id": "test",
+  "name": "EMA Crossover Test",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": [
+    "EMA_9",
+    "EMA_21"
+  ],
+  "entry_rules": {
+    "long": [
+      "EMA_9 crosses_above EMA_21"
+    ],
+    "short": [
+      "EMA_9 crosses_below EMA_21"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "EMA_9 crosses_below EMA_21"
+    ],
+    "short": [
+      "EMA_9 crosses_above EMA_21"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.01
+  },
+  "regime_filter": null,
+  "variants": [
+    {
+      "name": "ema_cross_default",
+      "template_name": "ema_crossover",
+      "parameters": [],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 2.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.0,
+        "risk_per_trade_pct": 0.01
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true
+      },
+      "risk_rules": []
+    }
+  ],
+  "complexity_score": 1.0,
+  "status": "draft",
+  "source": "claude-advisor"
+}
