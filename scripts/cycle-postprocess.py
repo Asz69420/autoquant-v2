@@ -254,26 +254,37 @@ def backtest_new_specs():
             continue
 
         spec_path = os.path.join(SPECS_DIR, f)
-        spec_id = f.replace(".strategy_spec.json", "")
-
-        existing_for_spec = conn.execute(
-            "SELECT COUNT(*) FROM backtest_results WHERE strategy_spec_id = ?",
-            (spec_id,),
-        ).fetchone()[0]
-        if existing_for_spec > 0:
-            continue
+        file_spec_id = f.replace(".strategy_spec.json", "")
 
         try:
             with open(spec_path, "r", encoding="utf-8") as fh:
                 spec = json.load(fh)
-            asset = spec.get("asset", "ETH")
-            timeframe = spec.get("timeframe", "4h")
+            explicit_spec_id = (spec.get("id") or "").strip()
+            spec_ids = [file_spec_id]
+            if explicit_spec_id and explicit_spec_id not in spec_ids:
+                spec_ids.append(explicit_spec_id)
+
+            asset = str(spec.get("asset", "ETH")).strip()
+            timeframe = str(spec.get("timeframe", "4h")).strip()
             variants = spec.get("variants", [])
             if not variants:
                 continue
 
+            placeholders = ",".join("?" * len(spec_ids))
+            existing_for_spec = conn.execute(
+                f"SELECT COUNT(*) FROM backtest_results WHERE strategy_spec_id IN ({placeholders})",
+                tuple(spec_ids),
+            ).fetchone()[0]
+            if existing_for_spec > 0:
+                continue
+
+            seen_variant_names = set()
             for v in variants:
-                vname = v.get("name", "default")
+                vname = str(v.get("name", "default")).strip()
+                if not vname or vname in seen_variant_names:
+                    continue
+                seen_variant_names.add(vname)
+
                 try:
                     balrog_result = subprocess.run(
                         [sys.executable, BALROG, "--spec", spec_path],
@@ -286,18 +297,21 @@ def backtest_new_specs():
                             balrog_out = json.loads(balrog_result.stdout or "{}")
                             errors = balrog_out.get("errors", [])
                             print(f"Balrog BLOCKED {f}: {errors}", file=sys.stderr)
-                            log_event("balrog_block", "balrog", f"Blocked spec {spec_id}: {errors}", severity="warn", artifact_id=spec_id, pipeline="research_cycle", step="validation")
+                            log_event("balrog_block", "balrog", f"Blocked spec {file_spec_id}: {errors}", severity="warn", artifact_id=file_spec_id, pipeline="research_cycle", step="validation")
                         except Exception:
                             print(f"Balrog BLOCKED {f}: validation failed", file=sys.stderr)
-                            log_event("balrog_block", "balrog", f"Blocked spec {spec_id}: validation failed", severity="warn", artifact_id=spec_id, pipeline="research_cycle", step="validation")
+                            log_event("balrog_block", "balrog", f"Blocked spec {file_spec_id}: validation failed", severity="warn", artifact_id=file_spec_id, pipeline="research_cycle", step="validation")
                         continue
 
                     existing_variant = conn.execute(
-                        """
+                        f"""
                         SELECT COUNT(*) FROM backtest_results
-                        WHERE strategy_spec_id = ? AND variant_id = ? AND asset = ? AND timeframe = ?
+                        WHERE strategy_spec_id IN ({placeholders})
+                          AND lower(variant_id) = lower(?)
+                          AND lower(asset) = lower(?)
+                          AND lower(timeframe) = lower(?)
                         """,
-                        (spec_id, vname, asset, timeframe),
+                        tuple(spec_ids + [vname, asset, timeframe]),
                     ).fetchone()[0]
                     if existing_variant > 0:
                         continue
@@ -322,13 +336,16 @@ def backtest_new_specs():
                     if result.returncode == 0:
                         backtested += 1
                         bt_row = conn.execute(
-                            """
+                            f"""
                             SELECT id, profit_factor, score_total
                             FROM backtest_results
-                            WHERE strategy_spec_id = ? AND variant_id = ? AND asset = ? AND timeframe = ?
+                            WHERE strategy_spec_id IN ({placeholders})
+                              AND lower(variant_id) = lower(?)
+                              AND lower(asset) = lower(?)
+                              AND lower(timeframe) = lower(?)
                             ORDER BY ts_iso DESC LIMIT 1
                             """,
-                            (spec_id, vname, asset, timeframe),
+                            tuple(spec_ids + [vname, asset, timeframe]),
                         ).fetchone()
                         result_id = bt_row[0] if bt_row else None
                         pf = bt_row[1] if bt_row and bt_row[1] is not None else 0
@@ -336,7 +353,7 @@ def backtest_new_specs():
                         log_event(
                             "backtest_complete",
                             "frodex",
-                            f"Backtested {spec_id} variant {vname}: PF {pf}, QS {qs}",
+                            f"Backtested {file_spec_id} variant {vname}: PF {pf}, QS {qs}",
                             artifact_id=result_id,
                             pipeline="research_cycle",
                             step="backtest",
