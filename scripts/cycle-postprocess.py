@@ -157,21 +157,61 @@ def log_token_event(agent, pipeline, description):
         pass
 
 
-def build_log_card(phase, status, run_id, runtime_sec, activity_dict, note):
-    phase_emoji = PHASE_EMOJIS.get(phase, "📋")
-    status_emoji = STATUS_EMOJIS.get(status, "✅")
-    runtime_str = f"{int(runtime_sec // 60)}m {int(runtime_sec % 60)}s" if runtime_sec else "0m 0s"
-    run_id_short = run_id[-6:] if run_id and len(run_id) > 6 else (run_id or "------")
+def next_cycle_id():
+    counter_path = os.path.join(ROOT, "data", "state", "cycle_counter.json")
+    try:
+        with open(counter_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        data = {"last_cycle_id": 0}
+
+    data["last_cycle_id"] = int(data.get("last_cycle_id", 0)) + 1
+    os.makedirs(os.path.dirname(counter_path), exist_ok=True)
+    with open(counter_path, "w", encoding="utf-8") as f:
+        json.dump(data, f)
+    return data["last_cycle_id"]
+
+
+def build_log_card(cycle_id, rows, elapsed_seconds, new_backtests):
+    status_path = os.path.join(ROOT, "agents", "quandalf", "memory", "strategy_status.json")
+    status = {}
+    if os.path.exists(status_path):
+        try:
+            with open(status_path, "r", encoding="utf-8") as f:
+                status = json.load(f)
+        except Exception:
+            pass
+
+    rows_dict = [dict(r) if not isinstance(r, dict) else r for r in rows]
+
+    new_families = len(status.get("new_this_cycle", []))
+    abandoned = len(status.get("abandoned_this_cycle", []))
+    active = len(status.get("active_families", []))
+    specs_written = len(status.get("specs_written", []))
+
+    promotions = sum(1 for r in rows_dict if r.get("score_total") and r["score_total"] >= 3.0)
+    best_qs = max((r.get("score_total", 0) or 0 for r in rows_dict), default=0)
+
+    elapsed_str = f"{int(elapsed_seconds // 60)}m {int(elapsed_seconds % 60)}s" if elapsed_seconds else "?"
 
     lines = []
-    lines.append(f"{phase_emoji} {phase.capitalize()}")
-    lines.append(f"{status_emoji} | ▶ {runtime_str} | 🆔 {run_id_short}")
+    lines.append("🍳 Cooking")
+    lines.append(f"{'✅' if promotions > 0 else '⚠️'} | ▶ {elapsed_str} | 🆔 {cycle_id}")
     lines.append("○──activity──────────────────")
-    for k, v in activity_dict.items():
-        lines.append(f"{k}: {v}")
+    lines.append(f"New strategies: {specs_written}")
+    lines.append(f"New families: {new_families}")
+    lines.append(f"Active families: {active}")
+    lines.append(f"Backtests: {new_backtests}")
+    lines.append(f"Promotions: {promotions}")
+    lines.append(f"Abandoned: {abandoned}")
     lines.append("○──note──────────────────────")
-    for line in str(note)[:200].split("\n"):
-        lines.append(line)
+    if promotions > 0:
+        lines.append(f"🏆 {promotions} promotion(s)! Best QS: {best_qs:.2f}")
+    elif best_qs > 0:
+        lines.append(f"Best QS: {best_qs:.2f}. Iterating.")
+    else:
+        lines.append("No strong results yet. Quandalf refining.")
+
     return "\n".join(lines)
 
 
@@ -467,35 +507,8 @@ def main():
         if r["profit_factor"] and r["profit_factor"] > best_pf:
             best_pf = r["profit_factor"]
 
-    overall_status = (
-        "ok"
-        if any(r["score_total"] and r["score_total"] >= 1.0 for r in rows)
-        else "warn"
-        if any(r["total_trades"] and r["total_trades"] > 0 for r in rows)
-        else "fail"
-    )
-
-    note = f"Cycle complete: {len(rows)} backtests run."
-    if best_qscore >= 3.0:
-        note += f" Promotion candidate: {best_strategy}!"
-    elif best_qscore >= 1.0:
-        note += f" Best: {best_strategy} (QS {best_qscore})"
-    else:
-        note += " No strong promotion yet."
-
-    log_card = build_log_card(
-        "cooking",
-        overall_status,
-        rows[0]["id"] if rows else "none",
-        elapsed,
-        {
-            "Backtests": len(rows),
-            "Best PF": round(best_pf, 3),
-            "Best QScore": round(best_qscore, 2),
-            "Promotions": sum(1 for r in rows if r["score_total"] and r["score_total"] >= 3.0),
-        },
-        note,
-    )
+    cycle_id = next_cycle_id()
+    log_card = build_log_card(cycle_id, rows, elapsed, new_backtests)
     log_card_formatted = f"<pre>{log_card}</pre>"
     banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
     if os.path.exists(banner_path):

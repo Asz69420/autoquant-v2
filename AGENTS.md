@@ -128,3 +128,18 @@ Never memorize rules — read the config files.
 - Workspace changes backed up via git (when repo is configured)
 - .env files, credentials, and logs excluded from git
 - OpenClaw workspace is source of truth, GitHub is backup
+
+## Grind Mode
+
+When Asz says "grind", "grind mode", "iterate on this", "keep working on this", or "keep going until X":
+
+exec python scripts/grind.py --target-qscore 3.0 --max-iterations 20
+
+Options Asz can specify:
+- "grind to 2.0" → --target-qscore 2.0
+- "grind 50 iterations" → --max-iterations 50
+- "grind for 3 hours" → --max-hours 3
+
+The grind loop chains back-to-back: design → backtest → reflect → refine → backtest → repeat.
+Stops when: target QScore hit, max iterations reached, or max time exceeded.
+Progress DMs every 5 iterations. Log cards every iteration.

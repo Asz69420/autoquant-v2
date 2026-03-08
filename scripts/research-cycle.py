@@ -76,6 +76,19 @@ def log_event(event_type, agent, message, severity="info", artifact_id=None, pip
         pass
 
 
+def next_cycle_id():
+    counter_path = ROOT / "data" / "state" / "cycle_counter.json"
+    try:
+        data = json.loads(counter_path.read_text(encoding="utf-8"))
+    except Exception:
+        data = {"last_cycle_id": 0}
+
+    data["last_cycle_id"] = int(data.get("last_cycle_id", 0)) + 1
+    counter_path.parent.mkdir(parents=True, exist_ok=True)
+    counter_path.write_text(json.dumps(data), encoding="utf-8")
+    return data["last_cycle_id"]
+
+
 def main() -> int:
     # Phase 1 only: Build briefing packet
     leaderboard = _run_skill([PY, str(SKILLS_DIR / "autoquant-leaderboard" / "query.py"), "--limit", "5"])
@@ -117,7 +130,7 @@ def main() -> int:
         backtest_details.append(detail)
 
     now = datetime.now(timezone.utc)
-    cycle_id = f"cycle_{now.strftime('%Y%m%d_%H%M%S')}"
+    cycle_id = next_cycle_id()
 
     packet = {
         "ts_iso": now.isoformat(),
@@ -130,6 +143,23 @@ def main() -> int:
         "funding_rates": funding,
         "recent_backtest_details": backtest_details,
     }
+
+    # Add strategy families
+    try:
+        conn2 = sqlite3.connect(str(db_path))
+        conn2.row_factory = sqlite3.Row
+        active_families = conn2.execute(
+            "SELECT * FROM strategy_families WHERE status = 'active' ORDER BY best_qscore DESC LIMIT 10"
+        ).fetchall()
+        abandoned_recent = conn2.execute(
+            "SELECT family_id, thesis, abandon_reason, iterations FROM strategy_families WHERE status = 'abandoned' ORDER BY ts_iso_updated DESC LIMIT 5"
+        ).fetchall()
+        conn2.close()
+        packet["active_strategy_families"] = [dict(f) for f in active_families]
+        packet["recently_abandoned"] = [dict(f) for f in abandoned_recent]
+    except Exception:
+        packet["active_strategy_families"] = []
+        packet["recently_abandoned"] = []
 
     BRIEFING_PATH.parent.mkdir(parents=True, exist_ok=True)
     BRIEFING_PATH.write_text(json.dumps(packet, indent=2), encoding="utf-8")
