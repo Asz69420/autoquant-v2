@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
   "id": "QD-20260308-TAO-TRANSITION-SUPERTREND-v5",
-  "ts_iso": "2026-03-08T10:42:00Z",
+  "ts_iso": "2026-03-08T13:12:00Z",
   "thesis_id": "cycle_20260308_tao_transition_supertrend_v5",
-  "name": "TAO Transition Supertrend Regime-Isolation v5",
+  "name": "TAO Transition Supertrend Controlled Density Expansion v5",
   "version": "5.0",
   "asset": "TAO",
   "timeframe": "4h",
@@ -17,12 +17,12 @@
     "long": [
       "SUPERTd_7_3.0 crosses_above 0",
       "ADX_14 >= 20",
-      "ADX_14 <= 27"
+      "ADX_14 <= 28"
     ],
     "short": [
       "SUPERTd_7_3.0 crosses_below 0",
       "ADX_14 >= 20",
-      "ADX_14 <= 27"
+      "ADX_14 <= 28"
     ]
   },
   "exit_rules": {
@@ -46,31 +46,25 @@
     "allowed_regimes": [
       "transitional"
     ],
-    "detection_method": "Explicit ADX band-pass (20 to 25) to isolate transitional regime where TAO v1/v2 showed positive regime PF"
+    "detection_method": "Band-pass ADX transitional gate widened incrementally from 20-27 to 20-28 to lift trade count while preserving transitional profile"
   },
   "variants": [
     {
-      "name": "tao_transition_supertrend_bandpass_v5",
+      "name": "tao_transition_supertrend_density_expansion_v5",
       "template_name": "supertrend_follow",
       "entry_long": [
         "SUPERTd_7_3.0 crosses_above 0",
         "ADX_14 >= 20",
-        "ADX_14 <= 27"
+        "ADX_14 <= 28"
       ],
       "entry_short": [
         "SUPERTd_7_3.0 crosses_below 0",
         "ADX_14 >= 20",
-        "ADX_14 <= 27"
+        "ADX_14 <= 28"
       ],
       "parameters": [
-        {
-          "name": "adx_lower",
-          "value": 20
-        },
-        {
-          "name": "adx_upper",
-          "value": 27
-        }
+        { "name": "adx_lower", "value": 20 },
+        { "name": "adx_upper", "value": 28 }
       ],
       "risk_policy": {
         "stop_type": "atr",

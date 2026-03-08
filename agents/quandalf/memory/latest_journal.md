@@ -257,7 +257,7 @@ Iâ€™m improving at cutting dead branches, but I still feel the temptation to ove
 - If VVV v3 improves PF but worsens DD materially, next revision changes only stop geometry.
 
 
-## Entry 032 — Reflection Cycle: Density Discipline, Regime Isolation, and One-Change Refinements (2026-03-08, 20:42 AEST)
+## Entry 032 ï¿½ Reflection Cycle: Density Discipline, Regime Isolation, and One-Change Refinements (2026-03-08, 20:42 AEST)
 
 I processed the full reflection packet and deduplicated repeated records.
 - Raw rows: 189
@@ -267,53 +267,53 @@ I processed the full reflection packet and deduplicated repeated records.
 
 ### Per-result evaluation (all unique variants)
 
-1. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v1` / `axs_channel_shortbias_balanced` — 48 trades, PF 0.7147. Adequate trades but anti-edge. Regime split: ranging works better than trending. **Iterate historically; superseded by later variants.**
-2. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v2` / `axs_channel_shortbias_range_only` — 48 trades, PF 0.7147. No improvement vs v1. **Stagnant, superseded.**
-3. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v3` / `axs_channel_shortbias_range_density_v3` — 50 trades, PF 0.7852. Closer to viability, still sub-0.8. **Continue lineage via newer v6+.**
-4. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v4` / `axs_channel_shortbias_transition_probe_v4` — 77 trades, PF 1.0576. Marginal edge with good density; transitional strongest. **Iterate.**
-5. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v5` / `axs_channel_shortbias_regime_restrict_v5` — 77 trades, PF 1.0576. Same as v4. **Iterate.**
-6. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v6` / `axs_channel_shortbias_tail_extension_v6` — 74 trades, PF 1.0805, QScore 0.445. Better PF than v5. **Improved -> keep iterating.**
+1. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v1` / `axs_channel_shortbias_balanced` ï¿½ 48 trades, PF 0.7147. Adequate trades but anti-edge. Regime split: ranging works better than trending. **Iterate historically; superseded by later variants.**
+2. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v2` / `axs_channel_shortbias_range_only` ï¿½ 48 trades, PF 0.7147. No improvement vs v1. **Stagnant, superseded.**
+3. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v3` / `axs_channel_shortbias_range_density_v3` ï¿½ 50 trades, PF 0.7852. Closer to viability, still sub-0.8. **Continue lineage via newer v6+.**
+4. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v4` / `axs_channel_shortbias_transition_probe_v4` ï¿½ 77 trades, PF 1.0576. Marginal edge with good density; transitional strongest. **Iterate.**
+5. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v5` / `axs_channel_shortbias_regime_restrict_v5` ï¿½ 77 trades, PF 1.0576. Same as v4. **Iterate.**
+6. `QD-20260308-AXS-CHANNEL-SHORTBIAS-v6` / `axs_channel_shortbias_tail_extension_v6` ï¿½ 74 trades, PF 1.0805, QScore 0.445. Better PF than v5. **Improved -> keep iterating.**
 
-7. `QD-20260308-BANANA-FUNDING-REVERSION-v1` — 1 trade, PF 999 artifact. **Too restrictive (non-inferential), abandon.**
-8. `QD-20260308-BANANA-FUNDING-REVERSION-v2` — 1 trade, PF 999 artifact. **Abandon.**
-9. `QD-20260308-BANANA-FUNDING-REVERSION-v3` — 1 trade, PF 999 artifact. **Abandon (3+ stagnant sparse iterations).**
+7. `QD-20260308-BANANA-FUNDING-REVERSION-v1` ï¿½ 1 trade, PF 999 artifact. **Too restrictive (non-inferential), abandon.**
+8. `QD-20260308-BANANA-FUNDING-REVERSION-v2` ï¿½ 1 trade, PF 999 artifact. **Abandon.**
+9. `QD-20260308-BANANA-FUNDING-REVERSION-v3` ï¿½ 1 trade, PF 999 artifact. **Abandon (3+ stagnant sparse iterations).**
 
-10. `QD-20260308-BTC-CARRY-SQUEEZE-v2` — 79 trades, PF 0.7587. Good density but no regime >1 except weak pockets. **Abandon branch.**
-11. `QD-20260308-BTC-CARRY-SQUEEZE-v3` — 79 trades, PF 0.7587. Stagnant. **Abandon.**
-12. `QD-20260308-BTC-CARRY-SQUEEZE-v4` — 88 trades, PF 0.6969. Worse. **Abandon.**
-13. `QD-20260308-BTC-CARRY-SQUEEZE-v5` — 143 trades, PF 0.9910. Marginal but still failing score due cost drag. **Final rescue already attempted; retire for now.**
-14. `aq_btc_carry_squeeze_v1` / balanced — 125 trades, PF 0.9372. **No durable edge. Abandon.**
-15. `aq_btc_carry_squeeze_v1` / long_bias — 143 trades, PF 0.9910. **Near breakeven but still negative after costs. Abandon.**
+10. `QD-20260308-BTC-CARRY-SQUEEZE-v2` ï¿½ 79 trades, PF 0.7587. Good density but no regime >1 except weak pockets. **Abandon branch.**
+11. `QD-20260308-BTC-CARRY-SQUEEZE-v3` ï¿½ 79 trades, PF 0.7587. Stagnant. **Abandon.**
+12. `QD-20260308-BTC-CARRY-SQUEEZE-v4` ï¿½ 88 trades, PF 0.6969. Worse. **Abandon.**
+13. `QD-20260308-BTC-CARRY-SQUEEZE-v5` ï¿½ 143 trades, PF 0.9910. Marginal but still failing score due cost drag. **Final rescue already attempted; retire for now.**
+14. `aq_btc_carry_squeeze_v1` / balanced ï¿½ 125 trades, PF 0.9372. **No durable edge. Abandon.**
+15. `aq_btc_carry_squeeze_v1` / long_bias ï¿½ 143 trades, PF 0.9910. **Near breakeven but still negative after costs. Abandon.**
 
-16. `QD-20260308-BTC-GCHANNEL-SWITCH-v1` — 217 trades, PF 0.6026, deep drawdown. High density but structurally wrong edge sign. **Abandon.**
+16. `QD-20260308-BTC-GCHANNEL-SWITCH-v1` ï¿½ 217 trades, PF 0.6026, deep drawdown. High density but structurally wrong edge sign. **Abandon.**
 
-17. `QD-20260308-ETH-FUNDING-REVERSION-v1` — 0 trades. Entry logic inactive. **Fundamentally broken; abandon this architecture.**
-18. `QD-20260308-ETH-FUNDING-REVERSION-v2` — 0 trades after threshold relax. **No activation; abandon.**
+17. `QD-20260308-ETH-FUNDING-REVERSION-v1` ï¿½ 0 trades. Entry logic inactive. **Fundamentally broken; abandon this architecture.**
+18. `QD-20260308-ETH-FUNDING-REVERSION-v2` ï¿½ 0 trades after threshold relax. **No activation; abandon.**
 
-19. `QD-20260308-ETH-PIVOT-SUPERTREND-ADAPTIVE-v1` — 6 trades, PF 0.00. Too restrictive + anti-edge. **Abandon.**
-20. `QD-20260308-ETH-VTX-CHOP-TRANS-v1` — 2 trades, PF 0.00. Too restrictive. **Abandon.**
-21. `QD-20260308-ETH-VTX-COUNTERSWING-v2` — 9 trades, PF 0.00. Anti-edge. **Abandon.**
-22. `QD-20260308-ETH-VTX-COUNTERSWING-v3` — 9 trades, PF 0.00. No improvement. **Abandon.**
-23. `test_ema_cross` — 10 trades, PF 0.2843. Low N + anti-edge. **Abandon.**
+19. `QD-20260308-ETH-PIVOT-SUPERTREND-ADAPTIVE-v1` ï¿½ 6 trades, PF 0.00. Too restrictive + anti-edge. **Abandon.**
+20. `QD-20260308-ETH-VTX-CHOP-TRANS-v1` ï¿½ 2 trades, PF 0.00. Too restrictive. **Abandon.**
+21. `QD-20260308-ETH-VTX-COUNTERSWING-v2` ï¿½ 9 trades, PF 0.00. Anti-edge. **Abandon.**
+22. `QD-20260308-ETH-VTX-COUNTERSWING-v3` ï¿½ 9 trades, PF 0.00. No improvement. **Abandon.**
+23. `test_ema_cross` ï¿½ 10 trades, PF 0.2843. Low N + anti-edge. **Abandon.**
 
-24. `QD-20260308-SOL-FUNDING-REVERSION-v1` — 1 trade, PF 999 artifact. **Abandon.**
-25. `QD-20260308-SOL-FUNDING-REVERSION-v2` — 1 trade, PF 999 artifact. **Abandon.**
-26. `QD-20260308-SOL-FUNDING-REVERSION-v3` — 1 trade, PF 999 artifact. **Abandon (3+ sparse iterations).**
+24. `QD-20260308-SOL-FUNDING-REVERSION-v1` ï¿½ 1 trade, PF 999 artifact. **Abandon.**
+25. `QD-20260308-SOL-FUNDING-REVERSION-v2` ï¿½ 1 trade, PF 999 artifact. **Abandon.**
+26. `QD-20260308-SOL-FUNDING-REVERSION-v3` ï¿½ 1 trade, PF 999 artifact. **Abandon (3+ sparse iterations).**
 
-27. `QD-20260308-SOL-PIVOT-SUPERTREND-RSI-v1` — 39 trades, PF 0.4121. Enough trades, edge clearly negative in dominant regime. **Abandon.**
-28. `QD-20260308-SOL-PIVOT-SUPERTREND-v1` — 36 trades, PF 0.2329. **Abandon.**
-29. `QD-20260308-SOL-PIVOT-SUPERTREND-v2` — 36 trades, PF 0.2329. **Abandon.**
+27. `QD-20260308-SOL-PIVOT-SUPERTREND-RSI-v1` ï¿½ 39 trades, PF 0.4121. Enough trades, edge clearly negative in dominant regime. **Abandon.**
+28. `QD-20260308-SOL-PIVOT-SUPERTREND-v1` ï¿½ 36 trades, PF 0.2329. **Abandon.**
+29. `QD-20260308-SOL-PIVOT-SUPERTREND-v2` ï¿½ 36 trades, PF 0.2329. **Abandon.**
 
-30. `QD-20260308-TAO-PIVOT-SUPERTREND-v1` — 26 trades, PF 0.9013. Transitional PF good, trending bad. **Superseded by transition-only branch.**
-31. `QD-20260308-TAO-PIVOT-SUPERTREND-v2` — 26 trades, PF 0.9013. No improvement. **Superseded/retired.**
-32. `QD-20260308-TAO-TRANSITION-SUPERTREND-v3` — 13 trades, PF 1.3374, QScore 0.9073. Strong PF pocket but <15 trades -> entry still too restrictive. **Iterate by relaxing one gate.**
+30. `QD-20260308-TAO-PIVOT-SUPERTREND-v1` ï¿½ 26 trades, PF 0.9013. Transitional PF good, trending bad. **Superseded by transition-only branch.**
+31. `QD-20260308-TAO-PIVOT-SUPERTREND-v2` ï¿½ 26 trades, PF 0.9013. No improvement. **Superseded/retired.**
+32. `QD-20260308-TAO-TRANSITION-SUPERTREND-v3` ï¿½ 13 trades, PF 1.3374, QScore 0.9073. Strong PF pocket but <15 trades -> entry still too restrictive. **Iterate by relaxing one gate.**
 
-33. `QD-20260308-VVV-FUNDING-SNAPBACK-v1` — 216 trades, PF 1.1011, QScore 0.5323. Best VVV variant so far. **Iterate.**
-34. `QD-20260308-VVV-FUNDING-SNAPBACK-v2` — 214 trades, PF 0.9961. Marginal/flat. **Iterate with risk tuning.**
-35. `QD-20260308-VVV-FUNDING-SNAPBACK-v3` — 214 trades, PF 1.0236, QScore 0.09. Marginal edge with cost pressure. **Iterate with one risk change.**
+33. `QD-20260308-VVV-FUNDING-SNAPBACK-v1` ï¿½ 216 trades, PF 1.1011, QScore 0.5323. Best VVV variant so far. **Iterate.**
+34. `QD-20260308-VVV-FUNDING-SNAPBACK-v2` ï¿½ 214 trades, PF 0.9961. Marginal/flat. **Iterate with risk tuning.**
+35. `QD-20260308-VVV-FUNDING-SNAPBACK-v3` ï¿½ 214 trades, PF 1.0236, QScore 0.09. Marginal edge with cost pressure. **Iterate with one risk change.**
 
-36. `SS-20260308-QD01` / `btc_chop_fade_defensive` — 0 trades. Logic broken. **Abandon.**
-37. `SS-20260308-QD01` / `btc_chop_fade_balanced` — 0 trades. Logic broken. **Abandon.**
+36. `SS-20260308-QD01` / `btc_chop_fade_defensive` ï¿½ 0 trades. Logic broken. **Abandon.**
+37. `SS-20260308-QD01` / `btc_chop_fade_balanced` ï¿½ 0 trades. Logic broken. **Abandon.**
 
 ### Lifecycle decisions
 - **Continue iterating:** `axs_channel_shortbias`, `vvv_funding_snapback`, `tao_transition_supertrend`
@@ -336,3 +336,58 @@ I processed the full reflection packet and deduplicated repeated records.
 - Low-trade PF mirages remain a major ranking hazard. I strongly recommend auto-labeling `<15 trades` as exploratory-only.
 - Regime diagnostics continue to be the only reason marginal families are salvageable (AXS/TAO/VVV) instead of discarded with aggregate-only views.
 - ETH funding branch failed even after threshold relax; this looks like a structural mismatch between trigger logic and ETH funding distribution at 1h.
+
+## Entry 032 â€” Controlled TAO Density Expansion Under Active Orders (2026-03-08, 23:12 AEST)
+
+I reread the orders first. The instruction is controlled adaptability with bounded risk, not random re-architecture. So I refined an existing positive branch with exactly one parameter change.
+
+### Strategy written this cycle
+- `artifacts/strategy_specs/QD-20260308-TAO-TRANSITION-SUPERTREND-v5.strategy_spec.json`
+
+### What changed
+- **Single change only:** ADX upper bound widened from **27 -> 28**.
+- Everything else kept constant (entry structure, exits, sizing, execution policy).
+
+### Rationale
+- TAO transition branch has shown real edge quality in the transitional regime, but trade count remains borderline for confidence.
+- This is a strict density probe: widen one side of the band by one point and observe whether sample size improves without collapsing PF.
+
+### Risk posture check
+- No increase to risk per trade.
+- No leverage or concurrency expansion.
+- Hard stop + time stop unchanged.
+- Fully aligned with kickstart order intent: fresh candidate, bounded exploration, unchanged hard risk profile.
+
+### Next step
+Backtest v5 against v4 and v3 with a three-metric gate:
+1) trade count >= 18,
+2) PF >= 1.10,
+3) max drawdown <= 4.5%.
+If v5 fails any two of these, freeze ADX widening and shift next refinement to exit-shape only.
+
+## Entry 033 â€” Enforcing Anti-Range Logic in AXS (2026-03-08, 23:20 AEST)
+
+Read orders first, then executed a bounded refinement. I did not widen risk, leverage, or position count.
+
+### Strategy written this cycle
+- `artifacts/strategy_specs/QD-20260308-AXS-CHANNEL-SHORTBIAS-v8.strategy_spec.json`
+
+### What changed
+- Added explicit **ADX_14 >= 20** gate to both long and short entries.
+- Added `ADX_14` indicator and `adx_min` parameter for transparency.
+- Kept stop, TP, sizing, hold time, and execution policy unchanged from v7.
+
+### Why this refinement
+AXS is profitable in trending/transitional but leaks losses in ranging conditions. Regime metadata alone is not enough; this puts anti-range filtering directly in entry logic.
+
+### Risk posture
+- Risk/trade unchanged at 0.45%.
+- Same hard stop and time stop.
+- No extra concurrency, no reverse flips.
+
+### Next step
+Compare v8 vs v7 on three checkpoints:
+1) PF uplift target >= 1.20,
+2) drawdown non-inferior to v7 (<= 5.9%),
+3) trade count remains viable (>= 55).
+If v8 over-filters and collapses count, next iteration should relax ADX floor to 18 (single-variable change).
