@@ -13,6 +13,34 @@ CREATE INDEX IF NOT EXISTS idx_bt_score ON backtest_results(score_total DESC);
 CREATE INDEX IF NOT EXISTS idx_bt_decision ON backtest_results(score_decision);
 CREATE INDEX IF NOT EXISTS idx_bt_family_stage_killed ON backtest_results(strategy_family, stage, killed);
 
+CREATE TABLE IF NOT EXISTS research_funnel_queue (
+  id TEXT PRIMARY KEY,
+  cycle_id INTEGER,
+  spec_path TEXT NOT NULL,
+  strategy_spec_id TEXT NOT NULL,
+  variant_id TEXT NOT NULL,
+  asset TEXT NOT NULL,
+  timeframe TEXT NOT NULL,
+  stage TEXT NOT NULL,
+  bucket TEXT NOT NULL,
+  priority INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'queued',
+  queued_at TEXT NOT NULL,
+  started_at TEXT,
+  completed_at TEXT,
+  parent_result_id TEXT,
+  mutation_type TEXT,
+  family_generation INTEGER NOT NULL DEFAULT 1,
+  strategy_family TEXT,
+  validation_target TEXT NOT NULL DEFAULT '',
+  source_queue_id TEXT,
+  notes TEXT,
+  result_id TEXT,
+  UNIQUE(spec_path, variant_id, asset, timeframe, stage, validation_target)
+);
+CREATE INDEX IF NOT EXISTS idx_funnel_queue_status ON research_funnel_queue(status, stage, bucket, priority, queued_at);
+CREATE INDEX IF NOT EXISTS idx_funnel_queue_cycle ON research_funnel_queue(cycle_id, status, bucket, priority);
+
 CREATE TABLE IF NOT EXISTS lessons (id TEXT PRIMARY KEY, ts_iso TEXT NOT NULL, backtest_result_id TEXT NOT NULL, strategy_spec_id TEXT NOT NULL, lesson_type TEXT NOT NULL, observation TEXT NOT NULL, implication TEXT NOT NULL, actionable INTEGER NOT NULL DEFAULT 0, suggested_action TEXT, confidence TEXT, applied_in TEXT);
 
 CREATE TABLE IF NOT EXISTS refinements (id TEXT PRIMARY KEY, ts_iso TEXT NOT NULL, source_strategy_spec_id TEXT NOT NULL, lesson_ids TEXT NOT NULL, changes TEXT NOT NULL, new_strategy_spec_id TEXT NOT NULL, rationale TEXT NOT NULL, iteration INTEGER NOT NULL DEFAULT 1, max_iterations INTEGER NOT NULL DEFAULT 5);

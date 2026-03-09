@@ -25,7 +25,8 @@ steps:
 
   - id: backtest
     # File/state handoff from capture-cycle-specs -> backtest:
-    # runner consumes current_cycle_specs.json manifest; it does not read stdin.
+    # runner seeds the SQLite research_funnel_queue from current_cycle_specs.json, then processes staged work
+    # within the same cycle (screen -> full -> validation) subject to per-cycle limits.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\parallel_runner.py --manifest C:\Users\Clamps\.openclaw\workspace-oragorn\data\state\current_cycle_specs.json --variant all'
 
   - id: leaderboard-update
