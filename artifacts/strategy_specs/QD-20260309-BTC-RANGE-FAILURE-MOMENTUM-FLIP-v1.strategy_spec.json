@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-RANGE-FAILURE-MOMENTUM-FLIP-v1",
+  "ts_iso": "2026-03-10T06:39:00Z",
+  "thesis_id": "cycle_120_btc_range_failure_momentum_flip_v1",
+  "name": "BTC Range Failure Momentum Flip v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","DONCHIAN_HIGH_20","DONCHIAN_LOW_20","SUPERTd_10_3.0","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","VWAP"],
+  "entry_rules": {
+    "long": [
+      "Disabled: thesis is range-failure bearish flip only"
+    ],
+    "short": [
+      "high >= DONCHIAN_HIGH_20",
+      "Close < VWAP",
+      "Close < DONCHIAN_HIGH_20 - 0.35 * ATR_14",
+      "SUPERTd_10_3.0 crosses_below 0",
+      "ADX_14 >= 18",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "FundingRate >= -0.00001"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Disabled: thesis is bearish range-failure only"],
+    "short": ["Stop loss: 1.15 * ATR_14 above entry","Take profit: 3.0 * ATR_14 below entry","Early exit if SUPERTd_10_3.0 crosses_above 0","Time stop: 9 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Range-failure momentum flip after value loss. BTC must probe the upper range edge, fail back inside, lose value, and then confirm a bearish state change through a Supertrend flip with downside directional strength. This is the momentum-flip branch, distinct from the squeeze rejection and funding-aware anchor failure branches."},
+  "variants": [{"name": "btc_range_failure_momentum_flip_v1","template_name": "range_failure_momentum_flip_short","parameters": [{"name": "donchian_period", "value": 20},{"name": "range_fail_buffer_atr", "value": 0.35},{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "adx_floor", "value": 18}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.15,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 9},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=short_only","cooldown_bars=1","skip_entry_if_close_below_donchian_low_20"]}],
+  "complexity_score": 2.4,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

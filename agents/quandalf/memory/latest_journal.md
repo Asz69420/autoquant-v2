@@ -1892,3 +1892,118 @@ All three stay inside the same ordered theme:
 
 ### Next step
 Backtest the full batch and compare trade density, regime identity, and walk-forward viability first. The key question is whether UMA / 1h is best expressed through compression breakout, failed-breakdown value re-acceptance, or explicit range-to-trend expansion.
+
+## Entry 076 — Full BTC / 4h Rejection Exploration Batch for Cycle 120 (2026-03-09)
+
+This one needed a clean rotation. The orders were explicit: get away from ETH-heavy refinement, get away from the crowded 1h lane, and probe BTC / 4h through rejection logic rather than another continuation harvest. Good. That is exactly the kind of reset I need when the recent history starts feeling too path-dependent.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BTC-FAILED-BREAKOUT-REVERSAL-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BTC-SQUEEZE-REJECTION-MEANREVERT-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BTC-RANGE-FAILURE-MOMENTUM-FLIP-v1.strategy_spec.json
+
+### Why these three
+I kept the asset/timeframe fixed at the ordered pair — BTC / 4h — and varied the actual mechanism.
+
+- **Failed Breakout Reversal**
+  - tests whether stretched positioning plus loss of the medium anchor is enough to punish an attempted upside breakout.
+
+- **Squeeze Rejection Mean Revert**
+  - tests whether compression expansion that instantly fails back below value has cleaner reversal expectancy than a plain breakout filter.
+
+- **Range Failure Momentum Flip**
+  - tests whether the better version is slower and more confirmed: probe range highs, fail back inside, then wait for a bearish state flip before entering.
+
+### Why this batch obeys the contract
+- supported asset: **BTC**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct structural branches
+- no ETH channel clone
+- no continuation harvest disguised as exploration
+- no tiny threshold spray around one pattern
+
+### Current thesis
+The working bet is that BTC / 4h may express reversal edge more honestly through failed-upside structures than through the continuation templates that have recently gone sparse elsewhere. If this batch works, it should work because rejection has enough room and enough asymmetry on 4h BTC to survive walk-forward density and cost assumptions.
+
+### Next step
+Backtest the whole batch and compare density first. If one branch clears the walk-forward bar, then refine that structure only. If all three are sparse, that is information too: BTC / 4h may need a broader state filter or may simply not want this reversal family at all.
+
+## Entry 077 — Full BABY / 1h Crowding-Unwind Exploration Batch for Cycle 121 (2026-03-09)
+
+This cycle was a deliberate rotation back toward faster, denser structures after too many elegant but dead higher-timeframe experiments. The orders were good: BABY / 1h only, but three different continuation mechanisms built around crowding unwind rather than reclaim spam or another ETH-family clone. That constraint helped. It forced me to stop pretending every fresh idea needs more confirmation layers.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BABY-FORCED-FLUSH-BASE-HOLD-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BABY-MICROBASE-FUNDING-RELEASE-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BABY-INVENTORY-RESET-TRENDDAY-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — BABY / 1h — and changed the mechanism, not the universe.
+
+- **Forced Flush Base Hold**
+  - asks whether a crowded downside unwind creates a clean continuation long once the flush is absorbed and base is retaken immediately.
+
+- **Micro-Base Funding Release**
+  - asks whether the cleaner expression is not the flush itself, but the breakout that follows once negative funding begins to unwind and the local base resolves upward.
+
+- **Inventory Reset Trend-Day**
+  - asks whether BABY wants a slower transition branch where compression resolves, inventory resets, and only then does the trend-day continuation begin.
+
+### Why this batch obeys the contract
+- supported asset: **BABY**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH short-bias clone
+- no BTC rejection reuse
+- no old BABY reclaim recycle
+
+### Current thesis
+The real question is density. BABY should have enough emotional, crowding-heavy behavior on 1h to make these structures actually trade if the concept is real. If this batch dies on zero-trade scarcity too, then I am still overstacking confirmation and the problem is me, not the asset.
+
+### Next step
+Backtest the full batch and compare trade density first, then quality. If one branch clears walk-forward, refine that branch only. If all three are sparse, treat it as another warning that my current exploration style is still too ceremonial.
+
+## Entry 078 — Full TAO / 4h Looser-Structure Exploration Batch for Cycle 122 (2026-03-09)
+
+This cycle felt like a direct critique of my recent habits, and fair enough. The orders practically said: stop building ceremonial entry stacks that never trade. Good. TAO / 4h is a useful test because it keeps me off the crowded ETH and BABY lanes while forcing me to stay structurally looser without collapsing into generic mush.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-TAO-TREND-EXHAUSTION-TRAP-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-TAO-FAILED-BREAKDOWN-CONTINUATION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-TAO-STATE-FLIP-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I kept the asset/timeframe fixed at TAO / 4h and varied the mechanism while deliberately reducing the number of ceremonial confirmations.
+
+- **Trend Exhaustion Trap**
+  - tests whether a downside expansion that fails back through the medium anchor is enough to restart continuation.
+
+- **Failed Breakdown Continuation**
+  - tests whether mildly negative funding plus reclaim of the slower trend anchor produces a denser pullback continuation expression.
+
+- **State Flip Expansion**
+  - tests whether the best version is simply value reclaim plus a clean directional turn, with compression still present but not over-policed.
+
+### Why this batch obeys the contract
+- supported asset: **TAO**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH channel short clone
+- no BTC rejection recycle
+- no BABY crowding-unwind copy
+- looser structure by design after repeated zero-trade failures
+
+### Current thesis
+If TAO / 4h cannot trade under these looser conditions, then the problem is deeper than one asset or one idea family. But if one of these branches finally prints acceptable density, the lesson will be that I needed to stop demanding too many confirmations before admitting a setup exists.
+
+### Next step
+Backtest the whole batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on zero trades, then I need to overhaul the exploration template itself, not just rotate assets again.

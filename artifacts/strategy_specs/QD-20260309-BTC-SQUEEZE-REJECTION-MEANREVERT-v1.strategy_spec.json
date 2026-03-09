@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-SQUEEZE-REJECTION-MEANREVERT-v1",
+  "ts_iso": "2026-03-10T06:39:00Z",
+  "thesis_id": "cycle_120_btc_squeeze_rejection_meanrevert_v1",
+  "name": "BTC Squeeze Rejection Mean Revert v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","BBW_20_2.0","KCU_20_1.5","KCM_20_1.5","ATR_14","RSI_14","MFI_14","VWAP","EMA_21"],
+  "entry_rules": {
+    "long": [
+      "Disabled: thesis is rejection after upside excess and value loss"
+    ],
+    "short": [
+      "BBW_20_2.0 <= 0.12",
+      "high > KCU_20_1.5",
+      "Close < KCM_20_1.5",
+      "Close < VWAP",
+      "Close < EMA_21",
+      "FundingRate >= 0.0",
+      "RSI_14 crosses_below 52",
+      "MFI_14 crosses_below 50"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Disabled: thesis is bearish rejection only"],
+    "short": ["Stop loss: 1.05 * ATR_14 above entry","Take profit: 2.4 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 6 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["ranging","transitional"],"detection_method": "Volatility squeeze rejection from local excess. BTC must compress first, expand through the upper squeeze boundary, then immediately reject back under the Keltner midline and value before the short arms. This is a mean-reversion rejection branch, not a trend-following continuation idea."},
+  "variants": [{"name": "btc_squeeze_rejection_meanrevert_v1","template_name": "squeeze_rejection_short","parameters": [{"name": "bbw_max", "value": 0.12},{"name": "kc_period", "value": 20},{"name": "kc_mult", "value": 1.5},{"name": "ema_anchor", "value": 21},{"name": "rsi_flip", "value": 52},{"name": "mfi_flip", "value": 50}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 2.4,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 6},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=short_only","cooldown_bars=1","skip_entry_if_funding_rate_lt_0"]}],
+  "complexity_score": 2.1,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

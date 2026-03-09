@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-FORCED-FLUSH-BASE-HOLD-v1",
+  "ts_iso": "2026-03-10T06:45:00Z",
+  "thesis_id": "cycle_121_baby_forced_flush_base_hold_v1",
+  "name": "BABY Forced Flush Base Hold v1",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": ["FundingRate","EMA_21","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00022",
+      "low <= EMA_21 - 1.1 * ATR_14",
+      "Close > EMA_21",
+      "Close > VWAP",
+      "RSI_14 crosses_above 46",
+      "MFI_14 >= 48",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Disabled: thesis is forced-flush continuation to the upside only"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry","Take profit: 2.5 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 10 bars"],
+    "short": ["Disabled: thesis is long-only" ]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Crowding unwind continuation after forced flush. BABY must print a downside excess while funding is still strongly negative, then immediately retake EMA_21 and VWAP and hold base. This is a continuation-after-washout branch, not a generic reclaim pattern."},
+  "variants": [{"name": "baby_forced_flush_base_hold_v1","template_name": "flush_base_hold_long","parameters": [{"name": "funding_extreme_neg", "value": -0.00022},{"name": "ema_anchor", "value": 21},{"name": "flush_atr_mult", "value": 1.1},{"name": "rsi_reclaim", "value": 46},{"name": "mfi_floor", "value": 48},{"name": "adx_floor", "value": 14}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.0,"tp_type": "atr","tp_atr_mult": 2.5,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1","skip_entry_if_atr_percentile_gt_98"]}],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

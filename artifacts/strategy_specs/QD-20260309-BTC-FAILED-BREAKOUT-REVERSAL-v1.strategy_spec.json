@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-FAILED-BREAKOUT-REVERSAL-v1",
+  "ts_iso": "2026-03-10T06:39:00Z",
+  "thesis_id": "cycle_120_btc_failed_breakout_reversal_v1",
+  "name": "BTC Failed Breakout Reversal v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","EMA_21","EMA_55","ATR_14","RSI_14","ADX_14","PLUS_DI_14","MINUS_DI_14","VWAP"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00002",
+      "high >= EMA_21 + 1.0 * ATR_14",
+      "Close < EMA_21",
+      "Close < VWAP",
+      "RSI_14 <= 48",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "ADX_14 >= 17",
+      "EMA_21 > EMA_55"
+    ],
+    "short": [
+      "FundingRate >= 0.00002",
+      "high >= EMA_21 + 1.0 * ATR_14",
+      "Close < EMA_21",
+      "Close < VWAP",
+      "RSI_14 <= 48",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "ADX_14 >= 17",
+      "EMA_21 >= EMA_55"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Disabled: thesis is bearish failed-breakout only"],
+    "short": ["Stop loss: 1.2 * ATR_14 above entry","Take profit: 2.8 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 8 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","ranging"],"detection_method": "Funding-aware failed-breakout reversal. BTC must overextend above the medium anchor, then lose EMA_21 and VWAP with downside directional pressure taking control while funding remains stretched. This tests post-breakout failure, not continuation or reclaim."},
+  "variants": [{"name": "btc_failed_breakout_reversal_v1","template_name": "failed_breakout_reversal_short","parameters": [{"name": "funding_pos_stretch", "value": 0.00002},{"name": "ema_fast", "value": 21},{"name": "ema_slow", "value": 55},{"name": "excess_atr_mult", "value": 1.0},{"name": "rsi_ceiling", "value": 48},{"name": "adx_floor", "value": 17}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.2,"tp_type": "atr","tp_atr_mult": 2.8,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 8},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=short_only","cooldown_bars=1","skip_entry_if_atr_percentile_gt_98"]}],
+  "complexity_score": 2.3,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
