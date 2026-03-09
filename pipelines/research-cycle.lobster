@@ -51,7 +51,11 @@ steps:
     # cycle-postprocess reads current_cycle_status.json, manifest, run-state, DB rows, and journals.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-postprocess.py'
 
+  - id: refinement-run
+    # Chained handoff: refinement runs only after cooking/research has completed and posted its current-cycle results.
+    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\refinement_cycle.py'
+
   - id: logron-health
-    # Final health/reporting pass after the research cycle finishes.
+    # Final health/reporting pass after the chained cooking -> refinement cycle finishes.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\logron-monitor.py'
 
