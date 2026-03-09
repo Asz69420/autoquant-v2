@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-UMA-INTRADAY-COMPRESSION-BREAK-RETAINED-VALUE-v1",
+  "ts_iso": "2026-03-10T08:11:00Z",
+  "thesis_id": "cycle_132_uma_intraday_compression_break_retained_value_v1",
+  "name": "UMA Intraday Compression Break Retained Value v1",
+  "version": "1.0",
+  "asset": "UMA",
+  "timeframe": "1h",
+  "indicators": ["BBW_20_2.0","EMA_21","EMA_50","VWAP","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "BBW_20_2.0 <= 0.20",
+      "Close > EMA_21",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "ADX_14 >= 15",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Disabled: thesis is bullish compression break with retained value only"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.05 * ATR_14 below entry","Take profit: 2.8 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 10 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Intraday compression break with retained value. UMA must keep value above the fast/medium anchor stack and VWAP while compression stays tight, then continue as directional strength expands. This is broader than the prior zero-trade grammar and avoids raw breakout chasing."},
+  "variants": [{"name": "uma_intraday_compression_break_retained_value_v1","template_name": "intraday_compression_break_retained_value_long","parameters": [{"name": "bbw_max", "value": 0.20},{"name": "ema_fast", "value": 21},{"name": "ema_medium", "value": 50},{"name": "adx_floor", "value": 15}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 2.8,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

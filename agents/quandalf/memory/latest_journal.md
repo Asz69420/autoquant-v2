@@ -2314,3 +2314,156 @@ If SOL / 1h cannot print trades with these broader expressions, then the indictm
 
 ### Next step
 Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to be even simpler and more continuous than what I am writing now.
+
+## Entry 087 — Full BABY / 1h Density-First Exploration Batch for Cycle 131 (2026-03-09)
+
+This is a fair revisit, but only if the logic really changes. BABY was already a graveyard once, so the point was not to rename the same dead structure. The order made the actual bet explicit: funding is still heavily negative, density should exist, and if it still does not, then the fault is in my design expression rather than the lane itself.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BABY-FUNDING-UNWIND-SQUEEZE-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BABY-POST-LIQUIDATION-MICROBASE-ACCELERATION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BABY-INVENTORY-RESET-RECLAIM-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — BABY / 1h — and changed the mechanism while staying biased toward more live intraday expressions.
+
+- **Funding-Unwind Squeeze Continuation**
+  - tests whether the cleanest version is a base-hold continuation once funding becomes less negative and squeeze pressure starts releasing.
+
+- **Post-Liquidation Micro-Base Acceleration**
+  - tests whether BABY wants the fastest expression: flush, immediate base hold, and go.
+
+- **Inventory-Reset Reclaim Expansion**
+  - tests whether the better route is reclaiming downside inventory first and then turning on through a live intraday state flip.
+
+### Why this batch obeys the contract
+- supported asset: **BABY**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled BABY zero-trade grammar
+- no ceremonial confirmation stack
+
+### Current thesis
+If BABY / 1h cannot trade even with these broader expressions and still-negative funding context, then the conclusion gets sharper: I am still failing to write intraday structures that are alive enough for the walk-forward regime. But this is at least a fair test of that question.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to become even simpler and more continuous, not more clever.
+
+## Entry 088 — Full UMA / 1h Density-First Exploration Batch for Cycle 132 (2026-03-09)
+
+This was the right revisit target. UMA already failed once earlier in the day, which means this only makes sense if the expression changes for real. The order did that. It did not ask for the same reclaim/value grammar again. It asked for faster, denser intraday structures built around squeeze release, immediate state change, and retained value. That at least gives the lane a fair trial.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-UMA-NEGATIVE-FUNDING-SQUEEZE-RELEASE-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-UMA-FAILED-BREAKDOWN-STATE-FLIP-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-UMA-INTRADAY-COMPRESSION-BREAK-RETAINED-VALUE-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — UMA / 1h — and changed the mechanism while staying biased toward broader, more live intraday expressions.
+
+- **Negative-Funding Squeeze Release**
+  - tests whether the real edge appears once shorts stop paying peak negative funding and price is already holding base through squeeze release.
+
+- **Failed-Breakdown State Flip**
+  - tests whether the better route is reclaiming downside inventory and immediately turning on through a live momentum-state flip.
+
+- **Intraday Compression Break Retained Value**
+  - tests whether retained value above the fast/medium anchor stack is enough for a broader continuation expression without breakout ceremony.
+
+### Why this batch obeys the contract
+- supported asset: **UMA**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled BABY/SOL zero-trade grammar
+- no ceremonial multi-confirmation stack
+
+### Current thesis
+If UMA / 1h still cannot trade under these broader expressions, then the conclusion gets harder to avoid: even when I deliberately simplify the intraday language, I am still not describing signals that occur often enough to survive walk-forward validation. But this is at least a cleaner test than the earlier UMA pass.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to become even more continuous and less event-driven than what I am writing now.
+
+## Entry 089 — Full ETH / 4h Tail-Harvester Exploit Batch for Cycle 133 (2026-03-09)
+
+This is the right kind of exploit turn. Five straight exploration batches bought enough room to return to a family that has already proved itself, and ETH / 4h tail harvester is still the cleanest supported champion in the visible board. The job here is not invention. It is disciplined pressure on a strong baseline.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v12.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v13.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v14.strategy_spec.json
+
+### Why these three
+I stayed on the ordered family and changed only the refinement axis.
+
+- **v12 — drawdown trim**
+  - tests whether adding value acceptance and slightly tighter ATR risk can shave the 10.9% drawdown baseline without sacrificing the 85-trade density that makes the champion valuable.
+
+- **v13 — cleaner context**
+  - tests whether requiring a true state change and stronger ADX/RSI continuation context improves robustness enough to justify any density loss.
+
+- **v14 — faster invalidation**
+  - keeps entry broad and champion-like but attacks post-entry giveback by cutting stale tails sooner.
+
+### Why this batch obeys the contract
+- supported asset: **ETH**
+- supported timeframe: **4h**
+- mode: **exploit**
+- minimum specs: **2**
+- maximum specs: **3**
+- specs produced: **3**
+- one passing family only
+- focused exploit variants, not threshold spray
+- no drift into ETH 1h channel or KAMA-stoch logic
+- no unsupported transfer games
+
+### Current thesis
+The champion already has the hard thing: real density and real edge. So the right exploit question is narrow. Can I improve the drawdown profile or continuation quality without paying too much in activity? My current belief is that the drawdown-trim and faster-invalidation variants have a better chance than the cleaner-context variant, because this family can afford slight exit pressure better than it can afford heavy entry selectivity.
+
+### Next step
+Backtest the full exploit batch against the champion baseline directly. If one variant gets closer to QScore 4.6 while trimming drawdown under 10% and keeping trade count above 75, it deserves to replace the current reference. If none beat the champion, that is still useful information: it means the current local optimum is already hard to improve and should be left mostly intact.
+
+## Entry 090 — Full TAO / 4h Tradeable-Structure Exploration Batch for Cycle 134 (2026-03-09)
+
+This was the right rotation after another ETH / 4h exploit turn. TAO / 4h is useful precisely because it changes both the family attention and the structural pace without falling back into the same dead 1h grammar. The order was explicit about what not to do: no ETH-family cloning, no recycled BABY/SOL intraday choreography, and no event stacks that are too precious to trade.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-TAO-FAILED-BREAKDOWN-VALUE-RECLAIM-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-TAO-COMPRESSION-BREAKOUT-RETAINED-VALUE-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-TAO-SHALLOW-FUNDING-TREND-RESET-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — TAO / 4h — and changed the mechanism while staying biased toward broader, more tradeable expressions.
+
+- **Failed-Breakdown Value Reclaim**
+  - tests whether TAO continuation is best expressed after downside excess is reclaimed back above fast structure and value.
+
+- **Compression Breakout Retained Value**
+  - tests whether the cleaner route is retained higher-value acceptance through compression and then continuation with live directional strength.
+
+- **Shallow Funding Trend Reset**
+  - tests whether the denser branch is a shallower, funding-supported trend reset rather than a full breakdown-reclaim event.
+
+### Why this batch obeys the contract
+- supported asset: **TAO**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled BABY/SOL intraday grammar
+- no over-filtered event stack
+
+### Current thesis
+TAO / 4h should be a fair test of whether I can still write medium-speed structures that are both distinct and alive. If these still come back empty, then the problem is not one asset, one timeframe, or one market personality. It means my exploration grammar is still too selective even after repeated warnings.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to cut even deeper into the event-driven structure and move further toward continuous-state expression.

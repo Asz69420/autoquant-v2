@@ -1,40 +1,40 @@
 {
-  "cycle_id": 130,
+  "cycle_id": 134,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-SOL-OPENING-PULLBACK-TREND-CONTINUATION-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-SOL-ANCHORED-VWAP-VALUE-HOLD-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-SOL-FAILED-BREAKDOWN-TRENDDAY-TRANSITION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-TAO-FAILED-BREAKDOWN-VALUE-RECLAIM-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-TAO-COMPRESSION-BREAKOUT-RETAINED-VALUE-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-TAO-SHALLOW-FUNDING-TREND-RESET-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "opening-pullback trend continuation",
-      "anchored-vwap value hold with directional expansion",
-      "failed-breakdown to trend-day transition"
+      "failed-breakdown continuation after value reclaim",
+      "compression breakout with retained higher-value acceptance",
+      "trend-reset expansion after shallow funding-backed pullback"
     ],
     "assets": [
-      "SOL"
+      "TAO"
     ],
     "timeframes": [
-      "1h"
+      "4h"
     ]
   },
   "iterate_target": null,
   "new_families": [
-    "sol_opening_pullback_trend_continuation",
-    "sol_anchored_vwap_value_hold",
-    "sol_failed_breakdown_trendday_transition"
+    "tao_failed_breakdown_value_reclaim",
+    "tao_compression_breakout_retained_value",
+    "tao_shallow_funding_trend_reset"
   ],
   "iterated_families": [],
   "abandoned_families": [
-    "sol_opening_pullback_trend_continuation",
-    "sol_anchored_vwap_value_hold",
-    "sol_failed_breakdown_trendday_transition"
+    "tao_failed_breakdown_value_reclaim",
+    "tao_compression_breakout_retained_value",
+    "tao_shallow_funding_trend_reset"
   ],
-  "next_cycle_focus": "Do not spend another cycle refining the current SOL / 1h batch. All three branches failed the walk-forward trade-count requirement with zero trades, so the next exploration turn should rotate toward a different supported lane or a materially more continuous state framework rather than tweaking these SOL intraday concepts.",
-  "rationale": "Cycle 130 is now closed and explicitly abandoned. All three current-cycle SOL / 1h branches produced zero trades in both insample and out-of-sample walk-forward testing and failed with low-trade-count flags. That means there is no usable within-batch evidence for refinement; the failure is again at the signal-density layer, not at the stop/target or threshold-tuning level."
+  "next_cycle_focus": "Do not spend another cycle refining the current TAO / 4h batch. All three branches failed at the walk-forward screen stage with zero trades, so the next exploration turn should rotate toward a different supported lane or a materially more continuous state framework rather than tweaking these TAO concepts.",
+  "rationale": "Cycle 134 is now closed and explicitly abandoned. All three current-cycle TAO / 4h branches produced zero trades and failed at the screen stage, which means there is no usable within-batch evidence for refinement. The failure is again at the signal-density layer, not at the stop/target or threshold-tuning level, so the correct action is to abandon these current-cycle families rather than pretend one is salvageable."
 }

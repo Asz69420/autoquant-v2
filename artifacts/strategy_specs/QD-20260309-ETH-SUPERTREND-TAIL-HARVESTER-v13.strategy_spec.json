@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v13",
+  "ts_iso": "2026-03-10T08:15:00Z",
+  "thesis_id": "cycle_133_eth_supertrend_tail_harvester_v13",
+  "name": "ETH Supertrend Tail Harvester v13",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": ["SUPERTd_10_3.0","EMA_50","VWAP","ADX_14","ATR_14","PLUS_DI_14","MINUS_DI_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "SUPERTd_10_3.0 crosses_above 0",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "ADX_14 >= 17",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "RSI_14 >= 53"
+    ],
+    "short": [
+      "SUPERTd_10_3.0 crosses_below 0",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "ADX_14 >= 17",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "RSI_14 <= 47"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry","Take profit: 8.0 * ATR_14 above entry","Early exit if SUPERTd_10_3.0 crosses_below 0","Time stop: 18 bars"],
+    "short": ["Stop loss: 1.0 * ATR_14 above entry","Take profit: 8.0 * ATR_14 below entry","Early exit if SUPERTd_10_3.0 crosses_above 0","Time stop: 18 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending"],"detection_method": "Cleaner pre-entry trend-state confirmation. Keep the tail-harvester architecture intact, but require an actual Supertrend state change plus stronger ADX/RSI alignment before entry so tail captures happen in clearer continuation context rather than in softer transitional noise."},
+  "variants": [{"name": "eth_supertrend_tail_harvester_cleaner_context_v13","template_name": "supertrend_tail_harvester","parameters": [{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "ema_anchor", "value": 50},{"name": "adx_floor", "value": 17},{"name": "rsi_long_floor", "value": 53},{"name": "rsi_short_ceiling", "value": 47},{"name": "rr_target", "value": 8.0}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.0,"tp_type": "atr","tp_atr_mult": 8.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 18},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
