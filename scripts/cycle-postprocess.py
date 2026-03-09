@@ -525,13 +525,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines = []
     lines.append("🍳 Cooking")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
-    lines.append("○──activity────────────────────────")
+    lines.append("○────────────────activity────────────────")
     lines.append(f"Generated: {generated}")
     lines.append(f"Iterated: {iterated}")
     lines.append(f"Passed: {passed}")
     lines.append(f"Aborted: {aborted}")
     lines.append(f"Backtests: {backtests}")
-    lines.append("○──note────────────────────────────")
+    lines.append("○──────────────────note──────────────────")
     lines.append(note)
 
     return "\n".join(lines), metrics
@@ -590,7 +590,12 @@ def remember_card_send(cycle_id, card_text, fingerprint):
         json.dump(state, f, indent=2)
 
 
-def send_log_card(cycle_id, log_card):
+def send_log_card(cycle_id, log_card, metrics=None):
+    metrics = metrics or {}
+    has_current_cycle_results = bool(metrics.get("cycle_results_present")) or int(metrics.get("backtests_completed", 0) or 0) > 0
+    if not has_current_cycle_results:
+        return False
+
     should_send, fingerprint = should_send_card(cycle_id, log_card)
     if not should_send:
         return False
@@ -1202,7 +1207,7 @@ def main():
         backtest_count = count_backtests(rows)
         log_card, metrics = build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=run_state)
         write_cycle_metrics(metrics)
-        sent = send_log_card(cycle_id, log_card)
+        sent = send_log_card(cycle_id, log_card, metrics=metrics)
 
         print(json.dumps({"status": "card_sent" if sent else "card_skipped_duplicate", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "backtests": backtest_count, "total_in_db": total_rows, "card_metrics": metrics}))
         return
@@ -1286,7 +1291,7 @@ def main():
     backtest_count = count_backtests(rows)
     log_card, metrics = build_log_card(cycle_id, rows, elapsed, backtest_count, run_state=run_state)
     write_cycle_metrics(metrics)
-    log_card_sent = send_log_card(cycle_id, log_card)
+    log_card_sent = send_log_card(cycle_id, log_card, metrics=metrics)
 
     post_agent_message(
         "logron",

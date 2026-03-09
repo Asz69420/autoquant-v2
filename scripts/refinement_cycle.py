@@ -644,16 +644,16 @@ def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promot
         status_emoji = "🔬"
     lines = [
         "🔬 Refining",
-        f"{status_emoji} | ▶ {elapsed_text(run_state)} | 🆔 {cycle_id}",
-        "○──activity────────────────────────",
+        f"{status_emoji} | ▶️ {elapsed_text(run_state)} | 🆔 {cycle_id}",
+        "○────────────────activity────────────────",
         f"First: {int(round_counts.get(1, 0))}",
         f"Second: {int(round_counts.get(2, 0))}",
         f"Third: {int(round_counts.get(3, 0))}",
-        f"Backtests {int(tests_this_cycle)}",
-        f"Upgraded {int(upgrades)}",
-        f"Rejected {int(rejected)}",
-        f"Promoted {int(promoted)}",
-        "○──note────────────────────────────",
+        f"Backtests: {int(tests_this_cycle)}",
+        f"Upgraded: {int(upgrades)}",
+        f"Rejected: {int(rejected)}",
+        f"Promoted: {int(promoted)}",
+        "○──────────────────note──────────────────",
         note,
     ]
     return "\n".join(lines)

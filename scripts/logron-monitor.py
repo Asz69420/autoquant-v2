@@ -15,7 +15,7 @@ BANNERS = os.path.join(ROOT, "assets", "banners")
 GATEWAY_LOG_DIR = r"C:\tmp\openclaw"
 BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 HEALTH_SEND_STATE_PATH = os.path.join(ROOT, "data", "state", "health_send_state.json")
-HEALTH_COOLDOWN_SECONDS = 4 * 3600  # 4 hours between identical-status sends
+HEALTH_COOLDOWN_SECONDS = 24 * 3600  # daily-only resend for identical health state
 
 
 def send_log(message, bot="logron", channel="log", photo=None):
