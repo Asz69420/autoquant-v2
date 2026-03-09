@@ -1,7 +1,7 @@
 {
  "version": "journal-v1",
- "description": "Quandalf writes a journal entry each research cycle. Delivered to Asz via Telegram.",
- "schedule": "end_of_each_research_cycle",
+ "description": "Quandalf writes one dedicated daily journal for Asz. Live research cycles do not generate or deliver journals.",
+ "schedule": "daily_only",
  "delivery": {
  "channel": "asz_telegram_dm",
  "sender": "quandalf_bot",
@@ -25,7 +25,7 @@
  },
  "storage": {
  "live_file": "agents/quandalf/memory/daily_journal.md",
- "source_file": "agents/quandalf/memory/latest_journal.md",
+ "source_file": "agents/quandalf/memory/daily_journal.md",
  "archive_to": "agents/quandalf/memory/journal/",
  "filename_format": "YYYY-MM-DD-HHmm.md",
  "also_log_to_sqlite": true,

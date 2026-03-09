@@ -1262,22 +1262,12 @@ def main():
     for part in dm_parts:
         send_tg_as(part, "hades", "oragorn")
 
-    journal_text = sync_live_journal(cycle_id)
-
     journal_sent = False
-    if journal_text:
-        formatted = format_journal_html(journal_text)
-        journal_parts = split_message(formatted, 4000)
-        send_results = []
-        for i, part in enumerate(journal_parts):
-            header = "🧙 <b>Quandalf's Journal</b>\n\n" if i == 0 else ""
-            send_results.append(send_tg_as(header + part, "hades", "quandalf"))
-        journal_sent = all(send_results) if send_results else False
 
     log_event(
         "notification_sent",
         "oragorn",
-        f"Sent {len(rows)} result updates to Hades and a cooking card to log",
+        f"Sent {len(rows)} result updates to Hades and a cooking card to log; live cycle journal delivery disabled",
         pipeline="research_cycle",
         step="notify",
     )
