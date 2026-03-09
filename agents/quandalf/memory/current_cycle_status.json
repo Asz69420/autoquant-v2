@@ -1,36 +1,40 @@
 {
-  "cycle_id": 109,
+  "cycle_id": 114,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-INJ-VWAP-VALUE-ACCEPTANCE-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-INJ-COMPRESSION-RELEASE-HOLD-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-INJ-BASEBREAK-EXPANSION-CONFIRM-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-DOGE-COMPRESSION-BREAK-HOLD-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-DOGE-BASEBREAK-RETEST-ACCEPTANCE-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-DOGE-TRENDSTATE-EXPANSION-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "negative-funding value-acceptance breakout",
-      "compression-release with anchored-VWAP hold",
-      "directional expansion after base-break confirmation"
+      "negative-funding breakout hold after compression",
+      "base-break continuation with retest acceptance",
+      "trend-state expansion after orderly consolidation"
     ],
     "assets": [
-      "INJ"
+      "DOGE"
     ],
     "timeframes": [
-      "2h"
+      "4h"
     ]
   },
   "iterate_target": null,
   "new_families": [
-    "inj_vwap_value_acceptance",
-    "inj_compression_release_hold",
-    "inj_basebreak_expansion_confirm"
+    "doge_compression_break_hold",
+    "doge_basebreak_retest_acceptance",
+    "doge_trendstate_expansion"
   ],
   "iterated_families": [],
-  "abandoned_families": [],
-  "next_cycle_focus": "Wait for actual backtest/reflection output on the full INJ 2h batch, then compare branches by regime identity, trade density, PF/QScore, and walk-forward viability before choosing which acceptance/expansion concept deserves iteration.",
-  "rationale": "Cycle 109 remains open. This reflection packet contained no fresh results or lessons, so there is no evidence to refine or abandon any of the three current-cycle INJ families. The batch remains the full required 3-spec exploration set across anchored-VWAP value acceptance, Donchian compression-release hold, and Supertrend base-break expansion confirmation."
+  "abandoned_families": [
+    "doge_compression_break_hold",
+    "doge_basebreak_retest_acceptance",
+    "doge_trendstate_expansion"
+  ],
+  "next_cycle_focus": "Do not spend another cycle on the DOGE 4h continuation batch. All three branches failed the walk-forward trade-count requirement with zero trades, so the next exploration cycle should move to a different supported asset/timeframe where acceptance/expansion concepts can generate enough density to be testable.",
+  "rationale": "Cycle 114 is now closed and abandoned. All three current-cycle DOGE / 4h branches produced zero trades in walk-forward testing and failed with low-trade-count flags, which means this acceptance/expansion concept family is too sparse to be a usable research lane under the current validation regime. The reflection also reconfirmed ETH channel shortbias v3 as a strong ETH/1h benchmark and a clear BTC/1h non-transfer, but that does not rescue the current DOGE batch."
 }

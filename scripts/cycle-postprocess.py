@@ -343,6 +343,16 @@ def summarize_best_result(rows_dict):
     }
 
 
+def phase_state(done=False, active=False, blocked=False):
+    if blocked:
+        return "⛔"
+    if done:
+        return "✅"
+    if active:
+        return "▶"
+    return "○"
+
+
 def derive_next_cycle_focus(cycle_orders, cycle_status, metrics):
     focus = cycle_status.get("next_cycle_focus") or cycle_status.get("next_focus")
     if focus:
@@ -392,12 +402,12 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     spec_paths = unique_preserve([str(p).strip() for p in (status_spec_paths or manifest_spec_paths) if str(p).strip()])
     normalized_manifest_spec_ids = {normalize_spec_id(path) for path in spec_paths if normalize_spec_id(path)}
     row_spec_ids = {normalize_spec_id(r.get("strategy_spec_id")) for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id"))}
+    cycle_rows = [r for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id")) in normalized_manifest_spec_ids] if normalized_manifest_spec_ids else []
+    external_rows = [r for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id")) not in normalized_manifest_spec_ids] if normalized_manifest_spec_ids else rows_dict
 
     specs_produced = len(spec_paths)
     if not specs_produced:
         specs_produced = int(cycle_specs.get("spec_count", 0) or 0) if manifest_matches_cycle else 0
-    if not specs_produced and row_spec_ids:
-        specs_produced = len(row_spec_ids)
 
     mode = normalize_mode(cycle_status.get("mode") or cycle_orders.get("mode") or cycle_status.get("research_direction") or cycle_orders.get("research_direction"))
     minimum_spec_count = safe_int(cycle_status.get("minimum_spec_count", cycle_orders.get("minimum_spec_count", 0)) or 0)
@@ -407,16 +417,18 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     iterated_families = cycle_status.get("iterated_families", []) if status_matches_cycle else []
     abandoned_families = cycle_status.get("abandoned_families", []) if status_matches_cycle else []
 
-    completed_backtests = backtest_count
+    completed_backtests = len({str(r.get('id')) for r in cycle_rows if r.get('id')})
     queued_backtests = spec_variant_job_count(manifest_spec_paths or spec_paths)
     if queued_backtests < completed_backtests:
         queued_backtests = completed_backtests
 
-    pass_count = sum(1 for r in rows_dict if (r.get("score_total") or 0) >= 1.0)
-    promote_count = sum(1 for r in rows_dict if (r.get("score_total") or 0) >= 3.0)
+    pass_count = sum(1 for r in cycle_rows if (r.get("score_total") or 0) >= 1.0)
+    promote_count = sum(1 for r in cycle_rows if (r.get("score_total") or 0) >= 3.0)
     fail_count = max(0, completed_backtests - pass_count)
-    best_result = summarize_best_result(rows_dict)
+    best_result = summarize_best_result(cycle_rows)
     best_qs = best_result.get("qscore", 0) if best_result else 0
+
+    has_reflection_note = bool(str(cycle_status.get("rationale") or "").strip() or str(cycle_status.get("next_cycle_focus") or "").strip()) if status_matches_cycle else False
 
     metrics = {
         "cycle_id": cycle_id,
@@ -435,13 +447,18 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "iterate_target": cycle_orders.get("iterate_target") or cycle_orders.get("specific_family_to_iterate"),
         "exploration_targets": cycle_orders.get("exploration_targets") or {},
         "spec_paths": spec_paths,
-        "spec_ids": sorted(normalized_manifest_spec_ids or row_spec_ids),
+        "spec_ids": sorted(normalized_manifest_spec_ids),
         "specs_produced": specs_produced,
         "specs_written": specs_produced,
         "new_families": new_families,
         "iterated_families": iterated_families,
         "abandoned_families": abandoned_families,
         "active_families": len(new_families) + len(iterated_families),
+        "all_recent_rows": len(rows_dict),
+        "cycle_rows": len(cycle_rows),
+        "external_rows": len(external_rows),
+        "cycle_results_present": bool(cycle_rows),
+        "external_results_present": bool(external_rows),
         "backtests_queued": queued_backtests,
         "backtests_completed": completed_backtests,
         "backtests": completed_backtests,
@@ -453,6 +470,7 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "best_qscore": best_qs,
         "next_cycle_focus": "",
         "rationale": cycle_status.get("rationale"),
+        "has_reflection_note": has_reflection_note,
         "elapsed_seconds": elapsed_seconds,
         "run_elapsed_seconds": timing["run_elapsed_seconds"],
         "report_delay_seconds": timing["report_delay_seconds"],
@@ -469,24 +487,40 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     run_elapsed = metrics.get("run_elapsed_seconds", elapsed_seconds)
     elapsed_str = f"{int(run_elapsed // 60)}m {int(run_elapsed % 60)}s" if run_elapsed else "?"
 
+    design_done = metrics["specs_produced"] > 0
+    backtests_done = metrics["backtests_queued"] > 0 and metrics["backtests_completed"] >= metrics["backtests_queued"]
+    backtests_active = metrics["backtests_completed"] > 0 and not backtests_done
+    reflecting_done = metrics["has_reflection_note"] and metrics["cycle_results_present"]
+    reflecting_active = metrics["has_reflection_note"] and not metrics["cycle_results_present"]
+    posting_done = metrics.get("is_completed")
+
     lines = []
-    lines.append("🍳 Research Batch")
-    header_status = "🏆" if metrics["promote_count"] > 0 else "✅" if metrics["pass_count"] > 0 else "⚠️"
+    lines.append("🍳 Cooking")
+    header_status = "🏆" if metrics["promote_count"] > 0 else "✅" if backtests_done else "▶" if (design_done or backtests_active or reflecting_active) else "⚠️"
     lines.append(f"{header_status} | ▶ {elapsed_str} run | 🆔 {metrics['cycle_id']} | {metrics['mode']}")
+    lines.append("○──activity──────────────────")
+    lines.append(f"{phase_state(done=design_done)} Designing: {metrics['specs_produced']} specs | new {len(metrics['new_families'])} | iterated {len(metrics['iterated_families'])}")
+    lines.append(f"{phase_state(done=backtests_done, active=backtests_active)} Backtesting: {metrics['backtests_completed']}/{metrics['backtests_queued']} current-cycle results")
+    if reflecting_done:
+        lines.append(f"{phase_state(done=True)} Reflecting: updated from current-cycle results")
+    elif reflecting_active:
+        lines.append(f"{phase_state(active=True)} Reflecting: status updated, waiting on current-cycle results")
+    else:
+        lines.append(f"{phase_state()} Reflecting: no current-cycle reflection yet")
+    lines.append(f"{phase_state(done=posting_done, active=not posting_done)} Posting: {'reported' if posting_done else 'reporting now'}")
     lines.append("○──batch─────────────────────")
-    lines.append(f"Specs produced: {metrics['specs_produced']} (target {metrics['minimum_spec_count']}-{metrics['maximum_spec_count'] or '?'})")
-    lines.append(f"Backtests: {metrics['backtests_completed']}/{metrics['backtests_queued']} completed")
+    lines.append(f"Families: active {metrics['active_families']} | abandoned {len(metrics['abandoned_families'])}")
     lines.append(f"Pass / Fail / Promote: {metrics['pass_count']} / {metrics['fail_count']} / {metrics['promote_count']}")
-    lines.append(f"Families: new {len(metrics['new_families'])} | iterated {len(metrics['iterated_families'])} | abandoned {len(metrics['abandoned_families'])}")
     if metrics.get("is_completed"):
         lines.append(f"Report delay: +{int(metrics['report_delay_seconds'] // 60)}m {int(metrics['report_delay_seconds'] % 60)}s")
-    lines.append("○──best──────────────────────")
+    lines.append("○──note──────────────────────")
     best = metrics.get("best_result")
     if best:
-        lines.append(f"{best['asset']}/{best['timeframe']} {best['variant_id']} | QS {best['qscore']:.2f} | PF {best['profit_factor']:.2f} | T {best['total_trades']}")
+        lines.append(f"Best current-cycle result: {best['asset']}/{best['timeframe']} {best['variant_id']} | QS {best['qscore']:.2f} | PF {best['profit_factor']:.2f} | T {best['total_trades']}")
     else:
-        lines.append("No completed backtests yet for this batch.")
-    lines.append("○──next──────────────────────")
+        lines.append("No completed current-cycle backtests yet.")
+    if metrics.get("external_results_present"):
+        lines.append(f"Ignored {metrics['external_rows']} fresh off-cycle result(s) for this card.")
     lines.append(metrics.get("next_cycle_focus") or "Await next cycle focus.")
     if metrics.get("is_completed") and metrics.get("report_delay_seconds", 0) > 0:
         lines.append("Run already completed; this was a later report-only pass.")

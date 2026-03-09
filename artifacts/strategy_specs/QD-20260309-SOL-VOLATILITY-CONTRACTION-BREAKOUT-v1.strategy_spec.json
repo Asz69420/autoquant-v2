@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-VOLATILITY-CONTRACTION-BREAKOUT-v1",
+  "ts_iso": "2026-03-10T05:01:00Z",
+  "thesis_id": "cycle_110_sol_volatility_contraction_breakout_v1",
+  "name": "SOL Volatility Contraction Breakout v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "1d",
+  "indicators": [
+    "FundingRate",
+    "BBW_20_2.0",
+    "KCU_20_1.5",
+    "KCM_20_1.5",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00018",
+      "BBW_20_2.0 <= 0.11",
+      "Close > KCU_20_1.5",
+      "Close > EMA_55",
+      "low >= KCM_20_1.5",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00018",
+      "BBW_20_2.0 <= 0.11",
+      "Close < KCM_20_1.5",
+      "Close < EMA_55",
+      "high <= KCU_20_1.5",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.25 * ATR_14 below entry",
+      "Take profit: 3.4 * ATR_14 above entry",
+      "Early exit if Close crosses_below KCM_20_1.5",
+      "Time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.25 * ATR_14 above entry",
+      "Take profit: 3.4 * ATR_14 below entry",
+      "Early exit if Close crosses_above KCU_20_1.5",
+      "Time stop: 7 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": ["transitional", "trending"],
+    "detection_method": "Funding-aware breakout hold on higher timeframe. SOL must compress first, then break above the upper Keltner pressure zone while remaining accepted above the midline and medium anchor with rising ADX/DI. This tests contraction-to-expansion resumption rather than anchor pullback continuation."
+  },
+  "variants": [
+    {
+      "name": "sol_volatility_contraction_breakout_v1",
+      "template_name": "volatility_contraction_breakout",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.00018 },
+        { "name": "funding_extreme_pos", "value": 0.00018 },
+        { "name": "bbw_max", "value": 0.11 },
+        { "name": "kc_period", "value": 20 },
+        { "name": "kc_mult", "value": 1.5 },
+        { "name": "ema_anchor", "value": 55 },
+        { "name": "adx_floor", "value": 18 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.25,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 7
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

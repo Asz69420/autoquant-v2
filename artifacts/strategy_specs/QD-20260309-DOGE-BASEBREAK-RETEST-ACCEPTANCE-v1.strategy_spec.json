@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-DOGE-BASEBREAK-RETEST-ACCEPTANCE-v1",
+  "ts_iso": "2026-03-10T05:25:00Z",
+  "thesis_id": "cycle_114_doge_basebreak_retest_acceptance_v1",
+  "name": "DOGE Base-Break Retest Acceptance v1",
+  "version": "1.0",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","DCU_20_20","DCM_20_20","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","EMA_55","CHOP_14_1_100"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.0000015",
+      "Close crosses_above DCU_20_20",
+      "low <= DCU_20_20 + 0.15 * ATR_14",
+      "Close > DCU_20_20",
+      "Close > EMA_55",
+      "CHOP_14_1_100 <= 50",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.0000015",
+      "Close crosses_below DCM_20_20",
+      "high >= DCM_20_20 - 0.15 * ATR_14",
+      "Close < DCM_20_20",
+      "Close < EMA_55",
+      "CHOP_14_1_100 <= 50",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.25 * ATR_14 below entry","Take profit: 3.1 * ATR_14 above entry","Early exit if Close crosses_below DCU_20_20","Time stop: 9 bars"],
+    "short": ["Stop loss: 1.25 * ATR_14 above entry","Take profit: 3.1 * ATR_14 below entry","Early exit if Close crosses_above DCM_20_20","Time stop: 9 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Base-break continuation with retest acceptance. DOGE must break the range, retest near the broken boundary, and prove acceptance above internal structure while ADX/DI expand and choppiness stays contained. This is distinct from pure compression breakout-hold and state-transition expansion."},
+  "variants": [{"name": "doge_basebreak_retest_acceptance_v1","template_name": "donchian_retest_continuation","parameters": [{"name": "funding_extreme_neg", "value": -0.0000015},{"name": "funding_extreme_pos", "value": 0.0000015},{"name": "donchian_period", "value": 20},{"name": "retest_buffer_atr", "value": 0.15},{"name": "ema_anchor", "value": 55},{"name": "chop_max", "value": 50},{"name": "adx_floor", "value": 18}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.25,"tp_type": "atr","tp_atr_mult": 3.1,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 9},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

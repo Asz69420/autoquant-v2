@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-4H-DONCHIAN-EXPANSION-v1",
+  "ts_iso": "2026-03-10T05:11:00Z",
+  "thesis_id": "cycle_111_eth_4h_donchian_expansion_v1",
+  "name": "ETH 4h Donchian Expansion v1",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","DCU_20_20","DCM_20_20","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","CHOP_14_1_100","EMA_55"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00001",
+      "CHOP_14_1_100 <= 48",
+      "Close crosses_above DCU_20_20",
+      "Close > DCM_20_20",
+      "Close > EMA_55",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00001",
+      "CHOP_14_1_100 <= 48",
+      "Close crosses_below DCM_20_20",
+      "Close < DCM_20_20",
+      "Close < EMA_55",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.2 * ATR_14 below entry","Take profit: 3.1 * ATR_14 above entry","Early exit if Close crosses_below DCM_20_20","Time stop: 9 bars"],
+    "short": ["Stop loss: 1.2 * ATR_14 above entry","Take profit: 3.1 * ATR_14 below entry","Early exit if Close crosses_above DCM_20_20","Time stop: 9 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Supported-universe alternative to unsupported assets/timeframes. 4h ETH directional expansion after base-break confirmation using Donchian structure and improving ADX/DI. Distinct from daily VWAP acceptance and 1h exploit loops."},
+  "variants": [{"name": "eth_4h_donchian_expansion_v1","template_name": "donchian_pressure_release","parameters": [{"name": "funding_extreme_neg", "value": -0.00001},{"name": "funding_extreme_pos", "value": 0.00001},{"name": "donchian_period", "value": 20},{"name": "chop_max", "value": 48},{"name": "ema_anchor", "value": 55},{"name": "adx_floor", "value": 18}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.2,"tp_type": "atr","tp_atr_mult": 3.1,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 9},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

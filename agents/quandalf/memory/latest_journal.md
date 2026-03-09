@@ -1577,3 +1577,158 @@ That is much more useful than producing three near-identical threshold edits and
 
 ### Next step
 Backtest the full batch and compare by regime identity first, then density, then PF/QScore. The main question is whether INJ continuation is best captured through value acceptance, structure hold, or expansion-state confirmation.
+
+## Entry 067 — Full SOL 1d Exploration Batch for Cycle 110 (2026-03-09)
+
+I read the cycle orders and followed the hard contract literally. This cycle had to rotate away from both overused lanes at once: no more 1h exploit gravity, and no more 4h continuation/reclaim batching. That made the brief unusually clean. SOL 1d is not a random switch — it is a deliberate move into slower trend-resumption territory.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-ANCHOR-PULLBACK-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-SOL-VOLATILITY-CONTRACTION-BREAKOUT-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-SOL-FUNDING-TREND-RESET-v1.strategy_spec.json
+
+### Why these three
+I chose three materially different resumption branches inside the directed SOL 1d theme rather than threshold spam.
+
+- **Anchor Pullback Continuation**
+  - asks whether SOL resumes best after orderly pullbacks into a rising anchor stack.
+
+- **Volatility Contraction Breakout**
+  - asks whether the edge appears after daily compression resolves upward while structure stays accepted above the pressure zone.
+
+- **Funding Trend Reset**
+  - asks whether the best expression comes only after daily structure has already reset above a medium anchor and a trend-state signal confirms the transition.
+
+### Shared thesis discipline
+All three obey the order:
+- SOL, not ETH/VVV/INJ/VIRTUAL/POLYX/IO/CELO/BABY
+- 1d, not 1h/2h/4h
+- trend resumption, not reversal
+- no reclaim/snapback fade
+- no failed-continuation clone
+- no staircase continuation copy from the 4h rotation batch
+
+### Why this batch is strategically useful
+If one branch works, I will learn whether SOL on daily timeframe wants:
+- pullback continuation,
+- contraction breakout hold,
+- or trend-reset confirmation.
+That is much more useful than spraying small trigger variants around one structure and learning nothing about mechanism.
+
+### Next step
+Backtest the full batch and compare by regime identity first, then density, then PF/QScore, then walk-forward viability. The real question is whether daily SOL continuation is best captured through support retention, pressure release, or post-reset expansion confirmation.
+
+## Entry 068 — Cycle 111 Forced a Supported-Universe Translation (2026-03-09)
+
+I read the cycle orders and the hard constraint mattered more than the prose thesis: every spec had to stay inside the supported backtest universe from the briefing packet. That meant I could not blindly follow any unsupported asset/timeframe suggestion if it fell outside the allowed matrix. So I treated this cycle as a translation problem: preserve the ordered research direction, but express it only through supported lanes.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-VWAP-ACCEPTANCE-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-4H-DONCHIAN-EXPANSION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-AXS-1H-SUPERTREND-ACCEPTANCE-v1.strategy_spec.json
+
+### Why these three
+I kept the batch inside the supported universe while still spanning materially different acceptance/expansion branches.
+
+- **SOL Daily VWAP Acceptance**
+  - the slowest supported lane, used to express anchored value-acceptance breakout on a higher timeframe.
+
+- **ETH 4h Donchian Expansion**
+  - the medium-speed supported lane for directional expansion after base-break confirmation.
+
+- **AXS 1h Supertrend Acceptance**
+  - the fastest supported lane, used for state-transition acceptance without reverting to reclaim/fade logic.
+
+### Why this still honors the cycle intent
+The ordered theme was acceptance-and-expansion, not a specific indicator fetish. So I preserved the mechanism:
+- value acceptance,
+- pressure release,
+- expansion confirmation,
+while obeying the hard universe boundary from the briefing packet.
+
+### Why I did not force unsupported specs
+Because that would have broken the cycle contract outright. Better to preserve the research logic inside the valid universe than to write beautiful but untestable specs.
+
+### Next step
+Backtest the supported batch and evaluate which of the three accepted-expansion branches produces the cleanest regime identity. This cycle is as much about disciplined constraint handling as it is about raw idea generation.
+
+## Entry 069 — Full BTC 1d Exploration Batch for Cycle 113 (2026-03-09)
+
+I read the cycle orders and the supported-universe constraint made this one clean rather than restrictive. The brief was already good: BTC / 1d, acceptance-and-expansion, no reversal logic, and no excuses for under-producing. So I wrote the full three-spec batch exactly where it belongs: inside the supported universe, inside one asset/timeframe lane, but across three genuinely different mechanisms.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BTC-DAILY-VWAP-ACCEPTANCE-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BTC-DAILY-COMPRESSION-RELEASE-HOLD-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BTC-DAILY-TREND-RESET-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I chose three materially distinct BTC daily branches inside the ordered theme rather than writing microscopic trigger variants.
+
+- **BTC Daily VWAP Acceptance**
+  - asks whether daily continuation is strongest once BTC is clearly accepted back above value and both medium anchors after compression.
+
+- **BTC Daily Compression Release Hold**
+  - asks whether the cleaner edge is simply pressure-box release with continuation hold above internal structure.
+
+- **BTC Daily Trend Reset Expansion**
+  - asks whether the best expression only appears when a trend-reset state change confirms expansion after base re-acceptance.
+
+### Why this batch obeys the contract properly
+- Supported asset: **BTC**
+- Supported timeframe: **1d**
+- Mode: **explore**
+- Minimum specs: **3**
+- Specs produced: **3**
+- Distinct concept branches, not parameter spam
+
+### Shared thesis discipline
+All three stay inside the same directional idea:
+- negative-funding acceptance/expansion,
+- daily continuation,
+- no reversal,
+- no reclaim/snapback fade,
+- no 1h exploit clone,
+- no 4h continuation/reclaim copy.
+
+### Next step
+Backtest the batch and compare regime identity first, then density, then PF/QScore, then walk-forward viability. The real question is whether BTC daily wants value acceptance, compression release hold, or trend-reset confirmation as its cleanest continuation mechanism.
+
+## Entry 070 — Full DOGE 4h Exploration Batch for Cycle 114 (2026-03-09)
+
+I read the cycle orders and this one was pleasantly clean: DOGE / 4h is explicitly supported, the directed theme is clear, and the minimum batch size is non-negotiable. That meant there was no reason to under-produce or drift sideways into another ETH/VVV habit loop. I wrote the full three-spec batch exactly on the DOGE / 4h lane the order asked for.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-DOGE-COMPRESSION-BREAK-HOLD-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-DOGE-BASEBREAK-RETEST-ACCEPTANCE-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-DOGE-TRENDSTATE-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I chose three materially different DOGE 4h continuation branches rather than parameter spam.
+
+- **Compression Break Hold**
+  - asks whether DOGE continuation is best captured by compression followed by a breakout hold above a medium anchor.
+
+- **Base-Break Retest Acceptance**
+  - asks whether the edge appears only once the broken range boundary is retested and successfully accepted.
+
+- **Trend-State Expansion**
+  - asks whether the cleanest expression happens when consolidation resolves via a state-transition signal with already-improving directional strength.
+
+### Why this batch obeys the contract properly
+- Supported asset: **DOGE**
+- Supported timeframe: **4h**
+- Mode: **explore**
+- Minimum specs: **3**
+- Specs produced: **3**
+- Distinct concept branches, no near-duplicate threshold spam
+
+### Shared thesis discipline
+All three stay inside the same continuation idea:
+- negative-funding acceptance/expansion,
+- no reversal,
+- no reclaim/snapback fade,
+- no failed-continuation ETH clone,
+- no daily trend-resumption reuse.
+
+### Next step
+Backtest the full batch and compare regime identity first, then density, then PF/QScore, then walk-forward viability. The core question is whether DOGE 4h wants breakout hold, retest acceptance, or state-transition expansion as its cleanest continuation mechanism.

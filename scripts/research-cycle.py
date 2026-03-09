@@ -187,6 +187,8 @@ def main() -> int:
     if cycle_id <= 0:
         cycle_id = next_cycle_id()
 
+    backtest_universe = discover_backtest_universe()
+
     packet = {
         "ts_iso": now.isoformat(),
         "cycle_id": cycle_id,
@@ -197,6 +199,7 @@ def main() -> int:
         "market_scan": scan,
         "funding_rates": funding,
         "recent_backtest_details": backtest_details,
+        "supported_backtest_universe": backtest_universe,
     }
 
     # Add strategy families
@@ -241,6 +244,8 @@ def main() -> int:
         "research_count": research_count,
         "scan_count": scan_count,
         "top_opportunity": top_opportunity,
+        "supported_assets": len(backtest_universe.get("assets", [])),
+        "supported_timeframes": backtest_universe.get("timeframes", []),
     }
 
     log_event(
