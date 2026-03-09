@@ -16,7 +16,7 @@ steps:
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\capture_cycle_specs.py'
 
   - id: backtest
-    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\parallel_runner.py --manifest C:\Users\Clamps\.openclaw\workspace-oragorn\data\state\current_cycle_specs.json --variant all'
+    command: 'lobster run --file C:\Users\Clamps\.openclaw\workspace-oragorn\pipelines\parallel-backtest.lobster'
 
   - id: reflection
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\build-reflection-packet.py'
