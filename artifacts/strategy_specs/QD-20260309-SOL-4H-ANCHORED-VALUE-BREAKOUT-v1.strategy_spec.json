@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-4H-ANCHORED-VALUE-BREAKOUT-v1",
+  "ts_iso": "2026-03-10T05:40:00Z",
+  "thesis_id": "cycle_116_sol_4h_anchored_value_breakout_v1",
+  "name": "SOL 4h Anchored Value Breakout v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","VWAP","KCU_20_1.5","KCM_20_1.5","BBW_20_2.0","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","EMA_55"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00006",
+      "BBW_20_2.0 <= 0.11",
+      "Close > VWAP",
+      "Close > KCU_20_1.5",
+      "Close > EMA_55",
+      "low >= KCM_20_1.5",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00006",
+      "BBW_20_2.0 <= 0.11",
+      "Close < VWAP",
+      "Close < KCM_20_1.5",
+      "Close < EMA_55",
+      "high <= KCU_20_1.5",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.2 * ATR_14 below entry","Take profit: 3.0 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 10 bars"],
+    "short": ["Stop loss: 1.2 * ATR_14 above entry","Take profit: 3.0 * ATR_14 below entry","Early exit if Close crosses_above VWAP","Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Anchored-value breakout hold after compression. SOL must compress first, then accept above anchored VWAP and the upper Keltner pressure zone while remaining above the medium anchor and showing rising ADX/DI. This tests value acceptance before continuation rather than reclaim or failure-fade logic."},
+  "variants": [{"name": "sol_4h_anchored_value_breakout_v1","template_name": "vwap_keltner_acceptance_breakout","parameters": [{"name": "funding_extreme_neg", "value": -0.00006},{"name": "funding_extreme_pos", "value": 0.00006},{"name": "bbw_max", "value": 0.11},{"name": "kc_period", "value": 20},{"name": "kc_mult", "value": 1.5},{"name": "ema_anchor", "value": 55},{"name": "adx_floor", "value": 18}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.2,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 8,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AXS-OPENING-RANGE-DISPLACEMENT-FADE-v1",
+  "ts_iso": "2026-03-10T05:50:00Z",
+  "thesis_id": "cycle_117_axs_opening_range_displacement_fade_v1",
+  "name": "AXS Opening Range Displacement Fade v1",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "indicators": ["FundingRate","VWAP","ATR_14","RSI_14","CCI_20","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00018",
+      "low <= VWAP - 1.2 * ATR_14",
+      "Close > VWAP - 0.3 * ATR_14",
+      "RSI_14 crosses_above 40",
+      "CCI_20 crosses_above -100",
+      "ADX_14 <= 22"
+    ],
+    "short": [
+      "FundingRate >= 0.00018",
+      "high >= VWAP + 1.2 * ATR_14",
+      "Close < VWAP + 0.3 * ATR_14",
+      "RSI_14 crosses_below 60",
+      "CCI_20 crosses_below 100",
+      "ADX_14 <= 22"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.05 * ATR_14 below entry","Take profit: 2.4 * ATR_14 above entry","Early exit if Close crosses_below VWAP - 0.2 * ATR_14","Time stop: 10 bars"],
+    "short": ["Stop loss: 1.05 * ATR_14 above entry","Take profit: 2.4 * ATR_14 below entry","Early exit if Close crosses_above VWAP + 0.2 * ATR_14","Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["ranging","transitional"],"detection_method": "Opening-range displacement fade with mean-reversion filter. AXS must stretch materially away from value while funding stays skewed, then momentum must visibly stall through RSI/CCI recovery before entry. ADX is capped to avoid fading strong directional continuation."},
+  "variants": [{"name": "axs_opening_range_displacement_fade_v1","template_name": "opening_range_displacement_fade","parameters": [{"name": "funding_extreme_neg", "value": -0.00018},{"name": "funding_extreme_pos", "value": 0.00018},{"name": "displacement_atr_mult", "value": 1.2},{"name": "reentry_buffer_atr", "value": 0.3},{"name": "rsi_reclaim_long", "value": 40},{"name": "rsi_reclaim_short", "value": 60},{"name": "adx_max", "value": 22}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 2.4,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=2","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

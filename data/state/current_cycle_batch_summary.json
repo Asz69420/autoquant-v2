@@ -1,85 +1,72 @@
 {
-  "cycle_id": 114,
-  "cycle_key": "114",
-  "manifest_cycle_id": 114,
-  "status_cycle_id": 114,
-  "orders_cycle_id": 114,
+  "cycle_id": 117,
+  "cycle_key": "117",
+  "manifest_cycle_id": 117,
+  "status_cycle_id": 117,
+  "orders_cycle_id": 117,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "DOGE",
-  "target_timeframe": "4h",
+  "target_asset": "AXS",
+  "target_timeframe": "1h",
   "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "negative-funding breakout hold after compression",
-      "base-break continuation with retest acceptance",
-      "trend-state expansion after orderly consolidation"
+      "funding-skew exhaustion reversal",
+      "opening-range displacement with mean-reversion filter",
+      "inventory-reset reclaim after flush and value re-entry"
     ],
     "assets": [
-      "DOGE"
+      "AXS"
     ],
     "timeframes": [
-      "4h"
+      "1h"
     ]
   },
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-DOGE-COMPRESSION-BREAK-HOLD-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-DOGE-BASEBREAK-RETEST-ACCEPTANCE-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-DOGE-TRENDSTATE-EXPANSION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-AXS-FLUSH-RECLAIM-REVERSAL-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-AXS-OPENING-RANGE-DISPLACEMENT-FADE-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-AXS-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260309-DOGE-BASEBREAK-RETEST-ACCEPTANCE-v1",
-    "QD-20260309-DOGE-COMPRESSION-BREAK-HOLD-v1",
-    "QD-20260309-DOGE-TRENDSTATE-EXPANSION-v1"
+    "QD-20260309-AXS-FLUSH-RECLAIM-REVERSAL-v1",
+    "QD-20260309-AXS-INVENTORY-RESET-RECLAIM-v1",
+    "QD-20260309-AXS-OPENING-RANGE-DISPLACEMENT-FADE-v1"
   ],
   "specs_produced": 3,
   "specs_written": 3,
   "new_families": [
-    "doge_compression_break_hold",
-    "doge_basebreak_retest_acceptance",
-    "doge_trendstate_expansion"
+    "axs_flush_reclaim_reversal",
+    "axs_opening_range_displacement_fade",
+    "axs_inventory_reset_reclaim"
   ],
   "iterated_families": [],
-  "abandoned_families": [
-    "doge_compression_break_hold",
-    "doge_basebreak_retest_acceptance",
-    "doge_trendstate_expansion"
-  ],
+  "abandoned_families": [],
   "active_families": 3,
-  "all_recent_rows": 5,
-  "cycle_rows": 3,
-  "external_rows": 2,
-  "cycle_results_present": true,
+  "all_recent_rows": 10,
+  "cycle_rows": 0,
+  "external_rows": 10,
+  "cycle_results_present": false,
   "external_results_present": true,
   "backtests_queued": 3,
-  "backtests_completed": 3,
-  "backtests": 3,
+  "backtests_completed": 0,
+  "backtests": 0,
   "pass_count": 0,
-  "fail_count": 3,
+  "fail_count": 0,
   "promote_count": 0,
   "promotions": 0,
-  "best_result": {
-    "strategy_spec_id": "QD-20260309-DOGE-COMPRESSION-BREAK-HOLD-v1",
-    "variant_id": "doge_compression_break_hold_v1",
-    "asset": "DOGE",
-    "timeframe": "4h",
-    "qscore": -0.5,
-    "profit_factor": 0,
-    "total_trades": 0,
-    "decision": "fail"
-  },
-  "best_qscore": -0.5,
-  "next_cycle_focus": "Do not spend another cycle on the DOGE 4h continuation batch. All three branches failed the walk-forward trade-count requirement with zero trades, so the next exploration cycle should move to a different supported asset/timeframe where acceptance/expansion concepts can generate enough density to be testable.",
-  "rationale": "Cycle 114 is now closed and abandoned. All three current-cycle DOGE / 4h branches produced zero trades in walk-forward testing and failed with low-trade-count flags, which means this acceptance/expansion concept family is too sparse to be a usable research lane under the current validation regime. The reflection also reconfirmed ETH channel shortbias v3 as a strong ETH/1h benchmark and a clear BTC/1h non-transfer, but that does not rescue the current DOGE batch.",
+  "best_result": null,
+  "best_qscore": 0,
+  "next_cycle_focus": "Keep the AXS / 1h exhaustion batch intact and wait for actual AXS results. Separately note that ETH / 1h channel shortbias v6 is now the strongest supported exploit benchmark, while DOGE / 4h continuation families are confirmed too sparse under walk-forward. Neither changes the status of the current AXS cycle until AXS-specific results arrive.",
+  "rationale": "Cycle 117 remains open. This reflection packet contained meaningful results for older ETH exploit variants and older DOGE 4h failures, but no results for any of the three current-cycle AXS / 1h exhaustion families. Therefore there is no evidence yet to refine or abandon the flush-reclaim reversal, opening-range displacement fade, or inventory-reset reclaim branches from this cycle.",
   "has_reflection_note": true,
-  "elapsed_seconds": 269.0,
-  "run_elapsed_seconds": 269.0,
+  "elapsed_seconds": 285.1,
+  "run_elapsed_seconds": 285.1,
   "report_delay_seconds": 0.0,
   "is_completed": true,
-  "started_at_epoch": 1773033903.4131217,
-  "ended_at_epoch": 1773034172.4091916
+  "started_at_epoch": 1773035403.7000237,
+  "ended_at_epoch": 1773035688.78839
 }

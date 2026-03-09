@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AXS-FLUSH-RECLAIM-REVERSAL-v1",
+  "ts_iso": "2026-03-10T05:50:00Z",
+  "thesis_id": "cycle_117_axs_flush_reclaim_reversal_v1",
+  "name": "AXS Flush Reclaim Reversal v1",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "indicators": ["FundingRate","EMA_9","VWAP","ATR_14","RSI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00018",
+      "low <= EMA_9 - 1.0 * ATR_14",
+      "Close crosses_above EMA_9",
+      "Close > VWAP",
+      "RSI_14 crosses_above 42",
+      "ADX_14 >= 16",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00018",
+      "high >= EMA_9 + 1.0 * ATR_14",
+      "Close crosses_below EMA_9",
+      "Close < VWAP",
+      "RSI_14 crosses_below 58",
+      "ADX_14 >= 16",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry","Take profit: 2.6 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 12 bars"],
+    "short": ["Stop loss: 1.1 * ATR_14 above entry","Take profit: 2.6 * ATR_14 below entry","Early exit if Close crosses_above VWAP","Time stop: 12 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Fast flush-and-reclaim exhaustion reversal. AXS must print a real downside excess beyond the fast anchor, then immediately re-accept above EMA_9 and VWAP while funding remains negatively skewed and directional balance flips in favor of recovery. This is not continuation and not failed-continuation cloning; it is a true exhaustion reversal branch."},
+  "variants": [{"name": "axs_flush_reclaim_reversal_v1","template_name": "flush_reclaim_reversal","parameters": [{"name": "funding_extreme_neg", "value": -0.00018},{"name": "funding_extreme_pos", "value": 0.00018},{"name": "ema_fast", "value": 9},{"name": "washout_atr_mult", "value": 1.0},{"name": "rsi_reclaim_long", "value": 42},{"name": "rsi_reclaim_short", "value": 58},{"name": "adx_floor", "value": 16}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.1,"tp_type": "atr","tp_atr_mult": 2.6,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 12},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=2","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

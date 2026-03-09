@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-4H-ORDERLY-PULLBACK-RESET-v1",
+  "ts_iso": "2026-03-10T05:40:00Z",
+  "thesis_id": "cycle_116_sol_4h_orderly_pullback_reset_v1",
+  "name": "SOL 4h Orderly Pullback Reset v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","EMA_21","EMA_55","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","RSI_14","CHOP_14_1_100"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00006",
+      "EMA_21 > EMA_55",
+      "low <= EMA_21 + 0.20 * ATR_14",
+      "Close > EMA_21",
+      "Close > EMA_55",
+      "CHOP_14_1_100 <= 52",
+      "ADX_14 >= 17",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "RSI_14 >= 52"
+    ],
+    "short": [
+      "FundingRate >= 0.00006",
+      "EMA_21 < EMA_55",
+      "high >= EMA_21 - 0.20 * ATR_14",
+      "Close < EMA_21",
+      "Close < EMA_55",
+      "CHOP_14_1_100 <= 52",
+      "ADX_14 >= 17",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "RSI_14 <= 48"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.15 * ATR_14 below entry","Take profit: 2.9 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 11 bars"],
+    "short": ["Stop loss: 1.15 * ATR_14 above entry","Take profit: 2.9 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 11 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Trend-reset continuation after orderly pullback into a rising medium anchor. SOL must already hold a stacked trend, pull back shallowly into the fast anchor, and re-accept above both anchors while ADX/DI strengthen and choppiness stays controlled. This tests pullback-reset continuation rather than breakout acceptance."},
+  "variants": [{"name": "sol_4h_orderly_pullback_reset_v1","template_name": "anchor_pullback_continuation","parameters": [{"name": "funding_extreme_neg", "value": -0.00006},{"name": "funding_extreme_pos", "value": 0.00006},{"name": "ema_fast", "value": 21},{"name": "ema_anchor", "value": 55},{"name": "pullback_buffer_atr", "value": 0.20},{"name": "chop_max", "value": 52},{"name": "adx_floor", "value": 17}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.15,"tp_type": "atr","tp_atr_mult": 2.9,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 11},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 8,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.4,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1732,3 +1732,122 @@ All three stay inside the same continuation idea:
 
 ### Next step
 Backtest the full batch and compare regime identity first, then density, then PF/QScore, then walk-forward viability. The core question is whether DOGE 4h wants breakout hold, retest acceptance, or state-transition expansion as its cleanest continuation mechanism.
+
+## Entry 071 — Full ETH / 1h Exploit Batch for Cycle 115 (2026-03-09)
+
+I read the cycle orders and this one was the opposite of the last few rotations: not exploration, not another universe translation, not another excuse to invent a new family. The order was precise and deserved to be followed precisely. ETH / 1h channel shortbias v3 is the only supported family with a clean walk-forward pass, so this cycle is about exploiting that fact without destabilizing the thing that actually worked.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-ETH-CHANNEL-SHORTBIAS-v4.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-CHANNEL-SHORTBIAS-v5.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-ETH-CHANNEL-SHORTBIAS-v6.strategy_spec.json
+
+### Why these three
+I matched the three exact exploit levers the order implied.
+
+- **v4 — Selective Failed Continuation**
+  - same ETH / 1h failed-continuation inversion, but only after price is stretched 0.15 ATR away from EMA_20. This is the anti-BTC-leakage branch.
+
+- **v5 — Faster Invalidation**
+  - same v3 entry, but weaker follow-through is cut sooner through tighter RSI invalidation and a shorter time stop. This is the downside-stall control branch.
+
+- **v6 — Controlled Density Lift**
+  - same core shape, slightly looser RSI trigger only. This is the one optional density test, and it is intentionally the least invasive of the three.
+
+### Why this batch obeys the contract properly
+- Supported asset: **ETH**
+- Supported timeframe: **1h**
+- Mode: **exploit**
+- Minimum specs: **2**
+- Maximum specs: **3**
+- Specs produced: **3**
+- Same passing family, focused variants only
+- No drift to BTC
+- No reversion to original continuation logic
+- No generic threshold spray beyond the explicitly justified levers
+
+### Next step
+Backtest v4/v5/v6 against the v3 baseline and stop the exploit lane as soon as one variant clearly beats it on the ordered walk-forward bar. If none improve the baseline, accept that the current v3 shape may already be the local optimum for ETH / 1h.
+
+## Entry 072 — Full SOL / 4h Exploration Batch for Cycle 116 (2026-03-09)
+
+I read the cycle orders and this one was unusually well framed: rotate away from the overworked ETH short lane, stay inside the supported universe, and test SOL / 4h through three materially different continuation concepts that are explicitly not reclaims and not channel-failure shorts. That made the batch design straightforward and honest.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-4H-ANCHORED-VALUE-BREAKOUT-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-SOL-4H-ORDERLY-PULLBACK-RESET-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-SOL-4H-EXPANSION-STATE-CONFIRM-v1.strategy_spec.json
+
+### Why these three
+I chose three distinct SOL / 4h continuation branches that map directly onto the order’s concept menu.
+
+- **Anchored Value Breakout**
+  - asks whether post-compression continuation works best once price is accepted above value and the upper pressure zone.
+
+- **Orderly Pullback Reset**
+  - asks whether the real edge is trend reset after a shallow pullback into a rising medium anchor.
+
+- **Expansion State Confirm**
+  - asks whether the best expression only appears when compression resolves through an explicit state flip with directional strength already improving above the retained base.
+
+### Why this batch obeys the contract properly
+- Supported asset: **SOL**
+- Supported timeframe: **4h**
+- Mode: **explore**
+- Minimum specs: **3**
+- Specs produced: **3**
+- Distinct concept branches, not parameter spam
+- No reclaim logic
+- No failed-continuation short logic
+
+### Shared thesis discipline
+All three stay inside the same continuation theme:
+- negative-funding acceptance/expansion,
+- post-compression strength,
+- no reversal,
+- no snapback fade,
+- no ETH exploit cloning.
+
+### Next step
+Backtest the full batch and compare regime identity first, then density, then PF/QScore, then walk-forward viability. The key question is whether SOL / 4h wants value acceptance, orderly pullback reset, or state-confirmed expansion as its cleanest continuation mechanism.
+
+## Entry 073 — Full AXS / 1h Exhaustion Batch for Cycle 117 (2026-03-09)
+
+I read the cycle orders and this one forced a healthy correction in my thinking. The brief was explicit: AXS / 1h, explore mode, three materially different branches, and exhaustion rather than continuation. That ruled out the lazy move of cloning ETH failed-continuation logic or recycling the same reclaim geometry again.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-AXS-FLUSH-RECLAIM-REVERSAL-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-AXS-OPENING-RANGE-DISPLACEMENT-FADE-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-AXS-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json
+
+### Why these three
+I matched the three concept lanes the order spelled out.
+
+- **Flush Reclaim Reversal**
+  - asks whether AXS pays best on fast downside excess that instantly reclaims fast structure and value.
+
+- **Opening-Range Displacement Fade**
+  - asks whether the edge is a true displacement fade, but only when skew remains in funding and momentum visibly stalls.
+
+- **Inventory Reset Reclaim**
+  - asks whether the better expression is slower: a liquidation-style excess, then value re-entry, then reclaim once inventory has rotated.
+
+### Why this batch obeys the contract properly
+- Supported asset: **AXS**
+- Supported timeframe: **1h**
+- Mode: **explore**
+- Minimum specs: **3**
+- Specs produced: **3**
+- Distinct concept branches, no near-duplicate threshold spam
+- No ETH failed-continuation clone
+- No SOL/DOGE 4h continuation reuse
+
+### Shared thesis discipline
+All three stay inside the ordered theme:
+- negative-funding exhaustion,
+- no pure continuation batch,
+- no reclaim spam with tiny parameter shifts,
+- and no pretending that one branch alone was enough to explore the lane.
+
+### Next step
+Backtest the full batch and compare trade density, regime identity, and walk-forward viability first. The core question is whether AXS / 1h exhaustion is best expressed through immediate reversal, stalled displacement fade, or slower value re-entry after inventory reset.

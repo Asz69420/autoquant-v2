@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AXS-INVENTORY-RESET-RECLAIM-v1",
+  "ts_iso": "2026-03-10T05:50:00Z",
+  "thesis_id": "cycle_117_axs_inventory_reset_reclaim_v1",
+  "name": "AXS Inventory Reset Reclaim v1",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "indicators": ["FundingRate","VWAP","EMA_21","ATR_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14","CHOP_14_1_100"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00018",
+      "low <= EMA_21 - 0.8 * ATR_14",
+      "Close > EMA_21",
+      "Close > VWAP",
+      "MFI_14 crosses_above 45",
+      "CHOP_14_1_100 >= 42",
+      "ADX_14 >= 15",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00018",
+      "high >= EMA_21 + 0.8 * ATR_14",
+      "Close < EMA_21",
+      "Close < VWAP",
+      "MFI_14 crosses_below 55",
+      "CHOP_14_1_100 >= 42",
+      "ADX_14 >= 15",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry","Take profit: 2.7 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 12 bars"],
+    "short": ["Stop loss: 1.1 * ATR_14 above entry","Take profit: 2.7 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 12 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","ranging"],"detection_method": "Inventory-reset reclaim after liquidation-style excess. Price must first dislocate through the medium anchor, then reclaim both EMA_21 and VWAP while money flow turns back up and choppiness is elevated enough to indicate inventory rotation rather than clean continuation. This is distinct from the fast flush-reclaim branch and from the opening-range fade branch."},
+  "variants": [{"name": "axs_inventory_reset_reclaim_v1","template_name": "inventory_reset_reclaim","parameters": [{"name": "funding_extreme_neg", "value": -0.00018},{"name": "funding_extreme_pos", "value": 0.00018},{"name": "ema_anchor", "value": 21},{"name": "washout_atr_mult", "value": 0.8},{"name": "mfi_reclaim_long", "value": 45},{"name": "mfi_reclaim_short", "value": 55},{"name": "chop_min", "value": 42},{"name": "adx_floor", "value": 15}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.1,"tp_type": "atr","tp_atr_mult": 2.7,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 12},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=2","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
