@@ -474,10 +474,10 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
         if t in ("supertrend_value", "st_value", "supertrend"):
             st = indicators.get("supertrend")
             return float(st[idx][0]) if st and st[idx] else None
-        if t in ("vortex_plus", "vi_plus", "vi+"):
+        if t in ("vortex_plus", "vi_plus", "vi+", "vtxp_14"):
             vx = indicators.get("vortex")
             return vx[idx][0] if vx and vx[idx] and vx[idx][0] is not None else None
-        if t in ("vortex_minus", "vi_minus", "vi-"):
+        if t in ("vortex_minus", "vi_minus", "vi-", "vtxm_14"):
             vx = indicators.get("vortex")
             return vx[idx][1] if vx and vx[idx] and vx[idx][1] is not None else None
         if t in ("macd_line", "macd"):
