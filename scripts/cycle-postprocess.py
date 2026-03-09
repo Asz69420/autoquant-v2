@@ -556,13 +556,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines = []
     lines.append("🍳 Cooking")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
-    lines.append("○──────────────activity──────────────")
+    lines.append("○────────────activity────────────")
     lines.append(f"Generated: {generated}")
     lines.append(f"Iterated: {iterated}")
     lines.append(f"Passed: {passed}")
     lines.append(f"Aborted: {aborted}")
     lines.append(f"Backtests: {backtests}")
-    lines.append("○───────────────note───────────────")
+    lines.append("○─────────────note─────────────")
     lines.append(note)
 
     return "\n".join(lines), metrics

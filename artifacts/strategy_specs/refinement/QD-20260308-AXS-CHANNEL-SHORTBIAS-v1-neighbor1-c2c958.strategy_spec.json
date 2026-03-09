@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260308-AXS-CHANNEL-SHORTBIAS-v1-neighbor1-c2c958",
+  "ts_iso": "2026-03-09T22:14:04.621474+00:00",
+  "thesis_id": "cycle_20260308_axs_channel_shortbias",
+  "name": "AXS EMA Channel Short-Bias Switch v1 [neighbor1]",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "indicators": [
+    "EMA_20",
+    "EMA_100",
+    "RSI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "EMA_20 > EMA_100",
+      "RSI_14 crosses_above 52"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "EMA_20 < EMA_100",
+      "RSI_14 crosses_below 48"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 3.6 * ATR_14 above entry",
+      "Early exit if Close < EMA_20",
+      "Time stop: 26 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 3.6 * ATR_14 below entry",
+      "Early exit if Close > EMA_20",
+      "Time stop: 26 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.006
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "channel-style directional continuation with explicit short logic for negative-funding alt"
+  },
+  "variants": [
+    {
+      "name": "axs_channel_shortbias_balanced_neighbor1",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 18
+        },
+        {
+          "name": "ema_slow",
+          "value": 100
+        },
+        {
+          "name": "rsi_long_trigger",
+          "value": 52
+        },
+        {
+          "name": "rsi_short_trigger",
+          "value": 48
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.2,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.6,
+        "risk_per_trade_pct": 0.006,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 26
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 9,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.4,
+  "status": "ready_to_test",
+  "source": "refinement_cycle",
+  "parent_id": "wf_db6e5c577cda",
+  "mutation_type": "param_neighbor_r3",
+  "family_generation": 2
+}

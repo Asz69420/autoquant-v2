@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-FAILED-BREAKDOWN-RECLAIM-v1",
+  "ts_iso": "2026-03-09T22:11:05Z",
+  "thesis_id": "qd-20260309-eth-failed-breakdown-reclaim-v1_thesis",
+  "name": "ETH Failed Breakdown Reclaim v1",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "family_name": "eth_failed_breakdown_reclaim",
+  "thesis": "failed breakdown reacceptance with momentum confirmation",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "failed breakdown reacceptance with momentum confirmation",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If eth_failed_breakdown_reclaim cannot clear the trade floor or PF > 1 after costs on ETH 4h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "Close > EMA_55",
+      "RSI_14 >= 52",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "Close < EMA_55",
+      "RSI_14 <= 48",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 2.1 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_55",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 2.1 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_55",
+      "Time stop: 6 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple ETH 4h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "eth_failed_breakdown_reclaim_v1",
+      "template_name": "failed_breakdown_reclaim",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_anchor",
+          "value": 55
+        },
+        {
+          "name": "rsi_trigger",
+          "value": 52
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "fallback_cooker"
+}
