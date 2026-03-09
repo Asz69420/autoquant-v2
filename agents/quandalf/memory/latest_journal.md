@@ -1145,3 +1145,86 @@ If the residual drag is concentrated in the weaker end of the allowed trend filt
 
 ### Next step
 Backtest v12 against v8, v9, v10, and v11. If v12 is the first version that improves DD without breaking the regime profile, then sizing discipline is the correct remaining refinement path for this family.
+
+## Entry 057 — UMA v2: Faster Reclaim-Failure Exit (2026-03-09)
+
+I read the new cycle orders and followed the cleanest path. UMA v1 is not dead — it is thin, but alive. The best part of the profile is already visible: transitional PF is strong, ranging PF is at least neutral, and the thesis is directionally right. The main problem is risk shape, especially drawdown. So I did not touch the entry logic. I attacked failure speed.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-UMA-STRUCTURE-RECLAIM-v2.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **faster reclaim-failure exit**.
+- Early exit if Close crosses_below EMA_21 -> Early exit if Close crosses_below EMA_9
+- mirrored on the short side as well
+
+Everything else remains v1:
+- same funding threshold,
+- same EMA reclaim structure,
+- same ADX floor,
+- same directional balance test,
+- same CCI reclaim trigger,
+- same stop / TP / time stop / sizing.
+
+### Why this lever
+UMA v1 already showed the right regime shape to justify refinement. The issue is not that the branch cannot find the right kind of recovery. The issue is that weak recoveries are probably being allowed too much time to decay before they are recognized as invalid. A faster failure anchor is the most direct way to reduce drawdown without damaging the transitional edge that makes the branch interesting.
+
+### Thesis
+If UMA's current weakness comes from recoveries that begin correctly but fail to persist, then forcing a faster exit on EMA_9 failure should cut the worst reversions earlier, improve risk shape, and potentially lift aggregate PF without sacrificing too much trade count.
+
+### Evaluation gate
+- Profit factor >= 1.12
+- Total trades >= 180
+- Max DD <= 9.0%
+- Transitional PF >= 1.10
+- Ranging PF >= 1.00
+
+### Next step
+Backtest v2 immediately. If drawdown improves and transitional PF holds, this becomes the preferred UMA refinement line. If drawdown remains too high, the next lever should be modest TP compression rather than tighter entry filtering.
+
+## Entry 058 — ETH Channel v2: Inverted Trigger / Failed Continuation (2026-03-09)
+
+I read the cycle orders and followed the instruction directly: stop threshold fiddling and assume the current ETH channel transfer trigger is anti-correlated. That gives me the cleanest one-lever test available — invert the trigger logic itself and leave everything else alone.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-ETH-CHANNEL-SHORTBIAS-v2.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **invert the trigger logic**.
+
+Original transfer logic:
+- long when Close > EMA_20 and RSI crosses_above 51
+- short when Close < EMA_20 and RSI crosses_below 49
+
+New failed-continuation logic:
+- long when Close < EMA_20 and RSI crosses_above 51
+- short when Close > EMA_20 and RSI crosses_below 49
+
+Everything else remains unchanged from v1:
+- same stop,
+- same target,
+- same time stop,
+- same sizing,
+- same costs.
+
+### Why this lever
+The order was explicit: treat the existing setup as anti-correlated and reframe the family around failed bullish continuation / channel rejection instead of more threshold tuning. So I did exactly that.
+
+This version now asks a different question: if ETH continuation signals have been inverted in practice, does the edge appear when momentum fails **against** the fast channel rather than when it aligns with it?
+
+### Thesis
+ETH may be fading failed continuation better than it is rewarding continuation. If so, the original trigger was structurally pointed the wrong way, and inversion should move QScore materially rather than marginally.
+
+### Evaluation gate
+- QScore >= 1.0
+- Profit factor >= 1.12
+- Total trades >= 20
+- Max DD <= 10.0%
+
+Abort conditions:
+- Total trades < 15
+- Profit factor < 0.95
+- Max DD > 12.0%
+
+### Next step
+Backtest v2 first. If this materially improves quality, the next lever should be stronger pre-short trend confirmation. If it still fails, then the family may not be suffering from anti-correlation alone and should be reconsidered more fundamentally.

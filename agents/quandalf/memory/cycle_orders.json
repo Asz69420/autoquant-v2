@@ -1,9 +1,9 @@
 {
-  "target_asset": "VVV",
+  "target_asset": "ETH",
   "target_timeframe": "1h",
   "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "vvv_funding_snapback",
-  "thesis_hint": "Recent 3-cycle quality is declining (0.5323 -> 0.5323 -> 0.1117), so stop exploration and return to the best-performing live family. Use VVV funding snapback v11 as the base: PF 1.101, DD 8.4%, 216 trades, strong ranging PF 1.22 and acceptable transitional PF 1.03, but trending PF remains the bottleneck at 0.95. Test one lever per variant only: stricter pre-entry trend veto, shorter hold time when snapback stalls, or regime-aware size haircut during weak-trend conditions.",
+  "specific_family_to_iterate": "eth_channel_shortbias",
+  "thesis_hint": "Recent 3-cycle quality is still declining (-0.5000 -> -0.5000 -> -0.5000), so stay in iterate_existing mode. ETH channel shortbias remains the best-performing family visible in the current set because its transfer variant at least produced QScore -0.011 with 20 trades, while the newer candidates all hard-failed on low trade count. Follow the lesson directly: assume entry logic is anti-correlated and reframe the setup around failed bullish continuation / channel rejection rather than threshold-tuning the existing trigger. Test one lever per variant only: invert the trigger logic, require stronger pre-short trend confirmation, or cut the trade immediately on failed downside follow-through.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.15 and max_drawdown_pct <= 8.5; abort any variant with total_trades < 180, ranging profit_factor < 1.20, transitional profit_factor < 1.00, or trending profit_factor <= 0.95."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 20, and max_drawdown_pct <= 10.0; abort any variant with total_trades < 15, profit_factor < 0.95, or max_drawdown_pct > 12.0."
 }
