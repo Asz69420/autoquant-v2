@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import copy
+import hashlib
 import json
 import math
 import os
@@ -177,10 +178,18 @@ def ensure_schema(conn):
             source_queue_id TEXT,
             notes TEXT,
             result_id TEXT,
+            novelty_score REAL DEFAULT 0,
             UNIQUE(spec_path, variant_id, asset, timeframe, stage, validation_target)
         )
         """
     )
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(research_funnel_queue)")}
+    if "novelty_score" not in existing:
+        try:
+            conn.execute("ALTER TABLE research_funnel_queue ADD COLUMN novelty_score REAL DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
+    conn.execute("CREATE TABLE IF NOT EXISTS mechanism_priors (mechanism TEXT PRIMARY KEY, success_rate REAL, total_tested INTEGER, avg_best_qs REAL, priority_modifier REAL DEFAULT 1.0, updated_at TEXT)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_funnel_queue_status ON research_funnel_queue(status, stage, bucket, priority, queued_at)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_funnel_queue_cycle ON research_funnel_queue(cycle_id, status, bucket, priority)")
     conn.commit()
@@ -244,6 +253,137 @@ def variant_names_for_spec(spec, variant_mode=None):
     return out or ["default"]
 
 
+
+
+def indicator_signature(spec):
+    names = []
+    for item in spec.get("indicators") or []:
+        if isinstance(item, str):
+            names.append(item.lower())
+        elif isinstance(item, dict):
+            names.append(str(item.get("name") or "").lower())
+    return sorted([n for n in names if n])
+
+
+def core_threshold_signature(spec, variant):
+    params = variant_parameter_map(variant)
+    core = {}
+    for key, value in sorted(params.items()):
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            core[key] = value
+    return core
+
+
+def branch_dedupe_key(spec, variant, asset, timeframe):
+    payload = {
+        "indicators": indicator_signature(spec),
+        "thresholds": core_threshold_signature(spec, variant),
+        "asset": str(asset).upper(),
+        "timeframe": str(timeframe),
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def recent_queue_keys(conn, limit=50):
+    rows = conn.execute("SELECT notes FROM research_funnel_queue ORDER BY queued_at DESC LIMIT ?", (int(limit),)).fetchall()
+    keys = set()
+    for (notes,) in rows:
+        if not notes:
+            continue
+        try:
+            obj = json.loads(notes) if str(notes).strip().startswith("{") else {}
+        except Exception:
+            obj = {}
+        dedupe = obj.get("dedupe_key") if isinstance(obj, dict) else None
+        if dedupe:
+            keys.add(dedupe)
+    return keys
+
+
+def novelty_score_for_spec(conn, spec, asset, timeframe):
+    rows = conn.execute(
+        "SELECT asset, timeframe, strategy_spec_id FROM research_funnel_queue ORDER BY queued_at DESC LIMIT 50"
+    ).fetchall()
+    seen_assets = {str(r[0]).upper() for r in rows}
+    seen_tfs = {str(r[1]) for r in rows}
+    recent_spec_ids = [str(r[2]) for r in rows]
+    recent_specs = []
+    for spec_id in recent_spec_ids[:10]:
+        try:
+            recent_specs.append(load_spec(os.path.join(SPECS_DIR, spec_id + '.strategy_spec.json')))
+        except Exception:
+            continue
+    score = 0
+    sig = set(indicator_signature(spec))
+    if recent_specs:
+        if all(sig != set(indicator_signature(other)) for other in recent_specs):
+            score += 3
+        if all(str(spec.get("edge_mechanism") or "") != str(other.get("edge_mechanism") or "") for other in recent_specs):
+            score += 3
+    else:
+        score += 6
+    if str(asset).upper() not in seen_assets:
+        score += 2
+    if str(timeframe) not in seen_tfs:
+        score += 2
+    return float(max(0, min(10, score)))
+
+
+def mechanism_priority_modifier(conn, spec):
+    mech = str(spec.get("edge_mechanism") or "").strip()
+    if not mech:
+        return 1.0
+    row = conn.execute("SELECT priority_modifier FROM mechanism_priors WHERE mechanism = ?", (mech,)).fetchone()
+    return float(row[0]) if row and row[0] is not None else 1.0
+
+
+def effective_priority(conn, item):
+    try:
+        spec = load_spec(item["spec_path"])
+    except Exception:
+        spec = {}
+    base = float(item.get("priority") or 3)
+    novelty = float(item.get("novelty_score") or 0.0)
+    modifier = mechanism_priority_modifier(conn, spec)
+    adjusted = base / modifier
+    if novelty >= 7:
+        adjusted -= 0.5
+    elif novelty < 3:
+        adjusted += 0.5
+    return adjusted
+
+
+def family_stage_stats(conn, family, stage):
+    rows = conn.execute(
+        "SELECT COALESCE(MAX(family_generation),1), SUM(CASE WHEN lower(COALESCE(score_decision,'')) IN ('pass','promote') THEN 1 ELSE 0 END), SUM(CASE WHEN lower(COALESCE(score_decision,''))='promote' THEN 1 ELSE 0 END) FROM backtest_results WHERE lower(COALESCE(strategy_family,'')) = lower(?) AND stage = ? AND COALESCE(killed,0)=0",
+        (family, stage),
+    ).fetchone()
+    return {"max_generation": int(rows[0] or 1), "passes": int(rows[1] or 0), "promotes": int(rows[2] or 0)}
+
+
+def family_caps(conn, candidates, stage):
+    total = max(1, min(stage_limit(stage), len(candidates)))
+    base_cap = max(1, int(math.floor(total * 0.30)))
+    validate_promote_cap = max(1, int(math.floor(total * 0.40))) if stage == "validation" else None
+    caps = {}
+    family_counts = {}
+    for item in candidates:
+        family = item.get("strategy_family") or "unknown-family"
+        family_counts[family] = family_counts.get(family, 0) + 1
+    new_families = [f for f, _ in family_counts.items() if family_stage_stats(conn, f, "full")["max_generation"] <= 1]
+    guaranteed = {f: 2 for f in new_families} if stage == "screen" else {}
+    for family in family_counts:
+        stats = family_stage_stats(conn, family, "full")
+        cap = base_cap
+        if stats["max_generation"] >= 3 and stats["passes"] == 0:
+            cap = max(1, int(math.floor(cap / 2.0)))
+        if stage == "validation" and stats["promotes"] > 0:
+            cap = max(cap, validate_promote_cap)
+        if family in guaranteed:
+            cap = max(cap, guaranteed[family])
+        caps[family] = min(family_counts[family], cap)
+    return caps, guaranteed
+
 def queue_item_exists(conn, item):
     row = conn.execute(
         """
@@ -270,8 +410,8 @@ def enqueue_item(conn, item):
         INSERT INTO research_funnel_queue (
             id, cycle_id, spec_path, strategy_spec_id, variant_id, asset, timeframe,
             stage, bucket, priority, status, queued_at, parent_result_id, mutation_type,
-            family_generation, strategy_family, validation_target, source_queue_id, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?, ?, ?, ?, ?)
+            family_generation, strategy_family, validation_target, source_queue_id, notes, novelty_score
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             qid,
@@ -292,6 +432,7 @@ def enqueue_item(conn, item):
             item.get("validation_target") or "",
             item.get("source_queue_id"),
             item.get("notes"),
+            float(item.get("novelty_score") or 0.0),
         ),
     )
     return qid, True
@@ -350,7 +491,7 @@ def fetch_candidates(conn, cycle_id=None, stage=None):
     sql = """
         SELECT id, cycle_id, spec_path, strategy_spec_id, variant_id, asset, timeframe,
                stage, bucket, priority, status, queued_at, parent_result_id, mutation_type,
-               family_generation, strategy_family, validation_target, source_queue_id, notes
+               family_generation, strategy_family, validation_target, source_queue_id, notes, novelty_score
         FROM research_funnel_queue
         WHERE status = 'queued'
     """
@@ -360,33 +501,52 @@ def fetch_candidates(conn, cycle_id=None, stage=None):
     if stage is not None:
         sql += " AND stage = ?"
         params.append(stage)
-    sql += " ORDER BY priority ASC, queued_at ASC"
     conn.row_factory = sqlite3.Row
-    return [dict(r) for r in conn.execute(sql, params).fetchall()]
+    rows = [dict(r) for r in conn.execute(sql, params).fetchall()]
+    return sorted(rows, key=lambda item: (effective_priority(conn, item), item.get("queued_at") or ""))
 
 
-def pick_stage_batch(candidates, stage, bucket_quota, bucket_used, stage_used, allow_bucket_override=True):
+def pick_stage_batch(conn, candidates, stage, bucket_quota, bucket_used, stage_used, allow_bucket_override=True):
     selected = []
     leftovers = []
     remaining_stage = stage_limit(stage) - stage_used.get(stage, 0)
     if remaining_stage <= 0:
         return []
+    caps, guaranteed = family_caps(conn, [item for item in candidates if item["stage"] == stage], stage)
+    family_used = {}
 
     def can_take(item, bucket_override=False):
         bucket = item["bucket"]
+        family = item.get("strategy_family") or "unknown-family"
         if stage_used.get(stage, 0) + len(selected) >= stage_limit(stage):
             return False
-        if bucket_override:
-            return True
-        return bucket_used[bucket] < bucket_quota[bucket]
+        if family_used.get(family, 0) >= caps.get(family, 1):
+            return False
+        if not bucket_override and bucket_used[bucket] >= bucket_quota[bucket]:
+            return False
+        return True
 
     stage_candidates = [item for item in candidates if item["stage"] == stage]
+    if stage == "screen":
+        for family, minimum in guaranteed.items():
+            family_items = [item for item in stage_candidates if (item.get("strategy_family") or "unknown-family") == family]
+            for item in family_items[:minimum]:
+                if len(selected) >= remaining_stage:
+                    break
+                if can_take(item, bucket_override=True):
+                    selected.append(item)
+                    bucket_used[item["bucket"]] += 1
+                    family_used[family] = family_used.get(family, 0) + 1
     for item in stage_candidates:
+        if item["id"] in {s["id"] for s in selected}:
+            continue
         if len(selected) >= remaining_stage:
             break
         if can_take(item):
             selected.append(item)
             bucket_used[item["bucket"]] += 1
+            family = item.get("strategy_family") or "unknown-family"
+            family_used[family] = family_used.get(family, 0) + 1
         else:
             leftovers.append(item)
 
@@ -397,6 +557,8 @@ def pick_stage_batch(candidates, stage, bucket_quota, bucket_used, stage_used, a
             if can_take(item, bucket_override=True):
                 selected.append(item)
                 bucket_used[item["bucket"]] += 1
+                family = item.get("strategy_family") or "unknown-family"
+                family_used[family] = family_used.get(family, 0) + 1
 
     stage_used[stage] = stage_used.get(stage, 0) + len(selected)
     return selected
@@ -562,9 +724,14 @@ def queue_branch_items(conn, queue_item, spec, full_result):
         updates[key] = perturb_value(params[key], pct)
         new_variant = clone_variant_with_params(base_variant, updates, f"{queue_item['variant_id']}_param_{idx + 1}")
         branch_path, branch_spec = write_generated_spec(spec, queue_item["spec_path"], queue_item["asset"], queue_item["timeframe"], new_variant, "param_tweak", next_generation, parent_result_id)
-        qid, was_created = enqueue_item(
-            conn,
-            {
+        dedupe_key = branch_dedupe_key(branch_spec, new_variant, branch_spec["asset"], branch_spec["timeframe"])
+        if dedupe_key in recent_queue_keys(conn, limit=50):
+            log_event(conn, "branch_duplicate_skipped", "frodex", f"Skipped duplicate auto-branch {branch_spec['id']}", step="dedupe", artifact_id=queue_item["id"], metadata={"dedupe_key": dedupe_key})
+        else:
+            novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
+            qid, was_created = enqueue_item(
+                conn,
+                {
                 "cycle_id": queue_item.get("cycle_id"),
                 "spec_path": branch_path,
                 "strategy_spec_id": branch_spec["id"],
@@ -579,20 +746,26 @@ def queue_branch_items(conn, queue_item, spec, full_result):
                 "parent_result_id": parent_result_id,
                 "strategy_family": family,
                 "source_queue_id": queue_item["id"],
-                "notes": f"auto branch param tweak {updates}",
+                "notes": json.dumps({"message": f"auto branch param tweak {updates}", "dedupe_key": dedupe_key}),
+                "novelty_score": novelty,
             },
-        )
-        if was_created:
-            created.append(qid)
+            )
+            if was_created:
+                created.append(qid)
 
     faster, slower = timeframe_neighbors(queue_item["timeframe"])
     for tf in [faster, slower]:
         if not tf:
             continue
         branch_path, branch_spec = write_generated_spec(spec, queue_item["spec_path"], queue_item["asset"], tf, copy.deepcopy(base_variant), "tf_transfer", next_generation, parent_result_id)
-        qid, was_created = enqueue_item(
-            conn,
-            {
+        dedupe_key = branch_dedupe_key(branch_spec, new_variant, branch_spec["asset"], branch_spec["timeframe"])
+        if dedupe_key in recent_queue_keys(conn, limit=50):
+            log_event(conn, "branch_duplicate_skipped", "frodex", f"Skipped duplicate auto-branch {branch_spec['id']}", step="dedupe", artifact_id=queue_item["id"], metadata={"dedupe_key": dedupe_key})
+        else:
+            novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
+            qid, was_created = enqueue_item(
+                conn,
+                {
                 "cycle_id": queue_item.get("cycle_id"),
                 "spec_path": branch_path,
                 "strategy_spec_id": branch_spec["id"],
@@ -607,9 +780,10 @@ def queue_branch_items(conn, queue_item, spec, full_result):
                 "parent_result_id": parent_result_id,
                 "strategy_family": family,
                 "source_queue_id": queue_item["id"],
-                "notes": f"auto branch timeframe {tf}",
+                "notes": json.dumps({"message": f"auto branch timeframe {tf}", "dedupe_key": dedupe_key}),
+                "novelty_score": novelty,
             },
-        )
+            )
         if was_created:
             created.append(qid)
 
@@ -631,9 +805,14 @@ def queue_branch_items(conn, queue_item, spec, full_result):
             next_generation,
             parent_result_id,
         )
-        qid, was_created = enqueue_item(
-            conn,
-            {
+        dedupe_key = branch_dedupe_key(branch_spec, new_variant, branch_spec["asset"], branch_spec["timeframe"])
+        if dedupe_key in recent_queue_keys(conn, limit=50):
+            log_event(conn, "branch_duplicate_skipped", "frodex", f"Skipped duplicate auto-branch {branch_spec['id']}", step="dedupe", artifact_id=queue_item["id"], metadata={"dedupe_key": dedupe_key})
+        else:
+            novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
+            qid, was_created = enqueue_item(
+                conn,
+                {
                 "cycle_id": queue_item.get("cycle_id"),
                 "spec_path": branch_path,
                 "strategy_spec_id": branch_spec["id"],
@@ -648,9 +827,10 @@ def queue_branch_items(conn, queue_item, spec, full_result):
                 "parent_result_id": parent_result_id,
                 "strategy_family": family,
                 "source_queue_id": queue_item["id"],
-                "notes": "auto branch validation asset transfer",
+                "notes": json.dumps({"message": "auto branch validation asset transfer", "dedupe_key": dedupe_key}),
+                "novelty_score": novelty,
             },
-        )
+            )
         if was_created:
             created.append(qid)
     return created
@@ -842,12 +1022,12 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
     primary_bucket_used = {k: 0 for k in quotas}
     primary_stage_used = {"screen": 0, "full": 0, "validation": 0}
     for stage in ("screen", "full", "validation"):
-        selected.extend(pick_stage_batch(fetch_candidates(conn, cycle_id=cycle_id, stage=stage), stage, quotas, primary_bucket_used, primary_stage_used, allow_bucket_override=False))
+        selected.extend(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage=stage), stage, quotas, primary_bucket_used, primary_stage_used, allow_bucket_override=False))
 
     bucket_used = dict(primary_bucket_used)
     stage_used = dict(primary_stage_used)
     for stage in ("screen", "full", "validation"):
-        selected.extend([item for item in pick_stage_batch(fetch_candidates(conn, cycle_id=cycle_id, stage=stage), stage, quotas, bucket_used, stage_used, allow_bucket_override=True) if item["id"] not in {s["id"] for s in selected}])
+        selected.extend([item for item in pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage=stage), stage, quotas, bucket_used, stage_used, allow_bucket_override=True) if item["id"] not in {s["id"] for s in selected}])
 
     pipeline_id = create_pipeline_run(conn, parent_run_id or "manual", status="running", steps_total=len(selected))
     log_event(conn, "parallel_start", "oragorn", f"Research funnel cycle: selected={len(selected)}", step="start", artifact_id=pipeline_id, metadata={"bucket_quota": quotas, "bucket_used": bucket_used, "stage_used": stage_used, "primary_bucket_used": primary_bucket_used, "primary_stage_used": primary_stage_used})
@@ -886,7 +1066,7 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
             conn.execute("UPDATE pipeline_runs SET steps_completed = COALESCE(steps_completed,0) + 1 WHERE id=?", (pipeline_id,))
             conn.commit()
 
-    screen_jobs = pick_stage_batch(fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, {k: 0 for k in quotas}, {"screen": 0, "full": 0, "validation": 0}, allow_bucket_override=False)
+    screen_jobs = pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, {k: 0 for k in quotas}, {"screen": 0, "full": 0, "validation": 0}, allow_bucket_override=False)
     mark_running(conn, screen_jobs)
     finalize_results(run_stage_jobs(screen_jobs, concurrency=1))
 
@@ -895,11 +1075,11 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
         current_bucket_used[item["bucket"]] += 1
     stage_progress = {"screen": len(screen_jobs), "full": 0, "validation": 0}
 
-    full_jobs = pick_stage_batch(fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=False)
+    full_jobs = pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=False)
     mark_running(conn, full_jobs)
     finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_LIMIT, max_parallel or FULL_LIMIT)))
 
-    validation_jobs = pick_stage_batch(fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=False)
+    validation_jobs = pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=False)
     mark_running(conn, validation_jobs)
     finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_LIMIT, max_parallel or VALIDATION_LIMIT)))
 

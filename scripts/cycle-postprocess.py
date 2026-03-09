@@ -982,6 +982,65 @@ def backtest_new_specs():
     return backtested
 
 
+
+
+def update_mechanism_priors(conn):
+    conn.execute("CREATE TABLE IF NOT EXISTS mechanism_priors (mechanism TEXT PRIMARY KEY, success_rate REAL, total_tested INTEGER, avg_best_qs REAL, priority_modifier REAL DEFAULT 1.0, updated_at TEXT)")
+    rows = conn.execute("SELECT strategy_spec_id, score_decision, score_total FROM backtest_results WHERE COALESCE(strategy_spec_id,'') <> ''").fetchall()
+    by_mech = {}
+    for spec_id, decision, score_total in rows:
+        spec_path = os.path.join(SPECS_DIR, str(spec_id) + '.strategy_spec.json')
+        if not os.path.exists(spec_path):
+            continue
+        try:
+            with open(spec_path, 'r', encoding='utf-8') as handle:
+                spec = json.load(handle)
+        except Exception:
+            continue
+        mech = str(spec.get('edge_mechanism') or 'unknown').strip()
+        bucket = by_mech.setdefault(mech, {'tested': 0, 'success': 0, 'best': []})
+        bucket['tested'] += 1
+        if str(decision or '').lower() in ('pass', 'promote'):
+            bucket['success'] += 1
+        bucket['best'].append(float(score_total or 0.0))
+    updated = []
+    for mech, data in by_mech.items():
+        tested = int(data['tested'])
+        success_rate = round((data['success'] / tested) * 100.0, 2) if tested else 0.0
+        avg_best_qs = round(sum(data['best']) / len(data['best']), 4) if data['best'] else 0.0
+        if success_rate > 30.0:
+            modifier = 1.5
+        elif success_rate < 10.0 and tested >= 10:
+            modifier = 0.5
+        else:
+            modifier = 1.0
+        conn.execute("INSERT INTO mechanism_priors(mechanism, success_rate, total_tested, avg_best_qs, priority_modifier, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(mechanism) DO UPDATE SET success_rate=excluded.success_rate, total_tested=excluded.total_tested, avg_best_qs=excluded.avg_best_qs, priority_modifier=excluded.priority_modifier, updated_at=excluded.updated_at", (mech, success_rate, tested, avg_best_qs, modifier, datetime.now(timezone.utc).isoformat()))
+        updated.append({'mechanism': mech, 'success_rate': success_rate, 'total_tested': tested, 'avg_best_qs': avg_best_qs, 'priority_modifier': modifier})
+    return updated
+
+
+def update_portability_scores(conn):
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(backtest_results)")}
+    if 'portability_score' not in existing:
+        try:
+            conn.execute("ALTER TABLE backtest_results ADD COLUMN portability_score REAL DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
+    promote_rows = conn.execute("SELECT id, strategy_spec_id, variant_id, asset, timeframe FROM backtest_results WHERE lower(COALESCE(score_decision,'')) = 'promote' AND stage = 'full'").fetchall()
+    updated = []
+    for result_id, spec_id, variant_id, asset, timeframe in promote_rows:
+        validations = conn.execute("SELECT asset, timeframe, score_decision FROM backtest_results WHERE parent_id = ? AND stage = 'validation'", (result_id,)).fetchall()
+        passed = sum(1 for _, _, decision in validations if str(decision or '').lower() in ('pass', 'promote'))
+        if passed <= 0:
+            portability = 0.0
+        elif passed <= 2:
+            portability = 25.0 * passed
+        else:
+            portability = min(100.0, 75.0 + (passed - 3) * 12.5)
+        conn.execute("UPDATE backtest_results SET portability_score = ? WHERE id = ?", (portability, result_id))
+        updated.append({'result_id': result_id, 'validation_count': len(validations), 'passed': passed, 'portability_score': portability})
+    return updated
+
 def extract_lessons(rows):
     conn = sqlite3.connect(DB)
     lessons_added = 0
@@ -1188,6 +1247,11 @@ def main():
         f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
     )
 
+    portability_updates = update_portability_scores(sqlite3.connect(DB))
+    conn2 = sqlite3.connect(DB)
+    priors_updated = update_mechanism_priors(conn2)
+    conn2.commit()
+    conn2.close()
     lessons_added = extract_lessons(rows)
     log_event(
         "lessons_extracted",
@@ -1210,6 +1274,8 @@ def main():
                 "log_card_sent": log_card_sent,
                 "journal_sent": journal_sent,
                 "lessons_added": lessons_added,
+                "portability_updates": portability_updates[:5],
+                "priors_updated": priors_updated[:5],
                 "card_metrics": metrics,
             }
         )

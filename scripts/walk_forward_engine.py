@@ -28,6 +28,8 @@ from itertools import product as iter_product
 
 import numpy as np
 
+from regime_tagger import get_regime_tags
+
 try:
     from scipy.signal import butter, lfilter
     HAS_SCIPY = True
@@ -745,6 +747,48 @@ def calculate_qscore(metrics: dict) -> dict:
     }
 
 
+
+
+def compute_regime_scores(trades: list[dict], regime_payload: dict) -> tuple[dict, float, str, list[str]]:
+    tags = regime_payload.get("tags") or []
+    regime_groups = {}
+    total_trades = len(trades)
+    for trade in trades:
+        entry_idx = trade.get("entry_idx_abs", trade.get("entry_idx"))
+        regime = "UNKNOWN"
+        if isinstance(entry_idx, int) and 0 <= entry_idx < len(tags):
+            regime = tags[entry_idx].get("regime") or "UNKNOWN"
+        trade["entry_regime"] = regime
+        regime_groups.setdefault(regime, []).append(trade)
+
+    regime_scores = {}
+    primary_regime = "UNKNOWN"
+    primary_count = 0
+    for regime, regime_trades in regime_groups.items():
+        metrics = compute_metrics(regime_trades, [1.0])
+        qscore = calculate_qscore(metrics) if metrics["total_trades"] >= 15 else None
+        regime_scores[regime] = {
+            "trade_count": metrics["total_trades"],
+            "profit_factor": metrics["profit_factor"],
+            "win_rate": round(metrics["win_rate_pct"], 2),
+            "avg_return": metrics["avg_trade_pct"],
+            "qscore": qscore["score_total"] if qscore else None,
+        }
+        if metrics["total_trades"] > primary_count:
+            primary_count = metrics["total_trades"]
+            primary_regime = regime
+
+    concentration = round((primary_count / total_trades) * 100.0, 2) if total_trades else 0.0
+    flags = []
+    if concentration > 80.0:
+        flags.append("regime_specialist")
+    if total_trades and concentration < 40.0:
+        flags.append("robust_across_regimes")
+    chop_qs = (regime_scores.get("CHOP") or {}).get("qscore")
+    if chop_qs is not None and chop_qs > 1.0:
+        flags.append("valuable_in_chop")
+    return regime_scores, concentration, primary_regime, flags
+
 def extend_blind_window(candles: list[dict], blind_start: int, blind_end: int, strategy: dict, max_end: int) -> int:
     current_end = blind_end
     while current_end <= max_end:
@@ -775,10 +819,12 @@ def trim_to_recent_months(candles: list[dict], months: int = 3) -> list[dict]:
     return candles[-keep:]
 
 
-def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_grid: dict | None = None, stage: str = "full") -> dict:
+def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset: str = "unknown", param_grid: dict | None = None, stage: str = "full") -> dict:
     if stage == "screen":
         screen_candles = trim_to_recent_months(candles, months=3)
         screen_metrics = run_strategy_on_candles(screen_candles, strategy)
+        regime_payload = get_regime_tags("screen", timeframe, candles=screen_candles, force=True)
+        regime_scores, regime_concentration, primary_regime, regime_flags = compute_regime_scores(screen_metrics["trades"], regime_payload)
         passed = (
             screen_metrics["total_trades"] >= 10
             and screen_metrics["profit_factor"] >= 1.0
@@ -823,9 +869,15 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_
                 "qscore": screen_qscore["score_total"],
                 "decision": "pass" if passed else "fail",
                 "grade": "S" if passed else "F",
-                "flags": json.dumps(["screen_pass" if passed else "screen_fail"]),
+                "flags": json.dumps((["screen_pass" if passed else "screen_fail"] + regime_flags)),
+                "regime_scores": regime_scores,
+                "regime_concentration": regime_concentration,
+                "primary_regime": primary_regime,
             },
             "degradation_pct": 0.0,
+            "regime_scores": regime_scores,
+            "regime_concentration": regime_concentration,
+            "primary_regime": primary_regime,
             "screen_passed": passed,
             "walk_forward_config": {
                 "stage": "screen",
@@ -885,6 +937,12 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_
                     best_params = override
                     is_result = trial
         oos_result = run_strategy_on_candles(blind_data, strategy, params_override=best_params)
+        for trade in oos_result["trades"]:
+            trade["entry_idx_abs"] = fold["blind_start"] + int(trade.get("entry_idx", 0))
+            trade["exit_idx_abs"] = fold["blind_start"] + int(trade.get("exit_idx", 0))
+        for trade in is_result["trades"]:
+            trade["entry_idx_abs"] = fold["train_start"] + int(trade.get("entry_idx", 0))
+            trade["exit_idx_abs"] = fold["train_start"] + int(trade.get("exit_idx", 0))
         all_oos_trades.extend(oos_result["trades"])
         all_is_trades.extend(is_result["trades"])
         if oos_result["equity_curve"]:
@@ -918,6 +976,8 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_
 
     agg_is = compute_metrics(all_is_trades, [1.0])
     agg_oos = compute_metrics(all_oos_trades, all_oos_equity)
+    regime_payload = get_regime_tags(asset, timeframe, candles=candles)
+    regime_scores, regime_concentration, primary_regime, regime_flags = compute_regime_scores(all_oos_trades, regime_payload)
     is_qscore = calculate_qscore(agg_is)
     oos_qscore = calculate_qscore(agg_oos)
     is_qs_val = is_qscore["score_total"]
@@ -948,9 +1008,15 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_
             "qscore": oos_qscore["score_total"],
             "decision": oos_qscore["score_decision"],
             "grade": oos_qscore["score_grade"],
-            "flags": oos_qscore["score_flags"],
+            "flags": json.dumps(sorted(set(json.loads(oos_qscore["score_flags"]) + regime_flags))),
+            "regime_scores": regime_scores,
+            "regime_concentration": regime_concentration,
+            "primary_regime": primary_regime,
         },
         "degradation_pct": degradation_pct,
+        "regime_scores": regime_scores,
+        "regime_concentration": regime_concentration,
+        "primary_regime": primary_regime,
         "walk_forward_config": {
             "train_days": train_days,
             "blind_days": blind_days,
@@ -977,6 +1043,10 @@ def ensure_schema(conn: sqlite3.Connection):
         "validation_target": "TEXT",
         "family_generation": "INTEGER DEFAULT 1",
         "killed": "INTEGER DEFAULT 0",
+        "regime_scores": "TEXT",
+        "regime_concentration": "REAL",
+        "primary_regime": "TEXT",
+        "portability_score": "REAL DEFAULT 0",
     }
     for col, col_type in new_columns.items():
         if col not in existing:
@@ -1019,6 +1089,9 @@ def save_result(
         "outofsample": oos,
         "degradation_pct": wf_result["degradation_pct"],
         "walk_forward_config": wf_result["walk_forward_config"],
+        "regime_scores": wf_result.get("regime_scores") or {},
+        "regime_concentration": wf_result.get("regime_concentration", 0.0),
+        "primary_regime": wf_result.get("primary_regime") or "UNKNOWN",
     }
     score_details = {
         "method": "walk_forward_qscore",
@@ -1026,6 +1099,9 @@ def save_result(
         "outofsample_qscore": oos["qscore"],
         "degradation_pct": wf_result["degradation_pct"],
         "flags": oos.get("flags"),
+        "regime_scores": wf_result.get("regime_scores") or {},
+        "regime_concentration": wf_result.get("regime_concentration", 0.0),
+        "primary_regime": wf_result.get("primary_regime") or "UNKNOWN",
     }
     conn.execute(
         """
@@ -1039,8 +1115,9 @@ def save_result(
             walk_forward, status,
             qscore_insample, qscore_outofsample, degradation_pct,
             walk_forward_folds, walk_forward_config, fold_results,
-            strategy_family, parent_id, mutation_type, stage, validation_target, family_generation, killed
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            strategy_family, parent_id, mutation_type, stage, validation_target, family_generation, killed,
+            regime_scores, regime_concentration, primary_regime, portability_score
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             result_id,
@@ -1082,6 +1159,10 @@ def save_result(
             validation_target,
             int(family_generation or 1),
             0,
+            json.dumps(wf_result.get("regime_scores") or {}),
+            float(wf_result.get("regime_concentration") or 0.0),
+            wf_result.get("primary_regime") or "UNKNOWN",
+            0.0,
         ),
     )
     conn.commit()
@@ -1137,7 +1218,7 @@ def main():
         print(json.dumps({"status": "error", "error": str(e)}))
         return 1
 
-    result = run_walk_forward(candles, strategy, args.tf, stage=args.stage)
+    result = run_walk_forward(candles, strategy, args.tf, asset=args.asset, stage=args.stage)
     if result["status"] != "ok":
         print(json.dumps(result, indent=2))
         return 1
@@ -1180,6 +1261,9 @@ def main():
         "outofsample": result["outofsample_aggregate"],
         "degradation_pct": result["degradation_pct"],
         "walk_forward_config": result["walk_forward_config"],
+        "regime_scores": result.get("regime_scores"),
+        "regime_concentration": result.get("regime_concentration"),
+        "primary_regime": result.get("primary_regime"),
         "result_id": result.get("result_id"),
         "db_saved": result.get("db_saved", False),
         "fold_summary": [

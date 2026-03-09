@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS theses (id TEXT PRIMARY KEY, ts_iso TEXT NOT NULL, re
 
 CREATE TABLE IF NOT EXISTS strategy_specs (id TEXT PRIMARY KEY, ts_iso TEXT NOT NULL, thesis_id TEXT NOT NULL, name TEXT NOT NULL, version TEXT NOT NULL, asset TEXT NOT NULL, timeframe TEXT NOT NULL, indicators TEXT NOT NULL, entry_rules TEXT NOT NULL, exit_rules TEXT NOT NULL, position_sizing TEXT, regime_filter TEXT, variants TEXT NOT NULL, complexity_score REAL, status TEXT NOT NULL DEFAULT 'draft');
 
-CREATE TABLE IF NOT EXISTS backtest_results (id TEXT PRIMARY KEY, ts_iso TEXT NOT NULL, strategy_spec_id TEXT NOT NULL, variant_id TEXT NOT NULL, asset TEXT NOT NULL, timeframe TEXT NOT NULL, period_start TEXT NOT NULL, period_end TEXT NOT NULL, candle_count INTEGER, profit_factor REAL NOT NULL, total_return_pct REAL NOT NULL, max_drawdown_pct REAL NOT NULL, total_trades INTEGER NOT NULL, win_rate_pct REAL NOT NULL, avg_trade_pct REAL, sharpe_ratio REAL, sortino_ratio REAL, metrics TEXT NOT NULL, regime_metrics TEXT, score_total REAL NOT NULL, score_decision TEXT NOT NULL, score_edge REAL NOT NULL, score_resilience REAL NOT NULL, score_grade REAL NOT NULL, score_flags TEXT, score_details TEXT NOT NULL, xqscore_total REAL, xqscore_details TEXT, walk_forward TEXT, equity_curve TEXT, status TEXT NOT NULL DEFAULT 'complete', strategy_family TEXT, parent_id TEXT, mutation_type TEXT, stage TEXT NOT NULL DEFAULT 'full', validation_target TEXT, family_generation INTEGER NOT NULL DEFAULT 1, killed INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS backtest_results (id TEXT PRIMARY KEY, ts_iso TEXT NOT NULL, strategy_spec_id TEXT NOT NULL, variant_id TEXT NOT NULL, asset TEXT NOT NULL, timeframe TEXT NOT NULL, period_start TEXT NOT NULL, period_end TEXT NOT NULL, candle_count INTEGER, profit_factor REAL NOT NULL, total_return_pct REAL NOT NULL, max_drawdown_pct REAL NOT NULL, total_trades INTEGER NOT NULL, win_rate_pct REAL NOT NULL, avg_trade_pct REAL, sharpe_ratio REAL, sortino_ratio REAL, metrics TEXT NOT NULL, regime_metrics TEXT, score_total REAL NOT NULL, score_decision TEXT NOT NULL, score_edge REAL NOT NULL, score_resilience REAL NOT NULL, score_grade REAL NOT NULL, score_flags TEXT, score_details TEXT NOT NULL, xqscore_total REAL, xqscore_details TEXT, walk_forward TEXT, equity_curve TEXT, status TEXT NOT NULL DEFAULT 'complete', strategy_family TEXT, parent_id TEXT, mutation_type TEXT, stage TEXT NOT NULL DEFAULT 'full', validation_target TEXT, family_generation INTEGER NOT NULL DEFAULT 1, killed INTEGER NOT NULL DEFAULT 0, regime_scores TEXT, regime_concentration REAL, primary_regime TEXT, portability_score REAL DEFAULT 0);
 CREATE INDEX IF NOT EXISTS idx_bt_strategy ON backtest_results(strategy_spec_id);
 CREATE INDEX IF NOT EXISTS idx_bt_score ON backtest_results(score_total DESC);
 CREATE INDEX IF NOT EXISTS idx_bt_decision ON backtest_results(score_decision);
@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS research_funnel_queue (
   source_queue_id TEXT,
   notes TEXT,
   result_id TEXT,
+  novelty_score REAL DEFAULT 0,
   UNIQUE(spec_path, variant_id, asset, timeframe, stage, validation_target)
 );
 CREATE INDEX IF NOT EXISTS idx_funnel_queue_status ON research_funnel_queue(status, stage, bucket, priority, queued_at);
@@ -59,6 +60,8 @@ CREATE TABLE IF NOT EXISTS event_log (id INTEGER PRIMARY KEY AUTOINCREMENT, ts_i
 CREATE INDEX IF NOT EXISTS idx_events_ts ON event_log(ts_iso);
 CREATE INDEX IF NOT EXISTS idx_events_type ON event_log(event_type);
 CREATE INDEX IF NOT EXISTS idx_events_agent ON event_log(agent);
+
+CREATE TABLE IF NOT EXISTS mechanism_priors (mechanism TEXT PRIMARY KEY, success_rate REAL, total_tested INTEGER, avg_best_qs REAL, priority_modifier REAL DEFAULT 1.0, updated_at TEXT);
 
 -- QScore Leaderboard (all completed backtests)
 CREATE VIEW IF NOT EXISTS leaderboard AS
