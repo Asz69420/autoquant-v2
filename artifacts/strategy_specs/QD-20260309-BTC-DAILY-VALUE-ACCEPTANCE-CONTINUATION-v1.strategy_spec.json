@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-DAILY-VALUE-ACCEPTANCE-CONTINUATION-v1",
+  "ts_iso": "2026-03-10T07:35:00Z",
+  "thesis_id": "cycle_128_btc_daily_value_acceptance_continuation_v1",
+  "name": "BTC Daily Value Acceptance Continuation v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1d",
+  "indicators": ["EMA_21","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "low >= EMA_21 - 0.4 * ATR_14",
+      "Close > EMA_21",
+      "Close > VWAP",
+      "RSI_14 >= 52",
+      "MFI_14 >= 50",
+      "ADX_14 >= 13",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Disabled: thesis is bullish shallow-reset continuation only"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry","Take profit: 3.2 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 16 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Value-acceptance continuation after shallow reset. BTC must hold a shallow reset above the medium anchor and reclaim value immediately, with trend state still constructive. This is meant to be a denser daily continuation branch than the recent ceremony-heavy templates."},
+  "variants": [{"name": "btc_daily_value_acceptance_continuation_v1","template_name": "daily_value_acceptance_continuation_long","parameters": [{"name": "ema_anchor", "value": 21},{"name": "reset_atr_buffer", "value": 0.4},{"name": "rsi_floor", "value": 52},{"name": "mfi_floor", "value": 50},{"name": "adx_floor", "value": 13}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.1,"tp_type": "atr","tp_atr_mult": 3.2,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 16},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

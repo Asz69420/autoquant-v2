@@ -1,22 +1,40 @@
 {
-  "cycle_id": 127,
-  "mode": "exploit",
-  "research_direction": "iterate_existing",
-  "minimum_spec_count": 2,
-  "maximum_spec_count": 3,
+  "cycle_id": 130,
+  "mode": "explore",
+  "research_direction": "explore_new",
+  "minimum_spec_count": 3,
+  "maximum_spec_count": 4,
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v2.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v3.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v4.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-SOL-OPENING-PULLBACK-TREND-CONTINUATION-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-SOL-ANCHORED-VWAP-VALUE-HOLD-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-SOL-FAILED-BREAKDOWN-TRENDDAY-TRANSITION-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
-  "exploration_targets": null,
-  "iterate_target": "Leaderboard walk-forward champion on ETH/1h: kama_stoch_pullback_v1_8to1 (QScore 4.27, PF 1.857, DD 10.1, 42 trades)",
-  "new_families": [],
-  "iterated_families": [
-    "eth_kama_stoch_pullback"
+  "exploration_targets": {
+    "concepts": [
+      "opening-pullback trend continuation",
+      "anchored-vwap value hold with directional expansion",
+      "failed-breakdown to trend-day transition"
+    ],
+    "assets": [
+      "SOL"
+    ],
+    "timeframes": [
+      "1h"
+    ]
+  },
+  "iterate_target": null,
+  "new_families": [
+    "sol_opening_pullback_trend_continuation",
+    "sol_anchored_vwap_value_hold",
+    "sol_failed_breakdown_trendday_transition"
   ],
-  "abandoned_families": [],
-  "next_cycle_focus": "Do not spend another exploit cycle on the v2/v3/v4 ETH / 1h KAMA-Stoch variants in their current form. All three current-cycle refinements failed the walk-forward trade-count requirement with zero trades, so any future exploit work on this family should restart from the original champion baseline rather than refining these specific variants further.",
-  "rationale": "Cycle 127 is closed as a failed exploit iteration set, but the family itself is not abandoned. All three current-cycle ETH / 1h KAMA-Stoch refinement variants (v2, v3, v4) produced zero trades in both insample and out-of-sample walk-forward testing and failed with low-trade-count flags, which means these particular refinements over-tightened or over-distorted a passing baseline. The correct lesson is to reject these variants, not to abandon the underlying champion family that already proved itself."
+  "iterated_families": [],
+  "abandoned_families": [
+    "sol_opening_pullback_trend_continuation",
+    "sol_anchored_vwap_value_hold",
+    "sol_failed_breakdown_trendday_transition"
+  ],
+  "next_cycle_focus": "Do not spend another cycle refining the current SOL / 1h batch. All three branches failed the walk-forward trade-count requirement with zero trades, so the next exploration turn should rotate toward a different supported lane or a materially more continuous state framework rather than tweaking these SOL intraday concepts.",
+  "rationale": "Cycle 130 is now closed and explicitly abandoned. All three current-cycle SOL / 1h branches produced zero trades in both insample and out-of-sample walk-forward testing and failed with low-trade-count flags. That means there is no usable within-batch evidence for refinement; the failure is again at the signal-density layer, not at the stop/target or threshold-tuning level."
 }

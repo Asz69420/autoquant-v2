@@ -2200,3 +2200,117 @@ The family already works. The question is not whether to keep it alive; it is wh
 
 ### Next step
 Backtest the full exploit batch against the champion directly. If one variant preserves at least most of the trade count while improving PF or trimming drawdown materially, it deserves to become the new reference. If none beat the baseline, that is still a useful result — it means the current champion is already close to local optimum and should be left alone.
+
+## Entry 084 — Full BTC / 1d Daily-Rotation Exploration Batch for Cycle 128 (2026-03-09)
+
+This rotation makes sense. The ETH / 1h exploit failed hard, recent history has been too full of ETH-family thinking, and I needed a daily lane that was not just another SOL clone. BTC / 1d is a clean reset because it changes both the asset family and the pace of thinking. The order also said the quiet part out loud: stop writing ceremonial setups that never trade. Good.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BTC-DAILY-FAILED-BREAKOUT-REJECTION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BTC-DAILY-VALUE-ACCEPTANCE-CONTINUATION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BTC-DAILY-COMPRESSION-RELEASE-RETAINED-VALUE-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — BTC / 1d — and varied the mechanism with a deliberate bias toward broader daily expressions.
+
+- **Daily Failed Breakout Rejection**
+  - tests whether rejected upside excess back below value can generate a viable daily reversal lane.
+
+- **Daily Value Acceptance Continuation**
+  - tests whether the denser expression is simply shallow-reset continuation while value and the medium anchor hold.
+
+- **Daily Compression Release Retained Value**
+  - tests whether daily expansion works best when retained value is already in place and the fresh state change is enough.
+
+### Why this batch obeys the contract
+- supported asset: **BTC**
+- supported timeframe: **1d**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct daily branches
+- no ETH channel or ETH pullback clone
+- no recycled DOGE/BANANA grammar
+- no ceremonial multi-confirmation stack
+
+### Current thesis
+If this batch still comes back empty, then I have to accept that the problem is not just intraday selectivity or one bad asset lane. It would mean I am still failing to express edge in a way that survives the walk-forward trade floor even on the daily timeframe.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next design change needs to be even more radical: fewer event conditions, more continuous state logic, and maybe explicit always-on directional frameworks with lighter triggers.
+
+## Entry 085 — Full AXS / 4h Density-First Exploration Batch for Cycle 129 (2026-03-09)
+
+This was a necessary rotation. ETH-family exploitation has been overrepresented in attention even when the batch itself changes, and BTC just took the daily exploration lane. AXS / 4h is a good antidote because it forces a different market personality without falling back into the same zero-trade choreography. The order was explicit: density first, no threshold spray, no recycled grammar.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-AXS-NEGATIVE-FUNDING-FAILED-BREAKDOWN-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-AXS-VALUE-REACCEPTANCE-TREND-RESET-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-AXS-COMPRESSION-TO-EXPANSION-BREAKOUT-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — AXS / 4h — and varied the mechanism while staying biased toward broader, more live expressions.
+
+- **Negative-Funding Failed-Breakdown Continuation**
+  - tests whether downside excess rejection under still-negative funding is the cleanest continuation path.
+
+- **Value-Reacceptance Trend Reset**
+  - tests whether regained slower structure plus improving directional strength is enough to restart the trend without overcomplication.
+
+- **Compression-to-Expansion Breakout**
+  - tests whether retained structure plus a live bullish state is sufficient for the breakout-hold expression when rebuilt without ceremony.
+
+### Why this batch obeys the contract
+- supported asset: **AXS**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled DOGE/BANANA grammar
+- no threshold spray
+
+### Current thesis
+AXS / 4h should tell me whether I can still make a medium-speed batch that is both structurally distinct and actually alive. If this comes back empty too, the indictment gets even harsher: I am still failing to convert conceptual variation into tradable signal density.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then I need to cut even deeper into the exploration grammar and move further toward continuous state expression rather than event-based branching.
+
+## Entry 086 — Full SOL / 1h Density-First Exploration Batch for Cycle 130 (2026-03-09)
+
+This was the right rotation. The slower lanes have been a graveyard, and ETH-family exploit attention has consumed too much oxygen even when I am supposedly rotating. SOL / 1h gives me a supported liquid lane where density should be achievable if I stop over-writing the setups. The order was clear: no ceremony, no recycled dead grammar, no fake diversity.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-OPENING-PULLBACK-TREND-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-SOL-ANCHORED-VWAP-VALUE-HOLD-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-SOL-FAILED-BREAKDOWN-TRENDDAY-TRANSITION-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — SOL / 1h — and varied the mechanism while staying biased toward more live intraday expressions.
+
+- **Opening-Pullback Trend Continuation**
+  - tests whether the best intraday expression is simply an early reset that holds above the fast/medium anchor stack and value.
+
+- **Anchored-VWAP Value Hold**
+  - tests whether acceptance above value plus directional expansion is enough without converting the idea into a breakout chase.
+
+- **Failed-Breakdown Trend-Day Transition**
+  - tests whether reclaimed downside inventory followed by a live momentum flip is the cleaner route into intraday trend continuation.
+
+### Why this batch obeys the contract
+- supported asset: **SOL**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled DOGE/BANANA grammar
+- no ceremonial multi-confirmation stack
+
+### Current thesis
+If SOL / 1h cannot print trades with these broader expressions, then the indictment gets stronger: I am still solving for conceptual neatness rather than for tradable occurrence. But if any lane should be able to prove that I can still write living exploration ideas, it should be this one.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to be even simpler and more continuous than what I am writing now.
