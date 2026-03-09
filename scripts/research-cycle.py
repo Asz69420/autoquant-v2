@@ -78,17 +78,15 @@ def log_event(event_type, agent, message, severity="info", artifact_id=None, pip
         pass
 
 
-def next_cycle_id():
+def read_cycle_counter():
+    """Read current cycle_id from counter without incrementing.
+    Only cycle-start.py should ever increment the counter."""
     counter_path = ROOT / "data" / "state" / "cycle_counter.json"
     try:
         data = json.loads(counter_path.read_text(encoding="utf-8"))
+        return int(data.get("last_cycle_id", 0))
     except Exception:
-        data = {"last_cycle_id": 0}
-
-    data["last_cycle_id"] = int(data.get("last_cycle_id", 0)) + 1
-    counter_path.parent.mkdir(parents=True, exist_ok=True)
-    counter_path.write_text(json.dumps(data), encoding="utf-8")
-    return data["last_cycle_id"]
+        return 0
 
 
 def load_cycle_run_state() -> dict:
@@ -185,7 +183,7 @@ def main() -> int:
     run_state = load_cycle_run_state()
     cycle_id = int(run_state.get("cycle_id", 0) or 0)
     if cycle_id <= 0:
-        cycle_id = next_cycle_id()
+        cycle_id = read_cycle_counter()
 
     backtest_universe = discover_backtest_universe()
 
