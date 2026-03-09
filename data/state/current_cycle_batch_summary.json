@@ -1,16 +1,17 @@
 {
-  "cycle_id": 160,
-  "cycle_key": "160",
-  "manifest_cycle_id": 160,
-  "status_cycle_id": 159,
-  "orders_cycle_id": 160,
-  "status_matches_cycle": false,
+  "cycle_id": 201,
+  "cycle_key": "168",
+  "manifest_cycle_id": 168,
+  "status_cycle_id": 168,
+  "orders_cycle_id": 168,
+  "status_matches_cycle": true,
   "manifest_matches_cycle": true,
+  "state_warning": null,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "SOL",
+  "target_asset": "TAO",
   "target_timeframe": "4h",
   "iterate_target": null,
   "exploration_targets": {
@@ -20,25 +21,41 @@
       "compression release with retained higher-value acceptance"
     ],
     "assets": [
-      "SOL"
+      "TAO"
     ],
     "timeframes": [
       "4h"
     ]
   },
-  "spec_paths": [],
-  "spec_ids": [],
-  "specs_produced": 0,
-  "specs_written": 0,
-  "new_families": [],
+  "spec_paths": [
+    "artifacts/strategy_specs/QD-20260309-SOL-CONTINUOUS-TREND-STATE-PULLBACK-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-SOL-VALUE-REACCEPTANCE-AFTER-FAILED-BREAKDOWN-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-SOL-COMPRESSION-RELEASE-HIGHER-VALUE-ACCEPTANCE-v1.strategy_spec.json"
+  ],
+  "spec_ids": [
+    "QD-20260309-SOL-COMPRESSION-RELEASE-HIGHER-VALUE-ACCEPTANCE-v1",
+    "QD-20260309-SOL-CONTINUOUS-TREND-STATE-PULLBACK-v1",
+    "QD-20260309-SOL-VALUE-REACCEPTANCE-AFTER-FAILED-BREAKDOWN-v1"
+  ],
+  "specs_produced": 3,
+  "specs_written": 3,
+  "new_families": [
+    "sol_continuous_trend_state_pullback",
+    "sol_value_reacceptance_after_failed_breakdown",
+    "sol_compression_release_higher_value_acceptance"
+  ],
   "iterated_families": [],
-  "abandoned_families": [],
-  "active_families": 0,
-  "all_recent_rows": 18,
+  "abandoned_families": [
+    "sol_continuous_trend_state_pullback",
+    "sol_value_reacceptance_after_failed_breakdown",
+    "sol_compression_release_higher_value_acceptance"
+  ],
+  "active_families": 3,
+  "all_recent_rows": 0,
   "cycle_rows": 0,
-  "external_rows": 18,
+  "external_rows": 0,
   "cycle_results_present": false,
-  "external_results_present": true,
+  "external_results_present": false,
   "backtests_queued": 0,
   "backtests_completed": 0,
   "backtests": 0,
@@ -50,11 +67,11 @@
   "best_qscore": 0,
   "next_cycle_focus": "Do not spend another cycle cosmetically simplifying the current SOL / 4h batch. Even after stripping away funding/compression/ADX ceremony, all three branches still failed at the walk-forward screen stage with zero trades, so the next exploration turn should rotate to a different supported lane or define an even more primitive always-on state rather than another SOL 4h continuation rewrite.",
   "rationale": "Cycle 153 is a clean exploration batch failure with the cycle_id kept exactly at 153. The current-cycle SOL / 4h continuous trend-state pullback, value reacceptance after failed breakdown, and compression-release higher-value acceptance branches all produced zero trades, grade F, and screen_fail outcomes. The genuine lesson is that removing ceremony from the old SOL 4h grammar still was not enough to make these continuation states live; the state definitions themselves remain too selective in practice. Because this was an exploration batch and all three current-cycle families failed identically without any evidence of edge, the correct action is to abandon only those three Cycle 153 families rather than pretend one deserves further refinement.",
-  "has_reflection_note": false,
-  "elapsed_seconds": 94.0,
-  "run_elapsed_seconds": 94.0,
-  "report_delay_seconds": 0.0,
+  "has_reflection_note": true,
+  "elapsed_seconds": 74.0,
+  "run_elapsed_seconds": 74.0,
+  "report_delay_seconds": 184.6,
   "is_completed": true,
-  "started_at_epoch": 1773061927.664108,
-  "ended_at_epoch": 1773062021.635946
+  "started_at_epoch": 1773064324.9448225,
+  "ended_at_epoch": 1773064398.8969455
 }
