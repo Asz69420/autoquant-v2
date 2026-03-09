@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v5-neighbor3-068785",
+  "ts_iso": "2026-03-09T21:04:04.807754+00:00",
+  "thesis_id": "cycle_115_eth_channel_shortbias_faster_invalidation_v5",
+  "name": "ETH EMA Channel Short-Bias Faster Invalidation v5 [neighbor3]",
+  "version": "5.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "indicators": [
+    "EMA_20",
+    "EMA_100",
+    "RSI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close < EMA_20",
+      "RSI_14 crosses_above 50"
+    ],
+    "short": [
+      "Close > EMA_20",
+      "RSI_14 crosses_below 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 3.8 * ATR_14 above entry",
+      "Early exit if RSI_14 crosses_below 49",
+      "Time stop: 14 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 3.8 * ATR_14 below entry",
+      "Early exit if RSI_14 crosses_above 51",
+      "Time stop: 14 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Base v3 failed-continuation logic preserved. This is the invalidation branch: when follow-through stalls, the trade should die faster. Time tolerance is reduced and the RSI failure threshold is tightened by one point on each side."
+  },
+  "variants": [
+    {
+      "name": "eth_channel_shortbias_faster_invalidation_v5_neighbor3",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_slow",
+          "value": 100
+        },
+        {
+          "name": "rsi_long_trigger",
+          "value": 52
+        },
+        {
+          "name": "rsi_short_trigger",
+          "value": 50
+        },
+        {
+          "name": "exit_rsi_long",
+          "value": 49
+        },
+        {
+          "name": "exit_rsi_short",
+          "value": 51
+        },
+        {
+          "name": "trigger_mode",
+          "value": "inverted_failed_continuation"
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.8,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 14
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.1,
+  "status": "ready_to_test",
+  "source": "refinement_cycle",
+  "parent_id": "wf_99a99d2df1f5",
+  "mutation_type": "param_neighbor_r2",
+  "family_generation": 2
+}
