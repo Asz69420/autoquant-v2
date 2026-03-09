@@ -21,6 +21,8 @@ CYCLE_ID_FILES = {
     "cycle_status": os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json"),
     "cycle_orders": os.path.join(ROOT, "agents", "quandalf", "memory", "cycle_orders.json"),
 }
+ACTIVE_CYCLE_FILES = {"run_state", "briefing", "cycle_status", "cycle_orders"}
+LAST_COMPLETED_FILES = {"manifest", "batch_summary", "metrics"}
 
 
 def load_json(path):
@@ -56,7 +58,6 @@ def check_cycle_coherence(new_cycle_id):
         file=sys.stderr,
     )
 
-    # Sync drifted files to (new_cycle_id - 1) which is the last completed cycle
     last_cycle = new_cycle_id - 1
     for label, path in CYCLE_ID_FILES.items():
         if label == "cycle_counter":
@@ -64,13 +65,20 @@ def check_cycle_coherence(new_cycle_id):
         data = load_json(path)
         if not data:
             continue
+        target_cycle = new_cycle_id if label in ACTIVE_CYCLE_FILES else last_cycle
         old_cid = data.get("cycle_id")
-        if old_cid is not None and int(old_cid) != last_cycle:
-            data["cycle_id"] = last_cycle
+        if old_cid is not None and int(old_cid) != target_cycle:
+            data["cycle_id"] = target_cycle
+            if label == "cycle_status":
+                data.setdefault("mode", "pending")
+                data.setdefault("research_direction", "pending")
+                data.setdefault("spec_paths", [])
+                data.setdefault("specs_produced", 0)
+                data.setdefault("next_cycle_focus", "pending")
             try:
                 with open(path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2)
-                print(f"[cycle-start] synced {label} cycle_id {old_cid} -> {last_cycle}", file=sys.stderr)
+                print(f"[cycle-start] synced {label} cycle_id {old_cid} -> {target_cycle}", file=sys.stderr)
             except Exception as e:
                 print(f"[cycle-start] failed to sync {label}: {e}", file=sys.stderr)
 

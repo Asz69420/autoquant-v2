@@ -556,6 +556,19 @@ def count_backtests(rows):
     return len(seen_ids)
 
 
+def filter_rows_to_current_cycle(rows, cycle_id):
+    metrics = build_cycle_metrics(cycle_id, rows, 0, count_backtests(rows))
+    target_ids = set(metrics.get("spec_ids") or [])
+    if not target_ids:
+        return [], metrics
+    cycle_rows = []
+    for row in rows:
+        row_dict = dict(row) if not isinstance(row, dict) else row
+        if normalize_spec_id(row_dict.get("strategy_spec_id")) in target_ids:
+            cycle_rows.append(row_dict)
+    return cycle_rows, metrics
+
+
 def write_cycle_metrics(metrics):
     try:
         os.makedirs(os.path.dirname(CURRENT_CYCLE_METRICS_PATH), exist_ok=True)
@@ -1252,13 +1265,17 @@ def main():
         print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": resolve_cycle_id(run_state), "run_state": run_state}))
         return
 
+    cycle_id_preview = resolve_cycle_id(load_run_state())
+    cycle_rows, preview_metrics = filter_rows_to_current_cycle(rows, cycle_id_preview)
+    rows_for_dm = cycle_rows if cycle_rows else []
+
     dm_lines = []
     dm_lines.append("🧪 Research Cycle Results")
     dm_lines.append("")
 
     best_qscore = 0
     best_strategy = None
-    for r in rows:
+    for r in rows_for_dm:
         pf = round(r["profit_factor"], 3) if r["profit_factor"] else 0
         dd = round(r["max_drawdown_pct"], 1) if r["max_drawdown_pct"] else 0
         qs = round(r["score_total"], 2) if r["score_total"] else 0
@@ -1273,19 +1290,20 @@ def main():
             best_strategy = f"{r['asset']}/{r['timeframe']}"
 
     dm_lines.append("")
-    dm_lines.append(f"Total in DB: {total_rows} | New this cycle: {len(rows)}")
+    dm_lines.append(f"Total in DB: {total_rows} | New this cycle: {len(rows_for_dm)}")
 
-    dm_text = "\n".join(dm_lines)
-    dm_parts = split_message(dm_text, 3900)
-    for part in dm_parts:
-        send_tg_as(f"<pre>{part}</pre>", "hades", "oragorn")
+    if rows_for_dm:
+        dm_text = "\n".join(dm_lines)
+        dm_parts = split_message(dm_text, 3900)
+        for part in dm_parts:
+            send_tg_as(f"<pre>{part}</pre>", "hades", "oragorn")
 
     journal_sent = False
 
     log_event(
         "notification_sent",
         "oragorn",
-        f"Sent {len(rows)} result updates to Hades and a cooking card to log; live cycle journal delivery disabled",
+        f"Sent {len(rows_for_dm)} current-cycle result updates to Hades and a cooking card to log; live cycle journal delivery disabled",
         pipeline="research_cycle",
         step="notify",
     )
