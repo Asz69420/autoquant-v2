@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-POLYX-VWAP-STAIRCASE-HOLD-v1",
+  "ts_iso": "2026-03-10T03:31:00Z",
+  "thesis_id": "cycle_20260309_polyx_vwap_staircase_hold_v1",
+  "name": "POLYX VWAP Staircase Hold v1",
+  "version": "1.0",
+  "asset": "POLYX",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","VWAP","EMA_34","EMA_89","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","CHOP_14_1_100"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00030",
+      "Close > EMA_89",
+      "low >= EMA_34 - 0.15 * ATR_14",
+      "Close > EMA_34",
+      "Close > VWAP",
+      "ADX_14 >= 19",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "CHOP_14_1_100 <= 50"
+    ],
+    "short": [
+      "FundingRate >= 0.00030",
+      "Close < EMA_89",
+      "high <= EMA_34 + 0.15 * ATR_14",
+      "Close < EMA_34",
+      "Close < VWAP",
+      "ADX_14 >= 19",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "CHOP_14_1_100 <= 50"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.2 * ATR_14 below entry","Take profit: 2.9 * ATR_14 above entry","Early exit if Close crosses_below EMA_34","Time stop: 11 bars"],
+    "short": ["Stop loss: 1.2 * ATR_14 above entry","Take profit: 2.9 * ATR_14 below entry","Early exit if Close crosses_above EMA_34","Time stop: 11 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Continuation-through-value hypothesis. POLYX must keep a rising staircase above the slow anchor, defend the medium anchor on the pullback, and still hold above VWAP as directional strength expands. This tests whether continuation is cleaner when value acceptance confirms the staircase rather than just EMA ordering."},
+  "variants": [{"name": "polyx_vwap_staircase_hold_v1","template_name": "vwap_staircase_hold","parameters": [{"name": "funding_extreme_neg", "value": -0.00030},{"name": "funding_extreme_pos", "value": 0.00030},{"name": "ema_fast", "value": 34},{"name": "ema_anchor", "value": 89},{"name": "pullback_buffer_atr", "value": 0.15},{"name": "adx_floor", "value": 19},{"name": "chop_max", "value": 50}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.2,"tp_type": "atr","tp_atr_mult": 2.9,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 11},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

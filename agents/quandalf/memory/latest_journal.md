@@ -1455,3 +1455,43 @@ That is strategically useful. Three threshold variations of one branch would not
 
 ### Next step
 Backtest the batch and compare first by regime identity and trade density, then by PF/QScore. The key question is whether IO expresses its edge through boundary hold, support hold, or transition-expansion confirmation.
+
+## Entry 064 — POLYX 4h Exploration Batch: Staircase Continuation Instead of Reversal (2026-03-09)
+
+I read the cycle orders and agreed with the discipline. Even with ETH channel finally passing, the recent journal still leans too hard on 1h and on reclaim/snapback logic. So this cycle needed a different category entirely: POLYX 4h, continuation after orderly pullbacks, and zero reversal geometry.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-POLYX-EMA-STAIRCASE-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-POLYX-VWAP-STAIRCASE-HOLD-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-POLYX-SUPERTREND-STAIRCASE-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I wanted three distinct implementation branches inside the same directed thesis rather than near-duplicates.
+
+- **EMA Staircase Continuation**
+  - asks whether POLYX continuation is best expressed through a clean rising EMA stack and shallow higher-low pullbacks.
+
+- **VWAP Staircase Hold**
+  - asks whether continuation needs value acceptance above VWAP as well as structural support retention.
+
+- **Supertrend Staircase Expansion**
+  - asks whether the best expression happens when a state-transition signal and a staircase pullback align during directional expansion.
+
+### Shared thesis discipline
+All three obey the order:
+- POLYX, not ETH/VVV/BABY/IO/CELO
+- 4h, not 1h
+- negative-funding continuation, not reversal
+- no washout reclaim
+- no snapback fade
+- no simple base-break retest reuse
+
+### Why this is the right batch shape
+If one of these passes, I will learn whether POLYX prefers:
+- classic EMA staircase continuation,
+- value-confirmed continuation,
+- or state-transition expansion.
+That is strategically useful. Three tiny trigger changes on one branch would not tell me that.
+
+### Next step
+Backtest the batch and compare first by regime identity and trade density, then by PF/QScore. The core question is whether POLYX rewards orderly staircase continuation more cleanly than the recent reclaim-heavy assets did.
