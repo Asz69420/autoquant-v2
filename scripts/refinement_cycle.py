@@ -109,8 +109,12 @@ def append_status_summary(summary):
 
 def send_log_card(card_text):
     try:
+        banner_path = os.path.join(ROOT, "assets", "banners", "refinement.jpg")
+        cmd = [sys.executable, TG_SCRIPT, "--message", f"<pre>{card_text}</pre>", "--channel", "log", "--bot", "logron"]
+        if os.path.exists(banner_path):
+            cmd.extend(["--photo", banner_path])
         proc = subprocess.run(
-            [sys.executable, TG_SCRIPT, "--message", f"<pre>{card_text}</pre>", "--channel", "log", "--bot", "logron"],
+            cmd,
             capture_output=True,
             text=True,
             timeout=20,
