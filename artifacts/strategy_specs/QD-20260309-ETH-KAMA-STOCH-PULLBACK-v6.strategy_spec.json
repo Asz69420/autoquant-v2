@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-KAMA-STOCH-PULLBACK-v6",
+  "ts_iso": "2026-03-10T09:31:00Z",
+  "thesis_id": "cycle_143_eth_kama_stoch_pullback_v6",
+  "name": "ETH KAMA Stoch Pullback v6",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "indicators": ["KAMA_30","STOCH_K_14_3_3","STOCH_D_14_3_3","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > KAMA_30",
+      "STOCH_K_14_3_3 crosses_above STOCH_D_14_3_3",
+      "STOCH_K_14_3_3 <= 36",
+      "ADX_14 >= 16",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Close < KAMA_30",
+      "STOCH_K_14_3_3 crosses_below STOCH_D_14_3_3",
+      "STOCH_K_14_3_3 >= 64",
+      "ADX_14 >= 16",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.98 * ATR_14 below entry","Take profit: 8.0 * ATR_14 above entry","Early exit if STOCH_K_14_3_3 crosses_below STOCH_D_14_3_3 above 72","Time stop: 14 bars"],
+    "short": ["Stop loss: 0.98 * ATR_14 above entry","Take profit: 8.0 * ATR_14 below entry","Early exit if STOCH_K_14_3_3 crosses_above STOCH_D_14_3_3 below 28","Time stop: 14 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending"],"detection_method": "Cleaner pullback-quality refinement. Preserve the family core, but require stronger ADX and DI alignment before taking the stochastic pullback trigger so the entries happen in clearer trend state rather than softer bounce attempts."},
+  "variants": [{"name": "eth_kama_stoch_pullback_cleaner_context_v6","template_name": "kama_stoch_pullback","parameters": [{"name": "kama_period", "value": 30},{"name": "stoch_pullback_long_max", "value": 36},{"name": "stoch_pullback_short_min", "value": 64},{"name": "adx_floor", "value": 16},{"name": "rr_target", "value": 8.0}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 0.98,"tp_type": "atr","tp_atr_mult": 8.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 14},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 2.1,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

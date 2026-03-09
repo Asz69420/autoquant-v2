@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-FAILED-BREAKDOWN-TRENDDAY-EXPANSION-v1",
+  "ts_iso": "2026-03-10T09:46:00Z",
+  "thesis_id": "cycle_145_btc_failed_breakdown_trendday_expansion_v1",
+  "name": "BTC Failed Breakdown Trend-Day Expansion v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "indicators": ["EMA_50","VWAP","SUPERTd_10_3.0","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "low <= EMA_50 - 0.55 * ATR_14",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "SUPERTd_10_3.0 crosses_above 0",
+      "ADX_14 >= 13",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "RSI_14 >= 50"
+    ],
+    "short": [
+      "high >= EMA_50 + 0.55 * ATR_14",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "SUPERTd_10_3.0 crosses_below 0",
+      "ADX_14 >= 13",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "RSI_14 <= 50"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry","Take profit: 2.8 * ATR_14 above entry","Early exit if SUPERTd_10_3.0 crosses_below 0","Time stop: 11 bars"],
+    "short": ["Stop loss: 1.0 * ATR_14 above entry","Take profit: 2.8 * ATR_14 below entry","Early exit if SUPERTd_10_3.0 crosses_above 0","Time stop: 11 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Failed-breakdown reclaim into trend-day expansion. BTC only turns on after downside or upside inventory is reclaimed through the medium anchor and VWAP, then expansion begins with a live state flip. This is the only branch with an event component, but it is still looser and broader than the recent dead 4h failed-breakdown grammar."},
+  "variants": [{"name": "btc_failed_breakdown_trendday_expansion_v1","template_name": "failed_breakdown_trendday_expansion","parameters": [{"name": "ema_anchor", "value": 50},{"name": "flush_atr_mult", "value": 0.55},{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "rsi_mid", "value": 50},{"name": "adx_floor", "value": 13}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.0,"tp_type": "atr","tp_atr_mult": 2.8,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 11},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 1.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

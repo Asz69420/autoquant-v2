@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AXS-COMPRESSION-RELEASE-RETAINED-STRUCTURE-v1",
+  "ts_iso": "2026-03-10T09:56:00Z",
+  "thesis_id": "cycle_147_axs_compression_release_retained_structure_v1",
+  "name": "AXS Compression Release Retained Structure v1",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "indicators": ["BBW_20_2.0","EMA_21","EMA_50","VWAP","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "BBW_20_2.0 <= 0.22",
+      "Close > EMA_21",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "ADX_14 >= 12",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "BBW_20_2.0 <= 0.22",
+      "Close < EMA_21",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "ADX_14 >= 12",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.05 * ATR_14 below entry","Take profit: 3.0 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 12 bars"],
+    "short": ["Stop loss: 1.05 * ATR_14 above entry","Take profit: 3.0 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 12 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Compression release with retained structure. AXS remains eligible while structure is retained above or below the fast/medium anchor stack and VWAP through a tight volatility regime, then continuation is allowed as expansion begins without waiting for a ceremonial breakout trigger."},
+  "variants": [{"name": "axs_compression_release_retained_structure_v1","template_name": "compression_release_retained_structure","parameters": [{"name": "bbw_max", "value": 0.22},{"name": "ema_fast", "value": 21},{"name": "ema_medium", "value": 50},{"name": "adx_floor", "value": 12}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 12},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 1.7,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

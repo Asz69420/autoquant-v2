@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-ANCHORED-VWAP-PULLBACK-RESUMPTION-v1",
+  "ts_iso": "2026-03-10T09:46:00Z",
+  "thesis_id": "cycle_145_btc_anchored_vwap_pullback_resumption_v1",
+  "name": "BTC Anchored VWAP Pullback Resumption v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "indicators": ["VWAP","EMA_21","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > VWAP",
+      "Close > EMA_21",
+      "low >= VWAP - 0.25 * ATR_14",
+      "RSI_14 >= 52",
+      "MFI_14 >= 50",
+      "ADX_14 >= 11",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Close < VWAP",
+      "Close < EMA_21",
+      "high <= VWAP + 0.25 * ATR_14",
+      "RSI_14 <= 48",
+      "MFI_14 <= 50",
+      "ADX_14 >= 11",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.95 * ATR_14 below entry","Take profit: 2.7 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 10 bars"],
+    "short": ["Stop loss: 0.95 * ATR_14 above entry","Take profit: 2.7 * ATR_14 below entry","Early exit if Close crosses_above VWAP","Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Anchored-VWAP pullback resumption. BTC becomes active once value is retained above or below VWAP and the fast anchor, and it buys or sells shallow resets without waiting for a dramatic liquidation or breakout event. The retained value regime itself is the setup."},
+  "variants": [{"name": "btc_anchored_vwap_pullback_resumption_v1","template_name": "anchored_vwap_pullback_resumption","parameters": [{"name": "ema_anchor", "value": 21},{"name": "value_buffer_atr", "value": 0.25},{"name": "rsi_long_floor", "value": 52},{"name": "rsi_short_ceiling", "value": 48},{"name": "mfi_mid", "value": 50},{"name": "adx_floor", "value": 11}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 0.95,"tp_type": "atr","tp_atr_mult": 2.7,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 1.7,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-DAILY-VALUE-HOLD-MOMENTUM-REGIME-v1",
+  "ts_iso": "2026-03-10T09:36:00Z",
+  "thesis_id": "cycle_144_sol_daily_value_hold_momentum_regime_v1",
+  "name": "SOL Daily Value Hold Momentum Regime v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "1d",
+  "indicators": ["EMA_21","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_21",
+      "Close > VWAP",
+      "low >= VWAP - 0.25 * ATR_14",
+      "RSI_14 >= 52",
+      "MFI_14 >= 50",
+      "ADX_14 >= 11",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": ["Disabled: thesis is bullish value-hold momentum regime only"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.05 * ATR_14 below entry","Take profit: 3.1 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 15 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Daily value-hold momentum regime. SOL becomes eligible once higher value is retained above VWAP and the fast anchor while directional and money-flow context remain constructive. There is no theatrical breakout gate; the regime itself is the signal."},
+  "variants": [{"name": "sol_daily_value_hold_momentum_regime_v1","template_name": "value_hold_momentum_regime_long","parameters": [{"name": "ema_anchor", "value": 21},{"name": "value_buffer_atr", "value": 0.25},{"name": "rsi_floor", "value": 52},{"name": "mfi_floor", "value": 50},{"name": "adx_floor", "value": 11}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 3.1,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 15},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

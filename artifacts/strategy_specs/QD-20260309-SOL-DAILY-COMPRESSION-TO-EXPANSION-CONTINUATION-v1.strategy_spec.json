@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-DAILY-COMPRESSION-TO-EXPANSION-CONTINUATION-v1",
+  "ts_iso": "2026-03-10T09:36:00Z",
+  "thesis_id": "cycle_144_sol_daily_compression_to_expansion_continuation_v1",
+  "name": "SOL Daily Compression-to-Expansion Continuation v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "1d",
+  "indicators": ["BBW_20_2.0","EMA_21","VWAP","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "BBW_20_2.0 <= 0.24",
+      "Close > EMA_21",
+      "Close > VWAP",
+      "ADX_14 >= 11",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": ["Disabled: thesis is bullish compression-to-expansion continuation only"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry","Take profit: 3.2 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 15 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Compression-to-expansion continuation without event gating. SOL only needs retained higher value through compression plus constructive directional balance; the setup does not wait for a theatrical breakout event and instead allows looser daily activation as expansion begins."},
+  "variants": [{"name": "sol_daily_compression_to_expansion_continuation_v1","template_name": "compression_to_expansion_continuation_long","parameters": [{"name": "bbw_max", "value": 0.24},{"name": "ema_anchor", "value": 21},{"name": "adx_floor", "value": 11}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.1,"tp_type": "atr","tp_atr_mult": 3.2,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 15},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 1.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

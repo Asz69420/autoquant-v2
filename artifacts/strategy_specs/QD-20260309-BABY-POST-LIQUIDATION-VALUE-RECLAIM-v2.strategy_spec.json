@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BABY-POST-LIQUIDATION-VALUE-RECLAIM-v2",
+  "ts_iso": "2026-03-10T09:46:00Z",
+  "thesis_id": "cycle_146_baby_post_liquidation_value_reclaim_v2",
+  "name": "BABY Post-Liquidation Value Reclaim v2",
+  "version": "1.0",
+  "asset": "BABY",
+  "timeframe": "1h",
+  "indicators": ["EMA_21","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "low <= EMA_21 - 0.75 * ATR_14",
+      "Close > EMA_21",
+      "Close > VWAP",
+      "RSI_14 crosses_above 48",
+      "MFI_14 >= 50",
+      "ADX_14 >= 12",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": ["Disabled: thesis is bullish post-liquidation reclaim only"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.95 * ATR_14 below entry","Take profit: 2.7 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 9 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["transitional","ranging"],"detection_method": "Post-liquidation reclaim with immediate value acceptance. BABY becomes active when a flush is reclaimed straight back through EMA_21 and VWAP with improving momentum. The reclaim itself is enough; this branch avoids slow ceremonial confirmation."},
+  "variants": [{"name": "baby_post_liquidation_value_reclaim_v2","template_name": "post_liquidation_value_reclaim_long","parameters": [{"name": "ema_anchor", "value": 21},{"name": "flush_atr_mult", "value": 0.75},{"name": "rsi_reclaim", "value": 48},{"name": "mfi_floor", "value": 50},{"name": "adx_floor", "value": 12}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 0.95,"tp_type": "atr","tp_atr_mult": 2.7,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 9},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

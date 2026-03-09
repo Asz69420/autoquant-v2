@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AXS-SHALLOW-TRAP-VALUE-REACCEPTANCE-v1",
+  "ts_iso": "2026-03-10T09:56:00Z",
+  "thesis_id": "cycle_147_axs_shallow_trap_value_reacceptance_v1",
+  "name": "AXS Shallow Trap Value Reacceptance v1",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "indicators": ["EMA_50","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "low >= EMA_50 - 0.45 * ATR_14",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "RSI_14 crosses_above 49",
+      "MFI_14 >= 50",
+      "ADX_14 >= 13",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "high <= EMA_50 + 0.45 * ATR_14",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "RSI_14 crosses_below 51",
+      "MFI_14 <= 50",
+      "ADX_14 >= 13",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry","Take profit: 2.9 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 11 bars"],
+    "short": ["Stop loss: 1.0 * ATR_14 above entry","Take profit: 2.9 * ATR_14 below entry","Early exit if Close crosses_above VWAP","Time stop: 11 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Value-reacceptance continuation after shallow trap. AXS becomes active once a mild downside or upside trap is reclaimed back through the medium anchor and VWAP with momentum already improving. This keeps the trap logic but removes the need for a dramatic liquidation event."},
+  "variants": [{"name": "axs_shallow_trap_value_reacceptance_v1","template_name": "shallow_trap_value_reacceptance","parameters": [{"name": "ema_anchor", "value": 50},{"name": "trap_buffer_atr", "value": 0.45},{"name": "rsi_mid_reclaim", "value": 49},{"name": "mfi_mid", "value": 50},{"name": "adx_floor", "value": 13}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.0,"tp_type": "atr","tp_atr_mult": 2.9,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 11},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

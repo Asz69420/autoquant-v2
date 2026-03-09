@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-CONTINUOUS-INTRADAY-VALUE-HOLD-v1",
+  "ts_iso": "2026-03-10T09:46:00Z",
+  "thesis_id": "cycle_145_btc_continuous_intraday_value_hold_v1",
+  "name": "BTC Continuous Intraday Value Hold v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "indicators": ["EMA_21","EMA_50","VWAP","ATR_14","RSI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_21",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "low >= EMA_21 - 0.30 * ATR_14",
+      "RSI_14 >= 51",
+      "ADX_14 >= 12",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Close < EMA_21",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "high <= EMA_21 + 0.30 * ATR_14",
+      "RSI_14 <= 49",
+      "ADX_14 >= 12",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.95 * ATR_14 below entry","Take profit: 2.6 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 10 bars"],
+    "short": ["Stop loss: 0.95 * ATR_14 above entry","Take profit: 2.6 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Continuous intraday value-hold continuation. BTC stays eligible as long as price accepts above or below the fast/medium anchor stack and VWAP, and entries only require shallow resets inside that live state. This is deliberately broad and continuous rather than event-gated."},
+  "variants": [{"name": "btc_continuous_intraday_value_hold_v1","template_name": "continuous_intraday_value_hold","parameters": [{"name": "ema_fast", "value": 21},{"name": "ema_medium", "value": 50},{"name": "value_buffer_atr", "value": 0.30},{"name": "rsi_long_floor", "value": 51},{"name": "rsi_short_ceiling", "value": 49},{"name": "adx_floor", "value": 12}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 0.95,"tp_type": "atr","tp_atr_mult": 2.6,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 1.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

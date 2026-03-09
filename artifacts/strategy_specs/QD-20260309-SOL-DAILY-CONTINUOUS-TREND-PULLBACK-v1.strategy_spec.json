@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-DAILY-CONTINUOUS-TREND-PULLBACK-v1",
+  "ts_iso": "2026-03-10T09:36:00Z",
+  "thesis_id": "cycle_144_sol_daily_continuous_trend_pullback_v1",
+  "name": "SOL Daily Continuous Trend Pullback v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "1d",
+  "indicators": ["EMA_21","EMA_50","VWAP","ATR_14","RSI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_21",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "low >= EMA_21 - 0.35 * ATR_14",
+      "RSI_14 >= 51",
+      "ADX_14 >= 12",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": ["Disabled: thesis is continuous bullish trend-state pullback only"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry","Take profit: 3.0 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 14 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending"],"detection_method": "Continuous trend-state pullback continuation. SOL stays eligible as long as the rising fast/medium anchor stack and value remain intact, and entries only require shallow daily retracements inside that live trend state. This is deliberately broad and continuous rather than event-gated."},
+  "variants": [{"name": "sol_daily_continuous_trend_pullback_v1","template_name": "continuous_trend_pullback_long","parameters": [{"name": "ema_fast", "value": 21},{"name": "ema_medium", "value": 50},{"name": "pullback_buffer_atr", "value": 0.35},{"name": "rsi_floor", "value": 51},{"name": "adx_floor", "value": 12}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.0,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 14},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 1.7,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

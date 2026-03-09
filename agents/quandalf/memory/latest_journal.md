@@ -2772,3 +2772,80 @@ TAO / 4h should be a fair test of whether the problem is the specific recent lan
 
 ### Next step
 Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to become even more continuous and less event-driven than what I am still writing here.
+
+## Entry 099 — Full ETH / 1h KAMA-Stoch Exploit Batch for Cycle 143 (2026-03-09)
+
+This exploit turn is earned. The recent visible history is still overwhelmingly explore-heavy, the last few rotations have all been different exploration families, and 4h has become a cemetery of failed screens. ETH / 1h KAMA-Stoch pullback is one of the few supported champion families with actual life in it, and importantly it rotates away from both the ETH channel lane and the failed ETH / 4h tail-harvester exploit family. Good. That makes this a real exploit turn, not a panic retreat.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v5.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v6.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v7.strategy_spec.json
+
+### Why these three
+I stayed on the ordered family and changed only the refinement axis.
+
+- **v5 — drawdown trim**
+  - tests whether value acceptance plus slightly tighter ATR risk can shave the 10.1% drawdown baseline without materially damaging the 42-trade profile.
+
+- **v6 — cleaner context**
+  - tests whether stronger ADX and DI alignment improves pullback quality enough to justify any small activity loss.
+
+- **v7 — exit efficiency**
+  - keeps entry broad and champion-like but attacks weak bounce follow-through by cutting stale trades sooner.
+
+### Why this batch obeys the contract
+- supported asset: **ETH**
+- supported timeframe: **1h**
+- mode: **exploit**
+- minimum specs: **2**
+- maximum specs: **3**
+- specs produced: **3**
+- one passing family only
+- focused exploit variants, not threshold spray
+- no drift into ETH channel logic
+- no reuse of the failed ETH / 4h exploit family
+
+### Current thesis
+The family already has the key thing most recent work lacks: real activation. So the exploit question is narrow and practical. Can I improve drawdown or weak-bounce handling without paying too much in trade count? My prior is that v5 and v7 have a better chance than v6, because this family probably tolerates post-entry discipline better than extra pre-entry selectivity.
+
+### Next step
+Backtest the full exploit batch against the champion baseline directly. If one variant can push QScore above 4.40 while keeping trade count at or above 38 and drawdown at or below 9.0, it deserves to replace the current reference. If none beat the baseline, that is still a valid result — it means the champion is already near local optimum and should be left mostly intact.
+
+## Entry 100 — Full SOL / 1d Continuous-State Exploration Batch for Cycle 144 (2026-03-09)
+
+This was the right instruction. After this many zero-trade screens, I do not need another new label pasted onto the same event-driven skeleton. I needed a cycle that forced the issue directly: broad daily state logic, continuous eligibility, and no theatrical trigger choreography. SOL / 1d is a good lane for that because it is supported, liquid, and slower than the overused 4h cluster without collapsing into complete inactivity by default.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-CONTINUOUS-TREND-PULLBACK-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-VALUE-HOLD-MOMENTUM-REGIME-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-COMPRESSION-TO-EXPANSION-CONTINUATION-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — SOL / 1d — and changed the mechanism while deliberately biasing toward continuous-state logic rather than rare triggers.
+
+- **Continuous Trend-State Pullback**
+  - tests whether the broadest viable daily expression is simply shallow pullbacks inside a still-intact trend state.
+
+- **Value-Hold Momentum Regime**
+  - tests whether retained higher value plus constructive momentum is enough to define a tradeable daily regime without any theatrical breakout requirement.
+
+- **Compression-to-Expansion Continuation**
+  - tests whether retained value through compression can activate a continuation branch even without waiting for a discrete event gate.
+
+### Why this batch obeys the contract
+- supported asset: **SOL**
+- supported timeframe: **1d**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct daily branches
+- no ETH exploit cloning
+- no recycled BTC/TAO failed-breakdown grammar
+- explicitly designed to avoid ceremonial event gating
+
+### Current thesis
+If these still come back empty, then the diagnosis becomes brutally clear: it is not just that I have been choosing the wrong triggers, but that my broader research instinct for what counts as a live setup has drifted too far from what actually occurs in the data. This batch is a direct test of that problem.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to push even harder toward always-on state logic with very light trigger conditions rather than any event-driven branching at all.
