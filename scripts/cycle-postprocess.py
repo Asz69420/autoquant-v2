@@ -525,13 +525,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines = []
     lines.append("🍳 Cooking")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
-    lines.append("○──activity──────────────────")
+    lines.append("○──activity────────────────────────")
     lines.append(f"Generated: {generated}")
     lines.append(f"Iterated: {iterated}")
     lines.append(f"Passed: {passed}")
     lines.append(f"Aborted: {aborted}")
     lines.append(f"Backtests: {backtests}")
-    lines.append("○──note──────────────────────")
+    lines.append("○──note────────────────────────────")
     lines.append(note)
 
     return "\n".join(lines), metrics
@@ -1235,7 +1235,7 @@ def main():
         return
 
     dm_lines = []
-    dm_lines.append("🧪 <b>Research Cycle Results</b>")
+    dm_lines.append("🧪 Research Cycle Results")
     dm_lines.append("")
 
     best_qscore = 0
@@ -1248,19 +1248,19 @@ def main():
         decision = r["score_decision"] or "?"
 
         emoji = "🟢" if qs >= 3.0 else "🟡" if qs >= 1.0 else "🔴"
-        dm_lines.append(f"<code>{emoji} {r['asset']}/{r['timeframe']} PF:{pf} DD:{dd}% T:{trades} QS:{qs} {decision}</code>")
+        dm_lines.append(f"{emoji} {r['asset']}/{r['timeframe']} PF:{pf} DD:{dd}% T:{trades} QS:{qs} {decision}")
 
         if qs > best_qscore:
             best_qscore = qs
             best_strategy = f"{r['asset']}/{r['timeframe']}"
 
     dm_lines.append("")
-    dm_lines.append(f"<code>Total in DB: {total_rows} | New this cycle: {len(rows)}</code>")
+    dm_lines.append(f"Total in DB: {total_rows} | New this cycle: {len(rows)}")
 
     dm_text = "\n".join(dm_lines)
-    dm_parts = split_message(dm_text, 4000)
+    dm_parts = split_message(dm_text, 3900)
     for part in dm_parts:
-        send_tg_as(part, "hades", "oragorn")
+        send_tg_as(f"<pre>{part}</pre>", "hades", "oragorn")
 
     journal_sent = False
 

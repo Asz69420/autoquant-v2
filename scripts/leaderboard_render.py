@@ -105,7 +105,7 @@ def render_board():
         lines.append(f"   family gen {depth['generations']} | siblings {depth['siblings_tested']} | portability {item['portability_score']:.0f}%")
 
     lines.append("")
-    lines.append("───────────────────────────────")
+    lines.append("───────────────────────────────────")
     lines.append(f"{total_backtests} backtests │ {total_lessons} lessons │ {total_promotions} 🏆")
     conn.close()
     return "<pre>" + "\n".join(lines) + "</pre>"

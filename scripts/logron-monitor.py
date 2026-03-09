@@ -367,7 +367,7 @@ def build_health_card(status, stats, issues, auto_fixes):
     lines = []
     lines.append("👁️ Health Check")
     lines.append(f"{status_emoji} | System {'Healthy' if status == 'ok' else 'Degraded' if status == 'warn' else 'Critical'}")
-    lines.append("○──stats───────────────────────")
+    lines.append("○──stats────────────────────────────")
     lines.append(f"Backtests (24h): {stats.get('backtests_24h', 0)}")
     lines.append(f"Specs (24h): {stats.get('strategy_specs_24h', 0)}")
     lines.append(f"Total backtests: {stats.get('total_backtests', 0)}")
@@ -379,18 +379,18 @@ def build_health_card(status, stats, issues, auto_fixes):
     lines.append(f"GW errors: {stats.get('gateway_errors', 0)}")
 
     if auto_fixes:
-        lines.append("○──autofix──────────────────────")
+        lines.append("○──autofix──────────────────────────")
         for fix in auto_fixes:
             pattern = fix.get("pattern", "?")
             success = "ok" if fix.get("success") else "fail"
             lines.append(f"🛠️ {pattern} ({success})")
 
     if issues:
-        lines.append("○──issues──────────────────────")
+        lines.append("○──issues──────────────────────────")
         for i in issues:
             lines.append(f"⚠️ {i}")
     else:
-        lines.append("○──note────────────────────────")
+        lines.append("○──note────────────────────────────")
         lines.append("All systems nominal.")
 
     return "\n".join(lines)
