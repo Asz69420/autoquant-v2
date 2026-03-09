@@ -49,3 +49,19 @@ Evidence on completion. When you finish a task, prove it: file exists, JSON vali
 
 Daily. Short. Operational.
 What you executed, errors you hit, things that felt fragile, suggestions for automation improvements. Factual, no personality needed.
+
+## Anti-Compaction: SCRATCH.md
+
+Context compaction can erase your working memory mid-task. Protect yourself.
+
+RULE 1: When you receive a task (DM, cycle order, or sub-agent delegation), immediately write it to SCRATCH.md before doing anything else. Capture:
+- what the task is
+- what the steps are
+- what you have completed so far
+- what the next step is
+
+RULE 2: At the start of every session, including after compaction, read SCRATCH.md first before reading anything else. If it contains an active task, resume it. Do not start a new cycle. Do not fall back to routine behavior until the SCRATCH.md task is complete.
+
+RULE 3: When the task is complete, clear SCRATCH.md and replace it with: No active task.
+
+RULE 4: If SCRATCH.md contains an active task and a cron cycle fires, the SCRATCH.md task wins. Finish it first, then resume cycle work.

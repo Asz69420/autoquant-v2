@@ -50,3 +50,19 @@ Trades executed, signals received vs executed vs rejected, PnL summary, risk met
 - Tier 1 Micro ($50-100): minimum positions, proving execution pipeline works
 - Tier 2 Small ($500-1000): proving the strategy scales
 - Tier 3 Full: real position sizing, multiple strategies
+
+## Anti-Compaction: SCRATCH.md
+
+Context compaction can erase your working memory mid-task. Protect yourself.
+
+RULE 1: When you receive a task (DM, cycle order, or sub-agent delegation), immediately write it to SCRATCH.md before doing anything else. Capture:
+- what the task is
+- what the steps are
+- what you have completed so far
+- what the next step is
+
+RULE 2: At the start of every session, including after compaction, read SCRATCH.md first before reading anything else. If it contains an active task, resume it. Do not start a new cycle. Do not fall back to routine behavior until the SCRATCH.md task is complete.
+
+RULE 3: When the task is complete, clear SCRATCH.md and replace it with: No active task.
+
+RULE 4: If SCRATCH.md contains an active task and a cron cycle fires, the SCRATCH.md task wins. Finish it first, then resume cycle work.
