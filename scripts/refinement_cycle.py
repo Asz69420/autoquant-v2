@@ -19,6 +19,7 @@ CURRENT_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "curren
 STRATEGY_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "strategy_status.json")
 REFINEMENT_STATE_PATH = os.path.join(ROOT, "data", "state", "refinement_cycle_state.json")
 REFINEMENT_JOBS_PATH = os.path.join(ROOT, "data", "state", "refinement_jobs.json")
+REFINEMENT_RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "refinement_cycle_run_state.json")
 
 STATUS_ORDER = {
     None: 0,
@@ -119,12 +120,46 @@ def send_log_card(card_text):
         return False
 
 
-def elapsed_text(started_at):
+def start_run_state(cycle_id):
+    now = datetime.now(timezone.utc)
+    payload = {
+        "cycle_id": int(cycle_id),
+        "status": "started",
+        "started_at_epoch": now.timestamp(),
+        "started_at_iso": now.isoformat(),
+        "ended_at_epoch": None,
+        "ended_at_iso": None,
+        "run_elapsed_seconds": None,
+        "reporting_last_seen_at_epoch": now.timestamp(),
+        "reporting_last_seen_at_iso": now.isoformat(),
+    }
+    write_json(REFINEMENT_RUN_STATE_PATH, payload)
+    return payload
+
+
+def finalize_run_state(run_state):
+    current = load_json(REFINEMENT_RUN_STATE_PATH, default={})
+    if not current:
+        current = dict(run_state or {})
+    now = datetime.now(timezone.utc)
+    started_at_epoch = float(current.get("started_at_epoch") or now.timestamp())
+    if current.get("ended_at_epoch") is None:
+        current["ended_at_epoch"] = now.timestamp()
+        current["ended_at_iso"] = now.isoformat()
+        current["run_elapsed_seconds"] = round(max(0.0, current["ended_at_epoch"] - started_at_epoch), 1)
+        current["status"] = "completed"
+    current["reporting_last_seen_at_epoch"] = now.timestamp()
+    current["reporting_last_seen_at_iso"] = now.isoformat()
+    write_json(REFINEMENT_RUN_STATE_PATH, current)
+    return current
+
+
+def elapsed_text(run_state):
     try:
-        started = datetime.fromisoformat(str(started_at).replace("Z", "+00:00"))
-        seconds = max(0, int((datetime.now(timezone.utc) - started).total_seconds()))
+        seconds = float(run_state.get("run_elapsed_seconds") if isinstance(run_state, dict) and run_state.get("run_elapsed_seconds") is not None else 0)
     except Exception:
         seconds = 0
+    seconds = max(0, int(seconds))
     return f"{seconds // 60}m {seconds % 60}s"
 
 
@@ -596,7 +631,7 @@ def update_source_statuses(conn, touched_rows):
     return upgrades, rejected, promoted, per_round, note
 
 
-def build_card(cycle_id, started_at, tests_this_cycle, upgrades, rejected, promoted, round_counts, note, had_error=False):
+def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promoted, round_counts, note, had_error=False):
     if had_error:
         status_emoji = "❌"
     elif promoted > 0:
@@ -609,11 +644,11 @@ def build_card(cycle_id, started_at, tests_this_cycle, upgrades, rejected, promo
         status_emoji = "🔬"
     lines = [
         "🔬 Refining",
-        f"{status_emoji} | ▶ {elapsed_text(started_at)} | 🆔 {cycle_id}",
+        f"{status_emoji} | ▶ {elapsed_text(run_state)} | 🆔 {cycle_id}",
         "○──activity──────────────────",
-        f"Round 1 {int(round_counts.get(1, 0))}",
-        f"Round 2 {int(round_counts.get(2, 0))}",
-        f"Round 3 {int(round_counts.get(3, 0))}",
+        f"First: {int(round_counts.get(1, 0))}",
+        f"Second: {int(round_counts.get(2, 0))}",
+        f"Third: {int(round_counts.get(3, 0))}",
         f"Backtests {int(tests_this_cycle)}",
         f"Upgraded {int(upgrades)}",
         f"Rejected {int(rejected)}",
@@ -639,7 +674,8 @@ def main():
     args = ap.parse_args()
 
     cycle_id = next_cycle_id()
-    started_at = now_iso()
+    run_state = start_run_state(cycle_id)
+    started_at = run_state.get("started_at_iso") or now_iso()
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     ensure_schema(conn)
@@ -667,16 +703,18 @@ def main():
         note = f"Refinement cycle hit an error before completion: {str(exc).strip()[:290]}."
         log_event(conn, "refinement_cycle_error", "frodex", str(exc), severity="error", step="run")
     finally:
+        finalized_run_state = finalize_run_state(run_state)
         summary = {
             "cycle_id": cycle_id,
-            "started_at": started_at,
-            "finished_at": now_iso(),
+            "started_at": finalized_run_state.get("started_at_iso") or started_at,
+            "finished_at": finalized_run_state.get("ended_at_iso") or now_iso(),
+            "run_elapsed_seconds": finalized_run_state.get("run_elapsed_seconds"),
             "jobs_requested": len(jobs),
             "runner": payload,
             "had_error": had_error,
         }
         append_status_summary(summary)
-        card = build_card(cycle_id, started_at, len(jobs), upgrades, rejected, promoted, round_counts, note, had_error=had_error)
+        card = build_card(cycle_id, finalized_run_state, len(jobs), upgrades, rejected, promoted, round_counts, note, had_error=had_error)
         sent = False if args.dry_run else send_log_card(card)
         log_event(conn, "refinement_cycle_complete", "frodex", f"refinement cycle {cycle_id} complete", step="summary", metadata={"jobs": len(jobs), "upgrades": upgrades, "rejected": rejected, "promoted": promoted, "log_card_sent": sent, "dry_run": args.dry_run})
         conn.close()
