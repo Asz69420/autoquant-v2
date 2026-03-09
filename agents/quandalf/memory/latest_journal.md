@@ -2581,3 +2581,194 @@ If these daily structures still come back empty, the diagnosis hardens: the prob
 
 ### Next step
 Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to become even more continuous and less event-driven than what I am currently writing.
+
+## Entry 094 — Full ETH / 4h Tail-Harvester Exploit Batch for Cycle 138 (2026-03-09)
+
+This exploit turn is justified. The recent history is overwhelmingly explore-heavy, the newest visible exploration batches on AXS / 1h and SOL / 1d both failed the same zero-trade screen, and the ETH / 4h tail harvester is still the cleanest proven family in the supported universe. So the job here was narrow: keep the champion core intact and only push on the exact weaknesses the order named.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v15.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v16.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v17.strategy_spec.json
+
+### Why these three
+I stayed on the ordered family and changed only the refinement axis.
+
+- **v15 — drawdown trim**
+  - tests whether value acceptance plus slightly tighter ATR risk can shave the 10.9% drawdown baseline without materially damaging the 85-trade density.
+
+- **v16 — cleaner context**
+  - tests whether a true state change and slightly stronger ADX/RSI continuation context improve robustness enough to justify any activity loss.
+
+- **v17 — faster invalidation**
+  - keeps entry broad and champion-like but attacks stale-tail giveback by exiting weak continuations sooner.
+
+### Why this batch obeys the contract
+- supported asset: **ETH**
+- supported timeframe: **4h**
+- mode: **exploit**
+- minimum specs: **2**
+- maximum specs: **3**
+- specs produced: **3**
+- one passing family only
+- focused exploit variants, not threshold spray
+- no drift into ETH 1h channel or KAMA-stoch logic
+- no unsupported transfer games
+
+### Current thesis
+The family already has the one thing most of my recent work does not: real activation. So the exploit question is narrow and practical. Can I improve drawdown or continuation quality without paying too much in trade count? My prior remains that drawdown trim and faster invalidation have a better chance than cleaner pre-entry context, because this family’s edge is partly in how broad and active it remains.
+
+### Next step
+Backtest the full exploit batch against the champion baseline directly. If one variant reaches the higher exploit bar while holding trade count above 75 and drawdown at or below 10%, it deserves to replace the current reference. If none beat the baseline, that is still useful information: it means the champion is already near local optimum and should be left mostly intact.
+
+## Entry 095 — Full BANANA / 1h Intraday-Rotation Exploration Batch for Cycle 139 (2026-03-09)
+
+This rotation made sense. Another exploit turn was not earned after the latest ETH / 4h refinement set died on zero trades, and BANANA / 1h is a clean supported lane away from the recent ETH/SOL/AXS gravity. The order also blocked the lazy path: no recycled dead grammar, no ETH family cosplay, no ceremonial stacks that only sound intelligent.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BANANA-FAILED-BREAKOUT-REJECTION-v2.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BANANA-NEGATIVE-FUNDING-SQUEEZE-CONTINUATION-v2.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BANANA-INVENTORY-RESET-MOMENTUM-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — BANANA / 1h — and changed the mechanism while staying biased toward broader, more live intraday expressions.
+
+- **Failed-Breakout Rejection**
+  - tests whether BANANA offers a usable short lane when local upside excess loses value back below the fast/medium anchor stack.
+
+- **Negative-Funding Squeeze Continuation**
+  - tests whether the cleaner long expression is simply a held intraday base under still-supportive crowding pressure that releases into expansion.
+
+- **Inventory-Reset Momentum Expansion**
+  - tests whether the better long route is downside inventory reclaim followed by a live state flip and directional expansion.
+
+### Why this batch obeys the contract
+- supported asset: **BANANA**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled AXS/VVV dead grammar
+- no ceremonial confirmation stack
+
+### Current thesis
+BANANA / 1h should be a fair test of whether I can still write intraday structures that actually activate without collapsing into generic mush. If this lane also comes back empty, then the indictment broadens further: I am not just overfiltering one market personality, I am overfiltering the whole exploration language.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to push even further away from event-driven entries and toward more continuous state frameworks.
+
+## Entry 096 — Full DOGE / 4h Tradeable-Rotation Exploration Batch for Cycle 140 (2026-03-09)
+
+This rotation was earned. BANANA / 1h just died the same death as the rest of the intraday cluster, so staying in 1h and just changing nouns would have been denial. DOGE / 4h is a supported lane that changes both asset family and pace while still leaving enough room for structures that should trade if I stop over-choreographing them. That was the real point of the order.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-DOGE-FAILED-BREAKOUT-REJECTION-v2.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-DOGE-SHALLOW-RECLAIM-TREND-RESET-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-DOGE-COMPRESSION-BREAKOUT-HOLD-v3.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — DOGE / 4h — and changed the mechanism while staying biased toward broader, more tradeable expressions.
+
+- **Failed-Breakout Rejection**
+  - tests whether DOGE offers a usable short lane when upside excess loses value back below the fast/medium anchor stack.
+
+- **Shallow-Reclaim Trend Reset**
+  - tests whether the denser long expression is a medium-anchor reclaim after only a shallow pullback, without needing a dramatic flush.
+
+- **Compression Breakout Hold v3**
+  - tests whether retained value through compression is enough for the breakout-hold expression when rebuilt without ceremony.
+
+### Why this batch obeys the contract
+- supported asset: **DOGE**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH exploit cloning
+- no dead BANANA/AXS/VVV grammar
+- no ultra-rare 4h event stack
+
+### Current thesis
+DOGE / 4h should be a fair test of whether the problem is really the intraday lane or whether my broader exploration grammar is still overselective even when I move up in timeframe. If these also come back empty, the diagnosis gets harsher again.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to cut even deeper into event-driven logic and move further toward continuous-state expression.
+
+## Entry 097 — Full BTC / 4h Denser-Structure Exploration Batch for Cycle 141 (2026-03-09)
+
+This was the right rotation. DOGE / 4h just died in the same way the intraday clusters keep dying, and staying near that failure band would have been denial. BTC / 4h is a supported lane where the concepts can still be broad enough to trade if I stop over-choreographing the setup language. The order was clear: denser structures, no ETH-family cloning, no recycled dead BANANA/DOGE grammar.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BTC-FAILED-BREAKOUT-REJECTION-v2.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BTC-VALUE-RECAPTURE-CONTINUATION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BTC-COMPRESSION-RELEASE-RETAINED-VALUE-v2.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — BTC / 4h — and changed the mechanism while staying biased toward broader, more tradeable expressions.
+
+- **Failed-Breakout Rejection**
+  - tests whether BTC offers a usable short lane when upside excess loses value back below the fast/medium anchor stack.
+
+- **Value-Recapture Continuation**
+  - tests whether the denser long expression is a shallow downside-trap recovery back through medium structure and value.
+
+- **Compression Release Retained Value**
+  - tests whether retained higher-value acceptance through compression is enough for a live continuation branch without ceremony.
+
+### Why this batch obeys the contract
+- supported asset: **BTC**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH exploit cloning
+- no dead BANANA/DOGE grammar
+- no ultra-rare 4h event stack
+
+### Current thesis
+BTC / 4h should be a fair test of whether the problem is the specific recent lanes or the broader strategy-expression grammar itself. If these also come back empty, then the diagnosis hardens again: I am still solving for conceptual elegance rather than for tradable occurrence.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to become even more continuous and less event-driven than what I am still writing here.
+
+## Entry 098 — Full TAO / 4h Denser-Structure Exploration Batch for Cycle 142 (2026-03-09)
+
+This was the right rotation. BTC / 4h just died in the same way as the rest of the recent cluster, and another exploit turn would have been completely unearned. TAO / 4h is a supported lane where the structures can still be broad enough to trade if I stop insisting on a perfect story before the entry is allowed to exist. That was the real instruction here.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-TAO-FAILED-BREAKDOWN-FAST-VALUE-RECLAIM-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-TAO-COMPRESSION-RELEASE-RETAINED-VALUE-v2.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-TAO-SHALLOW-PULLBACK-TREND-RESET-v2.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — TAO / 4h — and changed the mechanism while staying biased toward broader, more tradeable expressions.
+
+- **Failed-Breakdown Fast Value Reclaim**
+  - tests whether TAO continuation is best expressed after downside excess is quickly reclaimed back above fast structure and value.
+
+- **Compression Release Retained Value**
+  - tests whether retained higher-value acceptance through compression is enough for a live continuation branch without ceremony.
+
+- **Shallow Pullback Trend Reset**
+  - tests whether the denser branch is simply a mild trend reset under still-supportive crowding context rather than a full breakdown event.
+
+### Why this batch obeys the contract
+- supported asset: **TAO**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH exploit cloning
+- no dead BTC/DOGE/BANANA grammar
+- no ultra-rare 4h event stack
+
+### Current thesis
+TAO / 4h should be a fair test of whether the problem is the specific recent lanes or the deeper strategy-expression grammar itself. If these also come back empty, then the diagnosis hardens yet again: I am still solving for conceptual elegance rather than for tradable occurrence.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to become even more continuous and less event-driven than what I am still writing here.

@@ -1,40 +1,40 @@
 {
-  "cycle_id": 137,
+  "cycle_id": 142,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-SOL-DAILY-FAILED-BREAKDOWN-CONTINUATION-v2.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-SOL-DAILY-VALUE-ACCEPTANCE-BREAKOUT-v2.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-SOL-DAILY-SHALLOW-PULLBACK-RESUMPTION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-TAO-FAILED-BREAKDOWN-FAST-VALUE-RECLAIM-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-TAO-COMPRESSION-RELEASE-RETAINED-VALUE-v2.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-TAO-SHALLOW-PULLBACK-TREND-RESET-v2.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "daily trend-reset continuation after failed breakdown",
-      "value-acceptance breakout after multi-bar compression",
-      "shallow pullback resumption with retained higher-timeframe structure"
+      "failed-breakdown continuation after fast value reclaim",
+      "compression release with retained higher-value acceptance",
+      "shallow pullback trend-reset continuation"
     ],
     "assets": [
-      "SOL"
+      "TAO"
     ],
     "timeframes": [
-      "1d"
+      "4h"
     ]
   },
   "iterate_target": null,
   "new_families": [
-    "sol_daily_failed_breakdown_continuation",
-    "sol_daily_value_acceptance_breakout",
-    "sol_daily_shallow_pullback_resumption"
+    "tao_failed_breakdown_fast_value_reclaim",
+    "tao_compression_release_retained_value",
+    "tao_shallow_pullback_trend_reset"
   ],
   "iterated_families": [],
   "abandoned_families": [
-    "sol_daily_failed_breakdown_continuation",
-    "sol_daily_value_acceptance_breakout",
-    "sol_daily_shallow_pullback_resumption"
+    "tao_failed_breakdown_fast_value_reclaim",
+    "tao_compression_release_retained_value",
+    "tao_shallow_pullback_trend_reset"
   ],
-  "next_cycle_focus": "Do not spend another cycle refining the current SOL / 1d batch. All three branches failed at the walk-forward screen stage with zero trades, so the next exploration turn should rotate toward a different supported lane or a materially more continuous state framework rather than tweaking these SOL daily concepts.",
-  "rationale": "Cycle 137 is now closed and explicitly abandoned. All three current-cycle SOL / 1d branches produced zero trades and failed at the screen stage, which means there is no usable within-batch evidence for refinement. The failure is again at the signal-density layer, not at the stop/target or threshold-tuning level, so the correct action is to abandon these current-cycle families rather than pretend one is salvageable."
+  "next_cycle_focus": "Do not spend another cycle refining the current TAO / 4h batch. All three branches failed at the walk-forward screen stage with zero trades, so the next exploration turn should rotate toward a different supported lane or a materially more continuous state framework rather than tweaking these TAO 4h concepts.",
+  "rationale": "Cycle 142 is now closed and explicitly abandoned. All three current-cycle TAO / 4h branches produced zero trades and failed at the screen stage, which means there is no usable within-batch evidence for refinement. The failure is again at the signal-density layer, not at the stop/target or threshold-tuning level, so the correct action is to abandon these current-cycle families rather than pretend one is salvageable."
 }

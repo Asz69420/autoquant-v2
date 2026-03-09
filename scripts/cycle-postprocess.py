@@ -489,38 +489,50 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     run_elapsed = metrics.get("run_elapsed_seconds", elapsed_seconds)
     elapsed_str = f"{int(run_elapsed // 60)}m {int(run_elapsed % 60)}s" if run_elapsed else "?"
 
-    promotions = metrics["promote_count"]
-    status_emoji = "✅" if promotions > 0 else "⚠️"
+    generated = metrics.get("specs_produced", 0)
+    iterated = len(metrics.get("iterated_families") or [])
+    passed = metrics.get("pass_count", 0)
     new_families = len(metrics.get("new_families") or [])
     active_families = metrics.get("active_families", 0)
-    abandoned = len(metrics.get("abandoned_families") or [])
-    best = metrics.get("best_result")
+    aborted = len(metrics.get("abandoned_families") or [])
+    backtests = metrics.get("backtests_completed", 0)
+    best_qs = metrics.get("best_qscore") or 0
+    mode = metrics.get("mode") or "cycle"
 
-    note_lines = []
-    if promotions > 0:
-        note_lines.append(f"🏆 {promotions} promotion(s)! Best QS: {metrics['best_qscore']:.2f}")
-    elif (metrics.get("best_qscore") or 0) > 0:
-        note_lines.append(f"Best QS: {metrics['best_qscore']:.2f}. Iterating.")
+    if passed > 0:
+        status_emoji = "✅"
+    elif backtests > 0:
+        status_emoji = "⚠️"
     else:
-        note_lines.append("No strong results yet. Quandalf refining.")
+        status_emoji = "🔄"
 
+    note_candidates = []
+    if passed > 0 and best_qs > 0:
+        note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
+    if backtests == 0 and generated > 0:
+        note_candidates.append(f"This {mode} cycle generated fresh work but still has no completed backtests, so the batch is waiting for scored evidence before any family gets advanced or cut.")
+    if aborted > 0 and best_qs > 0:
+        note_candidates.append(f"This {mode} cycle cut {aborted} weak family{'ies' if aborted != 1 else ''} while preserving the better branch with best QS {best_qs:.2f} for the next decision pass.")
     if metrics.get("external_results_present"):
-        note_lines.append(f"Ignored {metrics['external_rows']} off-cycle result(s).")
-    elif metrics.get("backtests_completed", 0) < metrics.get("backtests_queued", 0):
-        note_lines.append(f"{metrics['backtests_completed']}/{metrics['backtests_queued']} current-cycle backtests in.")
+        note_candidates.append(f"This {mode} cycle is being judged only on its own batch, while {metrics['external_rows']} off-cycle result{'s' if metrics['external_rows'] != 1 else ''} were intentionally ignored to keep the card honest.")
+    if not note_candidates:
+        note_candidates.append(f"This {mode} cycle is still building evidence, with active families under test and no convincing result yet strong enough to change direction.")
+
+    note = next((candidate for candidate in note_candidates if len(candidate) <= 350), note_candidates[-1])
+    if len(note) > 350:
+        note = f"This {mode} cycle is still building evidence, with best QS {best_qs:.2f} and the next decision waiting on cleaner current-cycle results." if best_qs > 0 else f"This {mode} cycle is still building evidence, and the next decision is waiting on cleaner current-cycle backtest results."
 
     lines = []
     lines.append("🍳 Cooking")
-    lines.append(f"{status_emoji} | ▶ {elapsed_str} | 🆔 {metrics['cycle_id']}")
+    lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○──activity──────────────────")
-    lines.append(f"New strategies: {metrics['specs_produced']}")
-    lines.append(f"New families: {new_families}")
-    lines.append(f"Active families: {active_families}")
-    lines.append(f"Backtests: {metrics['backtests_completed']}")
-    lines.append(f"Promotions: {promotions}")
-    lines.append(f"Abandoned: {abandoned}")
+    lines.append(f"Generated: {generated}")
+    lines.append(f"Iterated: {iterated}")
+    lines.append(f"Passed: {passed}")
+    lines.append(f"Aborted: {aborted}")
+    lines.append(f"Backtests: {backtests}")
     lines.append("○──note──────────────────────")
-    lines.extend(note_lines)
+    lines.append(note)
 
     return "\n".join(lines), metrics
 

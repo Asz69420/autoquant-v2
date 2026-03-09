@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-DOGE-FAILED-BREAKOUT-REJECTION-v2",
+  "ts_iso": "2026-03-10T09:10:00Z",
+  "thesis_id": "cycle_140_doge_failed_breakout_rejection_v2",
+  "name": "DOGE Failed Breakout Rejection v2",
+  "version": "1.0",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "indicators": ["EMA_21","EMA_50","VWAP","ATR_14","RSI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": ["Disabled: thesis is upside-failure rejection into bearish reset"],
+    "short": [
+      "high >= EMA_21 + 0.7 * ATR_14",
+      "Close < EMA_21",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "RSI_14 <= 48",
+      "ADX_14 >= 14",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Disabled: thesis is short-only"],
+    "short": ["Stop loss: 1.05 * ATR_14 above entry","Take profit: 2.7 * ATR_14 below entry","Early exit if Close crosses_above EMA_21","Time stop: 9 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["transitional","ranging"],"detection_method": "Failed-breakout rejection after upside excess. DOGE must lose value back below the fast/medium anchor stack after a local upside probe, with downside directional strength already taking over. This is a broader rejection branch, not an ETH-family short clone."},
+  "variants": [{"name": "doge_failed_breakout_rejection_v2","template_name": "failed_breakout_rejection_short","parameters": [{"name": "ema_fast", "value": 21},{"name": "ema_medium", "value": 50},{"name": "excess_atr_mult", "value": 0.7},{"name": "rsi_ceiling", "value": 48},{"name": "adx_floor", "value": 14}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 2.7,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 9},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=short_only","cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

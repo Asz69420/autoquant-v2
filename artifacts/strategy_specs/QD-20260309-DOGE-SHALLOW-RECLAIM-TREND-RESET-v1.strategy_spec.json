@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-DOGE-SHALLOW-RECLAIM-TREND-RESET-v1",
+  "ts_iso": "2026-03-10T09:10:00Z",
+  "thesis_id": "cycle_140_doge_shallow_reclaim_trend_reset_v1",
+  "name": "DOGE Shallow Reclaim Trend Reset v1",
+  "version": "1.0",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "indicators": ["EMA_50","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "low >= EMA_50 - 0.45 * ATR_14",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "RSI_14 crosses_above 49",
+      "MFI_14 >= 50",
+      "ADX_14 >= 14",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": ["Disabled: thesis is bullish trend-reset continuation only"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry","Take profit: 2.8 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 10 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Trend-reset continuation after shallow reclaim. DOGE must recover the medium anchor and value after only a shallow pullback, with directional strength already improving. This is the denser continuation branch rather than a full breakdown-reclaim event."},
+  "variants": [{"name": "doge_shallow_reclaim_trend_reset_v1","template_name": "shallow_reclaim_trend_reset_long","parameters": [{"name": "ema_anchor", "value": 50},{"name": "pullback_buffer_atr", "value": 0.45},{"name": "rsi_reclaim", "value": 49},{"name": "mfi_floor", "value": 50},{"name": "adx_floor", "value": 14}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.0,"tp_type": "atr","tp_atr_mult": 2.8,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 1.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
