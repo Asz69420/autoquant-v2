@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-KAMA-STOCH-PULLBACK-v2",
+  "ts_iso": "2026-03-10T07:26:00Z",
+  "thesis_id": "cycle_127_eth_kama_stoch_pullback_v2",
+  "name": "ETH KAMA Stoch Pullback v2",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "indicators": ["KAMA_30","STOCH_K_14_3_3","STOCH_D_14_3_3","ATR_14","ADX_14","VWAP"],
+  "entry_rules": {
+    "long": [
+      "Close > KAMA_30",
+      "Close > VWAP",
+      "STOCH_K_14_3_3 crosses_above STOCH_D_14_3_3",
+      "STOCH_K_14_3_3 <= 38",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Close < KAMA_30",
+      "Close < VWAP",
+      "STOCH_K_14_3_3 crosses_below STOCH_D_14_3_3",
+      "STOCH_K_14_3_3 >= 62",
+      "ADX_14 >= 14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.95 * ATR_14 below entry","Take profit: 7.8 * ATR_14 above entry","Early exit if Close crosses_below KAMA_30","Time stop: 16 bars"],
+    "short": ["Stop loss: 0.95 * ATR_14 above entry","Take profit: 7.8 * ATR_14 below entry","Early exit if Close crosses_above KAMA_30","Time stop: 16 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Drawdown-trim variant of the ETH 1h kama_stoch_pullback champion. Preserve the broad pullback engine and trade density, but require value acceptance through VWAP and slightly tighter ATR risk to try to cut drawdown from the 10.1% baseline."},
+  "variants": [{"name": "eth_kama_stoch_pullback_drawdown_trim_v2","template_name": "kama_stoch_pullback","parameters": [{"name": "kama_period", "value": 30},{"name": "stoch_pullback_long_max", "value": 38},{"name": "stoch_pullback_short_min", "value": 62},{"name": "adx_floor", "value": 14},{"name": "rr_target", "value": 7.8}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 0.95,"tp_type": "atr","tp_atr_mult": 7.8,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 16},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

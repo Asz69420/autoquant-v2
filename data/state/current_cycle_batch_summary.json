@@ -1,40 +1,28 @@
 {
-  "cycle_id": 121,
-  "cycle_key": "121",
-  "manifest_cycle_id": 121,
-  "status_cycle_id": 122,
+  "cycle_id": 126,
+  "cycle_key": "126",
+  "manifest_cycle_id": 126,
+  "status_cycle_id": 127,
   "orders_cycle_id": null,
   "status_matches_cycle": false,
   "manifest_matches_cycle": true,
-  "mode": "explore",
-  "research_direction": "explore_new",
-  "minimum_spec_count": 3,
-  "maximum_spec_count": 4,
-  "target_asset": "TAO",
-  "target_timeframe": "4h",
-  "iterate_target": null,
-  "exploration_targets": {
-    "concepts": [
-      "trend-exhaustion trap and re-acceptance",
-      "negative-funding pullback continuation after failed breakdown",
-      "state-flip expansion above reclaimed value"
-    ],
-    "assets": [
-      "TAO"
-    ],
-    "timeframes": [
-      "4h"
-    ]
-  },
+  "mode": "exploit",
+  "research_direction": "iterate_existing",
+  "minimum_spec_count": 2,
+  "maximum_spec_count": 3,
+  "target_asset": "ETH",
+  "target_timeframe": "1h",
+  "iterate_target": "Leaderboard walk-forward champion on ETH/1h: kama_stoch_pullback_v1_8to1 (QScore 4.27, PF 1.857, DD 10.1, 42 trades)",
+  "exploration_targets": {},
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260309-TAO-TREND-EXHAUSTION-TRAP-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260309-TAO-FAILED-BREAKDOWN-CONTINUATION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260309-TAO-STATE-FLIP-EXPANSION-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260309-ETH-KAMA-STOCH-PULLBACK-v2.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260309-ETH-KAMA-STOCH-PULLBACK-v3.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260309-ETH-KAMA-STOCH-PULLBACK-v4.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260309-TAO-FAILED-BREAKDOWN-CONTINUATION-v1",
-    "QD-20260309-TAO-STATE-FLIP-EXPANSION-v1",
-    "QD-20260309-TAO-TREND-EXHAUSTION-TRAP-v1"
+    "QD-20260309-ETH-KAMA-STOCH-PULLBACK-v2",
+    "QD-20260309-ETH-KAMA-STOCH-PULLBACK-v3",
+    "QD-20260309-ETH-KAMA-STOCH-PULLBACK-v4"
   ],
   "specs_produced": 3,
   "specs_written": 3,
@@ -55,23 +43,23 @@
   "promote_count": 0,
   "promotions": 0,
   "best_result": {
-    "strategy_spec_id": "QD-20260309-TAO-STATE-FLIP-EXPANSION-v1",
-    "variant_id": "tao_state_flip_expansion_v1",
-    "asset": "TAO",
-    "timeframe": "4h",
+    "strategy_spec_id": "QD-20260309-ETH-KAMA-STOCH-PULLBACK-v4",
+    "variant_id": "eth_kama_stoch_pullback_exit_efficiency_v4",
+    "asset": "ETH",
+    "timeframe": "1h",
     "qscore": -0.5,
     "profit_factor": 0,
     "total_trades": 0,
     "decision": "fail"
   },
   "best_qscore": -0.5,
-  "next_cycle_focus": "Do not spend another cycle refining the current TAO / 4h batch. All three branches failed the walk-forward trade-count requirement with zero trades, so the next exploration turn should rotate toward a materially denser supported lane or a simpler always-on state framework rather than tweaking these TAO concepts.",
-  "rationale": "Cycle 122 is now closed and explicitly abandoned. All three current-cycle TAO / 4h branches produced zero trades in both insample and out-of-sample walk-forward testing and failed with low-trade-count flags, despite being intentionally looser than the prior batches. That means the failure is not just over-confirmation inside one branch; it is a stronger warning that the current exploration template is still too sparse to produce evaluable signals.",
+  "next_cycle_focus": "Do not spend another exploit cycle on the v2/v3/v4 ETH / 1h KAMA-Stoch variants in their current form. All three current-cycle refinements failed the walk-forward trade-count requirement with zero trades, so any future exploit work on this family should restart from the original champion baseline rather than refining these specific variants further.",
+  "rationale": "Cycle 127 is closed as a failed exploit iteration set, but the family itself is not abandoned. All three current-cycle ETH / 1h KAMA-Stoch refinement variants (v2, v3, v4) produced zero trades in both insample and out-of-sample walk-forward testing and failed with low-trade-count flags, which means these particular refinements over-tightened or over-distorted a passing baseline. The correct lesson is to reject these variants, not to abandon the underlying champion family that already proved itself.",
   "has_reflection_note": false,
-  "elapsed_seconds": 247.0,
-  "run_elapsed_seconds": 247.0,
+  "elapsed_seconds": 279.3,
+  "run_elapsed_seconds": 279.3,
   "report_delay_seconds": 0.0,
   "is_completed": true,
-  "started_at_epoch": 1773039004.2783332,
-  "ended_at_epoch": 1773039251.2301416
+  "started_at_epoch": 1773041104.577337,
+  "ended_at_epoch": 1773041383.8988643
 }

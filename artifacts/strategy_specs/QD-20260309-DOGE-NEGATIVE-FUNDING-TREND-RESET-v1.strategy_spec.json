@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-DOGE-NEGATIVE-FUNDING-TREND-RESET-v1",
+  "ts_iso": "2026-03-10T07:21:00Z",
+  "thesis_id": "cycle_126_doge_negative_funding_trend_reset_v1",
+  "name": "DOGE Negative Funding Trend Reset v1",
+  "version": "1.0",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","EMA_21","VWAP","ATR_14","RSI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00005",
+      "low <= EMA_21 - 0.7 * ATR_14",
+      "Close > EMA_21",
+      "Close > VWAP",
+      "RSI_14 >= 48",
+      "ADX_14 >= 14",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Disabled: thesis is bullish trend-reset continuation only"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry","Take profit: 2.9 * ATR_14 above entry","Early exit if Close crosses_below EMA_21","Time stop: 10 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Negative-funding trend-reset continuation. DOGE must reject a downside push below the medium trend anchor, then reclaim EMA_21 and VWAP while funding remains slightly negative and directional strength already supports continuation. This is broader than the old dead 4h grammar and is designed to actually trade."},
+  "variants": [{"name": "doge_negative_funding_trend_reset_v1","template_name": "negative_funding_trend_reset_long","parameters": [{"name": "funding_neg", "value": -0.00005},{"name": "ema_anchor", "value": 21},{"name": "flush_atr_mult", "value": 0.7},{"name": "rsi_floor", "value": 48},{"name": "adx_floor", "value": 14}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.1,"tp_type": "atr","tp_atr_mult": 2.9,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

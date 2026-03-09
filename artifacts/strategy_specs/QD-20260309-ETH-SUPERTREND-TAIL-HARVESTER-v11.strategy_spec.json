@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v11",
+  "ts_iso": "2026-03-10T07:11:00Z",
+  "thesis_id": "cycle_124_eth_supertrend_tail_harvester_v11",
+  "name": "ETH Supertrend Tail Harvester v11",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": ["SUPERTd_10_3.0","EMA_50","ADX_14","ATR_14","VWAP","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "SUPERTd_10_3.0 > 0",
+      "Close > EMA_50",
+      "ADX_14 >= 15",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "SUPERTd_10_3.0 < 0",
+      "Close < EMA_50",
+      "ADX_14 >= 15",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.9 * ATR_14 below entry","Take profit: 8.0 * ATR_14 above entry","Early exit if Close crosses_below EMA_50","Time stop: 18 bars"],
+    "short": ["Stop loss: 0.9 * ATR_14 above entry","Take profit: 8.0 * ATR_14 below entry","Early exit if Close crosses_above EMA_50","Time stop: 18 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["trending","transitional"],"detection_method": "Post-entry invalidation variant. Keep the broad champion entry logic mostly intact and test whether faster ATR-based invalidation plus a shorter holding horizon can preserve PF while trimming drawdown and stale-trend giveback."},
+  "variants": [{"name": "eth_supertrend_tail_harvester_faster_invalidation_v11","template_name": "supertrend_tail_harvester","parameters": [{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "ema_anchor", "value": 50},{"name": "adx_floor", "value": 15},{"name": "rr_target", "value": 8.0}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 0.9,"tp_type": "atr","tp_atr_mult": 8.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 18},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": true,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -2007,3 +2007,196 @@ If TAO / 4h cannot trade under these looser conditions, then the problem is deep
 
 ### Next step
 Backtest the whole batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on zero trades, then I need to overhaul the exploration template itself, not just rotate assets again.
+
+## Entry 079 — Full SOL / 1d Daily-Density Exploration Batch for Cycle 123 (2026-03-09)
+
+This cycle finally said out loud what the last few reflections had been implying: stop building daily and 4h concepts like they are museum pieces. SOL / 1d is a good test because it forces me to work with a slower timeframe while still being honest about density. If these daily structures cannot trade, then the problem is not just noise on 1h or overfitting on 4h. It is my design instinct.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-VALUE-ACCEPTANCE-BREAKOUT-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-COMPRESSION-RELEASE-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-FAILED-BREAKDOWN-CONTINUE-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — SOL / 1d — and varied the actual mechanism while deliberately biasing toward simpler daily triggers.
+
+- **Daily Value Acceptance Breakout**
+  - tests whether the market only needs acceptance above value and a medium anchor once crowding pressure eases.
+
+- **Daily Compression Release**
+  - tests whether retained value plus a clean daily state flip is enough to capture higher-timeframe expansion.
+
+- **Daily Failed Breakdown Continue**
+  - tests whether the best daily continuation expression comes after a rejected downside loss below the slower trend anchor.
+
+### Why this batch obeys the contract
+- supported asset: **SOL**
+- supported timeframe: **1d**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH channel clone
+- no BTC rejection reuse
+- no recycled 4h continuation batch
+- explicitly biased toward density, not precision theater
+
+### Current thesis
+If one of these daily branches trades, the lesson will be that I needed broader state-based expressions rather than stacked event choreography. If these still come back empty, then I need to admit the problem is even deeper: I am still not thinking in trade-generating templates.
+
+### Next step
+Backtest the full batch and judge density first, quality second. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, I need a genuine redesign of the exploration grammar rather than another asset rotation.
+
+## Entry 080 — Full ETH / 4h Tail-Harvester Exploit Batch for Cycle 124 (2026-03-09)
+
+Good. An actual exploit turn, finally. Recent history has been saturated with exploratory dead ends, and the orders were right to force a compact return to something that has already earned respect. The ETH / 4h tail harvester is not a guess; it is the on-board walk-forward champion. That means this cycle is not about creativity for its own sake. It is about disciplined refinement.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v9.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v10.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v11.strategy_spec.json
+
+### Why these three
+I stayed on the ordered family and changed only the refinement axis.
+
+- **v9 — drawdown trim**
+  - keeps the broad champion structure but asks whether value acceptance plus slightly tighter initial risk can shave drawdown under the 10.9% baseline without wrecking the 85-trade density.
+
+- **v10 — cleaner confirmation**
+  - tests whether a more explicit state-change trigger and stronger ADX/RSI alignment improves resilience enough to offset any trade-count loss.
+
+- **v11 — faster invalidation**
+  - keeps entry broad and instead attacks the giveback problem after entry with tighter ATR risk and a shorter holding horizon.
+
+### Why this batch obeys the contract
+- supported asset: **ETH**
+- supported timeframe: **4h**
+- mode: **exploit**
+- minimum specs: **2**
+- maximum specs: **3**
+- specs produced: **3**
+- one passing family only
+- focused exploit variants, not threshold spray
+- no drift into ETH / 1h channel logic
+- no unsupported transfer games
+
+### Current thesis
+The champion already has the hard part: real density and real edge. So the correct exploit question is not whether the family works. It does. The question is where the improvement margin lives: pre-entry cleanliness, lower drawdown through better value acceptance, or faster post-entry damage control.
+
+### Next step
+Backtest the batch against the champion baseline directly. If one variant can beat or match the current PF while cutting drawdown and holding trade count above the exploit floor, it deserves to replace the current leader. If none can beat the baseline, that is still useful — it means the champion is already near the local optimum and I should stop touching it.
+
+## Entry 081 — Full BANANA / 1h Density-Oriented Exploration Batch for Cycle 125 (2026-03-09)
+
+This cycle was the right kind of reset after the ETH / 4h exploit turn. BANANA / 1h forces me back into a faster lane, but with explicit instructions not to smuggle in the dead grammar from BABY, BTC, or TAO. Good. The only way this is useful is if the structures are genuinely distinct and actually capable of producing trades.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-BANANA-NEGATIVE-FUNDING-SQUEEZE-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-BANANA-FAILED-BREAKDOWN-RECLAIM-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-BANANA-INVENTORY-RESET-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — BANANA / 1h — and varied the mechanism with an explicit bias toward trade density.
+
+- **Negative-Funding Squeeze Continuation**
+  - tests whether BANANA wants to continue higher out of a base while funding stays negative and directional strength expands.
+
+- **Failed-Breakdown Reclaim**
+  - tests whether the edge is sharper and faster: reject a downside break, reclaim value immediately, and go — no ceremonial waiting.
+
+- **Inventory-Reset Expansion**
+  - tests whether the cleaner version is a fresh state flip out of compression once inventory resets and trend resumes.
+
+### Why this batch obeys the contract
+- supported asset: **BANANA**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH short-bias clone
+- no recycled BABY/TAO/BTC zero-trade grammar
+- no threshold spray
+
+### Current thesis
+BANANA / 1h should be a better test of whether I have actually learned anything from the recent zero-trade failures. If these still come back empty, then the problem is not just one asset, one timeframe, or one idea family. It means I am still writing setups that sound cleaner than they trade.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then I need to simplify the exploration language again — probably down to even more continuous state logic and fewer event-based triggers.
+
+## Entry 082 — Full DOGE / 4h Tradeable-Structure Exploration Batch for Cycle 126 (2026-03-09)
+
+This was a useful test because DOGE / 4h sits exactly where I could have made the same mistake again: a slower lane, a familiar asset, and a temptation to rebuild the old dead structure with different paint. The orders were clear enough to stop that. I needed three actually tradeable branches, not three elegant excuses for another zero-trade packet.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-DOGE-NEGATIVE-FUNDING-TREND-RESET-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-DOGE-FAILED-BREAKDOWN-IMMEDIATE-EXPANSION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-DOGE-COMPRESSION-BREAKOUT-HOLD-v2.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — DOGE / 4h — and changed the mechanism with a bias toward simpler, more live expressions.
+
+- **Negative-Funding Trend Reset**
+  - tests whether DOGE continuation is best expressed after a downside push fails and price reclaims the medium anchor while funding remains slightly negative.
+
+- **Failed-Breakdown Immediate Expansion**
+  - tests whether the edge is faster: reject the downside break, re-accept value immediately, and only require expansion already underway.
+
+- **Compression Breakout Hold v2**
+  - tests whether the old breakout-hold idea can survive when rebuilt with retained value and live bullish state rather than ceremonial confirmation stacking.
+
+### Why this batch obeys the contract
+- supported asset: **DOGE**
+- supported timeframe: **4h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH channel short clone
+- no TAO/BTC zero-trade grammar recycle
+- no threshold spray
+
+### Current thesis
+DOGE / 4h should be one of the better places to test whether I can still write a slower-timeframe concept that actually trades. If these come back empty too, then the problem is not just one market or one lane. It means I still have not simplified the exploration template enough.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, I need to stop pretending that small structural loosening is enough and move toward genuinely continuous state-driven entry design.
+
+## Entry 083 — Full ETH / 1h KAMA-Stoch Exploit Batch for Cycle 127 (2026-03-09)
+
+This is the right exploit turn. Not the over-discussed ETH channel lane, not the 4h tail harvester again, but another family that already earned the right to be refined. The ETH / 1h KAMA-Stoch pullback champion has enough edge and enough density to justify real iteration. So the job here was not to get cute. It was to attack the exact weaknesses the order named.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v2.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v3.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-ETH-KAMA-STOCH-PULLBACK-v4.strategy_spec.json
+
+### Why these three
+I stayed on the ordered family and changed only the refinement axis.
+
+- **v2 — drawdown trim**
+  - tests whether adding value acceptance and slightly tighter ATR risk can cut the 10.1% drawdown baseline without killing the 42-trade profile.
+
+- **v3 — cleaner context**
+  - tests whether stronger ADX/DI trend-state context improves pullback quality enough to offset a possible trade-count reduction.
+
+- **v4 — exit efficiency**
+  - keeps entry relatively broad and attacks weak-bounce follow-through by cutting losers and stale setups sooner.
+
+### Why this batch obeys the contract
+- supported asset: **ETH**
+- supported timeframe: **1h**
+- mode: **exploit**
+- minimum specs: **2**
+- maximum specs: **3**
+- specs produced: **3**
+- one passing family only
+- focused exploit variants, not threshold spray
+- no drift into ETH channel shorts
+- no BTC transfer nonsense
+
+### Current thesis
+The family already works. The question is not whether to keep it alive; it is where the next increment lives. My guess is that drawdown control and exit efficiency are more promising than forcing much cleaner context, because the current baseline only has 42 trades and I do not want to pay too much density for elegance.
+
+### Next step
+Backtest the full exploit batch against the champion directly. If one variant preserves at least most of the trade count while improving PF or trimming drawdown materially, it deserves to become the new reference. If none beat the baseline, that is still a useful result — it means the current champion is already close to local optimum and should be left alone.

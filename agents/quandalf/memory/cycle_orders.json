@@ -1,27 +1,15 @@
 {
-  "cycle_id": 122,
-  "mode": "explore",
-  "minimum_spec_count": 3,
-  "maximum_spec_count": 4,
-  "target_asset": "TAO",
-  "target_timeframe": "4h",
-  "research_direction": "explore_new",
-  "specific_family_to_iterate": null,
-  "iterate_target": null,
-  "exploration_targets": {
-    "concepts": [
-      "trend-exhaustion trap and re-acceptance",
-      "negative-funding pullback continuation after failed breakdown",
-      "state-flip expansion above reclaimed value"
-    ],
-    "assets": [
-      "TAO"
-    ],
-    "timeframes": [
-      "4h"
-    ]
-  },
-  "thesis_hint": "Explore a new concept this cycle. Recent journal flow is still explore-heavy enough to preserve the soft 70/30 balance, but the recent batches also show repeated low-trade failures on over-confirmed structures. Stay inside the supported universe and rotate away from the crowded ETH/BABY 1h lane and from BTC rejection logic. Target TAO 4h and demand 3 materially different specs that are not classic reclaim spam and not ETH-style channel shorts: one branch should test failed-breakdown re-acceptance into trend continuation, one should test a cleaner trend-exhaustion trap where downside expansion fails and price reclaims a medium anchor before continuation, and one should test a state-flip expansion branch that only arms after value is reclaimed and directional strength turns up. The goal is open exploration of TAO 4h with enough structural looseness to actually trade, while avoiding another ceremonial zero-trade continuation batch.",
-  "stop_condition": "Stop the batch when either (A) one spec reaches walk-forward QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 15, and max_drawdown_pct <= 10.0, or (B) 4 materially different specs are exhausted without a pass. Abort any spec with total_trades < 12, profit_factor < 1.00, or max_drawdown_pct > 12.0.",
-  "rotation_reason": "Force exploration this cycle: recent history still satisfies the explore-heavy doctrine, recent concentration is strongest in ETH/BABY 1h work, and TAO/4h is a supported rotation that changes both asset family and structure without locking back into a passing-family exploit loop."
+  "cycle_id": 127,
+  "mode": "exploit",
+  "minimum_spec_count": 2,
+  "maximum_spec_count": 3,
+  "target_asset": "ETH",
+  "target_timeframe": "1h",
+  "research_direction": "iterate_existing",
+  "specific_family_to_iterate": "eth_kama_stoch_pullback",
+  "iterate_target": "Leaderboard walk-forward champion on ETH/1h: kama_stoch_pullback_v1_8to1 (QScore 4.27, PF 1.857, DD 10.1, 42 trades)",
+  "exploration_targets": null,
+  "thesis_hint": "Iterate on a passing strategy this cycle. Recent history is still explore-heavy enough to preserve the soft 70/30 doctrine, and the most overused recent lane is 4h exploration plus ETH channel discussion. Rotate away from both by exploiting a different supported passing family: ETH 1h kama_stoch_pullback, not ETH channel shortbias and not ETH 4h tail harvester. Demand 2-3 focused variants only: one should reduce drawdown from the 10.1% baseline without collapsing the 42-trade density, one should improve pullback quality by tightening trend-state context before entry, and an optional third may improve exit efficiency after weak bounce follow-through if it preserves the family's trade count. Do not drift into channel-failure shorts, do not broaden to BTC transfer tests, and do not spray tiny threshold edits around one trigger.",
+  "stop_condition": "Stop the batch when either (A) one variant improves the current pass with walk-forward QScore >= 4.40, profit_factor >= 1.90, total_trades >= 38, and max_drawdown_pct <= 9.0, or (B) 3 focused variants are exhausted without beating the current ETH/1h kama_stoch_pullback baseline. Abort any variant with total_trades < 30, profit_factor < 1.30, or max_drawdown_pct > 12.0.",
+  "rotation_reason": "Allow exploitation this cycle: recent history remains explore-heavy, no last-3 or last-5 concentration rule forces another asset rotation, and ETH/1h kama_stoch_pullback is a supported walk-forward pass that rotates away from the more overused 4h lane and ETH channel family."
 }
