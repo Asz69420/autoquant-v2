@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-INJ-COMPRESSION-RELEASE-HOLD-v1",
+  "ts_iso": "2026-03-10T04:31:00Z",
+  "thesis_id": "cycle_109_inj_compression_release_hold_v1",
+  "name": "INJ Compression Release Hold v1",
+  "version": "1.0",
+  "asset": "INJ",
+  "timeframe": "2h",
+  "indicators": [
+    "FundingRate",
+    "DCU_20_20",
+    "DCM_20_20",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "CHOP_14_1_100",
+    "EMA_55"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00028",
+      "CHOP_14_1_100 <= 48",
+      "Close crosses_above DCU_20_20",
+      "Close > DCM_20_20",
+      "Close > EMA_55",
+      "low >= DCM_20_20",
+      "ADX_14 >= 19",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00028",
+      "CHOP_14_1_100 <= 48",
+      "Close crosses_below DCM_20_20",
+      "Close < DCM_20_20",
+      "Close < EMA_55",
+      "high <= DCU_20_20",
+      "ADX_14 >= 19",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 3.1 * ATR_14 above entry",
+      "Early exit if Close crosses_below DCM_20_20",
+      "Time stop: 11 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 3.1 * ATR_14 below entry",
+      "Early exit if Close crosses_above DCM_20_20",
+      "Time stop: 11 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Compression-release breakout-hold. After volatility contraction and mildly negative funding, price must break the Donchian pressure box and hold above internal structure while directional strength expands. This tests whether INJ continuation is best captured through pressure release rather than VWAP-led acceptance or base-break expansion confirmation."
+  },
+  "variants": [
+    {
+      "name": "inj_compression_release_hold_v1",
+      "template_name": "donchian_pressure_release",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.00028 },
+        { "name": "funding_extreme_pos", "value": 0.00028 },
+        { "name": "donchian_period", "value": 20 },
+        { "name": "chop_max", "value": 48 },
+        { "name": "ema_anchor", "value": 55 },
+        { "name": "adx_floor", "value": 19 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.2,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.1,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 11
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

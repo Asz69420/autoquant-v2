@@ -1,23 +1,23 @@
 {
-  "cycle_id": 102,
+  "cycle_id": 109,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-VIRTUAL-VWAP-KELTNER-ACCEPTANCE-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-VIRTUAL-DONCHIAN-PRESSURE-RELEASE-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-VIRTUAL-SUPERTREND-VWAP-EXPANSION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-INJ-VWAP-VALUE-ACCEPTANCE-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-INJ-COMPRESSION-RELEASE-HOLD-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-INJ-BASEBREAK-EXPANSION-CONFIRM-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
       "negative-funding value-acceptance breakout",
-      "pressure-release continuation",
-      "trend-strength expansion"
+      "compression-release with anchored-VWAP hold",
+      "directional expansion after base-break confirmation"
     ],
     "assets": [
-      "VIRTUAL"
+      "INJ"
     ],
     "timeframes": [
       "2h"
@@ -25,12 +25,12 @@
   },
   "iterate_target": null,
   "new_families": [
-    "virtual_vwap_keltner_acceptance",
-    "virtual_donchian_pressure_release",
-    "virtual_supertrend_vwap_expansion"
+    "inj_vwap_value_acceptance",
+    "inj_compression_release_hold",
+    "inj_basebreak_expansion_confirm"
   ],
   "iterated_families": [],
   "abandoned_families": [],
-  "next_cycle_focus": "If this batch yields a clean pass, exploit the strongest VIRTUAL 2h family with tighter confirmation variants; otherwise rotate to a fresh asset/concept branch.",
-  "rationale": "Current VIRTUAL 2h exploration cycle remains open as a real three-spec batch. This reflection packet contained no fresh results or lessons, so there is no evidence to refine or abandon any of the three new VIRTUAL families yet. The cycle still consists of three materially distinct value-acceptance breakout branches: VWAP/Keltner acceptance, Donchian pressure release, and Supertrend VWAP expansion."
+  "next_cycle_focus": "Wait for actual backtest/reflection output on the full INJ 2h batch, then compare branches by regime identity, trade density, PF/QScore, and walk-forward viability before choosing which acceptance/expansion concept deserves iteration.",
+  "rationale": "Cycle 109 remains open. This reflection packet contained no fresh results or lessons, so there is no evidence to refine or abandon any of the three current-cycle INJ families. The batch remains the full required 3-spec exploration set across anchored-VWAP value acceptance, Donchian compression-release hold, and Supertrend base-break expansion confirmation."
 }

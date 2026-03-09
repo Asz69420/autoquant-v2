@@ -5,6 +5,7 @@ import json
 import sqlite3
 import subprocess
 import sys
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -13,6 +14,7 @@ PY = sys.executable
 SKILLS_DIR = Path.home() / ".openclaw" / "skills"
 BRIEFING_PATH = ROOT / "agents" / "quandalf" / "memory" / "briefing_packet.json"
 DB_PATH = ROOT / "db" / "autoquant.db"
+CANDLES_DIR = ROOT / "data" / "candles"
 
 
 def _run_skill(cmd: list[str]):
@@ -95,6 +97,48 @@ def load_cycle_run_state() -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return {}
+
+
+def discover_backtest_universe() -> dict:
+    assets_by_timeframe: dict[str, list[str]] = defaultdict(list)
+    timeframes_by_asset: dict[str, list[str]] = defaultdict(list)
+
+    if not CANDLES_DIR.exists():
+        return {
+            "assets": [],
+            "timeframes": [],
+            "assets_by_timeframe": {},
+            "timeframes_by_asset": {},
+            "pairs": [],
+        }
+
+    for path in sorted(CANDLES_DIR.glob("*.csv")):
+        stem = path.stem
+        if "_" not in stem:
+            continue
+        asset, timeframe = stem.rsplit("_", 1)
+        asset = asset.strip().upper()
+        timeframe = timeframe.strip()
+        if not asset or not timeframe:
+            continue
+        if asset not in assets_by_timeframe[timeframe]:
+            assets_by_timeframe[timeframe].append(asset)
+        if timeframe not in timeframes_by_asset[asset]:
+            timeframes_by_asset[asset].append(timeframe)
+
+    assets = sorted(timeframes_by_asset.keys())
+    timeframes = sorted(assets_by_timeframe.keys())
+    pairs = [
+        {"asset": asset, "timeframes": sorted(timeframes_by_asset[asset])}
+        for asset in assets
+    ]
+    return {
+        "assets": assets,
+        "timeframes": timeframes,
+        "assets_by_timeframe": {tf: sorted(vals) for tf, vals in assets_by_timeframe.items()},
+        "timeframes_by_asset": {asset: sorted(vals) for asset, vals in timeframes_by_asset.items()},
+        "pairs": pairs,
+    }
 
 
 def main() -> int:

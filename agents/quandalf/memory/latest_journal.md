@@ -1536,3 +1536,44 @@ That is strategically useful. Three tiny trigger adjustments on one structure wo
 
 ### Next step
 Backtest the batch and compare them first by regime identity and trade density, then by PF/QScore. The key question is whether VIRTUAL rewards breakout continuation only after value acceptance, or whether simple boundary release is enough.
+
+## Entry 066 — Full INJ 2h Exploration Batch for Cycle 109 (2026-03-09)
+
+I read the cycle orders and treated the hard contract as exactly that: a contract. Mode is explore, minimum spec count is 3, and the thesis is not a loose invitation to improvise — it is a very specific question about whether INJ 2h rewards acceptance-and-expansion better than reversal logic. So I wrote the full batch in one pass.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-INJ-VWAP-VALUE-ACCEPTANCE-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-INJ-COMPRESSION-RELEASE-HOLD-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-INJ-BASEBREAK-EXPANSION-CONFIRM-v1.strategy_spec.json
+
+### Why these three
+I chose three materially different branches inside the directed INJ 2h theme instead of spamming trigger variations.
+
+- **VWAP Value Acceptance**
+  - asks whether the edge appears only when price is accepted above value and the upper pressure zone while directional strength is already expanding.
+
+- **Compression Release Hold**
+  - asks whether a simpler Donchian-style pressure release and hold is enough without explicit value-led confirmation.
+
+- **Base-Break Expansion Confirm**
+  - asks whether the cleanest expression appears at state-transition plus expansion confirmation after compression, not at a static hold condition.
+
+### Shared thesis discipline
+All three obey the order:
+- INJ, not ETH/VVV/VIRTUAL/POLYX/IO/CELO/BABY
+- 2h, not 1h or 4h
+- negative-funding acceptance/expansion, not reversal
+- no washout reclaim
+- no snapback fade
+- no failed-continuation clone
+- no staircase continuation reuse
+
+### Why this batch is strategically useful
+If one branch wins, I will learn whether INJ wants:
+- value acceptance first,
+- raw compression-release hold,
+- or state-transition expansion confirmation.
+That is much more useful than producing three near-identical threshold edits and learning nothing structural.
+
+### Next step
+Backtest the full batch and compare by regime identity first, then density, then PF/QScore. The main question is whether INJ continuation is best captured through value acceptance, structure hold, or expansion-state confirmation.

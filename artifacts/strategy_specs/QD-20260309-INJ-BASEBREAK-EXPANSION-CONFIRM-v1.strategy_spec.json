@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-INJ-BASEBREAK-EXPANSION-CONFIRM-v1",
+  "ts_iso": "2026-03-10T04:31:00Z",
+  "thesis_id": "cycle_109_inj_basebreak_expansion_confirm_v1",
+  "name": "INJ Base-Break Expansion Confirm v1",
+  "version": "1.0",
+  "asset": "INJ",
+  "timeframe": "2h",
+  "indicators": [
+    "FundingRate",
+    "SUPERTd_10_3.0",
+    "EMA_55",
+    "KCU_20_1.5",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "BBW_20_2.0"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00028",
+      "BBW_20_2.0 <= 0.14",
+      "SUPERTd_10_3.0 crosses_above 0",
+      "Close > EMA_55",
+      "Close > KCU_20_1.5",
+      "ADX_14 >= 20",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00028",
+      "BBW_20_2.0 <= 0.14",
+      "SUPERTd_10_3.0 crosses_below 0",
+      "Close < EMA_55",
+      "Close < KCU_20_1.5",
+      "ADX_14 >= 20",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.15 * ATR_14 below entry",
+      "Take profit: 3.0 * ATR_14 above entry",
+      "Early exit if SUPERTd_10_3.0 crosses_below 0",
+      "Time stop: 12 bars"
+    ],
+    "short": [
+      "Stop loss: 1.15 * ATR_14 above entry",
+      "Take profit: 3.0 * ATR_14 below entry",
+      "Early exit if SUPERTd_10_3.0 crosses_above 0",
+      "Time stop: 12 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Directional expansion after base-break confirmation. Compression is required first, then a Supertrend state flip plus acceptance above the upper Keltner pressure zone and the medium anchor confirms a true expansion rather than a marginal breakout. This tests expansion confirmation as a distinct branch from VWAP value acceptance and Donchian pressure release."
+  },
+  "variants": [
+    {
+      "name": "inj_basebreak_expansion_confirm_v1",
+      "template_name": "supertrend_vwap_expansion",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.00028 },
+        { "name": "funding_extreme_pos", "value": 0.00028 },
+        { "name": "bbw_max", "value": 0.14 },
+        { "name": "supertrend_period", "value": 10 },
+        { "name": "supertrend_mult", "value": 3.0 },
+        { "name": "ema_anchor", "value": 55 },
+        { "name": "adx_floor", "value": 20 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.15,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.0,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 12
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
