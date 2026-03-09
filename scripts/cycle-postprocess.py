@@ -1295,8 +1295,13 @@ def main():
         f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
     )
 
-    portability_updates = update_portability_scores(sqlite3.connect(DB))
-    conn2 = sqlite3.connect(DB)
+    conn_portability = sqlite3.connect(DB, timeout=30)
+    portability_updates = update_portability_scores(conn_portability)
+    conn_portability.commit()
+    conn_portability.close()
+
+    conn2 = sqlite3.connect(DB, timeout=30)
+    conn2.execute("PRAGMA busy_timeout = 30000")
     priors_updated = update_mechanism_priors(conn2)
     conn2.commit()
     conn2.close()
