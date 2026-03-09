@@ -89,6 +89,12 @@ def render_board():
     total_backtests = conn.execute("SELECT COUNT(*) FROM backtest_results").fetchone()[0]
     total_lessons = conn.execute("SELECT COUNT(*) FROM lessons").fetchone()[0]
     total_promotions = conn.execute("SELECT COUNT(*) FROM backtest_results WHERE lower(COALESCE(score_decision,'')) = 'promote'").fetchone()[0]
+    
+    # SAFETY: If zero backtests in system, return immediately (don't block on subprocess call).
+    if total_backtests == 0:
+        conn.close()
+        print(json.dumps({"status": "empty", "message": "No backtests yet; leaderboard empty."}))
+        return
 
     lines = ["📊 Leaderboard", "", "🏆 Promote candidates"]
     if not promoted:

@@ -1247,6 +1247,14 @@ def main():
         print(json.dumps(out, indent=2))
         return 0
 
+    # SAFETY: If no specs were seeded and no jobs in manifest, return immediately with no-op result.
+    # This prevents hanging when a research cycle produces zero specs.
+    if not seeded and not args.job_manifest:
+        out = {"status": "no_work", "seeded": 0, "queue": queue_snapshot(conn, cycle_id=cycle_id), "cycle_id": cycle_id, "message": "No specs in this cycle; skipping backtest."}
+        conn.close()
+        print(json.dumps(out, indent=2))
+        return 0
+
     run_out = run_parallel_cycle(conn, cycle_id=cycle_id, dry_run=args.dry_run, parent_run_id=parent_run_id, max_parallel=max_parallel, max_jobs=args.max_jobs, apply_effects=(not args.no_funnel_effects))
     run_out["mode"] = mode
     run_out["max_parallel"] = max_parallel

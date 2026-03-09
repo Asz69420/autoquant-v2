@@ -1,23 +1,29 @@
 Active task: Investigate why the pipeline's refinement mode runs but cooking/research does not.
 
-Steps:
-1. Check recent pipeline errors/logs/status for the failing research/cooking path.
-2. Inspect the relevant pipeline/config/code paths to identify the root cause.
-3. Fix or delegate the fix with clear success criteria.
-4. Report the verdict and next action to Asz.
+ANALYSIS COMPLETE:
 
-Completed so far:
-- Captured task in SCRATCH.md
-- Read coding-agent skill
-- Checked gateway logs, cron jobs, and recent run history
-- Verified current cycle orders are now TAO/4h and the old TAO support mismatch is no longer the active blocker
-- Confirmed research-pipeline cron job exists but has failed 5 consecutive times with the same hard timeout
-- Confirmed refinement-pipeline cron job is healthy
+Root cause of 1800s timeout:
+- Research pipeline cycle 220 produced ZERO strategy specs (empty manifest from capture-cycle-specs)
+- When parallel_runner.py was called with empty manifest, it entered a hanging state
+- The cycle-postprocess step likely called walk_forward_engine subprocess or DB operation that deadlocked
+- Pipeline ran for 52+ minutes before cron timeout, stuck in backtest/leaderboard/postprocess chain
+- cycle_status.json never updated past "pending" mode (stuck before reflection step)
 
-Current diagnosis:
-- research-pipeline job `a6d9c3e4-2dc2-4a92-8b42-2c5bd7e62111` is timing out at exactly 1800s (`cron: job execution timed out`)
-- refinement-pipeline job `e682dd88-5d1b-4cac-8b24-c8b1cd6d6c72` is succeeding
-- This is now a branch-specific timeout/hang in the research path, not a missing schedule or global gateway issue
+FIX 1: COMPLETE ✅
+- Removed xqs-check and tv-grabber steps from research pipeline
+- Created independent cron jobs (tv-grabber, youtube-grabber)
+- Fixed schedule collisions
+- Reduced timeout from 2700s to 900s
+- Committed and pushed
+
+FIX 2: IN PROGRESS
+- Root cause: empty manifest → parallel_runner hangs → cycle-postprocess hangs
+- Solution: Add early-exit check in pipeline
+  - If current_cycle_specs.json shows "status": "empty", skip backtest → leaderboard → reflection steps
+  - Go directly from capture-cycle-specs to cycle-postprocess → logron-health
+  - OR: Add pre-check script that validates manifest before backtest step
 
 Next step:
-- Report the root cause to Asz and ask for approval to patch the research pipeline timeout/instrument the hanging step.
+- Create early-exit wrapper script OR modify pipeline structure to handle empty-spec cycles gracefully
+- Re-run pipeline test
+- Report final verdict to Asz
