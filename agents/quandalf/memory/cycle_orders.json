@@ -1,15 +1,27 @@
 {
-  "cycle_id": 149,
-  "mode": "exploit",
-  "minimum_spec_count": 2,
-  "maximum_spec_count": 3,
-  "target_asset": "ETH",
+  "cycle_id": 150,
+  "mode": "explore",
+  "minimum_spec_count": 3,
+  "maximum_spec_count": 4,
+  "target_asset": "DOGE",
   "target_timeframe": "1h",
-  "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "eth_channel_shortbias",
-  "iterate_target": "ETH/1h walk-forward pass cluster: eth_channel_shortbias_relaxed_failed_continuation_v3 family (recent OOS QScore 1.578, PF 1.818, DD 4.04, 18 trades across multiple neighbors)",
-  "exploration_targets": null,
-  "thesis_hint": "Iterate on a passing strategy this cycle. Live context still says the recent completed set is overwhelmingly non-promising, current cycle 147 is abandoned, and the recent scored results show only one real walk-forward edge cluster: ETH/1h channel-shortbias relaxed failed-continuation, with multiple neighboring variants reproducing the same 1.578 QScore pass. That is enough evidence for a compact exploit turn even under the soft 70/30 doctrine. Demand 2-3 focused variants only: one should improve trade density slightly while preserving the current PF/DD shape, one should improve context selection so the setup fires in transition/chop but avoids dead-trend anti-signals, and an optional third may tighten invalidation after failed downside follow-through if it keeps the 18-trade floor intact. Do not revert to the original anti-correlated continuation logic, do not branch into ETH KAMA-stoch or ETH 4h tail-harvester, and do not waste the batch on generic threshold spray.",
-  "stop_condition": "Stop the batch when either (A) one variant improves the current pass with walk-forward QScore >= 1.75, profit_factor >= 1.85, total_trades >= 18, and max_drawdown_pct <= 4.5, or (B) 3 focused variants are exhausted without beating the current ETH/1h channel-shortbias pass cluster. Abort any variant with total_trades < 15, profit_factor < 1.10, or max_drawdown_pct > 8.0.",
-  "rotation_reason": "Allow exploitation this cycle: recent completed work is still explore-heavy, 4h remains the most overrepresented recent failure lane, and ETH/1h channel-shortbias is still the only clearly supported walk-forward pass cluster evidenced in the live scored results."
+  "research_direction": "explore_new",
+  "specific_family_to_iterate": null,
+  "iterate_target": null,
+  "exploration_targets": {
+    "concepts": [
+      "continuous intraday value-hold continuation",
+      "failed-breakdown reclaim into momentum expansion",
+      "compression release with retained intraday structure"
+    ],
+    "assets": [
+      "DOGE"
+    ],
+    "timeframes": [
+      "1h"
+    ]
+  },
+  "thesis_hint": "Explore a new concept this cycle. Live context still says the recent scored set is broadly non-promising outside one clear pass cluster, and the most repeated completed failure lanes are ETH-family refinement plus 4h and 1d event-driven exploration that keep dying on zero trades. The latest live exploit turn already consumed ETH/1h channel-shortbias, so chaining another exploit batch would violate the intended explore-heavy balance and worsen asset/family concentration. Stay inside the supported universe and rotate to DOGE 1h with 3 materially different but density-first intraday specs: one continuous value-hold continuation branch that stays active while price accepts above a fast/medium anchor stack, one failed-breakdown reclaim branch that turns on only after downside inventory is reclaimed and expansion starts, and one compression-release branch that enters only if structure is retained after release rather than requiring ceremonial breakout stacking. Do not clone ETH channel, ETH KAMA-stoch, or ETH 4h tail-harvester logic, do not recycle the recent BTC/TAO/DOGE 4h failed-breakdown grammar, and do not write narrow event stacks that cannot plausibly clear the 15-trade floor.",
+  "stop_condition": "Stop the batch when either (A) one spec reaches walk-forward QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 15, and max_drawdown_pct <= 9.0, or (B) 4 materially different specs are exhausted without a pass. Abort any spec with total_trades < 12, profit_factor < 1.00, or max_drawdown_pct > 12.0.",
+  "rotation_reason": "Force exploration this cycle: recent completed work is still explore-heavy overall, the latest live turn already used the only clearly evidenced ETH/1h exploit cluster, and DOGE/1h is a supported rotation that changes both asset family and timeframe away from the overused ETH and 4h/1d failure lanes."
 }
