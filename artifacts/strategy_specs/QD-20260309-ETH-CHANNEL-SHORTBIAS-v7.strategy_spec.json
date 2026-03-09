@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v7",
+  "ts_iso": "2026-03-09T12:33:00Z",
+  "thesis_id": "cycle_152_eth_channel_shortbias_v7",
+  "name": "ETH EMA Channel Short-Bias Transition/Chop Context v7",
+  "version": "7.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "family_name": "eth_channel_shortbias",
+  "thesis": "Context-selection exploit variant for the ETH 1h relaxed failed-continuation pass cluster. Preserve the inverted failed-continuation core, but bias entries toward the transition/chop regime where the family already shows edge by requiring only mild channel stretch and a non-trending context check, suppressing dead-trend anti-signals without reverting to the old over-selective grammar.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "purpose": "walk_forward_full"
+    }
+  ],
+  "edge_mechanism": "failed continuation inside transitional channel mean-reversion pressure",
+  "expected_regime": "transition and chop",
+  "invalidation_condition": "If the added context still cuts trade count below 18 or fails to improve PF/DD shape, then transition/chop quality must be expressed more implicitly by the base trigger rather than through extra gating.",
+  "indicators": [
+    "EMA_20",
+    "EMA_100",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close < EMA_20 - 0.10 * ATR_14",
+      "RSI_14 crosses_above 50",
+      "ADX_14 <= 24"
+    ],
+    "short": [
+      "Close > EMA_20 + 0.10 * ATR_14",
+      "RSI_14 crosses_below 50",
+      "ADX_14 <= 24"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.08 * ATR_14 below entry",
+      "Take profit: 3.8 * ATR_14 above entry",
+      "Early exit if RSI_14 crosses_below 48",
+      "Time stop: 18 bars"
+    ],
+    "short": [
+      "Stop loss: 1.08 * ATR_14 above entry",
+      "Take profit: 3.8 * ATR_14 below entry",
+      "Early exit if RSI_14 crosses_above 52",
+      "Time stop: 18 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "chop"
+    ],
+    "detection_method": "Use the existing inverted failed-continuation structure but only allow mild channel stretch with an ADX ceiling to avoid dead-trend continuation environments."
+  },
+  "variants": [
+    {
+      "name": "eth_channel_shortbias_transition_chop_context_v7",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        {"name": "ema_fast", "value": 20},
+        {"name": "ema_slow", "value": 100},
+        {"name": "rsi_long_trigger", "value": 50},
+        {"name": "rsi_short_trigger", "value": 50},
+        {"name": "trigger_mode", "value": "inverted_failed_continuation"},
+        {"name": "adx_ceiling", "value": 24}
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.08,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.8,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 18
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_98"
+      ]
+    }
+  ],
+  "complexity_score": 2.2,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

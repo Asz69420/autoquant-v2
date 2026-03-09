@@ -1,15 +1,27 @@
 {
-  "cycle_id": 150,
-  "mode": "exploit",
-  "minimum_spec_count": 2,
-  "maximum_spec_count": 3,
-  "target_asset": "ETH",
-  "target_timeframe": "4h",
-  "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "eth_supertrend_tail_harvester",
-  "iterate_target": "Leaderboard walk-forward champion on ETH/4h: supertrend_tail_harvester_8to1 (QScore 4.47, PF 1.921, DD 10.9, 85 trades)",
-  "exploration_targets": null,
-  "thesis_hint": "Iterate on a passing strategy this cycle. Live context shows recent completed work is still explore-heavy overall, but the recent scored results also show a strong concentration in failing 1h batches and repeated ETH/1h channel-shortbias pass-neighbors. To preserve the soft 70/30 doctrine without over-farming the same 1h family, rotate the exploit turn into the supported ETH/4h walk-forward champion from the leaderboard. Demand 2-3 focused variants only: one should reduce drawdown from the 10.9% baseline without materially collapsing the 85-trade density, one should improve continuation quality by requiring slightly cleaner trend-state context before entry, and an optional third may tighten post-entry invalidation only if PF stays near the champion profile. Do not convert this into ETH/1h channel or KAMA-stoch logic, do not broaden to unsupported transfers, and do not waste the batch on generic threshold spray.",
-  "stop_condition": "Stop the batch when either (A) one variant improves the current pass with walk-forward QScore >= 4.60, profit_factor >= 1.95, total_trades >= 75, and max_drawdown_pct <= 10.0, or (B) 3 focused variants are exhausted without beating the current ETH/4h champion baseline. Abort any variant with total_trades < 60, profit_factor < 1.40, or max_drawdown_pct > 13.0.",
-  "rotation_reason": "Allow exploitation this cycle: recent completed work is still explore-heavy, 1h is the more concentrated recent completed lane, and ETH/4h tail harvester is a supported walk-forward champion that rotates away from the repeated ETH/1h pass cluster while staying inside the proven passing set."
+  "cycle_id": 154,
+  "mode": "explore",
+  "minimum_spec_count": 3,
+  "maximum_spec_count": 4,
+  "target_asset": "TAO",
+  "target_timeframe": "1h",
+  "research_direction": "explore_new",
+  "specific_family_to_iterate": null,
+  "iterate_target": null,
+  "exploration_targets": {
+    "concepts": [
+      "continuous intraday trend-state pullback continuation",
+      "failed-breakdown reclaim into momentum expansion",
+      "compression release with retained intraday value"
+    ],
+    "assets": [
+      "TAO"
+    ],
+    "timeframes": [
+      "1h"
+    ]
+  },
+  "thesis_hint": "Explore a new concept this cycle. Live context says the only positive walk-forward cluster is still ETH/1h channel-shortbias, but that lane is now over-concentrated across family, asset, timeframe, and concept, and the latest same-family exploit refinements already degraded badly (one zero-trade screen fail and one six-trade collapse). Current completed failures also cluster in SOL/4h and BTC/1h event-driven structures. Rotate away from all of that while staying inside the supported universe. Target TAO 1h and demand 3 materially different but density-first intraday specs: one broad trend-state pullback continuation branch that stays active while price accepts above a fast/medium anchor stack, one failed-breakdown reclaim branch that turns on only after downside inventory is reclaimed and expansion starts, and one compression-release branch that enters only if intraday value is retained after expansion rather than requiring ceremonial breakout stacking. Do not clone ETH channel, ETH KAMA-stoch, ETH tail-harvester, or the recent BTC/SOL failed-breakdown grammar, and do not write narrow event stacks that cannot plausibly clear the 15-trade floor.",
+  "stop_condition": "Stop the batch when either (A) one spec reaches walk-forward QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 15, and max_drawdown_pct <= 9.0, or (B) 4 materially different specs are exhausted without a pass. Abort any spec with total_trades < 12, profit_factor < 1.00, or max_drawdown_pct > 12.0.",
+  "rotation_reason": "Force exploration this cycle: ETH/1h channel-shortbias now dominates the live scored evidence and recent same-family exploit refinements degraded, so TAO/1h is the clean supported rotation away from the over-concentrated ETH lane and the recent SOL/BTC failure cluster."
 }

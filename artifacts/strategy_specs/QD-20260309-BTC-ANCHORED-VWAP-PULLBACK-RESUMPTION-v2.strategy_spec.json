@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-ANCHORED-VWAP-PULLBACK-RESUMPTION-v2",
+  "ts_iso": "2026-03-09T12:28:00Z",
+  "thesis_id": "cycle_151_btc_anchored_vwap_pullback_resumption_v2",
+  "name": "BTC Anchored VWAP Pullback Resumption v2",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "family_name": "btc_anchored_vwap_pullback_resumption",
+  "thesis": "Broader anchored-VWAP resumption for BTC on 1h. The trade should live whenever value is held on the correct side of VWAP and the fast anchor, and shallow resets toward that value should be enough to trigger continuation without requiring both money-flow and momentum stacks to line up perfectly.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "retained VWAP value with shallow pullback resumption",
+  "expected_regime": "trending and transitional retained-value continuation",
+  "invalidation_condition": "If this broader retained-value setup still cannot clear the trade floor, then anchored-VWAP continuation is not active enough on BTC 1h under current formulation.",
+  "indicators": [
+    "VWAP",
+    "EMA_21",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > VWAP",
+      "Close > EMA_21",
+      "low >= VWAP - 0.45 * ATR_14",
+      "RSI_14 >= 50",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "Close < VWAP",
+      "Close < EMA_21",
+      "high <= VWAP + 0.45 * ATR_14",
+      "RSI_14 <= 50",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 2.5 * ATR_14 above entry",
+      "Early exit if Close crosses_below VWAP",
+      "Time stop: 9 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 2.5 * ATR_14 below entry",
+      "Early exit if Close crosses_above VWAP",
+      "Time stop: 9 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Retained-value state built from VWAP and EMA_21 only, with a wider ATR pullback allowance and minimal momentum confirmation."
+  },
+  "variants": [
+    {
+      "name": "btc_anchored_vwap_pullback_resumption_v2",
+      "template_name": "anchored_vwap_pullback_resumption",
+      "parameters": [
+        {
+          "name": "ema_anchor",
+          "value": 21
+        },
+        {
+          "name": "value_buffer_atr",
+          "value": 0.45
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.5,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 9
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-VALUE-REACCEPTANCE-AFTER-FAILED-BREAKDOWN-v1",
+  "ts_iso": "2026-03-09T12:38:00Z",
+  "thesis_id": "cycle_153_sol_value_reacceptance_after_failed_breakdown_v1",
+  "name": "SOL Value Reacceptance After Failed Breakdown v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "family_name": "sol_value_reacceptance_after_failed_breakdown",
+  "thesis": "SOL 4h reclaim branch for failed breakdowns that should activate once downside excess is reclaimed through the medium anchor and value is reaccepted, without needing a fresh volatility squeeze or state-flip event. The point is to capture reclaim continuation, not to wait for a dramatic narrative candle.",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "SOL", "timeframe": "4h", "purpose": "walk_forward_screen"}
+  ],
+  "edge_mechanism": "downside excess reclaim into retained value continuation",
+  "expected_regime": "transitional reversal into trend continuation",
+  "invalidation_condition": "If reclaim-based acceptance still produces no trade flow, then failed-breakdown continuation is still being defined too narrowly for SOL 4h.",
+  "indicators": ["EMA_55","VWAP","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "low <= EMA_55 - 0.35 * ATR_14",
+      "Close > EMA_55",
+      "Close > VWAP",
+      "RSI_14 >= 50",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "high >= EMA_55 + 0.35 * ATR_14",
+      "Close < EMA_55",
+      "Close < VWAP",
+      "RSI_14 <= 50",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Early exit if Close crosses_below VWAP",
+      "Time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Early exit if Close crosses_above VWAP",
+      "Time stop: 8 bars"
+    ]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {
+    "allowed_regimes": ["transitional","trending"],
+    "detection_method": "Modest failed-breakdown reclaim using only a shallow flush through EMA_55, immediate value reacceptance through VWAP, and minimal directional confirmation."
+  },
+  "variants": [{
+    "name": "sol_value_reacceptance_after_failed_breakdown_v1",
+    "template_name": "value_reacceptance_failed_breakdown",
+    "parameters": [
+      {"name": "ema_anchor", "value": 55},
+      {"name": "flush_atr_mult", "value": 0.35},
+      {"name": "rsi_mid", "value": 50}
+    ],
+    "risk_policy": {
+      "stop_type": "atr",
+      "stop_atr_mult": 1.1,
+      "tp_type": "atr",
+      "tp_atr_mult": 2.8,
+      "risk_per_trade_pct": 0.004,
+      "max_concurrent_positions": 1,
+      "max_holding_bars": 8
+    },
+    "execution_policy": {
+      "entry_fill": "bar_close",
+      "tie_break": "worst_case",
+      "allow_reverse": true,
+      "slippage_bps": 8,
+      "fee_bps": 6
+    },
+    "risk_rules": ["cooldown_bars=0"]
+  }],
+  "complexity_score": 1.7,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

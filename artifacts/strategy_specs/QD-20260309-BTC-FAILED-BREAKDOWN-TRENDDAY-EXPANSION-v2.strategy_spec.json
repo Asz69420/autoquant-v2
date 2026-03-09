@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-BTC-FAILED-BREAKDOWN-TRENDDAY-EXPANSION-v2",
+  "ts_iso": "2026-03-09T12:28:00Z",
+  "thesis_id": "cycle_151_btc_failed_breakdown_trendday_expansion_v2",
+  "name": "BTC Failed Breakdown Trend-Day Expansion v2",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "family_name": "btc_failed_breakdown_trendday_expansion",
+  "thesis": "Broader failed-breakdown reclaim for BTC on 1h. Instead of waiting for a dramatic state flip plus full trend confirmation, the setup should activate once downside inventory is reclaimed through the medium anchor and value is reaccepted, allowing expansion follow-through to express without requiring a theatrical liquidation signature.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "inventory reclaim through value into momentum expansion",
+  "expected_regime": "transitional intraday reversal into continuation",
+  "invalidation_condition": "If reclaim-based entries still produce too few trades or fail to reach positive EV after costs, then the failed-breakdown thesis is still too selective or not structurally present on BTC 1h.",
+  "indicators": [
+    "EMA_50",
+    "VWAP",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "low <= EMA_50 - 0.35 * ATR_14",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "RSI_14 >= 50",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "high >= EMA_50 + 0.35 * ATR_14",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "RSI_14 <= 50",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.05 * ATR_14 below entry",
+      "Take profit: 2.5 * ATR_14 above entry",
+      "Early exit if Close crosses_below VWAP",
+      "Time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.05 * ATR_14 above entry",
+      "Take profit: 2.5 * ATR_14 below entry",
+      "Early exit if Close crosses_above VWAP",
+      "Time stop: 8 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Reclaim state using a modest flush through EMA_50, immediate close-back-through value, and only minimal direction confirmation."
+  },
+  "variants": [
+    {
+      "name": "btc_failed_breakdown_trendday_expansion_v2",
+      "template_name": "failed_breakdown_trendday_expansion",
+      "parameters": [
+        {
+          "name": "ema_anchor",
+          "value": 50
+        },
+        {
+          "name": "flush_atr_mult",
+          "value": 0.35
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.05,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.5,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 8
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v8",
+  "ts_iso": "2026-03-09T12:33:00Z",
+  "thesis_id": "cycle_152_eth_channel_shortbias_v8",
+  "name": "ETH EMA Channel Short-Bias Density Lift v8",
+  "version": "8.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "family_name": "eth_channel_shortbias",
+  "thesis": "Density-lift exploit variant for the ETH 1h relaxed failed-continuation family. Keep the inverted channel-failure structure intact, but reduce friction around trigger activation and holding period so the setup can arm slightly more often without breaking the PF/DD shape already proven by the pass cluster.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "purpose": "walk_forward_full"
+    }
+  ],
+  "edge_mechanism": "slightly denser failed continuation participation inside the same ETH channel rejection thesis",
+  "expected_regime": "transition and light trend exhaustion",
+  "invalidation_condition": "If the lighter trigger pressure increases trade count but PF degrades below the pass cluster or drawdown expands materially, then the current family is already at its density frontier.",
+  "indicators": [
+    "EMA_20",
+    "EMA_100",
+    "RSI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close < EMA_20",
+      "RSI_14 crosses_above 49"
+    ],
+    "short": [
+      "Close > EMA_20",
+      "RSI_14 crosses_below 51"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.12 * ATR_14 below entry",
+      "Take profit: 3.7 * ATR_14 above entry",
+      "Early exit if RSI_14 crosses_below 48",
+      "Time stop: 18 bars"
+    ],
+    "short": [
+      "Stop loss: 1.12 * ATR_14 above entry",
+      "Take profit: 3.7 * ATR_14 below entry",
+      "Early exit if RSI_14 crosses_above 52",
+      "Time stop: 18 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Preserve the original relaxed failed-continuation structure while easing RSI trigger pressure by one point and shortening the holding window slightly to preserve shape."
+  },
+  "variants": [
+    {
+      "name": "eth_channel_shortbias_density_lift_v8",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        {"name": "ema_fast", "value": 20},
+        {"name": "ema_slow", "value": 100},
+        {"name": "rsi_long_trigger", "value": 49},
+        {"name": "rsi_short_trigger", "value": 51},
+        {"name": "trigger_mode", "value": "inverted_failed_continuation"}
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.12,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.7,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 18
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

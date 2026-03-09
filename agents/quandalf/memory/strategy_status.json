@@ -2257,6 +2257,1258 @@
         ]
       },
       "had_error": false
+    },
+    {
+      "cycle_id": 7,
+      "started_at": "2026-03-09T12:22:41.024691+00:00",
+      "finished_at": "2026-03-09T12:22:42.988391+00:00",
+      "run_elapsed_seconds": 2.0,
+      "jobs_requested": 5,
+      "runner": {
+        "pipeline_id": "pr_dba67fc1362b",
+        "total_jobs": 5,
+        "ok": 5,
+        "fail": 0,
+        "results": [
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_347d92bf41cb",
+              "cycle_id": 7,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor2",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:22:41.227279+00:00",
+              "parent_result_id": "wf_d79e9e183168",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor2]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor2",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_a66510142c18",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor2]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor2\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_a66510142c18"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_ba1d764889fe",
+              "cycle_id": 7,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor1-f5a146.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor1-f5a146",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor1",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:22:41.225418+00:00",
+              "parent_result_id": "wf_d79e9e183168",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor1]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor1",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_23ec2a586729",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor1]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor1\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_23ec2a586729"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_29ab4de85192",
+              "cycle_id": 7,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor3-3bbb6e.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor3-3bbb6e",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor3",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:22:41.228687+00:00",
+              "parent_result_id": "wf_d79e9e183168",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor3]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor3",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_eed02aa0fe93",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor3]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor3\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_eed02aa0fe93"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_a112876d5eb5",
+              "cycle_id": 7,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor4-6421dd.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor4-6421dd",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor4",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:22:41.230127+00:00",
+              "parent_result_id": "wf_d79e9e183168",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor4]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor4",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_8df2c801f29f",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor4]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor4\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_8df2c801f29f"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_65a1d9e2b435",
+              "cycle_id": 7,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor5-a3bff3.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor5-a3bff3",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor5",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:22:41.231427+00:00",
+              "parent_result_id": "wf_d79e9e183168",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor5]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor5",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_8d8b953c4a6e",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor2] [neighbor5]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor2_neighbor5\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_8d8b953c4a6e"
+          }
+        ],
+        "bucket_quota": {
+          "explore": 7,
+          "refine": 7,
+          "validate": 4
+        },
+        "bucket_used": {
+          "explore": 0,
+          "refine": 0,
+          "validate": 0
+        },
+        "stage_used": {
+          "screen": 0,
+          "full": 5,
+          "validation": 0
+        },
+        "effects": {
+          "screen_to_full": 0,
+          "full_pass": 0,
+          "promote": 0,
+          "branch_specs": 0,
+          "validation_queued": 0,
+          "reduced_queued": 0
+        },
+        "mode": "normal",
+        "max_parallel": 5,
+        "seeded": 5,
+        "queue_after": [
+          {
+            "stage": "full",
+            "bucket": "refine",
+            "priority": 1,
+            "status": "done",
+            "count": 5
+          }
+        ]
+      },
+      "had_error": false
+    },
+    {
+      "cycle_id": 9,
+      "started_at": "2026-03-09T12:45:11.279491+00:00",
+      "finished_at": "2026-03-09T12:45:13.174556+00:00",
+      "run_elapsed_seconds": 1.9,
+      "jobs_requested": 5,
+      "runner": {
+        "pipeline_id": "pr_29c5b5f57668",
+        "total_jobs": 5,
+        "ok": 5,
+        "fail": 0,
+        "results": [
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_0a91de445e57",
+              "cycle_id": 9,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor2-153cbf.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor2-153cbf",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor2",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:45:11.475643+00:00",
+              "parent_result_id": "wf_a450912ffd4e",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor2]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor2",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_21a2fe31ef1a",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor2]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor2\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_21a2fe31ef1a"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_0ab92d5c236a",
+              "cycle_id": 9,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor1-05670a.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor1-05670a",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor1",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:45:11.470772+00:00",
+              "parent_result_id": "wf_a450912ffd4e",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor1]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor1",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_2750755c0520",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor1]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor1\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_2750755c0520"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_2995d996ab79",
+              "cycle_id": 9,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor3-8d5e69.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor3-8d5e69",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor3",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:45:11.477221+00:00",
+              "parent_result_id": "wf_a450912ffd4e",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor3]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor3",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_9b0d97dda91d",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor3]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor3\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_9b0d97dda91d"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_017da0334ce5",
+              "cycle_id": 9,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor4-1693eb.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor4-1693eb",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor4",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:45:11.478785+00:00",
+              "parent_result_id": "wf_a450912ffd4e",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor4]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor4",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_1dd56276bd89",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor4]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor4\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_1dd56276bd89"
+          },
+          {
+            "ok": true,
+            "job": {
+              "id": "rq_f87f8c4c74fb",
+              "cycle_id": 9,
+              "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\refinement\\QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor5-cb1063.strategy_spec.json",
+              "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor4-3124f9-neighbor5-cb1063",
+              "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor5",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "stage": "full",
+              "bucket": "refine",
+              "priority": 1,
+              "status": "queued",
+              "queued_at": "2026-03-09T12:45:11.480222+00:00",
+              "parent_result_id": "wf_a450912ffd4e",
+              "mutation_type": "param_neighbor",
+              "family_generation": 3,
+              "strategy_family": null,
+              "validation_target": "{\"asset\": \"ETH\", \"timeframe\": \"1h\", \"kind\": \"param_neighbor\"}",
+              "source_queue_id": null,
+              "notes": "{\"source\": \"refinement_cycle\", \"refinement_round\": 1, \"weakness_profile\": [\"LOW_TRADES\", \"FRAGILE_PARAMS\", \"SINGLE_ASSET\", \"NEAR_PROMOTE\"]}",
+              "novelty_score": 0.0
+            },
+            "payload": {
+              "status": "ok",
+              "asset": "ETH",
+              "timeframe": "1h",
+              "strategy": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor5]",
+              "variant": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor5",
+              "stage": "full",
+              "screen_passed": null,
+              "folds": 1,
+              "insample": {
+                "total_trades": 23,
+                "profit_factor": 0.752,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 30.434782608695656,
+                "sharpe_ratio": -1.921,
+                "qscore": 0.552,
+                "decision": "fail"
+              },
+              "outofsample": {
+                "total_trades": 18,
+                "profit_factor": 1.818,
+                "max_drawdown_pct": 4.04,
+                "total_return_pct": 7.98,
+                "win_rate_pct": 44.44444444444444,
+                "sharpe_ratio": 3.222,
+                "qscore": 1.578,
+                "decision": "pass",
+                "grade": "B",
+                "flags": "[]",
+                "regime_scores": {
+                  "TRANSITION": {
+                    "trade_count": 10,
+                    "profit_factor": 2.003,
+                    "win_rate": 40.0,
+                    "avg_return": 0.636,
+                    "qscore": null
+                  },
+                  "CHOP": {
+                    "trade_count": 8,
+                    "profit_factor": 1.489,
+                    "win_rate": 50.0,
+                    "avg_return": 0.217,
+                    "qscore": null
+                  }
+                },
+                "regime_concentration": 55.56,
+                "primary_regime": "TRANSITION"
+              },
+              "degradation_pct": -185.9,
+              "walk_forward_config": {
+                "train_days": 90,
+                "blind_days": 21,
+                "timeframe": "1h",
+                "min_blind_trades": 15
+              },
+              "regime_scores": {
+                "TRANSITION": {
+                  "trade_count": 10,
+                  "profit_factor": 2.003,
+                  "win_rate": 40.0,
+                  "avg_return": 0.636,
+                  "qscore": null
+                },
+                "CHOP": {
+                  "trade_count": 8,
+                  "profit_factor": 1.489,
+                  "win_rate": 50.0,
+                  "avg_return": 0.217,
+                  "qscore": null
+                }
+              },
+              "regime_concentration": 55.56,
+              "primary_regime": "TRANSITION",
+              "result_id": "wf_8b017afaadb6",
+              "db_saved": true,
+              "fold_summary": [
+                {
+                  "fold": 1,
+                  "is_pf": 0.752,
+                  "is_qs": 0.492,
+                  "oos_pf": 1.818,
+                  "oos_qs": 1.578,
+                  "oos_trades": 18
+                }
+              ]
+            },
+            "stdout": "{\n  \"status\": \"ok\",\n  \"asset\": \"ETH\",\n  \"timeframe\": \"1h\",\n  \"strategy\": \"ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor4] [neighbor5]\",\n  \"variant\": \"eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor4_neighbor5\",\n  \"stage\": \"full\",\n  \"screen_passed\": null,\n  \"folds\": 1,\n  \"insample\": {\n    \"total_trades\": 23,\n    \"profit_factor\": 0.752,\n    \"max_drawdown_pct\": 0.0,\n    \"total_return_pct\": 0.0,\n    \"win_rate_pct\": 30.434782608695656,\n    \"sharpe_ratio\": -1.921,\n    \"qscore\": 0.552,\n    \"decision\": \"fail\"\n  },\n  \"outofsample\": {\n    \"total_trades\": 18,\n    \"profit_factor\": 1.818,\n    \"max_drawdown_pct\": 4.04,\n    \"total_return_pct\": 7.98,\n    \"win_rate_pct\": 44.44444444444444,\n    \"sharpe_ratio\": 3.222,\n    \"qscore\": 1.578,\n    \"decision\": \"pass\",\n    \"grade\": \"B\",\n    \"flags\": \"[]\",\n    \"regime_scores\": {\n      \"TRANSITION\": {\n        \"trade_count\": 10,\n        \"profit_factor\": 2.003,\n        \"win_rate\": 40.0,\n        \"avg_return\": 0.636,\n        \"qscore\": null\n      },\n      \"CHOP\": {\n        \"trade_count\": 8,\n        \"profit_factor\": 1.489,\n        \"win_rate\": 50.0,\n        \"avg_return\": 0.217,\n        \"qscore\": null\n      }\n    },\n    \"regime_con",
+            "stderr": "",
+            "result_id": "wf_8b017afaadb6"
+          }
+        ],
+        "bucket_quota": {
+          "explore": 7,
+          "refine": 7,
+          "validate": 4
+        },
+        "bucket_used": {
+          "explore": 0,
+          "refine": 0,
+          "validate": 0
+        },
+        "stage_used": {
+          "screen": 0,
+          "full": 5,
+          "validation": 0
+        },
+        "effects": {
+          "screen_to_full": 0,
+          "full_pass": 0,
+          "promote": 0,
+          "branch_specs": 0,
+          "validation_queued": 0,
+          "reduced_queued": 0
+        },
+        "mode": "normal",
+        "max_parallel": 5,
+        "seeded": 5,
+        "queue_after": [
+          {
+            "stage": "full",
+            "bucket": "refine",
+            "priority": 1,
+            "status": "done",
+            "count": 5
+          }
+        ]
+      },
+      "had_error": false
     }
   ]
 }
