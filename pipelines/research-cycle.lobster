@@ -48,15 +48,8 @@ steps:
     # cycle-postprocess reads current_cycle_status.json, manifest, run-state, DB rows, and journals.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-postprocess.py'
 
-  - id: logron-health
-    # Health card delivery is owned exclusively by logron-monitor.py, which
-    # deduplicates via health_send_state.json (4h cooldown + status/issue
-    # change detection).  Running it here after each cycle lets it fire
-    # immediately on a genuine status change while suppressing duplicates.
-    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\logron-monitor.py'
-
   - id: xqs-check
-    # DB/state handoff from logron-health -> xqs-check:
+    # DB/state handoff from refine-postprocess -> xqs-check:
     # xQS promotion checks read/write backtest_results state; no stdin contract.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\xqs_runner.py --run'
 

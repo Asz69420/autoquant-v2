@@ -97,6 +97,27 @@ def load_cycle_run_state() -> dict:
         return {}
 
 
+def sync_current_cycle_status(cycle_id: int) -> None:
+    status_path = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
+    status = {}
+    try:
+        if status_path.exists():
+            status = json.loads(status_path.read_text(encoding="utf-8"))
+            if not isinstance(status, dict):
+                status = {}
+    except Exception:
+        status = {}
+    if int(status.get("cycle_id", 0) or 0) != int(cycle_id):
+        status["cycle_id"] = int(cycle_id)
+        status.setdefault("mode", "pending")
+        status.setdefault("research_direction", "pending")
+        status.setdefault("spec_paths", [])
+        status.setdefault("specs_produced", 0)
+        status.setdefault("next_cycle_focus", "pending")
+        status_path.parent.mkdir(parents=True, exist_ok=True)
+        status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+
+
 def discover_backtest_universe() -> dict:
     assets_by_timeframe: dict[str, list[str]] = defaultdict(list)
     timeframes_by_asset: dict[str, list[str]] = defaultdict(list)
@@ -186,6 +207,8 @@ def main() -> int:
         cycle_id = read_cycle_counter()
 
     backtest_universe = discover_backtest_universe()
+
+    sync_current_cycle_status(cycle_id)
 
     packet = {
         "ts_iso": now.isoformat(),
