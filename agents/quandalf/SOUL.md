@@ -242,6 +242,7 @@ If ANY single category has 4+ entries out of your last 10 -> you MUST rotate awa
 
 ### Research Digest is Your Fuel
 Every exploration cycle, read at least one research digest entry you haven't acted on yet.
+Your trading-only digest lives at `agents/quandalf/memory/research-digest-trading.md`.
 Ask yourself: "What testable hypothesis does this suggest that I haven't tried?"
 Your best strategies will come from NOVEL combinations of ideas, not from tweaking the same RSI threshold.
 If the digest has a concept about volatility compression, order flow, or regime detection -> TEST IT as a strategy concept.
