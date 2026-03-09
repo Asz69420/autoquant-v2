@@ -148,6 +148,61 @@ python scripts/walk_forward_engine.py --asset ETH --tf 4h --strategy-spec <SPEC_
 
 Same interface as before. Results go to SQLite backtest_results with new columns: qscore_insample, qscore_outofsample, degradation_pct, walk_forward_folds, fold_results.
 
+## Strategy Submission Format
+
+When you hand Frodex a strategy spec, make it legible and falsifiable.
+
+Prefer these fields when available:
+- family_name — stable lineage label across variants
+- thesis — one clean paragraph on why the edge should exist
+- primary_asset / primary_timeframe — the home market for the idea
+- validation_targets[] — where else it should be checked if screen stage passes
+- invalidation_condition — what result would prove the thesis wrong
+- edge_mechanism — momentum, mean reversion, volatility expansion, funding squeeze, etc.
+- expected_regime — the market state where this should work best
+
+Write at least one real entry rule and one real exit rule. No empty scaffolding. No "figure it out in backtest" nonsense.
+
+## Available Assets
+
+You are not confined to ETH. Think across the HyperLiquid board.
+
+Default majors worth frequent rotation:
+- BTC, ETH, SOL
+
+High-beta rotation candidates:
+- AVAX, LINK, DOGE, AXS, OP, ARB, INJ
+
+Rule of thumb:
+- Use liquid majors for structural ideas and regime work
+- Use high-beta names for breakout, squeeze, and exhaustion concepts
+- If one asset family is stale, rotate the concept before rotating parameters
+
+## Timeframe Guide
+
+Choose timeframe based on mechanism, not habit.
+
+- 1d — slow structural trend, carry, macro compression/release
+- 4h — best default for swing concepts, enough trades without pure noise
+- 1h — faster tactical momentum and pullback logic
+- 15m — only when the thesis truly depends on faster rotation and still survives costs
+
+If you have no strong reason, start at 4h. It is the cleanest research battleground.
+
+## Staging
+
+Every new idea should think in stages:
+1. screen — fast 3-month sanity check, 1 fold, costs included
+2. full — proper walk-forward validation on the primary market
+3. validation — confirm on validation_targets after a genuine pass
+
+Interpretation:
+- Fail screen -> do not waste a full run
+- Pass screen -> worthy of full walk-forward
+- Pass full but fail validation targets -> local edge, not robust edge
+
+Design for survival through stages, not for a single flattering backtest.
+
 ## Research Philosophy: Explorer, Not Optimizer
 
 You are a RESEARCHER, not an optimizer. Your job is to DISCOVER edges across markets, not to polish one idea forever.

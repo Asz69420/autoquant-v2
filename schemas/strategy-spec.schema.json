@@ -1,1 +1,167 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","$id":"autoquant://schemas/strategy-spec","title":"StrategySpec","description":"A concrete backtestable strategy specification with exact parameters.","type":"object","required":["id","ts_iso","thesis_id","name","version","asset","timeframe","indicators","entry_rules","exit_rules","variants","status"],"properties":{"id":{"type":"string","pattern":"^SS-[0-9]{8}-[A-Z0-9]{4}$"},"ts_iso":{"type":"string","format":"date-time"},"thesis_id":{"type":"string"},"name":{"type":"string"},"version":{"type":"string"},"asset":{"type":"string"},"timeframe":{"type":"string","enum":["1m","5m","15m","1h","4h","1d","1w"]},"indicators":{"type":"array","items":{"type":"object","required":["name","parameters"],"properties":{"name":{"type":"string"},"parameters":{"type":"object","additionalProperties":true}}}},"entry_rules":{"type":"array","items":{"type":"object","required":["condition","direction"],"properties":{"condition":{"type":"string"},"direction":{"type":"string","enum":["long","short","both"]},"description":{"type":"string"}}}},"exit_rules":{"type":"object","required":["stop_loss","take_profit"],"properties":{"stop_loss":{"type":"object","required":["type","value"],"properties":{"type":{"type":"string","enum":["fixed_pct","atr_multiple","indicator","custom"]},"value":{"type":"number"},"description":{"type":"string"}}},"take_profit":{"type":"object","required":["type","value"],"properties":{"type":{"type":"string","enum":["fixed_pct","atr_multiple","rr_ratio","indicator","custom"]},"value":{"type":"number"},"description":{"type":"string"}}},"trailing_stop":{"type":["object","null"],"properties":{"type":{"type":"string"},"value":{"type":"number"},"activation_pct":{"type":"number"}}}}},"position_sizing":{"type":"object","properties":{"method":{"type":"string","enum":["fixed","percent_equity","kelly","volatility_scaled"]},"value":{"type":"number"}}},"regime_filter":{"type":["object","null"],"properties":{"allowed_regimes":{"type":"array","items":{"type":"string","enum":["trending","ranging","transitional","volatile"]}},"detection_method":{"type":"string"}}},"variants":{"type":"array","items":{"type":"object","required":["variant_id","parameter_overrides"],"properties":{"variant_id":{"type":"string"},"parameter_overrides":{"type":"object","additionalProperties":true},"description":{"type":"string"}}}},"complexity_score":{"type":"number","minimum":0,"maximum":10},"status":{"type":"string","enum":["draft","ready_to_test","testing","tested","promoted","retired"]}},"additionalProperties":false}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "autoquant://schemas/strategy-spec",
+  "title": "StrategySpec",
+  "description": "A concrete backtestable strategy specification with exact parameters.",
+  "type": "object",
+  "required": ["id", "ts_iso", "thesis_id", "name", "version", "asset", "timeframe", "indicators", "entry_rules", "exit_rules", "variants", "status"],
+  "properties": {
+    "id": { "type": "string" },
+    "schema_version": { "type": ["string", "number"] },
+    "ts_iso": { "type": "string", "format": "date-time" },
+    "thesis_id": { "type": "string" },
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "asset": { "type": "string" },
+    "timeframe": { "type": "string", "enum": ["1m", "5m", "15m", "1h", "4h", "1d", "1w"] },
+    "family_name": { "type": "string" },
+    "thesis": { "type": "string" },
+    "primary_asset": { "type": "string" },
+    "primary_timeframe": { "type": "string" },
+    "validation_targets": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "properties": {
+              "asset": { "type": "string" },
+              "timeframe": { "type": "string" },
+              "label": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    },
+    "invalidation_condition": { "type": "string" },
+    "edge_mechanism": { "type": "string" },
+    "expected_regime": { "type": "string" },
+    "indicators": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "parameters": { "type": ["object", "array", "null"], "additionalProperties": true }
+            },
+            "additionalProperties": true
+          }
+        ]
+      }
+    },
+    "entry_rules": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["condition", "direction"],
+            "properties": {
+              "condition": { "type": "string" },
+              "direction": { "type": "string", "enum": ["long", "short", "both"] },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "long": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] } },
+            "short": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] } }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "exit_rules": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["stop_loss", "take_profit"],
+          "properties": {
+            "stop_loss": {
+              "type": "object",
+              "required": ["type", "value"],
+              "properties": {
+                "type": { "type": "string", "enum": ["fixed_pct", "atr_multiple", "indicator", "custom"] },
+                "value": { "type": "number" },
+                "description": { "type": "string" }
+              },
+              "additionalProperties": true
+            },
+            "take_profit": {
+              "type": "object",
+              "required": ["type", "value"],
+              "properties": {
+                "type": { "type": "string", "enum": ["fixed_pct", "atr_multiple", "rr_ratio", "indicator", "custom"] },
+                "value": { "type": "number" },
+                "description": { "type": "string" }
+              },
+              "additionalProperties": true
+            },
+            "trailing_stop": {
+              "type": ["object", "null"],
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "number" },
+                "activation_pct": { "type": "number" }
+              },
+              "additionalProperties": true
+            },
+            "long": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] } },
+            "short": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] } }
+          },
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "long": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] } },
+            "short": { "type": "array", "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] } }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "position_sizing": { "type": "object", "additionalProperties": true },
+    "regime_filter": { "type": ["object", "null"], "additionalProperties": true },
+    "variants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "variant_id": { "type": "string" },
+          "name": { "type": "string" },
+          "parameter_overrides": { "type": "object", "additionalProperties": true },
+          "parameters": {
+            "oneOf": [
+              { "type": "object", "additionalProperties": true },
+              { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+            ]
+          },
+          "description": { "type": "string" },
+          "risk_policy": { "type": "object", "additionalProperties": true },
+          "execution_policy": { "type": "object", "additionalProperties": true },
+          "risk_rules": { "type": "array", "items": { "type": ["string", "object"] } },
+          "template_name": { "type": "string" }
+        },
+        "additionalProperties": true,
+        "anyOf": [
+          { "required": ["variant_id"] },
+          { "required": ["name"] }
+        ]
+      }
+    },
+    "complexity_score": { "type": "number", "minimum": 0, "maximum": 10 },
+    "status": { "type": "string", "enum": ["draft", "ready_to_test", "testing", "tested", "promoted", "retired"] },
+    "source": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -642,6 +642,158 @@ def split_message(text, max_len=4000):
     return parts
 
 
+def normalize_rule_block(block):
+    if isinstance(block, dict):
+        long_rules = block.get("long") or []
+        short_rules = block.get("short") or []
+        return {"long": list(long_rules), "short": list(short_rules)}
+    if isinstance(block, list):
+        return {"long": list(block), "short": list(block)}
+    return {"long": [], "short": []}
+
+
+def has_minimum_rules(spec):
+    entries = normalize_rule_block(spec.get("entry_rules"))
+    exits = normalize_rule_block(spec.get("exit_rules"))
+    return any(entries.values()) and any(exits.values())
+
+
+def indicator_signature(spec):
+    indicators = spec.get("indicators") or []
+    names = []
+    for item in indicators:
+        if isinstance(item, str):
+            names.append(item.lower())
+        elif isinstance(item, dict):
+            names.append(str(item.get("name") or "").lower())
+    return "|".join(sorted(x for x in names if x))
+
+
+def derive_family_name(spec):
+    explicit = str(spec.get("family_name") or "").strip()
+    if explicit:
+        return explicit
+    signature = indicator_signature(spec)
+    if signature:
+        return signature.replace("|", "-")[:120]
+    return str(spec.get("name") or spec.get("id") or "unknown-family").strip().lower().replace(" ", "-")
+
+
+def conceptual_duplicate_warning(conn, signature):
+    if not signature:
+        return None
+    rows = conn.execute(
+        """
+        SELECT strategy_spec_id, strategy_family
+        FROM backtest_results
+        WHERE COALESCE(strategy_family, '') <> ''
+        ORDER BY ts_iso DESC
+        LIMIT 10
+        """
+    ).fetchall()
+    for row in rows:
+        family = str(row[1] or "").strip().lower().replace("-", "|")
+        if family == signature:
+            return row[0]
+    return None
+
+
+def family_is_killed(conn, family_name):
+    row = conn.execute(
+        "SELECT COUNT(*) FROM backtest_results WHERE lower(COALESCE(strategy_family, '')) = lower(?) AND COALESCE(killed, 0) = 1",
+        (family_name,),
+    ).fetchone()
+    return bool(row and row[0])
+
+
+def get_family_context(conn, family_name):
+    rows = conn.execute(
+        """
+        SELECT id, ts_iso, score_decision, score_total, family_generation
+        FROM backtest_results
+        WHERE lower(COALESCE(strategy_family, '')) = lower(?)
+        ORDER BY ts_iso DESC
+        """,
+        (family_name,),
+    ).fetchall()
+    parent_id = rows[0][0] if rows else None
+    next_generation = (int(rows[0][4] or 1) + 1) if rows else 1
+    return rows, parent_id, next_generation
+
+
+def analyze_result_row(row):
+    metrics = {}
+    score_flags = []
+    directional_bias = None
+    suspicious = False
+    auto_fail = False
+    try:
+        metrics = json.loads(row[9] or "{}") if row[9] else {}
+    except Exception:
+        metrics = {}
+    try:
+        score_flags = json.loads(row[13] or "[]") if row[13] else []
+    except Exception:
+        score_flags = []
+    trades_blob = metrics.get("outofsample", {}).get("trades") or metrics.get("trades") or []
+    if row[6] < 5:
+        auto_fail = True
+        score_flags.append("auto_fail_low_trade_count")
+    if (row[4] or 0) > 10 and (row[6] or 0) < 20:
+        suspicious = True
+        score_flags.append("suspicious_overfit")
+    if trades_blob:
+        long_count = sum(1 for t in trades_blob if str(t.get("direction", "")).lower() == "long")
+        short_count = sum(1 for t in trades_blob if str(t.get("direction", "")).lower() == "short")
+        total = long_count + short_count
+        if total > 0:
+            dominant = max(long_count, short_count) / total
+            if dominant > 0.8:
+                directional_bias = round(dominant * 100.0, 1)
+                score_flags.append("directional_bias")
+    return auto_fail, suspicious, directional_bias, json.dumps(sorted(set(score_flags)))
+
+
+def apply_family_kill_rules(conn, family_name):
+    rows = conn.execute(
+        """
+        SELECT id, score_decision, score_total, family_generation
+        FROM backtest_results
+        WHERE lower(COALESCE(strategy_family, '')) = lower(?)
+        ORDER BY ts_iso ASC
+        """,
+        (family_name,),
+    ).fetchall()
+    if not rows:
+        return None
+    consecutive_failures = 0
+    best_qs = max(float(r[2] or 0) for r in rows)
+    max_generation = max(int(r[3] or 1) for r in rows)
+    for row in reversed(rows):
+        if str(row[1] or "").lower() == "fail":
+            consecutive_failures += 1
+        else:
+            break
+    reason = None
+    if consecutive_failures >= 3:
+        reason = f"3 consecutive FAILs in family {family_name}"
+    elif max_generation >= 3 and best_qs < 0.8:
+        reason = f"best QS {best_qs:.2f} below 0.8 after {max_generation} generations for {family_name}"
+    if not reason:
+        return None
+    conn.execute(
+        "UPDATE backtest_results SET killed = 1 WHERE lower(COALESCE(strategy_family, '')) = lower(?)",
+        (family_name,),
+    )
+    event_message = f"Family killed: {reason}"
+    log_event("family_killed", "logron", event_message, severity="warn", pipeline="research_cycle", step="postprocess")
+    status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
+    status.setdefault("family_kill_events", []).append({"ts_iso": datetime.now(timezone.utc).isoformat(), "family": family_name, "reason": reason})
+    with open(CURRENT_CYCLE_STATUS_PATH, "w", encoding="utf-8") as f:
+        json.dump(status, f, indent=2)
+    return reason
+
+
 def backtest_new_specs():
     if not os.path.exists(SPECS_DIR):
         return 0
@@ -669,7 +821,21 @@ def backtest_new_specs():
             variants = spec.get("variants", [])
             if not variants:
                 continue
+            if not has_minimum_rules(spec):
+                log_event("spec_rejected", "logron", f"Rejected malformed spec {file_spec_id}: missing entry or exit rules", severity="warn", artifact_id=file_spec_id, pipeline="research_cycle", step="validation")
+                continue
 
+            family_name = derive_family_name(spec)
+            duplicate_of = conceptual_duplicate_warning(conn, indicator_signature(spec))
+            if duplicate_of:
+                log_event("spec_duplicate_warning", "logron", f"Spec {file_spec_id} conceptually duplicates recent spec {duplicate_of}", severity="warn", artifact_id=file_spec_id, pipeline="research_cycle", step="validation")
+            if family_is_killed(conn, family_name):
+                log_event("spec_rejected", "logron", f"Rejected spec {file_spec_id}: family {family_name} already killed", severity="warn", artifact_id=file_spec_id, pipeline="research_cycle", step="validation")
+                continue
+
+            family_rows, parent_id, next_generation = get_family_context(conn, family_name)
+            validation_targets = spec.get("validation_targets") or []
+            validation_target = json.dumps(validation_targets[0]) if validation_targets else None
             placeholders = ",".join("?" * len(spec_ids))
             existing_for_spec = conn.execute(
                 f"SELECT COUNT(*) FROM backtest_results WHERE strategy_spec_id IN ({placeholders})",
@@ -716,6 +882,28 @@ def backtest_new_specs():
                     if existing_variant > 0:
                         continue
 
+                    screen_cmd = [
+                        sys.executable,
+                        BACKTESTER,
+                        "--asset", asset,
+                        "--tf", timeframe,
+                        "--strategy-spec", spec_path,
+                        "--variant", vname,
+                        "--stage", "screen",
+                        "--strategy-family", family_name,
+                        "--mutation-type", "initial",
+                        "--family-generation", str(next_generation),
+                    ]
+                    if parent_id:
+                        screen_cmd.extend(["--parent-id", parent_id])
+                    if validation_target:
+                        screen_cmd.extend(["--validation-target", validation_target])
+                    screen_result = subprocess.run(screen_cmd, capture_output=True, text=True, timeout=120)
+                    screen_payload = json.loads(screen_result.stdout or "{}") if (screen_result.stdout or "").strip() else {}
+                    if screen_result.returncode != 0 or not screen_payload.get("screen_passed"):
+                        log_event("screen_failed", "frodex", f"Screen failed for {file_spec_id} variant {vname}", severity="warn", artifact_id=file_spec_id, pipeline="research_cycle", step="backtest")
+                        continue
+
                     result = subprocess.run(
                         [
                             sys.executable,
@@ -728,7 +916,15 @@ def backtest_new_specs():
                             spec_path,
                             "--variant",
                             vname,
-                        ],
+                            "--stage",
+                            "full",
+                            "--strategy-family",
+                            family_name,
+                            "--mutation-type",
+                            "screen_passed",
+                            "--family-generation",
+                            str(next_generation),
+                        ] + (["--parent-id", parent_id] if parent_id else []) + (["--validation-target", validation_target] if validation_target else []),
                         capture_output=True,
                         text=True,
                         timeout=120,
@@ -737,27 +933,44 @@ def backtest_new_specs():
                         backtested += 1
                         bt_row = conn.execute(
                             f"""
-                            SELECT id, profit_factor, score_total
+                            SELECT id, strategy_family, parent_id, family_generation, profit_factor, max_drawdown_pct, total_trades, win_rate_pct, score_total, metrics, score_decision, mutation_type, stage, score_flags
                             FROM backtest_results
                             WHERE strategy_spec_id IN ({placeholders})
                               AND lower(variant_id) = lower(?)
                               AND lower(asset) = lower(?)
                               AND lower(timeframe) = lower(?)
+                              AND stage = 'full'
                             ORDER BY ts_iso DESC LIMIT 1
                             """,
                             tuple(spec_ids + [vname, asset, timeframe]),
                         ).fetchone()
                         result_id = bt_row[0] if bt_row else None
-                        pf = bt_row[1] if bt_row and bt_row[1] is not None else 0
-                        qs = bt_row[2] if bt_row and bt_row[2] is not None else 0
-                        log_event(
-                            "backtest_complete",
-                            "frodex",
-                            f"Backtested {file_spec_id} variant {vname}: PF {pf}, QS {qs}",
-                            artifact_id=result_id,
-                            pipeline="research_cycle",
-                            step="backtest",
-                        )
+                        pf = bt_row[4] if bt_row and bt_row[4] is not None else 0
+                        qs = bt_row[8] if bt_row and bt_row[8] is not None else 0
+                        if bt_row:
+                            auto_fail, suspicious, directional_bias, updated_flags = analyze_result_row(bt_row)
+                            if auto_fail:
+                                conn.execute("UPDATE backtest_results SET score_decision = 'fail', score_total = 0.0, score_grade = 'F', score_flags = ? WHERE id = ?", (updated_flags, result_id))
+                                qs = 0
+                            elif suspicious or directional_bias:
+                                conn.execute("UPDATE backtest_results SET score_flags = ? WHERE id = ?", (updated_flags, result_id))
+                            conn.commit()
+                            kill_reason = apply_family_kill_rules(conn, bt_row[1] or family_name)
+                            details = [f"PF {pf}", f"QS {qs}", f"family={bt_row[1]}", f"parent={bt_row[2]}", f"gen={bt_row[3]}"]
+                            if suspicious:
+                                details.append("suspicious_overfit")
+                            if directional_bias:
+                                details.append(f"directional_bias={directional_bias}%")
+                            if kill_reason:
+                                details.append("family_killed")
+                            log_event(
+                                "backtest_complete",
+                                "frodex",
+                                f"Backtested {file_spec_id} variant {vname}: " + ", ".join(details),
+                                artifact_id=result_id,
+                                pipeline="research_cycle",
+                                step="backtest",
+                            )
                     else:
                         print(f"Backtest failed for {vname}: {result.stderr[:200]}", file=sys.stderr)
                 except Exception as e:

@@ -755,7 +755,87 @@ def extend_blind_window(candles: list[dict], blind_start: int, blind_end: int, s
     return blind_end
 
 
-def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_grid: dict | None = None) -> dict:
+def trim_to_recent_months(candles: list[dict], months: int = 3) -> list[dict]:
+    if not candles:
+        return candles
+    approx_days = max(1, months * 30)
+    timeframe_guess = str(candles[0].get("ts", ""))
+    cpd = 6
+    if len(candles) > 1:
+        first_ts = candles[0].get("ts")
+        second_ts = candles[1].get("ts")
+        try:
+            a = datetime.fromisoformat(str(first_ts).replace("Z", "+00:00"))
+            b = datetime.fromisoformat(str(second_ts).replace("Z", "+00:00"))
+            delta_minutes = max(1, int((b - a).total_seconds() // 60))
+            cpd = max(1, int(round((24 * 60) / delta_minutes)))
+        except Exception:
+            cpd = 6
+    keep = min(len(candles), approx_days * cpd)
+    return candles[-keep:]
+
+
+def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, param_grid: dict | None = None, stage: str = "full") -> dict:
+    if stage == "screen":
+        screen_candles = trim_to_recent_months(candles, months=3)
+        screen_metrics = run_strategy_on_candles(screen_candles, strategy)
+        passed = (
+            screen_metrics["total_trades"] >= 10
+            and screen_metrics["profit_factor"] >= 1.0
+            and screen_metrics["max_drawdown_pct"] <= 15.0
+        )
+        screen_qscore = calculate_qscore(screen_metrics)
+        return {
+            "status": "ok",
+            "folds": 1,
+            "fold_results": [{
+                "fold": 1,
+                "train_candles": 0,
+                "blind_candles": len(screen_candles),
+                "best_params": None,
+                "insample": None,
+                "outofsample": {
+                    "trades": screen_metrics["total_trades"],
+                    "pf": screen_metrics["profit_factor"],
+                    "max_dd": screen_metrics["max_drawdown_pct"],
+                    "return_pct": screen_metrics["total_return_pct"],
+                    "win_rate": screen_metrics["win_rate_pct"],
+                    "qscore": screen_qscore["score_total"],
+                },
+            }],
+            "insample_aggregate": {
+                "total_trades": 0,
+                "profit_factor": 0.0,
+                "max_drawdown_pct": 0.0,
+                "total_return_pct": 0.0,
+                "win_rate_pct": 0.0,
+                "sharpe_ratio": 0.0,
+                "qscore": 0.0,
+                "decision": "screen",
+            },
+            "outofsample_aggregate": {
+                "total_trades": screen_metrics["total_trades"],
+                "profit_factor": screen_metrics["profit_factor"],
+                "max_drawdown_pct": screen_metrics["max_drawdown_pct"],
+                "total_return_pct": screen_metrics["total_return_pct"],
+                "win_rate_pct": screen_metrics["win_rate_pct"],
+                "sharpe_ratio": screen_metrics["sharpe_ratio"],
+                "qscore": screen_qscore["score_total"],
+                "decision": "pass" if passed else "fail",
+                "grade": "S" if passed else "F",
+                "flags": json.dumps(["screen_pass" if passed else "screen_fail"]),
+            },
+            "degradation_pct": 0.0,
+            "screen_passed": passed,
+            "walk_forward_config": {
+                "stage": "screen",
+                "months": 3,
+                "folds": 1,
+                "timeframe": timeframe,
+                "transaction_cost_pct": round(TOTAL_COST_PCT * 100.0, 4),
+            },
+        }
+
     train_days, blind_days = WINDOW_CONFIG.get(timeframe, (180, 42))
     candles_per_day = {"1d": 1, "4h": 6, "1h": 24, "15m": 96, "5m": 288, "1m": 1440}
     cpd = candles_per_day.get(timeframe, 6)
@@ -890,6 +970,13 @@ def ensure_schema(conn: sqlite3.Connection):
         "walk_forward_folds": "INTEGER",
         "walk_forward_config": "TEXT",
         "fold_results": "TEXT",
+        "strategy_family": "TEXT DEFAULT ''",
+        "parent_id": "TEXT",
+        "mutation_type": "TEXT",
+        "stage": "TEXT DEFAULT 'full'",
+        "validation_target": "TEXT",
+        "family_generation": "INTEGER DEFAULT 1",
+        "killed": "INTEGER DEFAULT 0",
     }
     for col, col_type in new_columns.items():
         if col not in existing:
@@ -897,10 +984,28 @@ def ensure_schema(conn: sqlite3.Connection):
                 cursor.execute(f"ALTER TABLE backtest_results ADD COLUMN {col} {col_type}")
             except sqlite3.OperationalError:
                 pass
+    cursor.execute("UPDATE backtest_results SET stage = COALESCE(NULLIF(stage, ''), 'full')")
+    cursor.execute("UPDATE backtest_results SET family_generation = COALESCE(family_generation, 1)")
+    cursor.execute("UPDATE backtest_results SET killed = COALESCE(killed, 0)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_bt_family_stage_killed ON backtest_results(strategy_family, stage, killed)")
     conn.commit()
 
 
-def save_result(conn: sqlite3.Connection, spec_id: str, variant_id: str, asset: str, timeframe: str, wf_result: dict, candles: list[dict]):
+def save_result(
+    conn: sqlite3.Connection,
+    spec_id: str,
+    variant_id: str,
+    asset: str,
+    timeframe: str,
+    wf_result: dict,
+    candles: list[dict],
+    stage: str = "full",
+    strategy_family: str | None = None,
+    parent_id: str | None = None,
+    mutation_type: str | None = None,
+    validation_target: str | None = None,
+    family_generation: int = 1,
+):
     ensure_schema(conn)
     oos = wf_result["outofsample_aggregate"]
     ins = wf_result["insample_aggregate"]
@@ -933,8 +1038,9 @@ def save_result(conn: sqlite3.Connection, spec_id: str, variant_id: str, asset: 
             score_grade, score_flags, score_details,
             walk_forward, status,
             qscore_insample, qscore_outofsample, degradation_pct,
-            walk_forward_folds, walk_forward_config, fold_results
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            walk_forward_folds, walk_forward_config, fold_results,
+            strategy_family, parent_id, mutation_type, stage, validation_target, family_generation, killed
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             result_id,
@@ -969,6 +1075,13 @@ def save_result(conn: sqlite3.Connection, spec_id: str, variant_id: str, asset: 
             wf_result["folds"],
             json.dumps(wf_result["walk_forward_config"]),
             json.dumps(wf_result["fold_results"]),
+            strategy_family,
+            parent_id,
+            mutation_type,
+            stage,
+            validation_target,
+            int(family_generation or 1),
+            0,
         ),
     )
     conn.commit()
@@ -983,6 +1096,12 @@ def main():
     ap.add_argument("--variant", default="default", help="Variant name from spec")
     ap.add_argument("--dry-run", action="store_true", help="Print config without running")
     ap.add_argument("--no-db", action="store_true", help="Skip database write")
+    ap.add_argument("--stage", default="full", choices=["full", "screen"], help="Backtest stage")
+    ap.add_argument("--strategy-family", default="", help="Strategy family name")
+    ap.add_argument("--parent-id", default="", help="Parent backtest result id")
+    ap.add_argument("--mutation-type", default="", help="Mutation type label")
+    ap.add_argument("--validation-target", default="", help="Validation target asset/timeframe")
+    ap.add_argument("--family-generation", type=int, default=1, help="Family generation counter")
     args = ap.parse_args()
 
     if args.tf not in WINDOW_CONFIG:
@@ -1005,6 +1124,7 @@ def main():
             "timeframe": args.tf,
             "strategy": strategy["strategy_name"],
             "variant": args.variant,
+            "stage": args.stage,
             "train_days": train_days,
             "blind_days": blind_days,
             "spec_id": spec_id,
@@ -1017,7 +1137,7 @@ def main():
         print(json.dumps({"status": "error", "error": str(e)}))
         return 1
 
-    result = run_walk_forward(candles, strategy, args.tf)
+    result = run_walk_forward(candles, strategy, args.tf, stage=args.stage)
     if result["status"] != "ok":
         print(json.dumps(result, indent=2))
         return 1
@@ -1025,7 +1145,21 @@ def main():
     if not args.no_db:
         try:
             conn = sqlite3.connect(DB_PATH)
-            result_id = save_result(conn, spec_id, args.variant, args.asset, args.tf, result, candles)
+            result_id = save_result(
+                conn,
+                spec_id,
+                args.variant,
+                args.asset,
+                args.tf,
+                result,
+                candles,
+                stage=args.stage,
+                strategy_family=args.strategy_family or None,
+                parent_id=args.parent_id or None,
+                mutation_type=args.mutation_type or None,
+                validation_target=args.validation_target or None,
+                family_generation=args.family_generation,
+            )
             conn.close()
             result["result_id"] = result_id
             result["db_saved"] = True
@@ -1039,6 +1173,8 @@ def main():
         "timeframe": args.tf,
         "strategy": strategy["strategy_name"],
         "variant": args.variant,
+        "stage": args.stage,
+        "screen_passed": result.get("screen_passed"),
         "folds": result["folds"],
         "insample": result["insample_aggregate"],
         "outofsample": result["outofsample_aggregate"],
@@ -1049,8 +1185,8 @@ def main():
         "fold_summary": [
             {
                 "fold": fr["fold"],
-                "is_pf": fr["insample"]["pf"],
-                "is_qs": fr["insample"]["qscore"],
+                "is_pf": (fr.get("insample") or {}).get("pf"),
+                "is_qs": (fr.get("insample") or {}).get("qscore"),
                 "oos_pf": fr["outofsample"]["pf"],
                 "oos_qs": fr["outofsample"]["qscore"],
                 "oos_trades": fr["outofsample"]["trades"],
