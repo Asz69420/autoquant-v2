@@ -24,6 +24,9 @@ QUANDALF_JOURNAL_STATUS = os.path.join(ROOT, "agents", "quandalf", "memory", "cu
 SCREEN_LIMIT = 10
 FULL_LIMIT = 3
 VALIDATION_LIMIT = 5
+SCREEN_CONCURRENCY_CAP = 3
+FULL_CONCURRENCY_CAP = 2
+VALIDATION_CONCURRENCY_CAP = 2
 BUCKET_RATIOS = {"explore": 0.4, "refine": 0.4, "validate": 0.2}
 TIMEFRAME_ORDER = ["1m", "5m", "15m", "1h", "4h", "1d"]
 
@@ -1115,17 +1118,17 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
         full_jobs = clip_jobs(fetch_candidates(conn, cycle_id=cycle_id, stage="full"))
         validation_jobs = clip_jobs(fetch_candidates(conn, cycle_id=cycle_id, stage="validation"))
         mark_running(conn, screen_jobs)
-        finalize_results(run_stage_jobs(screen_jobs, concurrency=1))
+        finalize_results(run_stage_jobs(screen_jobs, concurrency=min(SCREEN_CONCURRENCY_CAP, max_parallel or SCREEN_CONCURRENCY_CAP)))
         mark_running(conn, full_jobs)
-        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_LIMIT, max_parallel or FULL_LIMIT)))
+        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_CONCURRENCY_CAP, max_parallel or FULL_CONCURRENCY_CAP)))
         mark_running(conn, validation_jobs)
-        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_LIMIT, max_parallel or VALIDATION_LIMIT)))
+        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_CONCURRENCY_CAP, max_parallel or VALIDATION_CONCURRENCY_CAP)))
         current_bucket_used = {k: 0 for k in quotas}
         stage_progress = {"screen": len(screen_jobs), "full": len(full_jobs), "validation": len(validation_jobs)}
     else:
         screen_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, {k: 0 for k in quotas}, {"screen": 0, "full": 0, "validation": 0}, allow_bucket_override=False))
         mark_running(conn, screen_jobs)
-        finalize_results(run_stage_jobs(screen_jobs, concurrency=1))
+        finalize_results(run_stage_jobs(screen_jobs, concurrency=min(SCREEN_CONCURRENCY_CAP, max_parallel or SCREEN_CONCURRENCY_CAP)))
 
         current_bucket_used = {k: 0 for k in quotas}
         for item in screen_jobs:
@@ -1134,11 +1137,11 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
 
         full_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=False))
         mark_running(conn, full_jobs)
-        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_LIMIT, max_parallel or FULL_LIMIT)))
+        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_CONCURRENCY_CAP, max_parallel or FULL_CONCURRENCY_CAP)))
 
         validation_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=False))
         mark_running(conn, validation_jobs)
-        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_LIMIT, max_parallel or VALIDATION_LIMIT)))
+        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_CONCURRENCY_CAP, max_parallel or VALIDATION_CONCURRENCY_CAP)))
 
     used_summary = {
         "screen": len(screen_jobs),
