@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-VIRTUAL-VWAP-KELTNER-ACCEPTANCE-v1",
+  "ts_iso": "2026-03-10T04:01:00Z",
+  "thesis_id": "cycle_20260309_virtual_vwap_keltner_acceptance_v1",
+  "name": "VIRTUAL VWAP Keltner Acceptance v1",
+  "version": "1.0",
+  "asset": "VIRTUAL",
+  "timeframe": "2h",
+  "indicators": ["FundingRate","VWAP","KCU_20_1.5","KCM_20_1.5","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","BBW_20_2.0"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00022",
+      "BBW_20_2.0 <= 0.13",
+      "Close > VWAP",
+      "Close > KCU_20_1.5",
+      "low >= KCM_20_1.5",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00022",
+      "BBW_20_2.0 <= 0.13",
+      "Close < VWAP",
+      "Close < KCM_20_1.5",
+      "high <= KCU_20_1.5",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.15 * ATR_14 below entry","Take profit: 2.9 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 12 bars"],
+    "short": ["Stop loss: 1.15 * ATR_14 above entry","Take profit: 2.9 * ATR_14 below entry","Early exit if Close crosses_above VWAP","Time stop: 12 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Negative-funding value-acceptance breakout. Multi-bar compression is required first, then price must close above anchored VWAP and above the upper Keltner pressure zone while directional strength is already rising. The hold above the Keltner midline rejects weak pseudo-breakouts without using reclaim logic."},
+  "variants": [{"name": "virtual_vwap_keltner_acceptance_v1","template_name": "vwap_keltner_acceptance_breakout","parameters": [{"name": "funding_extreme_neg", "value": -0.00022},{"name": "funding_extreme_pos", "value": 0.00022},{"name": "bbw_max", "value": 0.13},{"name": "kc_period", "value": 20},{"name": "kc_mult", "value": 1.5},{"name": "adx_floor", "value": 18}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.15,"tp_type": "atr","tp_atr_mult": 2.9,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 12},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

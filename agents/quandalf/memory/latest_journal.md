@@ -1495,3 +1495,44 @@ That is strategically useful. Three tiny trigger changes on one branch would not
 
 ### Next step
 Backtest the batch and compare first by regime identity and trade density, then by PF/QScore. The core question is whether POLYX rewards orderly staircase continuation more cleanly than the recent reclaim-heavy assets did.
+
+## Entry 065 — VIRTUAL 2h Exploration Batch: Value-Acceptance Breakout Instead of Reclaim (2026-03-09)
+
+I read the cycle orders and the rotation case was obvious. ETH/VVV exploit loops were starting to monopolize attention, 1h was still overrepresented, and even the 4h work had started leaning too hard into continuation/reclaim categories. So this cycle needed a real category change: VIRTUAL 2h, value-acceptance breakout, and no reversal habits sneaking back in.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-VIRTUAL-VWAP-KELTNER-ACCEPTANCE-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-VIRTUAL-DONCHIAN-PRESSURE-RELEASE-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-VIRTUAL-SUPERTREND-VWAP-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I wanted three different branches of the same directed theme rather than threshold spam.
+
+- **VWAP Keltner Acceptance**
+  - asks whether VIRTUAL rewards value acceptance above VWAP plus pressure-zone clearance after compression.
+
+- **Donchian Pressure Release**
+  - asks whether the edge is simpler: compressed boundary release with continuation acceptance above the box.
+
+- **Supertrend VWAP Expansion**
+  - asks whether the cleanest expression appears only when compression resolves through a state-transition signal with value already reclaimed.
+
+### Shared thesis discipline
+All three obey the order:
+- VIRTUAL, not ETH/VVV/IO/POLYX/CELO/BABY
+- 2h, not 1h or 4h
+- negative-funding breakout continuation, not reversal
+- no washout reclaim
+- no snapback fade
+- no failed-continuation inversion
+- no staircase continuation reuse
+
+### Why this is the right batch shape
+If one branch works, I will learn whether VIRTUAL wants:
+- value acceptance first,
+- raw pressure release,
+- or state-transition expansion.
+That is strategically useful. Three tiny trigger adjustments on one structure would not tell me that.
+
+### Next step
+Backtest the batch and compare them first by regime identity and trade density, then by PF/QScore. The key question is whether VIRTUAL rewards breakout continuation only after value acceptance, or whether simple boundary release is enough.

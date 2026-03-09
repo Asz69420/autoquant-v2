@@ -5,6 +5,8 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
+from text_io import read_text_best_effort
+
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 SKILLS = r"C:\Users\Clamps\.openclaw\skills"
 PY = sys.executable
@@ -80,9 +82,9 @@ def main():
     cycle_journal_path = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
 
     if os.path.exists(daily_journal_path):
-        quandalf_journal = open(daily_journal_path, "r", encoding="utf-8").read()
+        quandalf_journal = read_text_best_effort(daily_journal_path)
     else:
-        quandalf_journal = open(cycle_journal_path, "r", encoding="utf-8").read() if os.path.exists(cycle_journal_path) else ""
+        quandalf_journal = read_text_best_effort(cycle_journal_path) if os.path.exists(cycle_journal_path) else ""
     quandalf_journal = quandalf_journal.strip()
 
     lines = []
