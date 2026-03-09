@@ -883,6 +883,19 @@ def queue_reduced_complexity_variant(conn, queue_item, spec, full_result):
     return [qid] if created else []
 
 
+def family_refinement_owned(conn, family):
+    if not family:
+        return False
+    try:
+        row = conn.execute(
+            "SELECT COUNT(*) FROM backtest_results WHERE lower(COALESCE(strategy_family,'')) = lower(?) AND refinement_status IS NOT NULL",
+            (family,),
+        ).fetchone()
+        return bool(row and int(row[0] or 0) > 0)
+    except sqlite3.OperationalError:
+        return False
+
+
 def note_leaderboard_candidate(full_result, spec):
     status = load_json(QUANDALF_JOURNAL_STATUS, default={})
     candidates = status.get("leaderboard_candidates") or []
@@ -926,6 +939,8 @@ def execute_job(job):
         cmd.extend(["--validation-target", job["validation_target"]])
     if job.get("family_generation"):
         cmd.extend(["--family-generation", str(job["family_generation"])])
+    if job.get("refinement_round") is not None:
+        cmd.extend(["--refinement-round", str(job["refinement_round"])])
 
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
@@ -995,7 +1010,10 @@ def process_result_effects(conn, queue_item, result):
         effects = {"full_pass": passed, "promote": promoted, "branch_queue_ids": [], "validation_queue_ids": [], "reduced_queue_ids": []}
         if passed:
             effects["validation_queue_ids"] = queue_validation_items(conn, queue_item, spec, payload, promote=promoted)
-            effects["branch_queue_ids"] = queue_branch_items(conn, queue_item, spec, payload)
+            if family_refinement_owned(conn, queue_item.get("strategy_family") or derive_family_name(spec)):
+                log_event(conn, "funnel_branch_skip_refinement_owned", "frodex", f"Skipped auto-branch for refinement-owned family {(queue_item.get('strategy_family') or derive_family_name(spec))}", step="full", artifact_id=payload.get("result_id"))
+            else:
+                effects["branch_queue_ids"] = queue_branch_items(conn, queue_item, spec, payload)
             log_event(conn, "funnel_full_pass", "frodex", f"Full PASS {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}%", step="full", artifact_id=payload.get("result_id"))
         else:
             log_event(conn, "funnel_full_fail", "frodex", f"Full FAIL {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}%", severity="warn", step="full", artifact_id=payload.get("result_id"))
@@ -1012,7 +1030,7 @@ def process_result_effects(conn, queue_item, result):
     return {}
 
 
-def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, max_parallel=None):
+def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, max_parallel=None, max_jobs=None, apply_effects=True):
     ensure_schema(conn)
     quotas = bucket_quota(SCREEN_LIMIT + FULL_LIMIT + VALIDATION_LIMIT)
     bucket_used = {k: 0 for k in quotas}
@@ -1028,6 +1046,20 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
     stage_used = dict(primary_stage_used)
     for stage in ("screen", "full", "validation"):
         selected.extend([item for item in pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage=stage), stage, quotas, bucket_used, stage_used, allow_bucket_override=True) if item["id"] not in {s["id"] for s in selected}])
+    if not apply_effects and max_jobs is not None:
+        selected = []
+        remaining = int(max_jobs)
+        for stage in ("screen", "full", "validation"):
+            if remaining <= 0:
+                break
+            items = fetch_candidates(conn, cycle_id=cycle_id, stage=stage)
+            selected.extend(items[:remaining])
+            remaining -= min(len(items), remaining)
+        bucket_used = {k: 0 for k in quotas}
+        stage_used = {"screen": 0, "full": 0, "validation": 0}
+        for item in selected:
+            bucket_used[item["bucket"]] = bucket_used.get(item["bucket"], 0) + 1
+            stage_used[item["stage"]] = stage_used.get(item["stage"], 0) + 1
 
     pipeline_id = create_pipeline_run(conn, parent_run_id or "manual", status="running", steps_total=len(selected))
     log_event(conn, "parallel_start", "oragorn", f"Research funnel cycle: selected={len(selected)}", step="start", artifact_id=pipeline_id, metadata={"bucket_quota": quotas, "bucket_used": bucket_used, "stage_used": stage_used, "primary_bucket_used": primary_bucket_used, "primary_stage_used": primary_stage_used})
@@ -1050,7 +1082,7 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
             all_results.append(result)
             if result.get("ok"):
                 ok_count += 1
-                effects = process_result_effects(conn, queue_item, result)
+                effects = process_result_effects(conn, queue_item, result) if apply_effects else {}
                 effect_summary["screen_to_full"] += 1 if effects.get("screen_to_full") else 0
                 effect_summary["full_pass"] += 1 if effects.get("full_pass") else 0
                 effect_summary["promote"] += 1 if effects.get("promote") else 0
@@ -1066,22 +1098,47 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
             conn.execute("UPDATE pipeline_runs SET steps_completed = COALESCE(steps_completed,0) + 1 WHERE id=?", (pipeline_id,))
             conn.commit()
 
-    screen_jobs = pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, {k: 0 for k in quotas}, {"screen": 0, "full": 0, "validation": 0}, allow_bucket_override=False)
-    mark_running(conn, screen_jobs)
-    finalize_results(run_stage_jobs(screen_jobs, concurrency=1))
+    remaining_budget = int(max_jobs) if max_jobs is not None else None
 
-    current_bucket_used = {k: 0 for k in quotas}
-    for item in screen_jobs:
-        current_bucket_used[item["bucket"]] += 1
-    stage_progress = {"screen": len(screen_jobs), "full": 0, "validation": 0}
+    def clip_jobs(items):
+        nonlocal remaining_budget
+        if remaining_budget is None:
+            return items
+        if remaining_budget <= 0:
+            return []
+        clipped = items[:remaining_budget]
+        remaining_budget -= len(clipped)
+        return clipped
 
-    full_jobs = pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=False)
-    mark_running(conn, full_jobs)
-    finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_LIMIT, max_parallel or FULL_LIMIT)))
+    if not apply_effects and max_jobs is not None:
+        screen_jobs = clip_jobs(fetch_candidates(conn, cycle_id=cycle_id, stage="screen"))
+        full_jobs = clip_jobs(fetch_candidates(conn, cycle_id=cycle_id, stage="full"))
+        validation_jobs = clip_jobs(fetch_candidates(conn, cycle_id=cycle_id, stage="validation"))
+        mark_running(conn, screen_jobs)
+        finalize_results(run_stage_jobs(screen_jobs, concurrency=1))
+        mark_running(conn, full_jobs)
+        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_LIMIT, max_parallel or FULL_LIMIT)))
+        mark_running(conn, validation_jobs)
+        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_LIMIT, max_parallel or VALIDATION_LIMIT)))
+        current_bucket_used = {k: 0 for k in quotas}
+        stage_progress = {"screen": len(screen_jobs), "full": len(full_jobs), "validation": len(validation_jobs)}
+    else:
+        screen_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, {k: 0 for k in quotas}, {"screen": 0, "full": 0, "validation": 0}, allow_bucket_override=False))
+        mark_running(conn, screen_jobs)
+        finalize_results(run_stage_jobs(screen_jobs, concurrency=1))
 
-    validation_jobs = pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=False)
-    mark_running(conn, validation_jobs)
-    finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_LIMIT, max_parallel or VALIDATION_LIMIT)))
+        current_bucket_used = {k: 0 for k in quotas}
+        for item in screen_jobs:
+            current_bucket_used[item["bucket"]] += 1
+        stage_progress = {"screen": len(screen_jobs), "full": 0, "validation": 0}
+
+        full_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=False))
+        mark_running(conn, full_jobs)
+        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_LIMIT, max_parallel or FULL_LIMIT)))
+
+        validation_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=False))
+        mark_running(conn, validation_jobs)
+        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_LIMIT, max_parallel or VALIDATION_LIMIT)))
 
     used_summary = {
         "screen": len(screen_jobs),
@@ -1092,6 +1149,29 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
     log_event(conn, "parallel_summary", "oragorn", f"Research funnel cycle done: ok={ok_count}, fail={fail_count}", step="summary", artifact_id=pipeline_id, metadata={"effects": effect_summary, "bucket_quota": quotas, "bucket_used": current_bucket_used, "stage_used": used_summary})
     conn.commit()
     return {"pipeline_id": pipeline_id, "total_jobs": len(screen_jobs) + len(full_jobs) + len(validation_jobs), "ok": ok_count, "fail": fail_count, "results": all_results, "bucket_quota": quotas, "bucket_used": current_bucket_used, "stage_used": used_summary, "effects": effect_summary}
+
+
+def load_job_manifest(path):
+    payload = load_manifest(path)
+    jobs = payload.get("jobs") or []
+    if not isinstance(jobs, list):
+        raise ValueError("job manifest missing jobs[]")
+    return payload, jobs
+
+
+def seed_queue_from_job_manifest(conn, manifest_path, cycle_id=None):
+    payload, jobs = load_job_manifest(manifest_path)
+    effective_cycle_id = cycle_id if cycle_id is not None else (int(payload.get("cycle_id") or 0) or None)
+    seeded = []
+    for item in jobs:
+        entry = dict(item)
+        if effective_cycle_id is not None:
+            entry["cycle_id"] = effective_cycle_id
+        qid, created = enqueue_item(conn, entry)
+        if created:
+            seeded.append(qid)
+    conn.commit()
+    return effective_cycle_id, seeded
 
 
 def queue_snapshot(conn, cycle_id=None):
@@ -1115,10 +1195,13 @@ def main():
     ap.add_argument("--variant", default=None, help="Variant name or 'all'")
     ap.add_argument("--batch", nargs="*", help="Multiple spec paths")
     ap.add_argument("--manifest", help="Manifest JSON containing spec_paths/latest_spec_path")
+    ap.add_argument("--job-manifest", help="Manifest JSON containing explicit queue jobs")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--cycle-id", type=int, default=None)
     ap.add_argument("--seed-only", action="store_true")
     ap.add_argument("--queue-report", action="store_true")
+    ap.add_argument("--max-jobs", type=int, default=None)
+    ap.add_argument("--no-funnel-effects", action="store_true")
     args = ap.parse_args()
 
     mode, throttle_parallel = read_throttle()
@@ -1127,6 +1210,8 @@ def main():
     cycle_id = args.cycle_id
     if cycle_id is None and args.manifest and os.path.exists(args.manifest):
         cycle_id = int((load_manifest(args.manifest).get("cycle_id") or 0) or 0) or None
+    if cycle_id is None and args.job_manifest and os.path.exists(args.job_manifest):
+        cycle_id = int((load_job_manifest(args.job_manifest)[0].get("cycle_id") or 0) or 0) or None
 
     spec_paths = []
     try:
@@ -1143,7 +1228,11 @@ def main():
 
     conn = sqlite3.connect(DB)
     ensure_schema(conn)
-    seeded = seed_queue_from_specs(conn, spec_paths, variant_mode=args.variant, cycle_id=cycle_id) if spec_paths else []
+    seeded = []
+    if args.job_manifest:
+        cycle_id, seeded = seed_queue_from_job_manifest(conn, args.job_manifest, cycle_id=cycle_id)
+    elif spec_paths:
+        seeded = seed_queue_from_specs(conn, spec_paths, variant_mode=args.variant, cycle_id=cycle_id)
     if args.seed_only:
         out = {"status": "seeded", "seeded": len(seeded), "queue": queue_snapshot(conn, cycle_id=cycle_id), "cycle_id": cycle_id}
         conn.close()
@@ -1155,7 +1244,7 @@ def main():
         print(json.dumps(out, indent=2))
         return 0
 
-    run_out = run_parallel_cycle(conn, cycle_id=cycle_id, dry_run=args.dry_run, parent_run_id=parent_run_id, max_parallel=max_parallel)
+    run_out = run_parallel_cycle(conn, cycle_id=cycle_id, dry_run=args.dry_run, parent_run_id=parent_run_id, max_parallel=max_parallel, max_jobs=args.max_jobs, apply_effects=(not args.no_funnel_effects))
     run_out["mode"] = mode
     run_out["max_parallel"] = max_parallel
     run_out["seeded"] = len(seeded)

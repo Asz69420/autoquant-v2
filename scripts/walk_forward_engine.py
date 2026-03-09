@@ -1047,6 +1047,9 @@ def ensure_schema(conn: sqlite3.Connection):
         "regime_concentration": "REAL",
         "primary_regime": "TEXT",
         "portability_score": "REAL DEFAULT 0",
+        "refinement_status": "TEXT",
+        "refinement_round": "INTEGER DEFAULT 0",
+        "weakness_profile": "TEXT",
     }
     for col, col_type in new_columns.items():
         if col not in existing:
@@ -1075,6 +1078,7 @@ def save_result(
     mutation_type: str | None = None,
     validation_target: str | None = None,
     family_generation: int = 1,
+    refinement_round: int = 0,
 ):
     ensure_schema(conn)
     oos = wf_result["outofsample_aggregate"]
@@ -1116,8 +1120,8 @@ def save_result(
             qscore_insample, qscore_outofsample, degradation_pct,
             walk_forward_folds, walk_forward_config, fold_results,
             strategy_family, parent_id, mutation_type, stage, validation_target, family_generation, killed,
-            regime_scores, regime_concentration, primary_regime, portability_score
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            regime_scores, regime_concentration, primary_regime, portability_score, refinement_status, refinement_round, weakness_profile
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             result_id,
@@ -1163,6 +1167,9 @@ def save_result(
             float(wf_result.get("regime_concentration") or 0.0),
             wf_result.get("primary_regime") or "UNKNOWN",
             0.0,
+            None,
+            int(refinement_round or 0),
+            None,
         ),
     )
     conn.commit()
@@ -1183,6 +1190,7 @@ def main():
     ap.add_argument("--mutation-type", default="", help="Mutation type label")
     ap.add_argument("--validation-target", default="", help="Validation target asset/timeframe")
     ap.add_argument("--family-generation", type=int, default=1, help="Family generation counter")
+    ap.add_argument("--refinement-round", type=int, default=0, help="Refinement round counter")
     args = ap.parse_args()
 
     if args.tf not in WINDOW_CONFIG:
@@ -1240,6 +1248,7 @@ def main():
                 mutation_type=args.mutation_type or None,
                 validation_target=args.validation_target or None,
                 family_generation=args.family_generation,
+                refinement_round=args.refinement_round,
             )
             conn.close()
             result["result_id"] = result_id

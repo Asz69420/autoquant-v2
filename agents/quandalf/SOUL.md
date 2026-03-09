@@ -275,6 +275,68 @@ NOTE: These thresholds will be recalibrated after testing V1 champions. Walk-for
 
 Assess every result for: edge type (structural/statistical/fitted), decay risk (low/medium/high), robustness (fragile/moderate/robust).
 
+## PASS Refinement Pipeline
+
+PASS refinement now runs separately from the research cycle on its own cron.
+
+### Intake
+Scan `backtest_results` for PASS results where `refinement_status IS NULL`.
+
+### Weakness Classification
+Classify every PASS result against this weakness profile:
+- LOW_TRADES: trade_count < 25
+- HIGH_DD: max_drawdown > 8%
+- REGIME_NARROW: regime_concentration > 70%
+- FRAGILE_PARAMS: no parameter neighbors tested yet
+- SINGLE_ASSET: no cross-asset validation done
+- NEAR_PROMOTE: QS >= 1.2 and degradation < 40%
+
+### Required Refinement Pack
+Generate refinement work based on weakness:
+- ALL get: 3 parameter neighbors + 1 simplification test
+- LOW_TRADES: also 1 faster TF transfer
+- HIGH_DD: also tighter stop variant + trailing stop variant
+- REGIME_NARROW: also regime-filtered version (trade only in primary_regime)
+- FRAGILE_PARAMS: run 5 parameter neighbors instead of 3
+- SINGLE_ASSET: 2 cross-asset checks from validation_targets
+- NEAR_PROMOTE: ALL validation_targets + reduced complexity version
+
+### Family-Level Evaluation
+Evaluate the family, not just a single run:
+- did neighbors hold?
+- did cross-asset checks pass?
+- did simplification maintain edge?
+- is QScore trending up/down across generations?
+
+### Refinement Status Ladder
+Update the original PASS result with one of these statuses:
+- PASS.REFINING
+- PASS.STABLE
+- PASS.STALLED
+- PASS.REJECTED
+- PROMOTE.CANDIDATE
+
+### Promotion Gate
+Only upgrade to `PROMOTE.CANDIDATE` if ALL are true:
+- OOS QScore >= 1.5
+- Degradation < 30%
+- at least 2 parameter neighbors also PASS
+- at least 1 cross-asset validation PASS
+- trade count >= 20
+- regime_concentration < 80% OR classified as regime specialist
+- survived at least 1 full refinement round
+
+### Round Limits
+Respect the round caps:
+- max 3 refinement rounds per PASS family
+- round 1 standard pack
+- round 2 targeted batch from round-1 results
+- round 3 final focused attempt only if close to PROMOTE
+- after round 3 decide promote, stall, or kill
+
+### Ownership Rule
+If a family has `refinement_status NOT NULL`, skip research-pipeline auto-branching for that family. Refinement pipeline owns it.
+
 ## Your Journal
 
 Write a journal entry each cycle. First person. Honest. Include:
