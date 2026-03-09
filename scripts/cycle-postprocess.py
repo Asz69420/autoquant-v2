@@ -9,6 +9,8 @@ import sys
 import time
 from datetime import datetime, timezone, timedelta
 
+from text_io import read_text_best_effort
+
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
@@ -21,6 +23,7 @@ CARD_STATE_PATH = os.path.join(ROOT, "data", "state", "cycle_postprocess_card_st
 CURRENT_CYCLE_SPECS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
 CURRENT_CYCLE_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
 CURRENT_CYCLE_METRICS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_metrics.json")
+CURRENT_CYCLE_BATCH_SUMMARY_PATH = os.path.join(ROOT, "data", "state", "current_cycle_batch_summary.json")
 RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
 
 PHASE_EMOJIS = {
@@ -264,6 +267,25 @@ def safe_int(value, default=0):
         return default
 
 
+def normalize_cycle_key(value):
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    try:
+        return str(int(text))
+    except Exception:
+        return text
+
+
+def normalize_mode(value):
+    text = str(value or "").strip().lower()
+    if text in {"explore", "explore_new", "exploration"}:
+        return "explore"
+    if text in {"exploit", "iterate_existing", "iteration", "iterate"}:
+        return "exploit"
+    return text or "unknown"
+
+
 def normalize_spec_id(value):
     text = str(value or "").strip()
     if not text:
@@ -275,49 +297,162 @@ def normalize_spec_id(value):
     return base
 
 
+def unique_preserve(seq):
+    seen = set()
+    out = []
+    for item in seq:
+        key = json.dumps(item, sort_keys=True) if isinstance(item, (dict, list)) else str(item)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(item)
+    return out
+
+
+def spec_variant_job_count(spec_paths):
+    total = 0
+    for spec_path in spec_paths:
+        try:
+            with open(spec_path, "r", encoding="utf-8") as f:
+                spec = json.load(f)
+        except Exception:
+            continue
+        variants = spec.get("variants") or []
+        names = {str(v.get("name") or "").strip().lower() for v in variants if str(v.get("name") or "").strip()}
+        total += max(1, len(names))
+    return total
+
+
+def summarize_best_result(rows_dict):
+    if not rows_dict:
+        return None
+
+    def sort_key(row):
+        return (row.get("score_total") or 0, row.get("profit_factor") or 0, row.get("total_trades") or 0)
+
+    best = max(rows_dict, key=sort_key)
+    return {
+        "strategy_spec_id": best.get("strategy_spec_id"),
+        "variant_id": best.get("variant_id"),
+        "asset": best.get("asset"),
+        "timeframe": best.get("timeframe"),
+        "qscore": round(best.get("score_total") or 0, 4),
+        "profit_factor": round(best.get("profit_factor") or 0, 4),
+        "total_trades": int(best.get("total_trades") or 0),
+        "decision": best.get("score_decision") or "unknown",
+    }
+
+
+def derive_next_cycle_focus(cycle_orders, cycle_status, metrics):
+    focus = cycle_status.get("next_cycle_focus") or cycle_status.get("next_focus")
+    if focus:
+        return str(focus).strip()
+
+    mode = metrics.get("mode", "unknown")
+    if mode == "exploit":
+        iterate_target = cycle_orders.get("iterate_target") or cycle_orders.get("specific_family_to_iterate")
+        if iterate_target:
+            return f"Exploit {iterate_target} with tighter batch variants."
+
+    targets = cycle_orders.get("exploration_targets") or {}
+    concepts = ", ".join(targets.get("concepts") or [])
+    assets = ", ".join(targets.get("assets") or [])
+    timeframes = ", ".join(targets.get("timeframes") or [])
+    if mode == "explore" and any([concepts, assets, timeframes]):
+        detail_bits = [bit for bit in [concepts, assets, timeframes] if bit]
+        return "Continue exploration rotation across " + " | ".join(detail_bits)
+
+    rotation_reason = str(cycle_orders.get("rotation_reason") or "").strip()
+    if rotation_reason:
+        return rotation_reason
+
+    rationale = str(cycle_status.get("rationale") or "").strip()
+    return rationale[:240] if rationale else "Await next cycle orders."
+
+
 def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_state=None):
     rows_dict = [dict(r) if not isinstance(r, dict) else r for r in rows]
     cycle_specs = load_json_file(CURRENT_CYCLE_SPECS_PATH)
     cycle_status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
+    cycle_orders = load_json_file(os.path.join(ROOT, "agents", "quandalf", "memory", "cycle_orders.json"))
     run_state = run_state or load_run_state()
     timing = compute_timing_metrics(run_state)
 
-    manifest_cycle_id = safe_int(cycle_specs.get("cycle_id", 0) or 0)
-    status_cycle_id = safe_int(cycle_status.get("cycle_id", 0) or 0)
-    status_matches_cycle = status_cycle_id == int(cycle_id) and status_cycle_id != 0
+    target_cycle_key = normalize_cycle_key(cycle_id)
+    manifest_cycle_key = normalize_cycle_key(cycle_specs.get("cycle_id", ""))
+    status_cycle_key = normalize_cycle_key(cycle_status.get("cycle_id", ""))
+    orders_cycle_key = normalize_cycle_key(cycle_orders.get("cycle_id", cycle_id))
 
-    manifest_matches_cycle = manifest_cycle_id == int(cycle_id) and manifest_cycle_id != 0
-    spec_paths = cycle_specs.get("spec_paths") or [] if manifest_matches_cycle else []
+    status_matches_cycle = bool(status_cycle_key and status_cycle_key == target_cycle_key)
+    manifest_matches_cycle = bool(manifest_cycle_key and manifest_cycle_key == target_cycle_key)
+    orders_match_cycle = not orders_cycle_key or orders_cycle_key == target_cycle_key
+
+    manifest_spec_paths = cycle_specs.get("spec_paths") or [] if manifest_matches_cycle else []
+    status_spec_paths = cycle_status.get("spec_paths") or [] if status_matches_cycle else []
+    spec_paths = unique_preserve([str(p).strip() for p in (status_spec_paths or manifest_spec_paths) if str(p).strip()])
     normalized_manifest_spec_ids = {normalize_spec_id(path) for path in spec_paths if normalize_spec_id(path)}
     row_spec_ids = {normalize_spec_id(r.get("strategy_spec_id")) for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id"))}
 
-    specs_written = int(cycle_specs.get("spec_count", 0) or 0) if manifest_matches_cycle else 0
-    if not specs_written and row_spec_ids:
-        specs_written = len(row_spec_ids)
+    specs_produced = len(spec_paths)
+    if not specs_produced:
+        specs_produced = int(cycle_specs.get("spec_count", 0) or 0) if manifest_matches_cycle else 0
+    if not specs_produced and row_spec_ids:
+        specs_produced = len(row_spec_ids)
 
-    new_families = len(cycle_status.get("new_families", [])) if status_matches_cycle else 0
-    iterated_families = len(cycle_status.get("iterated_families", [])) if status_matches_cycle else 0
-    active = new_families + iterated_families
-    abandoned = len(cycle_status.get("abandoned_families", [])) if status_matches_cycle else 0
+    mode = normalize_mode(cycle_status.get("mode") or cycle_orders.get("mode") or cycle_status.get("research_direction") or cycle_orders.get("research_direction"))
+    minimum_spec_count = safe_int(cycle_status.get("minimum_spec_count", cycle_orders.get("minimum_spec_count", 0)) or 0)
+    maximum_spec_count = safe_int(cycle_status.get("maximum_spec_count", cycle_orders.get("maximum_spec_count", cycle_orders.get("max_variants", 0))) or 0)
 
-    promotions = sum(1 for r in rows_dict if r.get("score_total") and r["score_total"] >= 3.0)
-    best_qs = max((r.get("score_total", 0) or 0 for r in rows_dict), default=0)
+    new_families = cycle_status.get("new_families", []) if status_matches_cycle else []
+    iterated_families = cycle_status.get("iterated_families", []) if status_matches_cycle else []
+    abandoned_families = cycle_status.get("abandoned_families", []) if status_matches_cycle else []
 
-    return {
-        "cycle_id": int(cycle_id),
-        "manifest_cycle_id": manifest_cycle_id,
-        "status_cycle_id": status_cycle_id,
+    completed_backtests = backtest_count
+    queued_backtests = spec_variant_job_count(manifest_spec_paths or spec_paths)
+    if queued_backtests < completed_backtests:
+        queued_backtests = completed_backtests
+
+    pass_count = sum(1 for r in rows_dict if (r.get("score_total") or 0) >= 1.0)
+    promote_count = sum(1 for r in rows_dict if (r.get("score_total") or 0) >= 3.0)
+    fail_count = max(0, completed_backtests - pass_count)
+    best_result = summarize_best_result(rows_dict)
+    best_qs = best_result.get("qscore", 0) if best_result else 0
+
+    metrics = {
+        "cycle_id": cycle_id,
+        "cycle_key": target_cycle_key,
+        "manifest_cycle_id": cycle_specs.get("cycle_id"),
+        "status_cycle_id": cycle_status.get("cycle_id"),
+        "orders_cycle_id": cycle_orders.get("cycle_id") if orders_match_cycle else None,
         "status_matches_cycle": status_matches_cycle,
+        "manifest_matches_cycle": manifest_matches_cycle,
+        "mode": mode,
+        "research_direction": cycle_status.get("research_direction") or cycle_orders.get("research_direction"),
+        "minimum_spec_count": minimum_spec_count,
+        "maximum_spec_count": maximum_spec_count,
+        "target_asset": cycle_orders.get("target_asset"),
+        "target_timeframe": cycle_orders.get("target_timeframe"),
+        "iterate_target": cycle_orders.get("iterate_target") or cycle_orders.get("specific_family_to_iterate"),
+        "exploration_targets": cycle_orders.get("exploration_targets") or {},
         "spec_paths": spec_paths,
         "spec_ids": sorted(normalized_manifest_spec_ids or row_spec_ids),
-        "specs_written": specs_written,
+        "specs_produced": specs_produced,
+        "specs_written": specs_produced,
         "new_families": new_families,
         "iterated_families": iterated_families,
-        "active_families": active,
-        "backtests": backtest_count,
-        "promotions": promotions,
-        "abandoned_families": abandoned,
+        "abandoned_families": abandoned_families,
+        "active_families": len(new_families) + len(iterated_families),
+        "backtests_queued": queued_backtests,
+        "backtests_completed": completed_backtests,
+        "backtests": completed_backtests,
+        "pass_count": pass_count,
+        "fail_count": fail_count,
+        "promote_count": promote_count,
+        "promotions": promote_count,
+        "best_result": best_result,
         "best_qscore": best_qs,
+        "next_cycle_focus": "",
+        "rationale": cycle_status.get("rationale"),
         "elapsed_seconds": elapsed_seconds,
         "run_elapsed_seconds": timing["run_elapsed_seconds"],
         "report_delay_seconds": timing["report_delay_seconds"],
@@ -325,6 +460,8 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "started_at_epoch": timing["started_at_epoch"],
         "ended_at_epoch": timing["ended_at_epoch"],
     }
+    metrics["next_cycle_focus"] = derive_next_cycle_focus(cycle_orders, cycle_status, metrics)
+    return metrics
 
 
 def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=None):
@@ -333,25 +470,24 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     elapsed_str = f"{int(run_elapsed // 60)}m {int(run_elapsed % 60)}s" if run_elapsed else "?"
 
     lines = []
-    lines.append("🍳 Cooking")
-    header_status = '✅' if metrics['promotions'] > 0 else '⚠️'
-    lines.append(f"{header_status} | ▶ {elapsed_str} run | 🆔 {cycle_id}")
-    lines.append("○──activity──────────────────")
-    lines.append(f"New strategies: {metrics['specs_written']}")
-    lines.append(f"New families: {metrics['new_families']}")
-    lines.append(f"Active families: {metrics['active_families']}")
-    lines.append(f"Backtests: {metrics['backtests']}")
-    lines.append(f"Promotions: {metrics['promotions']}")
-    lines.append(f"Abandoned: {metrics['abandoned_families']}")
+    lines.append("🍳 Research Batch")
+    header_status = "🏆" if metrics["promote_count"] > 0 else "✅" if metrics["pass_count"] > 0 else "⚠️"
+    lines.append(f"{header_status} | ▶ {elapsed_str} run | 🆔 {metrics['cycle_id']} | {metrics['mode']}")
+    lines.append("○──batch─────────────────────")
+    lines.append(f"Specs produced: {metrics['specs_produced']} (target {metrics['minimum_spec_count']}-{metrics['maximum_spec_count'] or '?'})")
+    lines.append(f"Backtests: {metrics['backtests_completed']}/{metrics['backtests_queued']} completed")
+    lines.append(f"Pass / Fail / Promote: {metrics['pass_count']} / {metrics['fail_count']} / {metrics['promote_count']}")
+    lines.append(f"Families: new {len(metrics['new_families'])} | iterated {len(metrics['iterated_families'])} | abandoned {len(metrics['abandoned_families'])}")
     if metrics.get("is_completed"):
         lines.append(f"Report delay: +{int(metrics['report_delay_seconds'] // 60)}m {int(metrics['report_delay_seconds'] % 60)}s")
-    lines.append("○──note──────────────────────")
-    if metrics['promotions'] > 0:
-        lines.append(f"🏆 {metrics['promotions']} promotion(s)! Best QS: {metrics['best_qscore']:.2f}")
-    elif metrics['best_qscore'] > 0:
-        lines.append(f"Best QS: {metrics['best_qscore']:.2f}. Iterating.")
+    lines.append("○──best──────────────────────")
+    best = metrics.get("best_result")
+    if best:
+        lines.append(f"{best['asset']}/{best['timeframe']} {best['variant_id']} | QS {best['qscore']:.2f} | PF {best['profit_factor']:.2f} | T {best['total_trades']}")
     else:
-        lines.append("No strong results yet. Quandalf refining.")
+        lines.append("No completed backtests yet for this batch.")
+    lines.append("○──next──────────────────────")
+    lines.append(metrics.get("next_cycle_focus") or "Await next cycle focus.")
     if metrics.get("is_completed") and metrics.get("report_delay_seconds", 0) > 0:
         lines.append("Run already completed; this was a later report-only pass.")
 
@@ -374,6 +510,8 @@ def write_cycle_metrics(metrics):
     try:
         os.makedirs(os.path.dirname(CURRENT_CYCLE_METRICS_PATH), exist_ok=True)
         with open(CURRENT_CYCLE_METRICS_PATH, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+        with open(CURRENT_CYCLE_BATCH_SUMMARY_PATH, "w", encoding="utf-8") as f:
             json.dump(metrics, f, indent=2)
     except Exception:
         pass
@@ -440,22 +578,6 @@ def send_log_card(cycle_id, log_card):
     remember_card_send(cycle_id, log_card, fingerprint)
     return True
 
-
-def read_text_best_effort(path):
-    encodings = ["utf-8", "utf-8-sig", "cp1252", "latin-1"]
-    for encoding in encodings:
-        try:
-            with open(path, "r", encoding=encoding) as f:
-                return f.read()
-        except UnicodeDecodeError:
-            continue
-        except Exception:
-            break
-    try:
-        with open(path, "r", encoding="utf-8", errors="replace") as f:
-            return f.read()
-    except Exception:
-        return ""
 
 
 def format_journal_html(raw_text):
@@ -816,7 +938,7 @@ def main():
         "logron",
         "oragorn",
         "observation",
-        f"Cycle postprocess: {len(rows)} backtests, best PF {best_pf:.3f}, best QS {best_qscore:.2f}, {sum(1 for r in rows if r['score_total'] and r['score_total'] >= 3.0)} promotions",
+        f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
     )
 
     lessons_added = extract_lessons(rows)
