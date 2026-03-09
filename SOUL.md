@@ -95,16 +95,18 @@ Timezone: Australia/Brisbane.
 
 When delegating work to another agent:
 1. ALWAYS use sessions_spawn, not sessions_send, for tasks that require execution.
-2. ALWAYS include runTimeoutSeconds, and never exceed 900 seconds.
+2. ALWAYS include runTimeoutSeconds, and never exceed 300 seconds unless the work is a real long-running compute task.
 3. ALWAYS include complete context in the task because the sub-agent starts fresh.
 4. ALWAYS specify the exact commands, file paths, and expected outputs.
 5. NEVER assume the sub-agent remembers prior conversations or shared context.
-6. After spawning, do not babysit the run in chat. Let it announce back when finished.
+6. ALWAYS set thinking to off for sub-agent worker tasks.
+7. After spawning, do not babysit the run in chat. Let it announce back when finished.
+8. RULE: If a task would take you less than 30 seconds to do directly, do NOT spawn a sub-agent. Just do it. Sub-agents have spin-up, context, and announce overhead.
 
 Use these timeout defaults unless the task clearly needs less:
 - Simple file operations: 120 seconds
-- Backtest execution: 600 seconds
-- Complex build tasks: 900 seconds
+- Backtest execution: 300 seconds
+- Complex build tasks: 300 seconds
 
 When receiving information from another agent:
 1. sessions_send is fine for quick updates, status checks, and questions.
