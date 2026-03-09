@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-IO-SUPERTREND-RETEST-EXPANSION-v1",
+  "ts_iso": "2026-03-10T03:01:00Z",
+  "thesis_id": "cycle_20260309_io_supertrend_retest_expansion_v1",
+  "name": "IO Supertrend Retest Expansion v1",
+  "version": "1.0",
+  "asset": "IO",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","SUPERTd_10_3.0","KCU_20_1.5","KCM_20_1.5","EMA_55","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00035",
+      "SUPERTd_10_3.0 crosses_above 0",
+      "low <= KCU_20_1.5 + 0.2 * ATR_14",
+      "Close > KCU_20_1.5",
+      "Close > EMA_55",
+      "ADX_14 >= 20",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00035",
+      "SUPERTd_10_3.0 crosses_below 0",
+      "high >= KCM_20_1.5 - 0.2 * ATR_14",
+      "Close < KCM_20_1.5",
+      "Close < EMA_55",
+      "ADX_14 >= 20",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.2 * ATR_14 below entry","Take profit: 3.0 * ATR_14 above entry","Early exit if SUPERTd_10_3.0 crosses_below 0","Time stop: 10 bars"],
+    "short": ["Stop loss: 1.2 * ATR_14 above entry","Take profit: 3.0 * ATR_14 below entry","Early exit if SUPERTd_10_3.0 crosses_above 0","Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Trend-state transition plus breakout retest. The concept asks whether IO rewards a Supertrend flip only when price can hold a retest above the expanded upper Keltner boundary with negative funding still present and ADX/DI already accelerating. This is a third branch distinct from Donchian boundary hold and EMA support hold."},
+  "variants": [{"name": "io_supertrend_retest_expansion_v1","template_name": "supertrend_retest_expansion","parameters": [{"name": "funding_extreme_neg", "value": -0.00035},{"name": "funding_extreme_pos", "value": 0.00035},{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "ema_anchor", "value": 55},{"name": "retest_buffer_atr", "value": 0.2},{"name": "adx_floor", "value": 20}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.2,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.6,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

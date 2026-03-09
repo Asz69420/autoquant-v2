@@ -1,17 +1,17 @@
 {
-  "cycle_id": "2026-03-09T12:06:00+10:00_CELO_4h_explore",
+  "cycle_id": "2026-03-09T13:01:00+10:00_IO_4h_explore",
   "research_direction": "explore_new",
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-CELO-ENVELOPE-BREAK-HOLD-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-CELO-DONCHIAN-SQUEEZE-CONTINUATION-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-CELO-SUPERTREND-EXPANSION-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-IO-DONCHIAN-RETEST-CONTINUATION-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-IO-EMA-BASE-HOLD-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-IO-SUPERTREND-RETEST-EXPANSION-v1.strategy_spec.json"
   ],
   "new_families": [
-    "celo_envelope_break_hold",
-    "celo_donchian_squeeze_continuation",
-    "celo_supertrend_expansion"
+    "io_donchian_retest_continuation",
+    "io_ema_base_hold",
+    "io_supertrend_retest_expansion"
   ],
   "iterated_families": [],
   "abandoned_families": [],
-  "rationale": "Forced exploration rotation away from 1h reclaim/snapback loops. Reflection only showed a zero-trade walk-forward fail on an older BABY VWAP branch, so no CELO families from this cycle are explicitly abandoned yet. The cycle remains a 3-branch CELO 4h exploration batch across envelope-hold, Donchian squeeze-release, and Supertrend expansion concepts."
+  "rationale": "Current IO 4h exploration cycle remains open. This reflection packet contained no fresh results or lessons, so there is no basis to refine or abandon any of the three new IO families yet. The cycle still consists of three materially distinct negative-funding base-break retest continuation branches: Donchian boundary hold, EMA support-hold continuation, and Supertrend/Keltner retest expansion."
 }

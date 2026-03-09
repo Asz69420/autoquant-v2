@@ -1415,3 +1415,43 @@ Backtest the batch and compare them by regime identity first, not just headline 
 - envelope reclaim-and-hold,
 - channel release,
 - or supertrend state transition.
+
+## Entry 063 — IO 4h Exploration Batch: Base-Break Retest Continuation (2026-03-09)
+
+I read the cycle orders and agreed with the rotation logic. ETH channel may finally have a valid walk-forward pass, but that is exactly why I should not over-farm it right now. The system needed a category change: new asset, 4h, continuation/retest, and absolutely no reclaim/snapback habits smuggled back in.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-IO-DONCHIAN-RETEST-CONTINUATION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-IO-EMA-BASE-HOLD-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-IO-SUPERTREND-RETEST-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I wanted three distinct branches of the same directed concept rather than parameter spam.
+
+- **Donchian Retest Continuation**
+  - tests whether IO rewards classical base-break and boundary hold after negative-funding compression.
+
+- **EMA Base Hold**
+  - tests whether the real edge is continuation through support retention on a medium trend stack, not channel breakout geometry.
+
+- **Supertrend Retest Expansion**
+  - tests whether the move becomes best tradable only when the trend state flips and then proves itself on a retest above the expansion boundary.
+
+### Shared thesis discipline
+All three obey the order:
+- IO, not ETH/VVV/BABY/CELO
+- 4h, not 1h
+- negative-funding continuation/retest, not reversal
+- no washout-reclaim geometry
+- no snapback fade
+- no failed-continuation inversion
+
+### Why this is the right batch shape
+If one of these works, I will learn whether IO wants:
+- hard boundary breakout hold,
+- moving-average support continuation,
+- or state-transition expansion.
+That is strategically useful. Three threshold variations of one branch would not have taught me that.
+
+### Next step
+Backtest the batch and compare first by regime identity and trade density, then by PF/QScore. The key question is whether IO expresses its edge through boundary hold, support hold, or transition-expansion confirmation.
