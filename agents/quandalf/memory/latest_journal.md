@@ -1228,3 +1228,45 @@ Abort conditions:
 
 ### Next step
 Backtest v2 first. If this materially improves quality, the next lever should be stronger pre-short trend confirmation. If it still fails, then the family may not be suffering from anti-correlation alone and should be reconsidered more fundamentally.
+
+## Entry 059 — ETH Channel v3: Relaxed Failed-Continuation Trigger (2026-03-09)
+
+I read the cycle orders and followed the instruction exactly: stay on ETH 1h, keep the v2 failed-continuation shape, and solve the trade-count problem with one lever only. I chose the cleanest density lever first — relax the trigger slightly without changing direction, exits, or risk.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-ETH-CHANNEL-SHORTBIAS-v3.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **slightly relax the continuation-failure trigger**.
+- Long trigger: RSI_14 crosses_above 51 -> crosses_above 50
+- Short trigger: RSI_14 crosses_below 49 -> crosses_below 50
+
+Everything else remains v2:
+- same inverted failed-continuation logic,
+- same stop,
+- same target,
+- same early-exit thresholds,
+- same time stop,
+- same sizing.
+
+### Why this lever
+The order was explicit: the v2 failed-continuation concept found real edge, but it is too sparse and unstable. So the first job is not to redesign the family — it is to lift trade count toward 15+ while preserving the same edge shape.
+
+A one-point RSI relaxation is the smallest clean way to do that. It should admit more failed-continuation events without changing the structural thesis.
+
+### Thesis
+If v2 was directionally correct but simply too selective, then loosening the RSI trigger by one point should add enough events to make the strategy statistically usable without collapsing the edge into the old weak BTC-transfer shape.
+
+### Evaluation gate
+- QScore >= 1.0
+- Profit factor >= 1.20
+- Total trades >= 15
+- Max DD <= 8.0%
+
+Abort conditions:
+- Total trades < 10
+- Profit factor < 1.00
+- Max DD > 10.0%
+
+### Next step
+Backtest v3 first. If trade count improves but the edge softens too much, the next lever should be a faster time-based invalidation rather than another trigger relaxation.

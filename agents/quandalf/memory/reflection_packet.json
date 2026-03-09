@@ -1,7 +1,99 @@
 {
-  "ts_iso": "2026-03-09T00:46:10.067807+00:00",
+  "ts_iso": "2026-03-09T01:02:19.290831+00:00",
   "type": "reflection",
   "recent_results": [
+    {
+      "id": "wf_b49aebc06503",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.818,
+      "max_drawdown_pct": 4.04,
+      "total_trades": 18,
+      "win_rate_pct": 44.44444444444444,
+      "total_return_pct": 7.98,
+      "score_total": 1.578,
+      "score_decision": "pass",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.552,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 18,
+          "profit_factor": 1.818,
+          "max_drawdown_pct": 4.04,
+          "total_return_pct": 7.98,
+          "win_rate_pct": 44.44444444444444,
+          "sharpe_ratio": 3.222,
+          "qscore": 1.578,
+          "decision": "pass",
+          "grade": "B",
+          "flags": "[]"
+        },
+        "degradation_pct": -185.9,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 15
+        }
+      },
+      "regime_metrics": null
+    },
+    {
+      "id": "wf_96c8c375c32d",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v2",
+      "variant_id": "eth_channel_shortbias_failed_continuation_v2",
+      "asset": "BTC",
+      "timeframe": "1h",
+      "profit_factor": 0.235,
+      "max_drawdown_pct": 8.34,
+      "total_trades": 12,
+      "win_rate_pct": 16.666666666666664,
+      "total_return_pct": -8.34,
+      "score_total": -0.348,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 10,
+          "profit_factor": 0.392,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.0,
+          "sharpe_ratio": -6.326,
+          "qscore": -0.108,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 12,
+          "profit_factor": 0.235,
+          "max_drawdown_pct": 8.34,
+          "total_return_pct": -8.34,
+          "win_rate_pct": 16.666666666666664,
+          "sharpe_ratio": -11.675,
+          "qscore": -0.348,
+          "decision": "fail",
+          "grade": "D",
+          "flags": "[\"low_trade_count\"]"
+        },
+        "degradation_pct": 100.0,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 15
+        }
+      },
+      "regime_metrics": null
+    },
     {
       "id": "wf_2fffbba9c28c",
       "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v2",
@@ -7036,6 +7128,14 @@
   ],
   "recent_lessons": [
     {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v2 on BTC/1h has very low PF (0.235). Entry logic may be anti-correlated with price movement.",
+      "implication": "Consider inverting entry conditions or switching to a different indicator combination."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v2 on ETH/1h shows edge (PF 4.261) but too few trades (8). Signal is too rare.",
+      "implication": "Relax entry conditions slightly to increase trade frequency while monitoring if PF holds."
+    },
+    {
       "observation": "Strategy QD-20260308-ETH-CHANNEL-SHORTBIAS-v1 on ETH/1h has very low PF (0.337). Entry logic may be anti-correlated with price movement.",
       "implication": "Consider inverting entry conditions or switching to a different indicator combination."
     },
@@ -7066,17 +7166,9 @@
     {
       "observation": "Strategy QD-20260308-AXS-CHANNEL-SHORTBIAS-v2.strategy_spec on AXS/4h is slightly losing (PF 0.715). Edge exists but costs eat it.",
       "implication": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-    },
-    {
-      "observation": "Strategy QD-20260308-AXS-CHANNEL-SHORTBIAS-v3.strategy_spec on AXS/4h is slightly losing (PF 0.785). Edge exists but costs eat it.",
-      "implication": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-    },
-    {
-      "observation": "Strategy QD-20260308-AXS-CHANNEL-SHORTBIAS-v4.strategy_spec on AXS/1h: PF 1.058, DD 7.3%, 77 trades, QScore 0.31 (FAIL).",
-      "implication": "Marginal edge. Consider parameter optimization or regime filtering."
     }
   ],
-  "result_count": 126,
+  "result_count": 128,
   "any_promising": true,
   "best_pf": 999.0,
   "best_qscore": 3.749
