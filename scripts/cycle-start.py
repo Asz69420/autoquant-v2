@@ -96,10 +96,27 @@ def next_cycle_id():
     return data["last_cycle_id"]
 
 
+def reuse_or_next_cycle_id():
+    """Reuse the previous cycle_id if it never completed (prevents drift from repeated failures)."""
+    run_state = load_json(OUT_PATH)
+    prev_status = run_state.get("status")
+    prev_cycle = run_state.get("cycle_id")
+    prev_ended = run_state.get("ended_at_epoch")
+
+    if prev_cycle and prev_status == "started" and not prev_ended:
+        print(
+            f"[cycle-start] previous cycle {prev_cycle} never completed (status={prev_status}), reusing cycle_id",
+            file=sys.stderr,
+        )
+        return int(prev_cycle)
+
+    return next_cycle_id()
+
+
 os.makedirs(STATE_DIR, exist_ok=True)
 started_at_epoch = time.time()
 started_at_iso = datetime.now(timezone.utc).isoformat()
-cycle_id = next_cycle_id()
+cycle_id = reuse_or_next_cycle_id()
 
 # Coherence check: warn and auto-sync drifted state files
 check_cycle_coherence(cycle_id)

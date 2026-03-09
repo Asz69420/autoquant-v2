@@ -19,7 +19,7 @@ CANDLES_DIR = ROOT / "data" / "candles"
 
 def _run_skill(cmd: list[str]):
     try:
-        p = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        p = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=120)
         raw = (p.stdout or "").strip()
         if not raw:
             return {"status": "empty", "stdout": "", "stderr": (p.stderr or "").strip()}
@@ -27,6 +27,8 @@ def _run_skill(cmd: list[str]):
             return json.loads(raw)
         except Exception:
             return {"status": "non_json", "stdout": raw, "stderr": (p.stderr or "").strip()}
+    except subprocess.TimeoutExpired:
+        return {"status": "timeout", "stdout": "", "stderr": "skill timed out after 120s"}
     except subprocess.CalledProcessError as e:
         out = (e.stdout or "").strip()
         err = (e.stderr or "").strip()
