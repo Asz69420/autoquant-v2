@@ -49,9 +49,11 @@ steps:
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-postprocess.py'
 
   - id: logron-health
-    # File/DB/state handoff from refine-postprocess -> logron-health:
-    # Logron checks latest cycle state in DB/logs/message board, not stdin.
-    command: 'openclaw agent --agent logron --message "Run health checks on the latest cycle. Query event_log for errors in the last 30 minutes. Query backtest_results for QScore trends. Check pipeline_runs for failures. Do NOT post a normal health card to the log channel from this pipeline step. The dedicated logron-health-check cron is the single authoritative health-card sender. From this pipeline step, only write alert to data/state/agent_messages.json for Oragorn and only send to the log channel if something critical or newly actionable is detected." --timeout 60000'
+    # Health card delivery is owned exclusively by logron-monitor.py, which
+    # deduplicates via health_send_state.json (4h cooldown + status/issue
+    # change detection).  Running it here after each cycle lets it fire
+    # immediately on a genuine status change while suppressing duplicates.
+    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\logron-monitor.py'
 
   - id: xqs-check
     # DB/state handoff from logron-health -> xqs-check:
