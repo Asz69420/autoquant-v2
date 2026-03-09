@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-SOL-DAILY-FAILED-BREAKDOWN-CONTINUATION-v2",
+  "ts_iso": "2026-03-10T08:56:00Z",
+  "thesis_id": "cycle_137_sol_daily_failed_breakdown_continuation_v2",
+  "name": "SOL Daily Failed Breakdown Continuation v2",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "1d",
+  "indicators": ["EMA_50","VWAP","ATR_14","RSI_14","MFI_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "low <= EMA_50 - 0.55 * ATR_14",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "RSI_14 >= 49",
+      "MFI_14 >= 50",
+      "ADX_14 >= 12",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "Disabled: thesis is bullish failed-breakdown continuation only"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry","Take profit: 3.0 * ATR_14 above entry","Early exit if Close crosses_below VWAP","Time stop: 14 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Daily trend-reset continuation after failed breakdown. SOL must reject downside loss back above the medium anchor and value with directional balance already constructive. This keeps the branch broad enough to print daily trades instead of waiting for a perfect reversal ceremony."},
+  "variants": [{"name": "sol_daily_failed_breakdown_continuation_v2","template_name": "daily_failed_breakdown_continuation_long","parameters": [{"name": "ema_anchor", "value": 50},{"name": "flush_atr_mult", "value": 0.55},{"name": "rsi_floor", "value": 49},{"name": "mfi_floor", "value": 50},{"name": "adx_floor", "value": 12}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.1,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 14},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 1.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

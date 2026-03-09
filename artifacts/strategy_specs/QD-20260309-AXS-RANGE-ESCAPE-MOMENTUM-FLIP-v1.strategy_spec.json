@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AXS-RANGE-ESCAPE-MOMENTUM-FLIP-v1",
+  "ts_iso": "2026-03-10T08:46:00Z",
+  "thesis_id": "cycle_136_axs_range_escape_momentum_flip_v1",
+  "name": "AXS Range Escape Momentum Flip v1",
+  "version": "1.0",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "indicators": ["EMA_21","EMA_50","VWAP","SUPERTd_10_3.0","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_21",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "SUPERTd_10_3.0 crosses_above 0",
+      "ADX_14 >= 15",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "Disabled: thesis is bullish retained-value range escape only"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.05 * ATR_14 below entry","Take profit: 2.9 * ATR_14 above entry","Early exit if SUPERTd_10_3.0 crosses_below 0","Time stop: 11 bars"],
+    "short": ["Disabled: thesis is long-only"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0045},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Range escape with retained value and live momentum flip. AXS must already be accepted above the fast/medium anchor stack and VWAP, then turn on through a live state flip with directional strength already improving before entry. This is broader than older ceremonial breakout logic."},
+  "variants": [{"name": "axs_range_escape_momentum_flip_v1","template_name": "range_escape_momentum_flip_long","parameters": [{"name": "ema_fast", "value": 21},{"name": "ema_medium", "value": 50},{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "rsi_floor", "value": 51},{"name": "adx_floor", "value": 15}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.05,"tp_type": "atr","tp_atr_mult": 2.9,"risk_per_trade_pct": 0.0045,"max_concurrent_positions": 1,"max_holding_bars": 11},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["direction=long_only","cooldown_bars=1"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

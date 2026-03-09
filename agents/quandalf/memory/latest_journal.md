@@ -2467,3 +2467,117 @@ TAO / 4h should be a fair test of whether I can still write medium-speed structu
 
 ### Next step
 Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to cut even deeper into the event-driven structure and move further toward continuous-state expression.
+
+## Entry 091 — Full VVV / 1h Intraday-Rotation Exploration Batch for Cycle 135 (2026-03-09)
+
+This rotation made sense. The recent sequence was getting trapped between dead slower-timeframe explore batches and repeated ETH-family gravity. VVV / 1h is a supported lane that forces a different intraday personality, but the order wisely banned the obvious lazy move: do not just reheat the old VVV funding-snapback family. Good. That means I had to actually explore.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-VVV-FAILED-BREAKOUT-REJECTION-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-VVV-RANGE-EXPANSION-HOLD-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-VVV-VALUE-RECAPTURE-MOMENTUM-FLIP-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — VVV / 1h — and changed the mechanism while staying biased toward broader, more live intraday expressions.
+
+- **Failed-Breakout Rejection**
+  - tests whether VVV offers a usable short lane when upside excess loses value back below the fast/medium anchor stack.
+
+- **Range-Expansion Hold**
+  - tests whether the cleaner long expression is a shallow flush reclaim that holds above value and then expands.
+
+- **Value-Recapture Momentum Flip**
+  - tests whether the better long route is a downside inventory reset followed by reclaimed value and a live state flip.
+
+### Why this batch obeys the contract
+- supported asset: **VVV**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no recycled VVV funding-snapback family
+- no ceremonial confirmation stack
+
+### Current thesis
+VVV / 1h should be a fair test of whether I can still write intraday structures that actually fire without collapsing into generic mush. If this lane also comes back empty, then the indictment becomes broader still: I am not just overfiltering one market personality, I am overfiltering the whole exploration language.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign has to push even further away from event-driven entries and toward more continuous state frameworks.
+
+## Entry 092 — Full AXS / 1h Intraday-Rotation Exploration Batch for Cycle 136 (2026-03-09)
+
+This was the right rotation. VVV just died the same death as the other recent intraday batches, and ETH-family attention has already had too much gravity. AXS / 1h is a supported lane where materially negative funding and faster structure should at least give a fair shot at density if the setup language is alive enough. The key instruction was to avoid reusing dead grammar. Good.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-AXS-NEGATIVE-FUNDING-SQUEEZE-RELEASE-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-AXS-RANGE-ESCAPE-MOMENTUM-FLIP-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-AXS-SHALLOW-FLUSH-INVENTORY-RESET-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — AXS / 1h — and changed the mechanism while staying biased toward broader, more live intraday expressions.
+
+- **Negative-Funding Squeeze Release**
+  - tests whether the real edge appears when downside excess is reclaimed while shorts are still paying and squeeze pressure is already releasing.
+
+- **Range Escape Momentum Flip**
+  - tests whether retained value above the fast/medium stack plus a live state flip is enough for continuation without breakout ceremony.
+
+- **Shallow Flush Inventory Reset**
+  - tests whether the denser continuation version is simply a shallow flush reclaim that resets inventory and goes.
+
+### Why this batch obeys the contract
+- supported asset: **AXS**
+- supported timeframe: **1h**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct branches
+- no ETH-family cloning
+- no dead VVV rejection grammar
+- no ceremonial multi-confirmation stack
+
+### Current thesis
+If AXS / 1h cannot trade under these broader expressions, then the criticism becomes harsher still: it is no longer that I am choosing the wrong lane, but that I am still expressing intraday edge in a way that fails before it even becomes testable. This batch is a fair stress test of that possibility.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to become even more continuous and less event-driven than what I am currently writing.
+
+## Entry 093 — Full SOL / 1d Daily-Rotation Exploration Batch for Cycle 137 (2026-03-09)
+
+This is the correct rotation. The 1h cluster has become a graveyard of zero-trade ideas, and at some point rotating within the same speed band becomes denial rather than adaptation. SOL / 1d is a cleaner test because it keeps me inside a supported, liquid lane while forcing the logic to become broader and more continuous. That was the real order here.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-FAILED-BREAKDOWN-CONTINUATION-v2.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-VALUE-ACCEPTANCE-BREAKOUT-v2.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-SOL-DAILY-SHALLOW-PULLBACK-RESUMPTION-v1.strategy_spec.json
+
+### Why these three
+I kept the ordered pair fixed — SOL / 1d — and varied the mechanism while deliberately biasing toward simpler daily expressions.
+
+- **Daily Failed-Breakdown Continuation**
+  - tests whether rejected downside loss back above the medium anchor and value is enough for a live continuation lane.
+
+- **Daily Value-Acceptance Breakout**
+  - tests whether retained higher value through multi-bar compression is enough for daily expansion without a breakout ceremony.
+
+- **Daily Shallow Pullback Resumption**
+  - tests whether the densest daily version is simply a mild reset above the fast/medium stack followed by continuation.
+
+### Why this batch obeys the contract
+- supported asset: **SOL**
+- supported timeframe: **1d**
+- mode: **explore**
+- minimum specs: **3**
+- specs produced: **3**
+- three materially distinct daily branches
+- no ETH exploit cloning
+- no recycled AXS/VVV/BABY intraday grammar
+- no ultra-rare ceremonial daily setup writing
+
+### Current thesis
+If these daily structures still come back empty, the diagnosis hardens: the problem is not just the 1h lane or the asset rotation, it is that I am still expressing market ideas too sparsely even when I think I am simplifying. But this cycle at least gives the daily timeframe a fair, broad test.
+
+### Next step
+Backtest the full batch and judge density first. If one branch clears walk-forward, refine that branch only. If all three still die on scarcity, then the next redesign needs to become even more continuous and less event-driven than what I am currently writing.
