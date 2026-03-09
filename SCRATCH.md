@@ -1,15 +1,14 @@
-Task: Fix sub-agent stalling.
+Task: Properly fix empty/garbage cycle batch postprocess cards.
 
 Steps:
-1. Diagnose current sub-agent state: list workers/sessions if possible, inspect logs, inspect model/thinking/timeout/approval config.
-2. Patch host openclaw.json: cheap subagent model, thinking off, runTimeoutSeconds 300, archiveAfterMinutes 60, maxConcurrent 3, exec ask off if supported.
-3. Check ~/.openclaw/exec-approvals.json for python/git preapproval; patch if needed.
-4. Update Oragorn SOUL.md with explicit <30 seconds do-it-yourself delegation rule.
-5. Clear any stalled sub-agents/workers if possible.
-6. Report diagnosis findings and changes.
+1. Trace where current_cycle_batch_summary.json and related current-cycle state are populated.
+2. Identify why postprocess reads empty/misaligned state and still sends/logs 0-spec/0-backtest updates.
+3. Patch upstream coherence checks so postprocess requires coherent current-cycle state and completed current-cycle rows before sending a batch card.
+4. If state is missing/misaligned when it should not be, emit an explicit warning/error path instead of a fake zero card.
+5. Validate, commit, and push.
 
 Completed so far:
 - Task captured.
 
 Next step:
-- Inspect runtime config and sub-agent state.
+- Read state-producing and postprocess code paths.

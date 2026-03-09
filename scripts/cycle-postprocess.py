@@ -432,6 +432,12 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
 
     has_reflection_note = bool(str(cycle_status.get("rationale") or "").strip() or str(cycle_status.get("next_cycle_focus") or "").strip()) if status_matches_cycle else False
 
+    state_warning = None
+    if manifest_matches_cycle and not status_matches_cycle:
+        state_warning = f"current_cycle_status lags active cycle {target_cycle_key} (status={status_cycle_key or 'missing'}, manifest={manifest_cycle_key or 'missing'})"
+    elif manifest_matches_cycle and int(cycle_specs.get('spec_count', 0) or 0) == 0 and rows_dict:
+        state_warning = f"active cycle {target_cycle_key} has no captured specs, but {len(rows_dict)} recent off-cycle result(s) are present"
+
     metrics = {
         "cycle_id": cycle_id,
         "cycle_key": target_cycle_key,
@@ -440,6 +446,7 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "orders_cycle_id": cycle_orders.get("cycle_id") if orders_match_cycle else None,
         "status_matches_cycle": status_matches_cycle,
         "manifest_matches_cycle": manifest_matches_cycle,
+        "state_warning": state_warning,
         "mode": mode,
         "research_direction": cycle_status.get("research_direction") or cycle_orders.get("research_direction"),
         "minimum_spec_count": minimum_spec_count,
@@ -554,8 +561,13 @@ def write_cycle_metrics(metrics):
         os.makedirs(os.path.dirname(CURRENT_CYCLE_METRICS_PATH), exist_ok=True)
         with open(CURRENT_CYCLE_METRICS_PATH, "w", encoding="utf-8") as f:
             json.dump(metrics, f, indent=2)
-        with open(CURRENT_CYCLE_BATCH_SUMMARY_PATH, "w", encoding="utf-8") as f:
-            json.dump(metrics, f, indent=2)
+
+        should_write_batch_summary = bool(metrics.get("cycle_results_present")) or (
+            int(metrics.get("specs_produced", 0) or 0) > 0 and int(metrics.get("external_rows", 0) or 0) == 0
+        )
+        if should_write_batch_summary:
+            with open(CURRENT_CYCLE_BATCH_SUMMARY_PATH, "w", encoding="utf-8") as f:
+                json.dump(metrics, f, indent=2)
     except Exception:
         pass
 
@@ -1209,7 +1221,8 @@ def main():
         write_cycle_metrics(metrics)
         sent = send_log_card(cycle_id, log_card, metrics=metrics)
 
-        print(json.dumps({"status": "card_sent" if sent else "card_skipped_duplicate", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "backtests": backtest_count, "total_in_db": total_rows, "card_metrics": metrics}))
+        status = "card_sent" if sent else ("state_warning" if metrics.get("state_warning") else "card_skipped_duplicate")
+        print(json.dumps({"status": status, "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "backtests": backtest_count, "total_in_db": total_rows, "card_metrics": metrics}))
         return
 
     new_backtests = backtest_new_specs() if a.backfill_unbacktested else 0
@@ -1293,12 +1306,17 @@ def main():
     write_cycle_metrics(metrics)
     log_card_sent = send_log_card(cycle_id, log_card, metrics=metrics)
 
-    post_agent_message(
-        "logron",
-        "oragorn",
-        "observation",
-        f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
-    )
+    if metrics.get("state_warning"):
+        warning_message = f"Cycle state warning: {metrics['state_warning']}"
+        post_agent_message("logron", "oragorn", "warning", warning_message)
+        log_event("cycle_state_warning", "logron", warning_message, severity="warn", pipeline="research_cycle", step="postprocess")
+    elif metrics.get("cycle_results_present") or int(metrics.get("specs_produced", 0) or 0) > 0:
+        post_agent_message(
+            "logron",
+            "oragorn",
+            "observation",
+            f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
+        )
 
     conn_portability = sqlite3.connect(DB, timeout=30)
     portability_updates = update_portability_scores(conn_portability)
