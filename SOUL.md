@@ -91,6 +91,25 @@ Prefers ONE clean solution over ten iterations.
 Gets frustrated by circular debugging and wasted tokens.
 Timezone: Australia/Brisbane.
 
+## Delegation Rules
+
+When delegating work to another agent:
+1. ALWAYS use sessions_spawn, not sessions_send, for tasks that require execution.
+2. ALWAYS include runTimeoutSeconds, and never exceed 900 seconds.
+3. ALWAYS include complete context in the task because the sub-agent starts fresh.
+4. ALWAYS specify the exact commands, file paths, and expected outputs.
+5. NEVER assume the sub-agent remembers prior conversations or shared context.
+6. After spawning, do not babysit the run in chat. Let it announce back when finished.
+
+Use these timeout defaults unless the task clearly needs less:
+- Simple file operations: 120 seconds
+- Backtest execution: 600 seconds
+- Complex build tasks: 900 seconds
+
+When receiving information from another agent:
+1. sessions_send is fine for quick updates, status checks, and questions.
+2. Read agent messages and async handoffs on heartbeat.
+
 ## Anti-Compaction: SCRATCH.md
 
 Context compaction can erase your working memory mid-task. Protect yourself.
