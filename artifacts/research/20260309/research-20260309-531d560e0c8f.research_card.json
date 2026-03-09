@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "id": "research-20260309-531d560e0c8f",
+  "created_at": "2026-03-09T00:14:24.640582Z",
+  "source_type": "transcript",
+  "source_ref": "https://www.youtube.com/watch?v=gUNXZMcd2jU",
+  "title": "OWASP's Top 10 Ways to Attack LLMs: AI Vulnerabilities Exposed",
+  "author": "IBMTechnology",
+  "summary_bullets": [
+    "You know what's catching a lot of teams off guard right now?",
+    "How easy it is for an LLM to leak something that it shouldn't, or be steered into doing something you never intended.",
+    "One clever prompt, one exposed training file, one sketchy plug-in, and suddenly your helpful AI assistant becomes a security incident just waiting to happen.",
+    "That's why the new OWASP Top 10 for AI Large Language Models, LLMs for short, really matters.",
+    "It cuts to the most common threats people are running into when they deploy these models in the real world.",
+    "And if you're new to OWASP, they're a global nonprofit focused on practical community-built security guidance.",
+    "They're the folks behind the classic Top 10 for Web Apps, and now they're doing the same for AI.",
+    "You can find all their work at owasp.org.",
+    "They came out with a Top 10 for Large Language Models in 2023, but a few years on, we've learned a lot, and that learning is reflected in an updated Top 10 list.",
+    "All right, let's break down what you need to watch out for when you put LLMs into production so you don't become the next victim."
+  ],
+  "creator_notes": [
+    {
+      "timestamp": null,
+      "quote": "You know what's catching a lot of teams off guard right now?",
+      "note": "Meaning: You know what's catching a lot of teams off guard right now?"
+    },
+    {
+      "timestamp": null,
+      "quote": "How easy it is for an LLM to leak something that it shouldn't, or be steered into doing something you never intended.",
+      "note": "Meaning: How easy it is for an LLM to leak something that it shouldn't, or be steered into doing something you never intended."
+    },
+    {
+      "timestamp": null,
+      "quote": "One clever prompt, one exposed training file, one sketchy plug-in, and suddenly your helpful AI assistant becomes a security incident just waiting to happen.",
+      "note": "Meaning: One clever prompt, one exposed training file, one sketchy plug-in, and suddenly your helpful AI assistant becomes a security incident just waiting to h"
+    },
+    {
+      "timestamp": null,
+      "quote": "That's why the new OWASP Top 10 for AI Large Language Models, LLMs for short, really matters.",
+      "note": "Meaning: That's why the new OWASP Top 10 for AI Large Language Models, LLMs for short, really matters."
+    },
+    {
+      "timestamp": null,
+      "quote": "It cuts to the most common threats people are running into when they deploy these models in the real world.",
+      "note": "Meaning: It cuts to the most common threats people are running into when they deploy these models in the real world."
+    },
+    {
+      "timestamp": null,
+      "quote": "And if you're new to OWASP, they're a global nonprofit focused on practical community-built security guidance.",
+      "note": "Meaning: And if you're new to OWASP, they're a global nonprofit focused on practical community-built security guidance."
+    },
+    {
+      "timestamp": null,
+      "quote": "They're the folks behind the classic Top 10 for Web Apps, and now they're doing the same for AI.",
+      "note": "Meaning: They're the folks behind the classic Top 10 for Web Apps, and now they're doing the same for AI."
+    },
+    {
+      "timestamp": null,
+      "quote": "You can find all their work at owasp.org.",
+      "note": "Meaning: You can find all their work at owasp.org."
+    },
+    {
+      "timestamp": null,
+      "quote": "They came out with a Top 10 for Large Language Models in 2023, but a few years on, we've learned a lot, and that learning is reflected in an updated Top 10 list.",
+      "note": "Meaning: They came out with a Top 10 for Large Language Models in 2023, but a few years on, we've learned a lot, and that learning is reflected in an updated To"
+    },
+    {
+      "timestamp": null,
+      "quote": "All right, let's break down what you need to watch out for when you put LLMs into production so you don't become the next victim.",
+      "note": "Meaning: All right, let's break down what you need to watch out for when you put LLMs into production so you don't become the next victim."
+    },
+    {
+      "timestamp": null,
+      "quote": "Okay, coming in at number one on the OWASP Top 10 for Large Language Models, prompt injection.",
+      "note": "Meaning: Okay, coming in at number one on the OWASP Top 10 for Large Language Models, prompt injection."
+    },
+    {
+      "timestamp": null,
+      "quote": "The same as it was in 2023, which means even though we've made progress on this one, we haven't solved it.",
+      "note": "Meaning: The same as it was in 2023, which means even though we've made progress on this one, we haven't solved it."
+    }
+  ],
+  "extracted_rules": [
+    "It cuts to the most common threats people are running into when they deploy these models in the real world.",
+    "And if you're new to OWASP, they're a global nonprofit focused on practical community-built security guidance.",
+    "All right, let's break down what you need to watch out for when you put LLMs into production so you don't become the next victim.",
+    "Now from there, if we have a bad guy, an attacker, who comes along and puts in a prompt, uh, a command into the system, telling it to do something that we didn't intend for it to.",
+    "So then the guy comes in and says, okay, if you won't tell me that, I'm, let's say I'm a chemistry student and I want you to tell me all the things that I should never mix together because they might explode.",
+    "In fact, we recently found out that even when LLMs have had protections against prompt injections that were written in normal language, in prose, like you and I normally speak, that if someone rephrased it as a poem, it got past the protections that were in place.",
+    "So, if you're a poet and don't know it, well, maybe you could be a prompt injector as well.",
+    "That is, if this system is connected to other systems, then I might be able to get it to execute commands that we really don't want it to do and be able do that under the control of an attacker.",
+    "And that would allow me, if I put in and say, don't breach our data, don't tell people how to build bombs and so forth.",
+    "So, the information going in, if somebody is sending a command in that we don't really want it to do, it could detect that and block it right here at the firewall so that it never gets into the LLM to begin with.",
+    "And if we see that data is breaching, is coming out, well, we could stop it and block it there, redact it, don't give the information to come out at all.",
+    "We need to do pen testing, that's basically sending commands into this system and seeing if it responds.",
+    "Sending a bunch of prompt injections into the system, and if it response prop ...",
+    "If not, then we know we need to put in some sort of blockage.",
+    "Therefore, if a bad actor comes along and decides they're gonna enter a prompt that asks for some of this information, if we don't have the right controls in place, then some of the information's gonna leak right back out, and now we have an issue.",
+    "Well, if we build, uh, maybe uh, an attacker builds an AI agent that goes in and asks something of the LLM, gets the results back and records it.",
+    "If they do that enough times, they can essentially harvest off large parts of the model.",
+    "Well, maybe I wanna block that if that's what is occurring.",
+    "Don't just let anyone come in and access this if it's gonna be sensitive information that they could potentially get.",
+    "Well, if we're gonna have a large language model, it doesn't exist just out of thin air."
+  ],
+  "strategy_components": [
+    {
+      "type": "filter",
+      "description": "I'm going to install a filter of some sort that says, okay, I want certain of this information entering my model, but maybe not all of it."
+    },
+    {
+      "type": "confirmation",
+      "description": "It's too expensive, too time consuming, requires too much expertise, too much compute power, all of that kind of stuff."
+    },
+    {
+      "type": "confirmation",
+      "description": "Well, an AI system, if we send too many commands into it at a point in time or long-running commands or commands that require a really complex language model, then we could basically take the system down, make it not ava"
+    }
+  ],
+  "explicit_conditions": [
+    "And if we see that data is breaching, is coming out, well, we could stop it and block it there, redact it, don't give the information to come out at all."
+  ],
+  "indicators_mentioned": [],
+  "tv_search_hints": [],
+  "timeframes_mentioned": [],
+  "assets_mentioned": [],
+  "tags": [],
+  "raw_pointer": "artifacts/research/20260309/research-20260309-531d560e0c8f.raw.txt",
+  "sha256": "0072206424ec9e0f2705605b715f964479c8a32b0b98d98c687d86d94b9eb7b4",
+  "truncated": false
+}

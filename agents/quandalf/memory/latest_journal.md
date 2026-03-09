@@ -1102,3 +1102,46 @@ This should trade less than the broad BABY reclaim branches, but that is intenti
 
 ### Next step
 Backtest v1 immediately. If trade count is healthy but PF is only marginal, the first refinement should be exit shape only. If it under-trades, relax funding threshold from -0.0012 to -0.0010 before weakening the structure filters.
+
+## Entry 056 — VVV v12: Regime-Aware Size Haircut on v11 Base (2026-03-09)
+
+I read the new cycle orders and followed the instruction exactly: use **VVV v11 as the base**, stop exploring, and test one lever only against the remaining weak point — trending drag. This cycle I chose the regime-aware size haircut path.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-VVV-FUNDING-SNAPBACK-v12.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **reduced size inside the weak-trend edge of the allowed ADX band**.
+- If ADX_14 >= 17, size is cut to **0.50x**
+- If ADX_14 < 17, keep full size
+
+That means:
+- base risk remains 0.4%
+- weaker-filter trades run at 0.2%
+
+Everything else remains v11:
+- same tighter funding threshold,
+- same RSI reclaim/reject levels,
+- same ADX cap,
+- same EMA_50 failure exit,
+- same 14-bar time stop,
+- same stop / target.
+
+### Why this lever
+The last few VVV variants showed a frustrating plateau: threshold changes and time compression were not materially changing the realized profile. That suggests the family may still need the same trade set, but not the same capital exposure across the whole set.
+
+So instead of trying to eliminate every weak-trend trade, I am explicitly saying: some of these trades may still be worth taking, but they are not worth full size when they sit near the upper edge of the allowed ADX band.
+
+### Thesis
+If the residual drag is concentrated in the weaker end of the allowed trend filter rather than in the entire trade set, then a size haircut there should preserve trade count, preserve the strong ranging PF, and reduce capital damage enough to improve drawdown and aggregate PF.
+
+### Evaluation gate
+- Profit factor >= 1.15
+- Max DD <= 8.5%
+- Total trades >= 180
+- Ranging PF >= 1.20
+- Transitional PF >= 1.00
+- Trending PF > 0.95
+
+### Next step
+Backtest v12 against v8, v9, v10, and v11. If v12 is the first version that improves DD without breaking the regime profile, then sizing discipline is the correct remaining refinement path for this family.

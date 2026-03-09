@@ -271,6 +271,67 @@ def butterworth_lfilter(values: list[float], cutoff_period: int = 20, order: int
     return lfilter(b_coeff, a_coeff, values).tolist()
 
 
+def normalize_parameter_map(raw_params) -> dict:
+    if isinstance(raw_params, dict):
+        return dict(raw_params)
+    if isinstance(raw_params, list):
+        out = {}
+        for item in raw_params:
+            if not isinstance(item, dict):
+                continue
+            name = item.get("name")
+            if not name:
+                continue
+            out[str(name)] = item.get("value", item.get("default"))
+        return out
+    return {}
+
+
+def normalize_directional_rules(raw_rules) -> dict:
+    if isinstance(raw_rules, dict):
+        return {
+            "long": list(raw_rules.get("long") or []),
+            "short": list(raw_rules.get("short") or []),
+        }
+    if isinstance(raw_rules, list):
+        rules = list(raw_rules)
+        return {"long": rules, "short": rules}
+    return {"long": [], "short": []}
+
+
+def normalize_risk(spec: dict, variant: dict) -> dict:
+    risk = {}
+    if isinstance(spec.get("risk"), dict):
+        risk.update(spec.get("risk", {}))
+    if isinstance(variant.get("risk"), dict):
+        risk.update(variant.get("risk", {}))
+
+    position_sizing = spec.get("position_sizing") if isinstance(spec.get("position_sizing"), dict) else {}
+    risk_policy = variant.get("risk_policy") if isinstance(variant.get("risk_policy"), dict) else {}
+    execution_policy = variant.get("execution_policy") if isinstance(variant.get("execution_policy"), dict) else {}
+    risk_rules = variant.get("risk_rules") if isinstance(variant.get("risk_rules"), list) else []
+
+    if "risk_per_trade_pct" in position_sizing and "risk_per_trade_pct" not in risk:
+        risk["risk_per_trade_pct"] = position_sizing["risk_per_trade_pct"]
+    risk.update(risk_policy)
+    risk.update(execution_policy)
+
+    for rule in risk_rules:
+        if not isinstance(rule, str) or "=" not in rule:
+            continue
+        key, value = rule.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        try:
+            parsed_value = float(value)
+            if parsed_value.is_integer():
+                parsed_value = int(parsed_value)
+        except ValueError:
+            parsed_value = value
+        risk[key] = parsed_value
+    return risk
+
+
 def parse_strategy_spec(spec_path: str, variant_name: str = "default") -> dict:
     with open(spec_path, "r", encoding="utf-8") as f:
         spec = json.load(f)
@@ -289,22 +350,82 @@ def parse_strategy_spec(spec_path: str, variant_name: str = "default") -> dict:
         "spec": spec,
         "variant": variant,
         "strategy_name": spec.get("name", spec.get("id", "unknown")),
-        "entry_rules": spec.get("entry_rules", variant.get("entry_rules", [])),
-        "exit_rules": spec.get("exit_rules", variant.get("exit_rules", [])),
-        "parameters": variant.get("parameters", spec.get("parameters", {})),
-        "risk": variant.get("risk", spec.get("risk", {})),
+        "entry_rules": normalize_directional_rules(spec.get("entry_rules", variant.get("entry_rules", []))),
+        "exit_rules": normalize_directional_rules(spec.get("exit_rules", variant.get("exit_rules", []))),
+        "parameters": normalize_parameter_map(variant.get("parameters", spec.get("parameters", {}))),
+        "risk": normalize_risk(spec, variant),
+        "declared_indicators": list(spec.get("indicators") or []),
     }
 
 
-def compute_indicators(candles: list[dict], params: dict) -> dict:
+def donchian_channels(candles: list[dict], period: int = 20):
+    n = len(candles)
+    lower = [None] * n
+    middle = [None] * n
+    upper = [None] * n
+    for i in range(period - 1, n):
+        window = candles[i - period + 1 : i + 1]
+        low = min(c["low"] for c in window)
+        high = max(c["high"] for c in window)
+        lower[i] = low
+        upper[i] = high
+        middle[i] = (low + high) / 2.0
+    return lower, middle, upper
+
+
+def choppiness_index(candles: list[dict], period: int = 14) -> list[float | None]:
+    out = [None] * len(candles)
+    atr_vals = atr(candles, 1)
+    for i in range(period - 1, len(candles)):
+        window = candles[i - period + 1 : i + 1]
+        tr_sum = sum(v for v in atr_vals[i - period + 1 : i + 1] if v is not None)
+        high_max = max(c["high"] for c in window)
+        low_min = min(c["low"] for c in window)
+        denom = high_max - low_min
+        if denom > 0 and tr_sum > 0:
+            out[i] = 100.0 * math.log10(tr_sum / denom) / math.log10(period)
+    return out
+
+
+def compute_indicators(candles: list[dict], params: dict, declared_indicators: list[str] | None = None) -> dict:
     closes = [c["close"] for c in candles]
     indicators = {"close": closes}
-    for p in [14, 20, 21, 50, 200]:
+    declared_indicators = declared_indicators or []
+
+    ema_periods = {14, 20, 21, 50, 200}
+    sma_periods = {14, 20, 21, 50, 200}
+    for key in ("ema_fast", "ema_slow", "fast_ema", "slow_ema"):
+        value = params.get(key)
+        if value is not None:
+            ema_periods.add(int(value))
+    for indicator_name in declared_indicators:
+        upper_name = str(indicator_name).upper()
+        if upper_name.startswith("EMA_"):
+            try:
+                ema_periods.add(int(upper_name.split("_")[1]))
+            except (IndexError, ValueError):
+                pass
+        if upper_name.startswith("SMA_"):
+            try:
+                sma_periods.add(int(upper_name.split("_")[1]))
+            except (IndexError, ValueError):
+                pass
+
+    for p in sorted(ema_periods | sma_periods):
         indicators[f"sma_{p}"] = sma(closes, p)
         indicators[f"ema_{p}"] = ema(closes, p)
     indicators["rsi_14"] = rsi(closes, 14)
     indicators["atr_14"] = atr(candles, 14)
     indicators["cci_20"] = cci(candles, 20)
+    indicators["chop_14_1_100"] = choppiness_index(candles, 14)
+    dcl_20, dcm_20, dcu_20 = donchian_channels(candles, 20)
+    indicators["dcl_20_20"] = dcl_20
+    indicators["dcm_20_20"] = dcm_20
+    indicators["dcu_20_20"] = dcu_20
+    dcl_10, dcm_10, dcu_10 = donchian_channels(candles, 10)
+    indicators["dcl_10_10"] = dcl_10
+    indicators["dcm_10_10"] = dcm_10
+    indicators["dcu_10_10"] = dcu_10
     st_period = params.get("supertrend_period", params.get("atr_period", 10))
     st_mult = params.get("supertrend_multiplier", params.get("multiplier", 3.0))
     indicators["supertrend"] = supertrend(candles, int(st_period), float(st_mult))
@@ -339,9 +460,7 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
             return candles[idx]["low"]
         if t == "open":
             return candles[idx]["open"]
-        if t.startswith("sma_") and t in indicators and indicators[t][idx] is not None:
-            return indicators[t][idx]
-        if t.startswith("ema_") and t in indicators and indicators[t][idx] is not None:
+        if (t.startswith("sma_") or t.startswith("ema_") or t.startswith("dcl_") or t.startswith("dcm_") or t.startswith("dcu_") or t.startswith("chop_")) and t in indicators and indicators[t][idx] is not None:
             return indicators[t][idx]
         if t.startswith("rsi"):
             return indicators["rsi_14"][idx]
@@ -389,13 +508,23 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
             right = get_value(right_text)
             return left is not None and right is not None and op_fn(left, right)
 
-    if "crosses_above" in condition.lower() or "cross_above" in condition.lower():
-        parts = condition.lower().replace("crosses_above", "|").replace("cross_above", "|").split("|")
+    lower_condition = condition.lower()
+    if "crosses_above" in lower_condition or "cross_above" in lower_condition:
+        parts = lower_condition.replace("crosses_above", "|").replace("cross_above", "|").split("|")
         if len(parts) == 2 and idx > 0:
-            curr = get_value(parts[0])
-            threshold = get_value(parts[1])
-            if curr is not None and threshold is not None:
-                return curr > threshold
+            left_text = parts[0].strip()
+            right_text = parts[1].strip()
+            prev_left = evaluate_condition(f"{left_text} <= {right_text}", idx - 1, indicators, candles)
+            curr_left = evaluate_condition(f"{left_text} > {right_text}", idx, indicators, candles)
+            return prev_left and curr_left
+    if "crosses_below" in lower_condition or "cross_below" in lower_condition:
+        parts = lower_condition.replace("crosses_below", "|").replace("cross_below", "|").split("|")
+        if len(parts) == 2 and idx > 0:
+            left_text = parts[0].strip()
+            right_text = parts[1].strip()
+            prev_left = evaluate_condition(f"{left_text} >= {right_text}", idx - 1, indicators, candles)
+            curr_left = evaluate_condition(f"{left_text} < {right_text}", idx, indicators, candles)
+            return prev_left and curr_left
     return False
 
 
@@ -404,9 +533,10 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
     if params_override:
         params.update(params_override)
 
-    entry_rules = strategy.get("entry_rules", [])
-    exit_rules = strategy.get("exit_rules", [])
+    entry_rules = normalize_directional_rules(strategy.get("entry_rules", []))
+    exit_rules = normalize_directional_rules(strategy.get("exit_rules", []))
     risk = strategy.get("risk", {})
+
     sl_pct = float(risk.get("stop_loss_pct", risk.get("stop_loss", 5.0)))
     tp_pct = float(risk.get("take_profit_pct", risk.get("take_profit", 10.0)))
     rr_ratio = risk.get("reward_risk_ratio", risk.get("rr_ratio"))
@@ -419,7 +549,16 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
         except (ValueError, IndexError):
             pass
 
-    indicators = compute_indicators(candles, params)
+    atr_period = int(risk.get("atr_period", 14))
+    stop_atr_mult = risk.get("stop_atr_mult")
+    tp_atr_mult = risk.get("tp_atr_mult")
+    max_holding_bars = risk.get("max_holding_bars")
+    try:
+        max_holding_bars = int(max_holding_bars) if max_holding_bars is not None else None
+    except (TypeError, ValueError):
+        max_holding_bars = None
+
+    indicators = compute_indicators(candles, params, strategy.get("declared_indicators"))
     trades = []
     position = None
     equity_curve = [1.0]
@@ -433,17 +572,41 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
             pnl_pct = ((close - entry_price) / entry_price) * 100.0 if direction == "long" else ((entry_price - close) / entry_price) * 100.0
             exit_signal = False
             exit_reason = ""
-            if pnl_pct <= -sl_pct:
+
+            atr_value = indicators.get(f"atr_{atr_period}", indicators.get("atr_14", []))[i]
+            if stop_atr_mult and atr_value is not None:
+                stop_move_pct = (float(stop_atr_mult) * atr_value / entry_price) * 100.0
+                if pnl_pct <= -stop_move_pct:
+                    exit_signal = True
+                    exit_reason = "stop_loss"
+                    pnl_pct = -stop_move_pct
+            elif pnl_pct <= -sl_pct:
                 exit_signal = True
                 exit_reason = "stop_loss"
                 pnl_pct = -sl_pct
-            elif pnl_pct >= tp_pct:
+
+            if not exit_signal:
+                if tp_atr_mult and atr_value is not None:
+                    tp_move_pct = (float(tp_atr_mult) * atr_value / entry_price) * 100.0
+                    if pnl_pct >= tp_move_pct:
+                        exit_signal = True
+                        exit_reason = "take_profit"
+                        pnl_pct = tp_move_pct
+                elif pnl_pct >= tp_pct:
+                    exit_signal = True
+                    exit_reason = "take_profit"
+                    pnl_pct = tp_pct
+
+            if not exit_signal and max_holding_bars is not None and (i - position["entry_idx"]) >= max_holding_bars:
                 exit_signal = True
-                exit_reason = "take_profit"
-                pnl_pct = tp_pct
-            else:
-                for rule in exit_rules:
+                exit_reason = "time_stop"
+
+            if not exit_signal:
+                for rule in exit_rules.get(direction, []):
                     cond = rule if isinstance(rule, str) else rule.get("condition", "")
+                    lower_cond = cond.lower()
+                    if any(prefix in lower_cond for prefix in ("stop loss:", "take profit:", "time stop:")):
+                        continue
                     if evaluate_condition(cond, i, indicators, candles):
                         exit_signal = True
                         exit_reason = "exit_rule"
@@ -466,21 +629,20 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
                 position = None
                 continue
 
-        if position is None and entry_rules:
-            all_met = True
-            for rule in entry_rules:
-                cond = rule if isinstance(rule, str) else rule.get("condition", "")
-                if not evaluate_condition(cond, i, indicators, candles):
-                    all_met = False
-                    break
-            if all_met:
-                direction = "long"
-                for rule in entry_rules:
-                    cond = (rule if isinstance(rule, str) else rule.get("condition", "")).lower()
-                    if "short" in cond or "sell" in cond or "direction == -1" in cond:
-                        direction = "short"
+        if position is None:
+            for direction in ("long", "short"):
+                direction_rules = entry_rules.get(direction, [])
+                if not direction_rules:
+                    continue
+                all_met = True
+                for rule in direction_rules:
+                    cond = rule if isinstance(rule, str) else rule.get("condition", "")
+                    if not evaluate_condition(cond, i, indicators, candles):
+                        all_met = False
                         break
-                position = {"entry_price": close, "entry_idx": i, "direction": direction}
+                if all_met:
+                    position = {"entry_price": close, "entry_idx": i, "direction": direction}
+                    break
         equity_curve.append(equity_curve[-1])
 
     if position is not None:

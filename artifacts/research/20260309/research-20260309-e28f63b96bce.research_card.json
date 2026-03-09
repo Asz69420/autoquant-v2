@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "id": "research-20260309-e28f63b96bce",
+  "created_at": "2026-03-09T00:13:46.106169Z",
+  "source_type": "transcript",
+  "source_ref": "https://www.youtube.com/watch?v=BOjdE7saP_0",
+  "title": "1,184 Malicious Skills on ClawHub Are Stealing Your Crypto Right Now",
+  "author": "OpenClawNewsFactor",
+  "summary_bullets": [
+    "Over 1,184 malicious skills were discovered on Clawhub, OpenClaw's official skill marketplace, actively spreading malware and running crypto scams against users who installed them.",
+    "Claw Hub, the community-driven skill marketplace that lets Openclaw users install third-party plugins in one click, has been confirmed to have distributed over 1,184 malicious skills before detection.",
+    "This is open claws npm moment, a supply chain attack directly inside the platform's own official distribution channel.",
+    "Here is the exact attack chain.",
+    "A malicious actor publishes a skill to Claw Hub with a legitimate sounding name, a currency converter, a news aggregator, a calendar sync tool.",
+    "The skill passes a basic functionality check because it actually performs its stated function.",
+    "But embedded in the skills execution code is a secondary payload that activates after the skill is installed and trusted by OpenClaw's runtime.",
+    "Because OpenClaw skills run with access to the host environment's file system and network, the malicious payload has everything it needs.",
+    "It reads environment variables to extract API keys and wallet addresses, exfiltrates them to an external server and in cryptocurrency targeting variants monitors clipboard content for wallet addresses and silently substitutes attacker controlled addresses at the moment of copy paste.",
+    "The reason this attack is particularly effective against openclaw users specifically is that the trust model for skills mirrors the trust model for the agent itself."
+  ],
+  "creator_notes": [
+    {
+      "timestamp": null,
+      "quote": "Over 1,184 malicious skills were discovered on Clawhub, OpenClaw's official skill marketplace, actively spreading malware and running crypto scams against users who installed them.",
+      "note": "Meaning: Over 1,184 malicious skills were discovered on Clawhub, OpenClaw's official skill marketplace, actively spreading malware and running crypto scams agai"
+    },
+    {
+      "timestamp": null,
+      "quote": "Claw Hub, the community-driven skill marketplace that lets Openclaw users install third-party plugins in one click, has been confirmed to have distributed over 1,184 malicious skills before detection.",
+      "note": "Meaning: Claw Hub, the community-driven skill marketplace that lets Openclaw users install third-party plugins in one click, has been confirmed to have distribu"
+    },
+    {
+      "timestamp": null,
+      "quote": "This is open claws npm moment, a supply chain attack directly inside the platform's own official distribution channel.",
+      "note": "Meaning: This is open claws npm moment, a supply chain attack directly inside the platform's own official distribution channel."
+    },
+    {
+      "timestamp": null,
+      "quote": "Here is the exact attack chain.",
+      "note": "Meaning: Here is the exact attack chain."
+    },
+    {
+      "timestamp": null,
+      "quote": "A malicious actor publishes a skill to Claw Hub with a legitimate sounding name, a currency converter, a news aggregator, a calendar sync tool.",
+      "note": "Meaning: A malicious actor publishes a skill to Claw Hub with a legitimate sounding name, a currency converter, a news aggregator, a calendar sync tool."
+    },
+    {
+      "timestamp": null,
+      "quote": "The skill passes a basic functionality check because it actually performs its stated function.",
+      "note": "Meaning: The skill passes a basic functionality check because it actually performs its stated function."
+    },
+    {
+      "timestamp": null,
+      "quote": "But embedded in the skills execution code is a secondary payload that activates after the skill is installed and trusted by OpenClaw's runtime.",
+      "note": "Meaning: But embedded in the skills execution code is a secondary payload that activates after the skill is installed and trusted by OpenClaw's runtime."
+    },
+    {
+      "timestamp": null,
+      "quote": "Because OpenClaw skills run with access to the host environment's file system and network, the malicious payload has everything it needs.",
+      "note": "Meaning: Because OpenClaw skills run with access to the host environment's file system and network, the malicious payload has everything it needs."
+    },
+    {
+      "timestamp": null,
+      "quote": "It reads environment variables to extract API keys and wallet addresses, exfiltrates them to an external server and in cryptocurrency targeting variants monitors clipboard content for wallet addresses",
+      "note": "Meaning: It reads environment variables to extract API keys and wallet addresses, exfiltrates them to an external server and in cryptocurrency targeting variant"
+    },
+    {
+      "timestamp": null,
+      "quote": "The reason this attack is particularly effective against openclaw users specifically is that the trust model for skills mirrors the trust model for the agent itself.",
+      "note": "Meaning: The reason this attack is particularly effective against openclaw users specifically is that the trust model for skills mirrors the trust model for the"
+    },
+    {
+      "timestamp": null,
+      "quote": "Once a skill is installed, it inherits the agents system level permissions.",
+      "note": "Meaning: Once a skill is installed, it inherits the agents system level permissions."
+    },
+    {
+      "timestamp": null,
+      "quote": "There is no sandboxed execution layer between a Claw Hub skill and your host machine unless you are running NanoClaw.",
+      "note": "Meaning: There is no sandboxed execution layer between a Claw Hub skill and your host machine unless you are running NanoClaw."
+    }
+  ],
+  "extracted_rules": [
+    "Not specified in content."
+  ],
+  "strategy_components": [
+    {
+      "type": "confirmation",
+      "description": "Claw Hub, the community-driven skill marketplace that lets Openclaw users install third-party plugins in one click, has been confirmed to have distributed over 1,184 malicious skills before detection."
+    },
+    {
+      "type": "confirmation",
+      "description": "The fix requires Claw Hub to implement mandatory code review and sandboxed skill execution before installation, neither of which currently exists at the platform level."
+    }
+  ],
+  "indicators_mentioned": [],
+  "tv_search_hints": [],
+  "timeframes_mentioned": [],
+  "assets_mentioned": [],
+  "tags": [],
+  "raw_pointer": "artifacts/research/20260309/research-20260309-e28f63b96bce.raw.txt",
+  "sha256": "b780ecc2118e407affb10080014945886fbf269433360eb45e16ae42c6b57cfe",
+  "truncated": false
+}
