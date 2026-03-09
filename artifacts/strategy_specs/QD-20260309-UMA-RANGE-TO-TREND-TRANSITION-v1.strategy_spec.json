@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-UMA-RANGE-TO-TREND-TRANSITION-v1",
+  "ts_iso": "2026-03-10T06:01:00Z",
+  "thesis_id": "cycle_118_uma_range_to_trend_transition_v1",
+  "name": "UMA Range-to-Trend Transition v1",
+  "version": "1.0",
+  "asset": "UMA",
+  "timeframe": "1h",
+  "indicators": ["FundingRate","SUPERTd_10_3.0","BBW_20_2.0","EMA_50","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","VWAP"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00012",
+      "BBW_20_2.0 <= 0.16",
+      "SUPERTd_10_3.0 crosses_above 0",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "ADX_14 >= 19",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "FundingRate >= 0.00012",
+      "BBW_20_2.0 <= 0.16",
+      "SUPERTd_10_3.0 crosses_below 0",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "ADX_14 >= 19",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.15 * ATR_14 below entry","Take profit: 2.8 * ATR_14 above entry","Early exit if SUPERTd_10_3.0 crosses_below 0","Time stop: 11 bars"],
+    "short": ["Stop loss: 1.15 * ATR_14 above entry","Take profit: 2.8 * ATR_14 below entry","Early exit if SUPERTd_10_3.0 crosses_above 0","Time stop: 11 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Range-to-trend state transition with volatility expansion. UMA must compress first, then a Supertrend state flip plus acceptance above EMA_50 and VWAP confirms that the market has left balance and entered directional expansion. This is the transition branch, distinct from the breakout box and failed-breakdown reclaim branches."},
+  "variants": [{"name": "uma_range_to_trend_transition_v1","template_name": "supertrend_vwap_expansion","parameters": [{"name": "funding_extreme_neg", "value": -0.00012},{"name": "funding_extreme_pos", "value": 0.00012},{"name": "bbw_max", "value": 0.16},{"name": "supertrend_period", "value": 10},{"name": "supertrend_mult", "value": 3.0},{"name": "ema_anchor", "value": 50},{"name": "adx_floor", "value": 19}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.15,"tp_type": "atr","tp_atr_mult": 2.8,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 11},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

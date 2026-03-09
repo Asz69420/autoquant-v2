@@ -1851,3 +1851,44 @@ All three stay inside the ordered theme:
 
 ### Next step
 Backtest the full batch and compare trade density, regime identity, and walk-forward viability first. The core question is whether AXS / 1h exhaustion is best expressed through immediate reversal, stalled displacement fade, or slower value re-entry after inventory reset.
+
+## Entry 074 — Full UMA / 1h Exploration Batch for Cycle 118 (2026-03-09)
+
+I read the cycle orders and this one rewarded discipline rather than cleverness. The brief already contained the full shape: UMA / 1h, three distinct concepts, explore mode, and explicit bans on ETH failed-continuation cloning and another dead 4h continuation batch. So the only real job was to honor the concept menu honestly and stay inside the supported universe.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-UMA-COMPRESSION-BREAKOUT-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-UMA-FAILED-BREAKDOWN-VALUE-REACCEPT-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-UMA-RANGE-TO-TREND-TRANSITION-v1.strategy_spec.json
+
+### Why these three
+I matched the three concept lanes the order asked for.
+
+- **Compression Breakout**
+  - asks whether UMA pays best when negative funding persists through a tight box and directional strength expands straight out of compression.
+
+- **Failed Breakdown Value Re-Accept**
+  - asks whether the edge appears after downside excess fails and price reclaims both the medium anchor and value.
+
+- **Range-to-Trend Transition**
+  - asks whether the cleanest expression comes only once compression resolves through a state change and directional expansion is already obvious.
+
+### Why this batch obeys the contract properly
+- Supported asset: **UMA**
+- Supported timeframe: **1h**
+- Mode: **explore**
+- Minimum specs: **3**
+- Specs produced: **3**
+- Distinct concept branches, not threshold spam
+- No ETH exploit clone
+- No 4h continuation reuse
+
+### Shared thesis discipline
+All three stay inside the same ordered theme:
+- negative-funding exploration,
+- no generic continuation batch,
+- no reclaim spam with trivial parameter changes,
+- no fake diversity.
+
+### Next step
+Backtest the full batch and compare trade density, regime identity, and walk-forward viability first. The key question is whether UMA / 1h is best expressed through compression breakout, failed-breakdown value re-acceptance, or explicit range-to-trend expansion.

@@ -1,23 +1,23 @@
 {
-  "cycle_id": 117,
+  "cycle_id": 118,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "artifacts/strategy_specs/QD-20260309-AXS-FLUSH-RECLAIM-REVERSAL-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-AXS-OPENING-RANGE-DISPLACEMENT-FADE-v1.strategy_spec.json",
-    "artifacts/strategy_specs/QD-20260309-AXS-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json"
+    "artifacts/strategy_specs/QD-20260309-UMA-COMPRESSION-BREAKOUT-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-UMA-FAILED-BREAKDOWN-VALUE-REACCEPT-v1.strategy_spec.json",
+    "artifacts/strategy_specs/QD-20260309-UMA-RANGE-TO-TREND-TRANSITION-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "funding-skew exhaustion reversal",
-      "opening-range displacement with mean-reversion filter",
-      "inventory-reset reclaim after flush and value re-entry"
+      "funding-skew compression breakout",
+      "post-failed-breakdown value re-acceptance",
+      "range-to-trend state transition with volatility expansion"
     ],
     "assets": [
-      "AXS"
+      "UMA"
     ],
     "timeframes": [
       "1h"
@@ -25,12 +25,16 @@
   },
   "iterate_target": null,
   "new_families": [
-    "axs_flush_reclaim_reversal",
-    "axs_opening_range_displacement_fade",
-    "axs_inventory_reset_reclaim"
+    "uma_compression_breakout",
+    "uma_failed_breakdown_value_reaccept",
+    "uma_range_to_trend_transition"
   ],
   "iterated_families": [],
-  "abandoned_families": [],
-  "next_cycle_focus": "Keep the AXS / 1h exhaustion batch intact and wait for actual AXS results. Separately note that ETH / 1h channel shortbias v6 is now the strongest supported exploit benchmark, while DOGE / 4h continuation families are confirmed too sparse under walk-forward. Neither changes the status of the current AXS cycle until AXS-specific results arrive.",
-  "rationale": "Cycle 117 remains open. This reflection packet contained meaningful results for older ETH exploit variants and older DOGE 4h failures, but no results for any of the three current-cycle AXS / 1h exhaustion families. Therefore there is no evidence yet to refine or abandon the flush-reclaim reversal, opening-range displacement fade, or inventory-reset reclaim branches from this cycle."
+  "abandoned_families": [
+    "uma_compression_breakout",
+    "uma_failed_breakdown_value_reaccept",
+    "uma_range_to_trend_transition"
+  ],
+  "next_cycle_focus": "Do not spend another cycle on the current UMA / 1h exploration lane. All three branches failed the walk-forward trade-count requirement with zero trades, so the next exploration cycle should move to a different supported asset/timeframe or a denser concept family rather than refining these UMA branches.",
+  "rationale": "Cycle 118 is now closed and explicitly abandoned. All three current-cycle UMA / 1h branches produced zero trades in walk-forward testing and failed with low-trade-count flags, which means this concept family is too sparse to be a usable research lane under the current validation regime. The packet also reconfirmed ETH / 1h channel shortbias as the strongest exploit benchmark and BTC / 1h transfer failure, but those older results do not rescue the current UMA batch."
 }
