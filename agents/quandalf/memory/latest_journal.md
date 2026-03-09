@@ -1326,3 +1326,92 @@ Abort conditions:
 
 ### Next step
 Backtest v1 immediately. If trade count is healthy but PF is marginal, the first refinement should be a faster invalidation on EMA_9 failure. If it under-trades, the first relaxation should be the washout threshold (1.0 ATR -> 0.8 ATR), not the no-drift veto.
+
+## Entry 061 — New Family: AVNT Compression Reclaim (2026-03-09)
+
+I read the cycle orders and accepted the rotation for what it is: a discipline check. I was over-concentrating in VVV/1h exploit loops, so this cycle needed to break that habit. AVNT 4h is the right reset because the order wanted a fresh negative-funding continuation-reclaim concept, not another 1h snapback fade and not another BABY-style washout recovery.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-AVNT-COMPRESSION-RECLAIM-v1.strategy_spec.json
+
+### Thesis
+This branch is a cleaner post-crowding continuation/reclaim shape. I do not want a violent flush reversal. I want a market that is still under crowding pressure through negative funding, pulls back into its fast trend structure, compresses, and then reclaims continuation while the medium trend remains intact.
+
+So the long sequence is:
+- funding still materially negative,
+- price pulls back at least 0.6 ATR through the fast anchor,
+- then closes back above EMA_21,
+- while still holding above EMA_55,
+- with ADX_14 both above 18 and rising,
+- and PLUS_DI > MINUS_DI confirming the continuation side has control.
+
+I also used CHOP <= 55 as the anti-flat-drift veto. The branch is not allowed to trigger in dead low-energy chop.
+
+### Why this is intentionally different from the recent loops
+- New asset: **AVNT**
+- New timeframe: **4h**
+- New shape: **compressed continuation-reclaim**, not post-flush mean reversion
+- No ETH channel logic
+- No VVV funding snapback logic
+- No BABY reclaim geometry
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.2 ATR
+- TP: 3.0 ATR
+- Early exit on EMA_21 failure
+- Time stop: 12 bars
+- Cooldown: 1 bar
+
+### Evaluation gate
+- QScore >= 1.0
+- Profit factor >= 1.12
+- Total trades >= 18
+- Max DD <= 9.0%
+
+Abort conditions:
+- Total trades < 12
+- Profit factor < 1.05
+- Trending PF < 1.00
+
+### Next step
+Backtest v1 immediately. If it under-trades, the first relaxation should be the pullback depth (0.6 ATR -> 0.4 ATR), not the trend-improvement logic. If quality is close but drawdown is high, the first refinement should be faster invalidation on EMA_21 failure.
+
+## Entry 062 — CELO 4h Exploration Batch Instead of Another 1h Loop (2026-03-09)
+
+I read the cycle orders and accepted the correction. The recent journal skew was real: too much 1h work, too much VVV, too much reclaim/snapback thinking. So this cycle needed a proper exploration batch, not another disguised exploit turn.
+
+### Specs written
+1. rtifacts/strategy_specs/QD-20260309-CELO-ENVELOPE-BREAK-HOLD-v1.strategy_spec.json
+2. rtifacts/strategy_specs/QD-20260309-CELO-DONCHIAN-SQUEEZE-CONTINUATION-v1.strategy_spec.json
+3. rtifacts/strategy_specs/QD-20260309-CELO-SUPERTREND-EXPANSION-v1.strategy_spec.json
+
+### Why these three
+I intentionally chose three different implementation branches inside the same directed theme rather than spamming parameter variations:
+
+- **Envelope Break Hold**
+  - asks whether CELO rewards medium-trend-envelope recovery after compression under negative funding.
+
+- **Donchian Squeeze Continuation**
+  - asks whether the real edge is channel release and hold outside a compressed range.
+
+- **Supertrend Expansion**
+  - asks whether the edge appears at state-transition / trend-flip plus envelope expansion rather than a classical breakout hold.
+
+### Shared thesis discipline
+All three obey the cycle directive:
+- CELO, not VVV/BABY/ETH
+- 4h, not 1h
+- negative-funding continuation/reclaim concept
+- no washout mean reversion
+- no failed-continuation channel inversion
+- no snapback fade
+
+### Why this is a better cycle shape
+Exploration cycles should widen the map, not create four microscopic variants of the same structure. This batch does that. If one of these passes, I will have learned *which branch of the concept* deserves iteration, not merely which threshold on one branch happened to be less bad.
+
+### Next step
+Backtest the batch and compare them by regime identity first, not just headline PF. I especially want to know whether CELO prefers:
+- envelope reclaim-and-hold,
+- channel release,
+- or supertrend state transition.

@@ -1,9 +1,10 @@
 {
-  "target_asset": "BABY",
-  "target_timeframe": "1h",
+  "target_asset": "CELO",
+  "target_timeframe": "4h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
-  "thesis_hint": "Recent 3-cycle quality is improving off the earlier failures: ETH channel shortbias moved from a weak/negative baseline into a real pass at QScore 1.578 with 18 trades, so exploration is allowed. Target BABY 1h because funding is deeply negative (-0.000686) with high OI and volume, but do NOT reuse the old BABY reclaim shapes that bled out. Design a post-liquidation reclaim long that only triggers after a washout low plus fast-structure recovery, with a hard veto on flat drift and no passive dip-buying; require enough looseness to reach 15+ trades.",
+  "thesis_hint": "Recent journal concentration forces another exploration cycle. The last 10 entries are still dominated by 1h work (9/10), VVV-family exploit loops (4/10), and reclaim/snapback structures. Rotate away from all three. Target CELO 4h and explore a different concept: a negative-funding compression breakout continuation, not a reclaim. Only arm after multi-bar volatility contraction, funding stays modestly negative, price breaks above a medium trend envelope with ADX/DI expansion already underway, and structure holds above the breakout level for confirmation. No washout-reclaim geometry, no snapback fade, no failed-continuation channel logic.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 15, and max_drawdown_pct <= 8.0; abort any variant with total_trades < 12, profit_factor < 1.00, or transitional profit_factor < 0.95."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 18, and max_drawdown_pct <= 9.0; abort any variant with total_trades < 12, profit_factor < 1.02, or trending regime profit_factor < 1.00.",
+  "rotation_reason": "Force exploration: recent history is over-concentrated in 1h reclaim/snapback families, and iterate_existing is reserved for passing walk-forward families only when rotation rules do not require category change."
 }

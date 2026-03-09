@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-AVNT-COMPRESSION-RECLAIM-v1",
+  "ts_iso": "2026-03-10T02:04:00Z",
+  "thesis_id": "cycle_20260309_avnt_compression_reclaim_v1",
+  "name": "AVNT Compression Reclaim v1",
+  "version": "1.0",
+  "asset": "AVNT",
+  "timeframe": "4h",
+  "indicators": [
+    "FundingRate",
+    "EMA_21",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "CHOP_14_1_100",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00045",
+      "low <= EMA_21 - 0.6 * ATR_14",
+      "Close crosses_above EMA_21",
+      "Close > EMA_55",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "CHOP_14_1_100 <= 55",
+      "RSI_14 >= 48"
+    ],
+    "short": [
+      "FundingRate >= 0.00045",
+      "high >= EMA_21 + 0.6 * ATR_14",
+      "Close crosses_below EMA_21",
+      "Close < EMA_55",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "CHOP_14_1_100 <= 55",
+      "RSI_14 <= 52"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 3.0 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_21",
+      "Time stop: 12 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 3.0 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_21",
+      "Time stop: 12 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "Fresh AVNT 4h continuation-reclaim concept: funding must still be materially negative, price must first compress/pull back into the fast trend anchor then reclaim it while staying above the medium trend anchor, and trend strength must be improving rather than flat. ADX rising plus DI alignment vetoes drift, while CHOP <= 55 rejects low-energy chop."
+  },
+  "variants": [
+    {
+      "name": "avnt_compression_reclaim_v1",
+      "template_name": "compression_reclaim",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.00045 },
+        { "name": "funding_extreme_pos", "value": 0.00045 },
+        { "name": "ema_fast", "value": 21 },
+        { "name": "ema_anchor", "value": 55 },
+        { "name": "pullback_atr_mult", "value": 0.6 },
+        { "name": "adx_floor", "value": 18 },
+        { "name": "chop_max", "value": 55 },
+        { "name": "rsi_reclaim", "value": 48 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.2,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.0,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 12
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

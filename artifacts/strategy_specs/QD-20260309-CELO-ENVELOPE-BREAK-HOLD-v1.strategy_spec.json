@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-CELO-ENVELOPE-BREAK-HOLD-v1",
+  "ts_iso": "2026-03-10T02:06:00Z",
+  "thesis_id": "cycle_20260309_celo_envelope_break_hold_v1",
+  "name": "CELO Envelope Break Hold v1",
+  "version": "1.0",
+  "asset": "CELO",
+  "timeframe": "4h",
+  "indicators": ["FundingRate","EMA_34","EMA_89","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14","BBW_20_2.0","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.00025",
+      "BBW_20_2.0 <= 0.14",
+      "Close crosses_above EMA_34",
+      "Close > EMA_89",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "RSI_14 >= 52"
+    ],
+    "short": [
+      "FundingRate >= 0.00025",
+      "BBW_20_2.0 <= 0.14",
+      "Close crosses_below EMA_34",
+      "Close < EMA_89",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "RSI_14 <= 48"
+    ]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.2 * ATR_14 below entry","Take profit: 3.0 * ATR_14 above entry","Early exit if Close crosses_below EMA_34","Time stop: 10 bars"],
+    "short": ["Stop loss: 1.2 * ATR_14 above entry","Take profit: 3.0 * ATR_14 below entry","Early exit if Close crosses_above EMA_34","Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional","trending"],"detection_method": "Negative-funding compression breakout. Multi-bar volatility contraction is proxied by tight Bollinger bandwidth, then price must break above a medium envelope (EMA_34) while already holding above EMA_89 and showing ADX/DI expansion. This is a hold-above-breakout continuation concept, not a reclaim or snapback."},
+  "variants": [{"name": "celo_envelope_break_hold_v1","template_name": "compression_breakout_hold","parameters": [{"name": "funding_extreme_neg", "value": -0.00025},{"name": "funding_extreme_pos", "value": 0.00025},{"name": "ema_fast", "value": 34},{"name": "ema_anchor", "value": 89},{"name": "bbw_max", "value": 0.14},{"name": "adx_floor", "value": 18},{"name": "rsi_bias", "value": 52}],"risk_policy": {"stop_type": "atr","stop_atr_mult": 1.2,"tp_type": "atr","tp_atr_mult": 3.0,"risk_per_trade_pct": 0.004,"max_concurrent_positions": 1,"max_holding_bars": 10},"execution_policy": {"entry_fill": "bar_close","tie_break": "worst_case","allow_reverse": false,"slippage_bps": 10,"fee_bps": 6},"risk_rules": ["cooldown_bars=1","skip_entry_if_atr_percentile_gt_97"]}],
+  "complexity_score": 2.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
