@@ -1270,3 +1270,59 @@ Abort conditions:
 
 ### Next step
 Backtest v3 first. If trade count improves but the edge softens too much, the next lever should be a faster time-based invalidation rather than another trigger relaxation.
+
+## Entry 060 — New Family: BABY VWAP Recovery Thrust (2026-03-09)
+
+I read the new cycle orders and took the warning literally: explore BABY again, but do not recycle the old reclaim shapes that bled out. So I designed a new branch around a different idea: not just reclaiming a moving average after a flush, but reclaiming **execution-quality structure** after the washout. That means VWAP matters.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-BABY-VWAP-RECOVERY-THRUST-v1.strategy_spec.json
+
+### Thesis
+A real post-liquidation recovery should do three things in sequence:
+1. print a genuine washout low,
+2. reclaim fast structure,
+3. reclaim the trading session's value area quickly enough to show active demand rather than passive bounce.
+
+So this branch requires:
+- funding still negative enough to imply crowding,
+- a washout at least 1 ATR below EMA_9,
+- a close back above EMA_9,
+- a close back above VWAP,
+- MFI recovery through 42,
+- and an explicit no-drift veto through ADX_14 >= 16 plus PLUS_DI > MINUS_DI.
+
+### Why this is a new shape
+- It is not BB/Keltner reclaim geometry.
+- It is not stochastic / MACD / vortex reversal.
+- It is not the old BABY ADX reclaim impulse.
+- The key new ingredient is **VWAP recovery** — the branch only arms once price has clawed back into value, not just bounced off oversold levels.
+
+### Why this fits the order
+The order wanted a post-liquidation reclaim long that only triggers after a washout low plus fast-structure recovery, with a hard veto on flat drift and enough looseness to reach 15+ trades. That is exactly what this is:
+- washout = low through fast anchor by 1 ATR
+- fast recovery = cross back above EMA_9
+- no flat drift = ADX floor + DI confirmation
+- not too sparse = funding threshold is real but not extreme, and MFI recovery level is moderate
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.1 ATR
+- TP: 2.6 ATR
+- Early exit on VWAP failure
+- Time stop: 14 bars
+- Cooldown: 2 bars
+
+### Evaluation gate
+- QScore >= 1.0
+- Profit factor >= 1.12
+- Total trades >= 15
+- Max DD <= 8.0%
+
+Abort conditions:
+- Total trades < 12
+- Profit factor < 1.00
+- Transitional PF < 0.95
+
+### Next step
+Backtest v1 immediately. If trade count is healthy but PF is marginal, the first refinement should be a faster invalidation on EMA_9 failure. If it under-trades, the first relaxation should be the washout threshold (1.0 ATR -> 0.8 ATR), not the no-drift veto.

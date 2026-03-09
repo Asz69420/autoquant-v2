@@ -1,6 +1,6 @@
 {
-  "ts_iso": "2026-03-09T01:00:36.704522+00:00",
-  "cycle_id": 101,
+  "ts_iso": "2026-03-09T01:30:55.797204+00:00",
+  "cycle_id": 102,
   "leaderboard": {
     "status": "ok",
     "count": 5,
@@ -80,12 +80,12 @@
   "kpi": {
     "status": "ok",
     "period_days": 30,
-    "total": 1300,
-    "passed": 12,
+    "total": 1302,
+    "passed": 13,
     "promoted": 11,
-    "failed": 1288,
+    "failed": 1289,
     "suspect": 172,
-    "hit_rate_pct": 0.9,
+    "hit_rate_pct": 1.0,
     "promote_rate_pct": 0.8,
     "best": {
       "spec_id": "strategy-spec-20260301-claude-st9k3m5x.strategy_spec",
@@ -96,6 +96,17 @@
     "status": "ok",
     "count": 5,
     "lessons": [
+      {
+        "id": "lesson_wf_b49aebc06503",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3",
+        "type": "backtest_analysis",
+        "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3 on ETH/1h shows strong edge (PF 1.818, 18 trades). Worth iterating.",
+        "implication": "Test across multiple assets for robustness. If PF holds, candidate for promotion.",
+        "actionable": true,
+        "action": "Test across multiple assets for robustness. If PF holds, candidate for promotion.",
+        "confidence": "medium",
+        "date": "2026-03-09T01:02:33.921449+00:00"
+      },
       {
         "id": "lesson_wf_96c8c375c32d",
         "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v2",
@@ -139,17 +150,6 @@
         "action": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions.",
         "confidence": "medium",
         "date": "2026-03-09T00:08:01.402112+00:00"
-      },
-      {
-        "id": "lesson_hl_20260309_cd03ac46",
-        "spec_id": "QD-20260309-BABY-KELTNER-RECLAIM-PERSISTENCE-v1.strategy_spec",
-        "type": "backtest_analysis",
-        "observation": "Strategy QD-20260309-BABY-KELTNER-RECLAIM-PERSISTENCE-v1.strategy_spec on BABY/1h has very low PF (0.000). Entry logic may be anti-correlated with price movement.",
-        "implication": "Consider inverting entry conditions or switching to a different indicator combination.",
-        "actionable": true,
-        "action": "Consider inverting entry conditions or switching to a different indicator combination.",
-        "confidence": "medium",
-        "date": "2026-03-09T00:08:01.401884+00:00"
       }
     ]
   },
@@ -221,112 +221,112 @@
       {
         "asset": "BTC",
         "asset_type": "perp",
-        "price": 66317.0,
-        "volume_24h": 2410683652.683641,
-        "open_interest": 22906.6733,
-        "funding_rate": 4.513e-06,
+        "price": 66480.0,
+        "volume_24h": 2480616140.636713,
+        "open_interest": 23703.84436,
+        "funding_rate": 1.25e-05,
         "price_change_24h": 0.0,
         "max_leverage": 40.0,
-        "opportunity_score": 0.500692
-      },
-      {
-        "asset": "DYM",
-        "asset_type": "perp",
-        "price": 0.03876,
-        "volume_24h": 218393.2397569999,
-        "open_interest": 12488794.0,
-        "funding_rate": -0.0019574846,
-        "price_change_24h": 0.0,
-        "max_leverage": 3.0,
-        "opportunity_score": 0.300045
-      },
-      {
-        "asset": "ETH",
-        "asset_type": "perp",
-        "price": 1951.0,
-        "volume_24h": 881396139.6314797,
-        "open_interest": 578121.2092000005,
-        "funding_rate": -1.55358e-05,
-        "price_change_24h": 0.0,
-        "max_leverage": 25.0,
-        "opportunity_score": 0.185191
+        "opportunity_score": 0.505463
       },
       {
         "asset": "BABY",
         "asset_type": "perp",
-        "price": 0.013892,
-        "volume_24h": 4571367.709987,
-        "open_interest": 61861618.0,
-        "funding_rate": -0.000476224,
+        "price": 0.014017,
+        "volume_24h": 4626136.45355,
+        "open_interest": 62393906.0,
+        "funding_rate": -0.0006864109,
         "price_change_24h": 0.0,
         "max_leverage": 3.0,
-        "opportunity_score": 0.073933
-      },
-      {
-        "asset": "MAVIA",
-        "asset_type": "perp",
-        "price": 0.03322,
-        "volume_24h": 3319.358741,
-        "open_interest": 53838756.8,
-        "funding_rate": 0.0004546065,
-        "price_change_24h": 0.0,
-        "max_leverage": 3.0,
-        "opportunity_score": 0.069673
+        "opportunity_score": 0.300932
       },
       {
         "asset": "AVNT",
         "asset_type": "perp",
-        "price": 0.15456,
-        "volume_24h": 506417.8074199999,
-        "open_interest": 6062912.0,
-        "funding_rate": -0.0003810159,
+        "price": 0.15484,
+        "volume_24h": 596414.8398200001,
+        "open_interest": 6288552.0,
+        "funding_rate": -0.0005297259,
         "price_change_24h": 0.0,
         "max_leverage": 5.0,
-        "opportunity_score": 0.058499
+        "opportunity_score": 0.23164
       },
       {
-        "asset": "SOL",
+        "asset": "DYM",
         "asset_type": "perp",
-        "price": 82.305,
-        "volume_24h": 237002038.41338956,
-        "open_interest": 3192141.5000000126,
-        "funding_rate": 1.25e-05,
+        "price": 0.03691,
+        "volume_24h": 256161.018236,
+        "open_interest": 12769498.6,
+        "funding_rate": -0.0004341664,
         "price_change_24h": 0.0,
-        "max_leverage": 20.0,
-        "opportunity_score": 0.051072
+        "max_leverage": 3.0,
+        "opportunity_score": 0.189807
+      },
+      {
+        "asset": "ETH",
+        "asset_type": "perp",
+        "price": 1950.7,
+        "volume_24h": 893305679.2560495,
+        "open_interest": 577462.8236,
+        "funding_rate": -8.9518e-06,
+        "price_change_24h": 0.0,
+        "max_leverage": 25.0,
+        "opportunity_score": 0.18397
+      },
+      {
+        "asset": "UMA",
+        "asset_type": "perp",
+        "price": 0.42243,
+        "volume_24h": 394604.5699350001,
+        "open_interest": 586482.6,
+        "funding_rate": -0.0003943029,
+        "price_change_24h": 0.0,
+        "max_leverage": 3.0,
+        "opportunity_score": 0.172412
       },
       {
         "asset": "BLAST",
         "asset_type": "perp",
         "price": 0.00049,
-        "volume_24h": 45402.12252,
+        "volume_24h": 43948.737368,
         "open_interest": 1712280882.0,
-        "funding_rate": -0.000222166,
+        "funding_rate": -0.0002297532,
         "price_change_24h": 0.0,
         "max_leverage": 3.0,
-        "opportunity_score": 0.034058
+        "opportunity_score": 0.100424
       },
       {
-        "asset": "HYPE",
+        "asset": "MAVIA",
         "asset_type": "perp",
-        "price": 30.705,
-        "volume_24h": 151102029.80243993,
-        "open_interest": 17820079.32,
-        "funding_rate": 1.25e-05,
+        "price": 0.0331,
+        "volume_24h": 3319.362055,
+        "open_interest": 53838756.8,
+        "funding_rate": 0.00022434,
         "price_change_24h": 0.0,
-        "max_leverage": 10.0,
-        "opportunity_score": 0.033256
+        "max_leverage": 3.0,
+        "opportunity_score": 0.09805
       },
       {
         "asset": "0G",
         "asset_type": "perp",
-        "price": 0.54425,
-        "volume_24h": 261655.8618700001,
-        "open_interest": 943814.0,
-        "funding_rate": -0.000182329,
+        "price": 0.55174,
+        "volume_24h": 275558.5837000001,
+        "open_interest": 953398.0,
+        "funding_rate": -0.0001968956,
         "price_change_24h": 0.0,
         "max_leverage": 3.0,
-        "opportunity_score": 0.027998
+        "opportunity_score": 0.08611
+      },
+      {
+        "asset": "2Z",
+        "asset_type": "perp",
+        "price": 0.073796,
+        "volume_24h": 139451.0827430001,
+        "open_interest": 20452394.0,
+        "funding_rate": -0.0001274537,
+        "price_change_24h": 0.0,
+        "max_leverage": 3.0,
+        "opportunity_score": 0.055733
       }
     ]
   },
@@ -335,704 +335,606 @@
     "count": 229,
     "funding": [
       {
-        "asset": "DYM",
-        "funding_rate": -0.0019574846,
-        "price": 0.03876,
-        "volume_24h": 218393.2397569999,
-        "open_interest": 12488794.0
-      },
-      {
         "asset": "BABY",
-        "funding_rate": -0.000476224,
-        "price": 0.013892,
-        "volume_24h": 4571367.709987,
-        "open_interest": 61861618.0
-      },
-      {
-        "asset": "MAVIA",
-        "funding_rate": 0.0004546065,
-        "price": 0.03322,
-        "volume_24h": 3319.358741,
-        "open_interest": 53838756.8
+        "funding_rate": -0.0006857332,
+        "price": 0.014017,
+        "volume_24h": 4626136.45355,
+        "open_interest": 62393906.0
       },
       {
         "asset": "AVNT",
-        "funding_rate": -0.0003810159,
-        "price": 0.15456,
-        "volume_24h": 506417.8074199999,
-        "open_interest": 6062912.0
+        "funding_rate": -0.0005297142,
+        "price": 0.15484,
+        "volume_24h": 596414.8398200001,
+        "open_interest": 6288552.0
       },
       {
-        "asset": "BLAST",
-        "funding_rate": -0.000222166,
-        "price": 0.00049,
-        "volume_24h": 45402.12252,
-        "open_interest": 1712280882.0
-      },
-      {
-        "asset": "0G",
-        "funding_rate": -0.000182329,
-        "price": 0.54425,
-        "volume_24h": 261655.8618700001,
-        "open_interest": 943814.0
+        "asset": "DYM",
+        "funding_rate": -0.0004328313,
+        "price": 0.03691,
+        "volume_24h": 256161.018236,
+        "open_interest": 12769498.6
       },
       {
         "asset": "UMA",
-        "funding_rate": -0.00016837,
-        "price": 0.42125,
-        "volume_24h": 383804.2525230001,
-        "open_interest": 604675.6
+        "funding_rate": -0.0003948064,
+        "price": 0.42243,
+        "volume_24h": 394604.5699350001,
+        "open_interest": 586482.6
       },
       {
-        "asset": "MEW",
-        "funding_rate": -0.000130742,
-        "price": 0.000565,
-        "volume_24h": 25660.973291,
-        "open_interest": 125240312.0
+        "asset": "BLAST",
+        "funding_rate": -0.0002289675,
+        "price": 0.00049,
+        "volume_24h": 43948.737368,
+        "open_interest": 1712280882.0
       },
       {
-        "asset": "WIF",
-        "funding_rate": -0.0001147462,
-        "price": 0.17906,
-        "volume_24h": 1385251.2341999991,
-        "open_interest": 29144938.0
+        "asset": "MAVIA",
+        "funding_rate": 0.000224793,
+        "price": 0.0331,
+        "volume_24h": 3319.362055,
+        "open_interest": 53838756.8
       },
       {
-        "asset": "ZRO",
-        "funding_rate": -0.0001052265,
-        "price": 1.976,
-        "volume_24h": 9201934.279580003,
-        "open_interest": 19979705.6
+        "asset": "0G",
+        "funding_rate": -0.0001961983,
+        "price": 0.55174,
+        "volume_24h": 275558.5837000001,
+        "open_interest": 953398.0
       },
       {
         "asset": "2Z",
-        "funding_rate": -0.0001051235,
-        "price": 0.074569,
-        "volume_24h": 139639.5935950001,
-        "open_interest": 20418520.0
+        "funding_rate": -0.0001274566,
+        "price": 0.073796,
+        "volume_24h": 139451.0827430001,
+        "open_interest": 20452394.0
       },
       {
-        "asset": "VVV",
-        "funding_rate": -0.0001013026,
-        "price": 5.4968,
-        "volume_24h": 5229257.311968001,
-        "open_interest": 1844427.46
-      },
-      {
-        "asset": "VIRTUAL",
-        "funding_rate": -9.54623e-05,
-        "price": 0.63522,
-        "volume_24h": 5534345.142502999,
-        "open_interest": 18430954.8
-      },
-      {
-        "asset": "LAYER",
-        "funding_rate": -8.09163e-05,
-        "price": 0.07886,
-        "volume_24h": 145329.9403889999,
-        "open_interest": 5714422.0
+        "asset": "WIF",
+        "funding_rate": -0.0001197872,
+        "price": 0.1789,
+        "volume_24h": 1427094.0351899993,
+        "open_interest": 29165190.0
       },
       {
         "asset": "kPEPE",
-        "funding_rate": -7.84107e-05,
-        "price": 0.003211,
-        "volume_24h": 2586013.707492,
-        "open_interest": 2989081348.0
+        "funding_rate": -0.0001067646,
+        "price": 0.003218,
+        "volume_24h": 2586654.865663,
+        "open_interest": 2984378428.0
+      },
+      {
+        "asset": "ZRO",
+        "funding_rate": -9.32351e-05,
+        "price": 1.956,
+        "volume_24h": 9357094.704910003,
+        "open_interest": 19978181.2
+      },
+      {
+        "asset": "IO",
+        "funding_rate": -9.11298e-05,
+        "price": 0.10305,
+        "volume_24h": 201760.972176,
+        "open_interest": 3836889.4
+      },
+      {
+        "asset": "VVV",
+        "funding_rate": -8.68148e-05,
+        "price": 5.4285,
+        "volume_24h": 5286586.277626002,
+        "open_interest": 1842375.2
       },
       {
         "asset": "EIGEN",
-        "funding_rate": -7.68923e-05,
-        "price": 0.1791,
-        "volume_24h": 218625.284727,
-        "open_interest": 11471319.28
+        "funding_rate": -8.35387e-05,
+        "price": 0.179,
+        "volume_24h": 219763.832431,
+        "open_interest": 11485443.68
       },
       {
-        "asset": "TST",
-        "funding_rate": 7.21983e-05,
-        "price": 0.009299,
-        "volume_24h": 24605.479253,
-        "open_interest": 13664364.0
-      },
-      {
-        "asset": "CELO",
-        "funding_rate": -7.19937e-05,
-        "price": 0.072566,
-        "volume_24h": 204669.604295,
-        "open_interest": 10662122.0
-      },
-      {
-        "asset": "TRUMP",
-        "funding_rate": -6.1794e-05,
-        "price": 2.9801,
-        "volume_24h": 1054701.3421600002,
-        "open_interest": 2424619.8000000003
-      },
-      {
-        "asset": "GRIFFAIN",
-        "funding_rate": 5.96679e-05,
-        "price": 0.0082,
-        "volume_24h": 168401.975149,
-        "open_interest": 141517142.0
-      },
-      {
-        "asset": "HYPER",
-        "funding_rate": -5.77058e-05,
-        "price": 0.087047,
-        "volume_24h": 56570.714374,
-        "open_interest": 5299878.0
-      },
-      {
-        "asset": "ALT",
-        "funding_rate": -5.67255e-05,
-        "price": 0.007199,
-        "volume_24h": 247194.560746,
-        "open_interest": 60653866.0
-      },
-      {
-        "asset": "XAI",
-        "funding_rate": -5.6128e-05,
-        "price": 0.0092,
-        "volume_24h": 20492.592801,
-        "open_interest": 68188939.2
-      },
-      {
-        "asset": "DOT",
-        "funding_rate": -5.59456e-05,
-        "price": 1.4653,
-        "volume_24h": 2563429.4726,
-        "open_interest": 8530781.0
-      },
-      {
-        "asset": "NEAR",
-        "funding_rate": -5.46779e-05,
-        "price": 1.2195,
-        "volume_24h": 2931260.0706700003,
-        "open_interest": 10482489.2
-      },
-      {
-        "asset": "APE",
-        "funding_rate": -5.086e-05,
-        "price": 0.09355,
-        "volume_24h": 73302.685421,
-        "open_interest": 8129220.8
-      },
-      {
-        "asset": "MANTA",
-        "funding_rate": -4.94987e-05,
-        "price": 0.06542,
-        "volume_24h": 131422.385592,
-        "open_interest": 3799436.2
-      },
-      {
-        "asset": "MOODENG",
-        "funding_rate": -4.92653e-05,
-        "price": 0.046766,
-        "volume_24h": 200708.96258,
-        "open_interest": 17650436.0
-      },
-      {
-        "asset": "ATOM",
-        "funding_rate": -4.78933e-05,
-        "price": 1.738,
-        "volume_24h": 1080957.860559,
-        "open_interest": 1591822.8800000001
+        "asset": "VIRTUAL",
+        "funding_rate": -8.1719e-05,
+        "price": 0.63615,
+        "volume_24h": 5610681.884175999,
+        "open_interest": 18321121.800000004
       },
       {
         "asset": "JTO",
-        "funding_rate": -4.76438e-05,
-        "price": 0.25484,
-        "volume_24h": 175334.77675,
-        "open_interest": 3135954.0
+        "funding_rate": -7.40818e-05,
+        "price": 0.25456,
+        "volume_24h": 182844.25996,
+        "open_interest": 3170860.0
       },
       {
-        "asset": "PAXG",
-        "funding_rate": -4.53926e-05,
-        "price": 5037.1,
-        "volume_24h": 14627145.478100006,
-        "open_interest": 15301.446
-      },
-      {
-        "asset": "BIGTIME",
-        "funding_rate": -4.4123e-05,
-        "price": 0.012876,
-        "volume_24h": 93025.111606,
-        "open_interest": 13609036.0
-      },
-      {
-        "asset": "W",
-        "funding_rate": -4.28963e-05,
-        "price": 0.01777,
-        "volume_24h": 89220.034045,
-        "open_interest": 48882348.2
-      },
-      {
-        "asset": "TURBO",
-        "funding_rate": -4.27386e-05,
-        "price": 0.00089,
-        "volume_24h": 23071.004493,
-        "open_interest": 294904520.0
-      },
-      {
-        "asset": "kNEIRO",
-        "funding_rate": -4.10251e-05,
-        "price": 0.06331,
-        "volume_24h": 126539.600794,
-        "open_interest": 3470729.4
-      },
-      {
-        "asset": "SCR",
-        "funding_rate": -4.02081e-05,
-        "price": 0.0395,
-        "volume_24h": 68047.510343,
-        "open_interest": 6803500.8
+        "asset": "LAYER",
+        "funding_rate": -7.28302e-05,
+        "price": 0.078882,
+        "volume_24h": 147674.663815,
+        "open_interest": 5531562.0
       },
       {
         "asset": "STABLE",
-        "funding_rate": -3.61699e-05,
-        "price": 0.026245,
-        "volume_24h": 2173664.2198499995,
-        "open_interest": 146154802.0
+        "funding_rate": -7.16194e-05,
+        "price": 0.026107,
+        "volume_24h": 2185907.7979139998,
+        "open_interest": 146211976.0
+      },
+      {
+        "asset": "APE",
+        "funding_rate": -6.59218e-05,
+        "price": 0.0938,
+        "volume_24h": 75408.763858,
+        "open_interest": 8109285.0
+      },
+      {
+        "asset": "TRUMP",
+        "funding_rate": -6.44846e-05,
+        "price": 2.9767,
+        "volume_24h": 1039499.0914800002,
+        "open_interest": 2422471.5999999996
+      },
+      {
+        "asset": "PURR",
+        "funding_rate": 6.31055e-05,
+        "price": 0.069213,
+        "volume_24h": 123027.063795,
+        "open_interest": 43427338.0
+      },
+      {
+        "asset": "SOPH",
+        "funding_rate": -6.2267e-05,
+        "price": 0.008337,
+        "volume_24h": 230855.2433029999,
+        "open_interest": 66378370.0
+      },
+      {
+        "asset": "ZORA",
+        "funding_rate": -6.03199e-05,
+        "price": 0.01723,
+        "volume_24h": 343969.4574649999,
+        "open_interest": 72039288.0
       },
       {
         "asset": "SKR",
-        "funding_rate": -3.48452e-05,
-        "price": 0.023719,
-        "volume_24h": 539330.542358,
-        "open_interest": 28039336.0
+        "funding_rate": -5.48021e-05,
+        "price": 0.024157,
+        "volume_24h": 517887.1119240001,
+        "open_interest": 27974528.0
       },
       {
-        "asset": "LIT",
-        "funding_rate": -3.43074e-05,
-        "price": 1.0133,
-        "volume_24h": 5022819.528500002,
-        "open_interest": 28756642.0
-      },
-      {
-        "asset": "SEI",
-        "funding_rate": -3.33703e-05,
-        "price": 0.062865,
-        "volume_24h": 687246.2251830002,
-        "open_interest": 36024242.0
-      },
-      {
-        "asset": "SPX",
-        "funding_rate": -3.2769e-05,
-        "price": 0.30153,
-        "volume_24h": 807083.1690670002,
-        "open_interest": 6930809.2
-      },
-      {
-        "asset": "OP",
-        "funding_rate": -3.05377e-05,
-        "price": 0.11574,
-        "volume_24h": 1077871.2299489998,
-        "open_interest": 25631894.4
-      },
-      {
-        "asset": "IP",
-        "funding_rate": -3.02751e-05,
-        "price": 0.77543,
-        "volume_24h": 705913.098899,
-        "open_interest": 5567718.2
-      },
-      {
-        "asset": "YGG",
-        "funding_rate": -3.00666e-05,
-        "price": 0.036914,
-        "volume_24h": 119537.32009,
-        "open_interest": 8456940.0
-      },
-      {
-        "asset": "APT",
-        "funding_rate": -2.57289e-05,
-        "price": 0.9375,
-        "volume_24h": 1119500.3997520006,
-        "open_interest": 6855065.98
-      },
-      {
-        "asset": "PROMPT",
-        "funding_rate": 2.56584e-05,
-        "price": 0.042432,
-        "volume_24h": 55061.186069,
-        "open_interest": 28547890.0
-      },
-      {
-        "asset": "AXS",
-        "funding_rate": -2.45246e-05,
-        "price": 1.1226,
-        "volume_24h": 524982.1208600001,
-        "open_interest": 2298625.6
-      },
-      {
-        "asset": "MINA",
-        "funding_rate": -2.38088e-05,
-        "price": 0.053868,
-        "volume_24h": 136407.928333,
-        "open_interest": 5740686.0
-      },
-      {
-        "asset": "INIT",
-        "funding_rate": -2.37925e-05,
-        "price": 0.081685,
-        "volume_24h": 287209.397457,
-        "open_interest": 6757250.0
-      },
-      {
-        "asset": "MEME",
-        "funding_rate": -2.07593e-05,
-        "price": 0.000561,
-        "volume_24h": 363939.969724,
-        "open_interest": 1183966438.0
-      },
-      {
-        "asset": "AZTEC",
-        "funding_rate": -2.06706e-05,
-        "price": 0.020819,
-        "volume_24h": 409911.167669,
-        "open_interest": 53418450.0
+        "asset": "POLYX",
+        "funding_rate": -5.4446e-05,
+        "price": 0.039432,
+        "volume_24h": 63708.026075,
+        "open_interest": 6300728.0
       },
       {
         "asset": "WCT",
-        "funding_rate": -1.98728e-05,
-        "price": 0.05663,
-        "volume_24h": 91967.028821,
-        "open_interest": 5771328.0
+        "funding_rate": -5.26254e-05,
+        "price": 0.056645,
+        "volume_24h": 92992.024595,
+        "open_interest": 5743046.0
       },
       {
-        "asset": "ETH",
-        "funding_rate": -1.55358e-05,
-        "price": 1951.0,
-        "volume_24h": 881396139.6314797,
-        "open_interest": 578121.2092000005
+        "asset": "SEI",
+        "funding_rate": -4.59177e-05,
+        "price": 0.063299,
+        "volume_24h": 695547.638251,
+        "open_interest": 35972754.0
       },
       {
-        "asset": "PYTH",
-        "funding_rate": -1.48725e-05,
-        "price": 0.04599,
-        "volume_24h": 501101.970985,
-        "open_interest": 18466826.0
+        "asset": "DOT",
+        "funding_rate": -4.54886e-05,
+        "price": 1.4682,
+        "volume_24h": 2561087.53078,
+        "open_interest": 8518796.4
       },
       {
-        "asset": "MET",
-        "funding_rate": -1.44576e-05,
-        "price": 0.15774,
-        "volume_24h": 271366.3471900001,
-        "open_interest": 11052516.0
+        "asset": "BSV",
+        "funding_rate": -4.44097e-05,
+        "price": 13.126,
+        "volume_24h": 122302.57718,
+        "open_interest": 58651.76
+      },
+      {
+        "asset": "MEME",
+        "funding_rate": -4.43245e-05,
+        "price": 0.00056,
+        "volume_24h": 365822.591078,
+        "open_interest": 1177548042.0
+      },
+      {
+        "asset": "HYPER",
+        "funding_rate": -4.28891e-05,
+        "price": 0.086919,
+        "volume_24h": 56414.534888,
+        "open_interest": 5289554.0
+      },
+      {
+        "asset": "MOODENG",
+        "funding_rate": -3.37462e-05,
+        "price": 0.04667,
+        "volume_24h": 204713.499855,
+        "open_interest": 17656536.0
+      },
+      {
+        "asset": "CELO",
+        "funding_rate": -3.34149e-05,
+        "price": 0.072696,
+        "volume_24h": 209220.066495,
+        "open_interest": 10703238.0
       },
       {
         "asset": "kLUNC",
-        "funding_rate": -1.30605e-05,
-        "price": 0.041738,
-        "volume_24h": 100241.604861,
-        "open_interest": 7707736.0
+        "funding_rate": -3.23519e-05,
+        "price": 0.041941,
+        "volume_24h": 102089.761212,
+        "open_interest": 7716890.0
+      },
+      {
+        "asset": "NEAR",
+        "funding_rate": -3.17052e-05,
+        "price": 1.2244,
+        "volume_24h": 2965696.0660900003,
+        "open_interest": 10503754.399999999
+      },
+      {
+        "asset": "COMP",
+        "funding_rate": -3.1411e-05,
+        "price": 16.694,
+        "volume_24h": 674967.53815,
+        "open_interest": 46425.3
+      },
+      {
+        "asset": "STBL",
+        "funding_rate": 3.06482e-05,
+        "price": 0.034409,
+        "volume_24h": 112784.465242,
+        "open_interest": 87724230.0
+      },
+      {
+        "asset": "BIGTIME",
+        "funding_rate": -2.98695e-05,
+        "price": 0.012831,
+        "volume_24h": 93019.642294,
+        "open_interest": 13574412.0
+      },
+      {
+        "asset": "TURBO",
+        "funding_rate": -2.91598e-05,
+        "price": 0.000888,
+        "volume_24h": 23096.004511,
+        "open_interest": 294959056.0
+      },
+      {
+        "asset": "MINA",
+        "funding_rate": -2.86977e-05,
+        "price": 0.05385,
+        "volume_24h": 144680.8496,
+        "open_interest": 5593424.0
+      },
+      {
+        "asset": "PROMPT",
+        "funding_rate": 2.77902e-05,
+        "price": 0.042317,
+        "volume_24h": 54691.986464,
+        "open_interest": 28548200.0
+      },
+      {
+        "asset": "OP",
+        "funding_rate": -2.53946e-05,
+        "price": 0.1158,
+        "volume_24h": 1101132.6425209998,
+        "open_interest": 25973285.6
+      },
+      {
+        "asset": "SPX",
+        "funding_rate": -2.531e-05,
+        "price": 0.30303,
+        "volume_24h": 809884.991644,
+        "open_interest": 6930631.8
+      },
+      {
+        "asset": "REZ",
+        "funding_rate": -2.45061e-05,
+        "price": 0.003246,
+        "volume_24h": 77018.270378,
+        "open_interest": 66553476.0
+      },
+      {
+        "asset": "APT",
+        "funding_rate": -2.43523e-05,
+        "price": 0.9375,
+        "volume_24h": 1126913.7689530004,
+        "open_interest": 6847822.32
+      },
+      {
+        "asset": "IP",
+        "funding_rate": -2.36213e-05,
+        "price": 0.77535,
+        "volume_24h": 619027.281757,
+        "open_interest": 5569697.6
+      },
+      {
+        "asset": "kNEIRO",
+        "funding_rate": -2.32685e-05,
+        "price": 0.06312,
+        "volume_24h": 127452.967856,
+        "open_interest": 3466279.2
+      },
+      {
+        "asset": "PAXG",
+        "funding_rate": -2.17435e-05,
+        "price": 5083.0,
+        "volume_24h": 15993014.014300004,
+        "open_interest": 15156.004
+      },
+      {
+        "asset": "ATOM",
+        "funding_rate": -2.03077e-05,
+        "price": 1.7215,
+        "volume_24h": 1081241.9715009998,
+        "open_interest": 1590751.7000000002
+      },
+      {
+        "asset": "GRIFFAIN",
+        "funding_rate": 1.92439e-05,
+        "price": 0.008213,
+        "volume_24h": 171848.720076,
+        "open_interest": 141415442.0
+      },
+      {
+        "asset": "XRP",
+        "funding_rate": -1.7462e-05,
+        "price": 1.348,
+        "volume_24h": 26099105.4516,
+        "open_interest": 56944674.0
+      },
+      {
+        "asset": "AXS",
+        "funding_rate": -1.37439e-05,
+        "price": 1.1227,
+        "volume_24h": 517842.3516600002,
+        "open_interest": 2295871.8
+      },
+      {
+        "asset": "BNB",
+        "funding_rate": -1.27688e-05,
+        "price": 616.65,
+        "volume_24h": 6324630.965610002,
+        "open_interest": 45235.466
+      },
+      {
+        "asset": "BTC",
+        "funding_rate": 1.25e-05,
+        "price": 66480.0,
+        "volume_24h": 2480616396.442263,
+        "open_interest": 23703.843
       },
       {
         "asset": "DYDX",
         "funding_rate": 1.25e-05,
-        "price": 0.08055,
-        "volume_24h": 368299.4508600001,
-        "open_interest": 22293561.0
-      },
-      {
-        "asset": "SOL",
-        "funding_rate": 1.25e-05,
-        "price": 82.305,
-        "volume_24h": 237002158.57868955,
-        "open_interest": 3192139.680000013
+        "price": 0.08018,
+        "volume_24h": 372490.3373610001,
+        "open_interest": 22482774.4
       },
       {
         "asset": "AVAX",
         "funding_rate": 1.25e-05,
-        "price": 8.8995,
-        "volume_24h": 3765526.6743859993,
-        "open_interest": 3844044.9000000004
-      },
-      {
-        "asset": "ARB",
-        "funding_rate": 1.25e-05,
-        "price": 0.09524,
-        "volume_24h": 1186650.1685459998,
-        "open_interest": 28331000.8
-      },
-      {
-        "asset": "LDO",
-        "funding_rate": 1.25e-05,
-        "price": 0.28246,
-        "volume_24h": 1050795.0631200005,
-        "open_interest": 12743166.8
+        "price": 8.8906,
+        "volume_24h": 3796335.4927509995,
+        "open_interest": 3840689.8999999994
       },
       {
         "asset": "LINK",
         "funding_rate": 1.25e-05,
-        "price": 8.5654,
-        "volume_24h": 4503515.550389999,
-        "open_interest": 2430595.4
+        "price": 8.568,
+        "volume_24h": 4504792.852409998,
+        "open_interest": 2434403.1999999997
       },
       {
         "asset": "STX",
         "funding_rate": 1.25e-05,
-        "price": 0.2521,
-        "volume_24h": 263439.7732890001,
-        "open_interest": 2866252.2
+        "price": 0.25203,
+        "volume_24h": 265269.6402830001,
+        "open_interest": 2859900.2
       },
       {
         "asset": "CFX",
         "funding_rate": 1.25e-05,
-        "price": 0.047571,
-        "volume_24h": 214868.740425,
-        "open_interest": 12832028.0
+        "price": 0.047483,
+        "volume_24h": 225718.920765,
+        "open_interest": 12773324.0
       },
       {
         "asset": "GMX",
         "funding_rate": 1.25e-05,
-        "price": 5.9787,
-        "volume_24h": 436879.0355150001,
-        "open_interest": 62561.44
+        "price": 5.9942,
+        "volume_24h": 452606.1872680001,
+        "open_interest": 64916.32
+      },
+      {
+        "asset": "SNX",
+        "funding_rate": 1.25e-05,
+        "price": 0.30623,
+        "volume_24h": 152734.6776500001,
+        "open_interest": 1591073.4
       },
       {
         "asset": "AAVE",
         "funding_rate": 1.25e-05,
-        "price": 106.28,
-        "volume_24h": 3629848.671199999,
-        "open_interest": 176375.38
-      },
-      {
-        "asset": "COMP",
-        "funding_rate": 1.25e-05,
-        "price": 16.755,
-        "volume_24h": 668822.5207400001,
-        "open_interest": 46213.82
+        "price": 106.48,
+        "volume_24h": 3635627.1267999983,
+        "open_interest": 176371.28
       },
       {
         "asset": "WLD",
         "funding_rate": 1.25e-05,
-        "price": 0.36198,
-        "volume_24h": 822853.5396560004,
-        "open_interest": 33943095.4
+        "price": 0.36284,
+        "volume_24h": 866021.2380040004,
+        "open_interest": 34072279.4
       },
       {
         "asset": "TRX",
         "funding_rate": 1.25e-05,
-        "price": 0.28926,
-        "volume_24h": 1414595.4148300001,
-        "open_interest": 27102450.0
+        "price": 0.2895,
+        "volume_24h": 1414413.6507100002,
+        "open_interest": 27098204.0
       },
       {
         "asset": "RUNE",
         "funding_rate": 1.25e-05,
-        "price": 0.41235,
-        "volume_24h": 169143.468959,
-        "open_interest": 2598440.2
+        "price": 0.41281,
+        "volume_24h": 178644.994629,
+        "open_interest": 2624045.6
+      },
+      {
+        "asset": "BANANA",
+        "funding_rate": 1.25e-05,
+        "price": 4.8857,
+        "volume_24h": 761066.0979100006,
+        "open_interest": 66693.2
       },
       {
         "asset": "TRB",
         "funding_rate": 1.25e-05,
-        "price": 14.72,
-        "volume_24h": 131139.73018,
-        "open_interest": 28307.08
+        "price": 14.81,
+        "volume_24h": 138865.2362,
+        "open_interest": 27680.06
       },
       {
         "asset": "FTT",
         "funding_rate": 1.25e-05,
-        "price": 0.27015,
-        "volume_24h": 19671.871382,
+        "price": 0.27002,
+        "volume_24h": 19713.087848,
         "open_interest": 246989.0
-      },
-      {
-        "asset": "ARK",
-        "funding_rate": 1.25e-05,
-        "price": 0.1665,
-        "volume_24h": 4772860.258760002,
-        "open_interest": 1425346.0
-      },
-      {
-        "asset": "KAS",
-        "funding_rate": 1.25e-05,
-        "price": 0.02948,
-        "volume_24h": 162684.686785,
-        "open_interest": 25727710.0
-      },
-      {
-        "asset": "BLUR",
-        "funding_rate": 1.25e-05,
-        "price": 0.018821,
-        "volume_24h": 75579.889272,
-        "open_interest": 30772942.0
-      },
-      {
-        "asset": "TIA",
-        "funding_rate": 1.25e-05,
-        "price": 0.31487,
-        "volume_24h": 440216.052689,
-        "open_interest": 6102057.2
-      },
-      {
-        "asset": "BSV",
-        "funding_rate": 1.25e-05,
-        "price": 13.141,
-        "volume_24h": 121680.42516,
-        "open_interest": 58636.52
       },
       {
         "asset": "TON",
         "funding_rate": 1.25e-05,
-        "price": 1.3138,
-        "volume_24h": 767576.8776000001,
-        "open_interest": 5666198.8
+        "price": 1.3108,
+        "volume_24h": 763270.7538200001,
+        "open_interest": 5668008.2
       },
       {
-        "asset": "PENDLE",
+        "asset": "GAS",
         "funding_rate": 1.25e-05,
-        "price": 1.1906,
-        "volume_24h": 227956.2070000001,
-        "open_interest": 3370876.0
+        "price": 1.4968,
+        "volume_24h": 60264.00157,
+        "open_interest": 68408.4
       },
       {
         "asset": "FET",
         "funding_rate": 1.25e-05,
-        "price": 0.14227,
-        "volume_24h": 370098.8300400002,
-        "open_interest": 9469774.0
-      },
-      {
-        "asset": "ORDI",
-        "funding_rate": 1.25e-05,
-        "price": 2.3407,
-        "volume_24h": 89353.538525,
-        "open_interest": 76719.38
+        "price": 0.1421,
+        "volume_24h": 379306.4841100001,
+        "open_interest": 9508408.0
       },
       {
         "asset": "FIL",
         "funding_rate": 1.25e-05,
-        "price": 0.94197,
-        "volume_24h": 460189.928423,
-        "open_interest": 2226137.2
+        "price": 0.94101,
+        "volume_24h": 462738.151262,
+        "open_interest": 2220707.4
       },
       {
         "asset": "SUSHI",
         "funding_rate": 1.25e-05,
-        "price": 0.1911,
-        "volume_24h": 116505.266005,
-        "open_interest": 2073784.2000000002
-      },
-      {
-        "asset": "IMX",
-        "funding_rate": 1.25e-05,
-        "price": 0.14955,
-        "volume_24h": 80528.433069,
-        "open_interest": 6068560.2
+        "price": 0.1913,
+        "volume_24h": 117229.751599,
+        "open_interest": 2071358.6
       },
       {
         "asset": "GMT",
         "funding_rate": 1.25e-05,
-        "price": 0.01068,
-        "volume_24h": 57002.0791750001,
-        "open_interest": 30471138.0
-      },
-      {
-        "asset": "SUPER",
-        "funding_rate": 1.25e-05,
-        "price": 0.11183,
-        "volume_24h": 64705.9126,
-        "open_interest": 2246108.0
+        "price": 0.010652,
+        "volume_24h": 57263.665456,
+        "open_interest": 30424008.0
       },
       {
         "asset": "USTC",
         "funding_rate": 1.25e-05,
-        "price": 0.004904,
-        "volume_24h": 28873.170694,
-        "open_interest": 34167874.0
+        "price": 0.004887,
+        "volume_24h": 29204.627333,
+        "open_interest": 34057748.0
       },
       {
         "asset": "JUP",
         "funding_rate": 1.25e-05,
-        "price": 0.16455,
-        "volume_24h": 2573604.85667,
-        "open_interest": 24170308.0
+        "price": 0.16449,
+        "volume_24h": 2137516.3935400005,
+        "open_interest": 24015526.0
       },
       {
         "asset": "RSR",
         "funding_rate": 1.25e-05,
-        "price": 0.001622,
-        "volume_24h": 38123.965919,
+        "price": 0.001614,
+        "volume_24h": 37736.946435,
         "open_interest": 92724472.0
       },
       {
         "asset": "GALA",
         "funding_rate": 1.25e-05,
-        "price": 0.003303,
-        "volume_24h": 152513.876525,
-        "open_interest": 100158182.0
-      },
-      {
-        "asset": "ACE",
-        "funding_rate": 1.25e-05,
-        "price": 0.1415,
-        "volume_24h": 97618.358597,
-        "open_interest": 2540503.24
+        "price": 0.003314,
+        "volume_24h": 154196.350344,
+        "open_interest": 100357152.0
       },
       {
         "asset": "MAV",
         "funding_rate": 1.25e-05,
-        "price": 0.01354,
-        "volume_24h": 62036.923804,
-        "open_interest": 12787668.0
+        "price": 0.013495,
+        "volume_24h": 59930.985038,
+        "open_interest": 12785168.0
       },
       {
         "asset": "CAKE",
         "funding_rate": 1.25e-05,
-        "price": 1.306,
-        "volume_24h": 201634.31175,
-        "open_interest": 592353.2
+        "price": 1.3081,
+        "volume_24h": 202377.1594799999,
+        "open_interest": 590636.0
       },
       {
         "asset": "PEOPLE",
         "funding_rate": 1.25e-05,
-        "price": 0.006903,
-        "volume_24h": 74092.608749,
-        "open_interest": 20646144.0
+        "price": 0.006949,
+        "volume_24h": 72173.299646,
+        "open_interest": 20559226.0
       },
       {
         "asset": "ENS",
         "funding_rate": 1.25e-05,
-        "price": 5.687,
-        "volume_24h": 144452.8866890001,
-        "open_interest": 319071.38
+        "price": 5.6874,
+        "volume_24h": 140924.874213,
+        "open_interest": 319907.22
       },
       {
-        "asset": "ETC",
+        "asset": "XAI",
         "funding_rate": 1.25e-05,
-        "price": 8.018,
-        "volume_24h": 289342.489858,
-        "open_interest": 178956.04
+        "price": 0.00917,
+        "volume_24h": 21044.896881,
+        "open_interest": 68115100.0
       },
       {
         "asset": "ONDO",
         "funding_rate": 1.25e-05,
-        "price": 0.24532,
-        "volume_24h": 442006.2740499998,
-        "open_interest": 12872040.0
-      },
-      {
-        "asset": "STRK",
-        "funding_rate": 1.25e-05,
-        "price": 0.03828,
-        "volume_24h": 166438.487414,
-        "open_interest": 61877226.8
+        "price": 0.24556,
+        "volume_24h": 456662.8728599998,
+        "open_interest": 12874096.0
       },
       {
         "asset": "TAO",
         "funding_rate": 1.25e-05,
-        "price": 185.31,
-        "volume_24h": 8381488.393270001,
-        "open_interest": 88038.626
+        "price": 184.57,
+        "volume_24h": 8445013.232530002,
+        "open_interest": 88123.858
       },
       {
         "asset": "AR",
         "funding_rate": 1.25e-05,
-        "price": 1.5829,
-        "volume_24h": 400340.0754530004,
-        "open_interest": 291946.8
+        "price": 1.5849,
+        "volume_24h": 415466.7435310002,
+        "open_interest": 286687.64
       },
       {
         "asset": "BOME",
@@ -1044,625 +946,723 @@
       {
         "asset": "ETHFI",
         "funding_rate": 1.25e-05,
-        "price": 0.52242,
-        "volume_24h": 251379.495163,
-        "open_interest": 8120520.2
+        "price": 0.52335,
+        "volume_24h": 260928.974248,
+        "open_interest": 8100385.0
       },
       {
         "asset": "MNT",
         "funding_rate": 1.25e-05,
-        "price": 0.65071,
-        "volume_24h": 479275.086586,
-        "open_interest": 5995889.2
+        "price": 0.6494,
+        "volume_24h": 477912.1469120001,
+        "open_interest": 6000539.8
+      },
+      {
+        "asset": "TNSR",
+        "funding_rate": 1.25e-05,
+        "price": 0.04537,
+        "volume_24h": 52522.15888,
+        "open_interest": 4586420.0
       },
       {
         "asset": "SAGA",
         "funding_rate": 1.25e-05,
-        "price": 0.03138,
-        "volume_24h": 67770.98111,
-        "open_interest": 37836799.6
+        "price": 0.03122,
+        "volume_24h": 72785.775945,
+        "open_interest": 37963060.6
       },
       {
         "asset": "MERL",
         "funding_rate": 1.25e-05,
-        "price": 0.035632,
-        "volume_24h": 237755.8741179999,
-        "open_interest": 18696440.0
-      },
-      {
-        "asset": "HBAR",
-        "funding_rate": 1.25e-05,
-        "price": 0.094595,
-        "volume_24h": 540984.348707,
-        "open_interest": 44143942.0
+        "price": 0.035557,
+        "volume_24h": 234330.698308,
+        "open_interest": 18717060.0
       },
       {
         "asset": "POPCAT",
         "funding_rate": 1.25e-05,
-        "price": 0.050416,
-        "volume_24h": 284765.051161,
-        "open_interest": 33475188.0
-      },
-      {
-        "asset": "REZ",
-        "funding_rate": 1.25e-05,
-        "price": 0.003249,
-        "volume_24h": 77190.914557,
-        "open_interest": 66703224.0
+        "price": 0.050314,
+        "volume_24h": 285785.247036,
+        "open_interest": 33450312.0
       },
       {
         "asset": "NOT",
         "funding_rate": 1.25e-05,
-        "price": 0.000361,
-        "volume_24h": 20587.700849,
+        "price": 0.00036,
+        "volume_24h": 20602.57672,
         "open_interest": 331944436.0
       },
       {
         "asset": "BRETT",
         "funding_rate": 1.25e-05,
-        "price": 0.006938,
-        "volume_24h": 517909.6130330001,
-        "open_interest": 93056796.0
+        "price": 0.006973,
+        "volume_24h": 519610.2028130001,
+        "open_interest": 92543804.0
       },
       {
         "asset": "ZK",
         "funding_rate": 1.25e-05,
-        "price": 0.018046,
-        "volume_24h": 204632.316052,
-        "open_interest": 184747572.0
-      },
-      {
-        "asset": "RENDER",
-        "funding_rate": 1.25e-05,
-        "price": 1.3666,
-        "volume_24h": 556411.5061999998,
-        "open_interest": 873301.0
-      },
-      {
-        "asset": "POL",
-        "funding_rate": 1.25e-05,
-        "price": 0.095978,
-        "volume_24h": 580414.614136,
-        "open_interest": 24771166.0
+        "price": 0.018045,
+        "volume_24h": 201030.337671,
+        "open_interest": 185046784.0
       },
       {
         "asset": "HMSTR",
         "funding_rate": 1.25e-05,
         "price": 0.000149,
-        "volume_24h": 24155.703755,
-        "open_interest": 7329657502.0
+        "volume_24h": 25111.529165,
+        "open_interest": 7327724476.0
       },
       {
         "asset": "GOAT",
         "funding_rate": 1.25e-05,
-        "price": 0.01795,
-        "volume_24h": 89841.876071,
-        "open_interest": 12447436.0
+        "price": 0.017913,
+        "volume_24h": 90076.471164,
+        "open_interest": 12404272.0
       },
       {
         "asset": "GRASS",
         "funding_rate": 1.25e-05,
-        "price": 0.2971,
-        "volume_24h": 2215077.7184269996,
-        "open_interest": 7606217.6
-      },
-      {
-        "asset": "PURR",
-        "funding_rate": 1.25e-05,
-        "price": 0.069821,
-        "volume_24h": 127688.824024,
-        "open_interest": 43352902.0
+        "price": 0.29669,
+        "volume_24h": 2187364.3882549996,
+        "open_interest": 7574958.6
       },
       {
         "asset": "PNUT",
         "funding_rate": 1.25e-05,
-        "price": 0.04382,
-        "volume_24h": 295032.841188,
-        "open_interest": 10329842.4
-      },
-      {
-        "asset": "XLM",
-        "funding_rate": 1.25e-05,
-        "price": 0.14916,
-        "volume_24h": 333249.6104500002,
-        "open_interest": 38129154.0
+        "price": 0.04385,
+        "volume_24h": 295873.956248,
+        "open_interest": 10246106.2
       },
       {
         "asset": "CHILLGUY",
         "funding_rate": 1.25e-05,
-        "price": 0.00958,
-        "volume_24h": 64791.990903,
-        "open_interest": 36332422.0
+        "price": 0.00961,
+        "volume_24h": 64605.402836,
+        "open_interest": 36325146.0
       },
       {
         "asset": "SAND",
         "funding_rate": 1.25e-05,
-        "price": 0.078222,
-        "volume_24h": 136262.129321,
-        "open_interest": 5387794.0
+        "price": 0.0783,
+        "volume_24h": 137460.701175,
+        "open_interest": 5358764.0
+      },
+      {
+        "asset": "ALGO",
+        "funding_rate": 1.25e-05,
+        "price": 0.0822,
+        "volume_24h": 248437.073386,
+        "open_interest": 10764324.0
       },
       {
         "asset": "HYPE",
         "funding_rate": 1.25e-05,
-        "price": 30.705,
-        "volume_24h": 151102029.80243993,
-        "open_interest": 17820079.32
+        "price": 30.568,
+        "volume_24h": 156462974.17111996,
+        "open_interest": 17850963.980000008
       },
       {
         "asset": "ME",
         "funding_rate": 1.25e-05,
-        "price": 0.1104,
-        "volume_24h": 87618.182706,
-        "open_interest": 1634347.8
+        "price": 0.11096,
+        "volume_24h": 90607.588767,
+        "open_interest": 1604232.6
+      },
+      {
+        "asset": "MOVE",
+        "funding_rate": 1.25e-05,
+        "price": 0.020614,
+        "volume_24h": 141696.595616,
+        "open_interest": 23010102.0
       },
       {
         "asset": "USUAL",
         "funding_rate": 1.25e-05,
-        "price": 0.01527,
-        "volume_24h": 119746.359809,
-        "open_interest": 21352666.4
+        "price": 0.01523,
+        "volume_24h": 119928.194147,
+        "open_interest": 21344285.0
       },
       {
         "asset": "FARTCOIN",
         "funding_rate": 1.25e-05,
-        "price": 0.14708,
-        "volume_24h": 7006481.993986001,
-        "open_interest": 161616231.99999997
+        "price": 0.14687,
+        "volume_24h": 6976437.659013002,
+        "open_interest": 162144755.8
       },
       {
         "asset": "AIXBT",
         "funding_rate": 1.25e-05,
-        "price": 0.024353,
-        "volume_24h": 420501.83885,
-        "open_interest": 41080196.0
+        "price": 0.024323,
+        "volume_24h": 429879.438529,
+        "open_interest": 41346568.0
       },
       {
         "asset": "ZEREBRO",
         "funding_rate": 1.25e-05,
-        "price": 0.006758,
-        "volume_24h": 80856.331408,
-        "open_interest": 78984578.0
-      },
-      {
-        "asset": "BIO",
-        "funding_rate": 1.25e-05,
-        "price": 0.02072,
-        "volume_24h": 94269.068229,
-        "open_interest": 15310656.0
+        "price": 0.006757,
+        "volume_24h": 78523.832093,
+        "open_interest": 78952254.0
       },
       {
         "asset": "MELANIA",
         "funding_rate": 1.25e-05,
-        "price": 0.10532,
-        "volume_24h": 133001.400106,
-        "open_interest": 12253473.399999999
+        "price": 0.1049,
+        "volume_24h": 134162.326217,
+        "open_interest": 12233457.4
       },
       {
         "asset": "VINE",
         "funding_rate": 1.25e-05,
-        "price": 0.01685,
-        "volume_24h": 78736.294213,
-        "open_interest": 23865730.0
+        "price": 0.016882,
+        "volume_24h": 79116.091332,
+        "open_interest": 23887586.0
       },
       {
         "asset": "BERA",
         "funding_rate": 1.25e-05,
-        "price": 0.53648,
-        "volume_24h": 662375.4530099998,
-        "open_interest": 5452387.399999999
+        "price": 0.53495,
+        "volume_24h": 659026.4504609999,
+        "open_interest": 5448447.2
+      },
+      {
+        "asset": "TST",
+        "funding_rate": 1.25e-05,
+        "price": 0.00925,
+        "volume_24h": 25103.435435,
+        "open_interest": 13675992.0
       },
       {
         "asset": "KAITO",
         "funding_rate": 1.25e-05,
-        "price": 0.3622,
-        "volume_24h": 281689.4503600001,
-        "open_interest": 5221320.0
+        "price": 0.36363,
+        "volume_24h": 278658.7744200001,
+        "open_interest": 5219412.0
+      },
+      {
+        "asset": "INIT",
+        "funding_rate": 1.25e-05,
+        "price": 0.082289,
+        "volume_24h": 280553.657994,
+        "open_interest": 6748348.0
       },
       {
         "asset": "DOOD",
         "funding_rate": 1.25e-05,
-        "price": 0.002759,
-        "volume_24h": 185802.0190309999,
-        "open_interest": 205486604.0
+        "price": 0.002779,
+        "volume_24h": 192373.5047279999,
+        "open_interest": 202985170.0
       },
       {
         "asset": "NXPC",
         "funding_rate": 1.25e-05,
-        "price": 0.27209,
-        "volume_24h": 153936.04313,
-        "open_interest": 4399866.0
-      },
-      {
-        "asset": "SOPH",
-        "funding_rate": 1.25e-05,
-        "price": 0.008308,
-        "volume_24h": 228796.1156179999,
-        "open_interest": 65953710.0
+        "price": 0.27266,
+        "volume_24h": 148961.8829100001,
+        "open_interest": 4404298.0
       },
       {
         "asset": "RESOLV",
         "funding_rate": 1.25e-05,
-        "price": 0.1009,
-        "volume_24h": 4627629.764656999,
-        "open_interest": 97302042.0
+        "price": 0.10226,
+        "volume_24h": 4581963.086018998,
+        "open_interest": 97176832.0
       },
       {
         "asset": "SYRUP",
         "funding_rate": 1.25e-05,
-        "price": 0.21893,
-        "volume_24h": 278538.4568999999,
-        "open_interest": 4854574.0
+        "price": 0.21806,
+        "volume_24h": 281614.9573399999,
+        "open_interest": 4839518.0
       },
       {
         "asset": "PUMP",
         "funding_rate": 1.25e-05,
-        "price": 0.001946,
-        "volume_24h": 6966062.220069003,
-        "open_interest": 21083751542.0
+        "price": 0.001937,
+        "volume_24h": 7020862.717113002,
+        "open_interest": 21087465520.0
       },
       {
         "asset": "YZY",
         "funding_rate": 1.25e-05,
-        "price": 0.3259,
-        "volume_24h": 82801.57682,
+        "price": 0.32575,
+        "volume_24h": 81744.25553,
         "open_interest": 1707928.0
       },
       {
         "asset": "XPL",
         "funding_rate": 1.25e-05,
-        "price": 0.094095,
-        "volume_24h": 3590234.408927,
-        "open_interest": 298352514.0
+        "price": 0.094361,
+        "volume_24h": 3514397.3615589994,
+        "open_interest": 298350586.0
       },
       {
         "asset": "WLFI",
         "funding_rate": 1.25e-05,
-        "price": 0.097151,
-        "volume_24h": 2481712.000487,
-        "open_interest": 214602654.0
-      },
-      {
-        "asset": "LINEA",
-        "funding_rate": 1.25e-05,
-        "price": 0.0031,
-        "volume_24h": 135941.952585,
-        "open_interest": 536187678.0
+        "price": 0.097631,
+        "volume_24h": 2489664.988539,
+        "open_interest": 214608612.0
       },
       {
         "asset": "SKY",
         "funding_rate": 1.25e-05,
-        "price": 0.072372,
-        "volume_24h": 615102.7195939998,
-        "open_interest": 23252096.0
+        "price": 0.072539,
+        "volume_24h": 613764.5272309999,
+        "open_interest": 23246994.0
       },
       {
         "asset": "ASTER",
         "funding_rate": 1.25e-05,
-        "price": 0.69008,
-        "volume_24h": 2271633.488260002,
-        "open_interest": 80556414.0
-      },
-      {
-        "asset": "STBL",
-        "funding_rate": 1.25e-05,
-        "price": 0.03454,
-        "volume_24h": 112657.315436,
-        "open_interest": 87659378.0
+        "price": 0.68923,
+        "volume_24h": 2275471.9710300006,
+        "open_interest": 80541070.0
       },
       {
         "asset": "HEMI",
         "funding_rate": 1.25e-05,
-        "price": 0.007156,
-        "volume_24h": 150597.713058,
-        "open_interest": 212138188.0
+        "price": 0.00717,
+        "volume_24h": 147801.849254,
+        "open_interest": 212082738.0
       },
       {
         "asset": "APEX",
         "funding_rate": 1.25e-05,
-        "price": 0.27548,
-        "volume_24h": 1002869.4970699999,
-        "open_interest": 7628666.0
+        "price": 0.27575,
+        "volume_24h": 1013978.1419,
+        "open_interest": 7662050.0
       },
       {
         "asset": "ZEC",
         "funding_rate": 1.25e-05,
-        "price": 199.08,
-        "volume_24h": 21141002.066399988,
-        "open_interest": 219028.36
+        "price": 199.46,
+        "volume_24h": 20927086.48899999,
+        "open_interest": 219100.42
       },
       {
         "asset": "MON",
         "funding_rate": 1.25e-05,
-        "price": 0.02058,
-        "volume_24h": 2023695.3687240002,
-        "open_interest": 1272293408.0
+        "price": 0.020476,
+        "volume_24h": 2024714.8046270004,
+        "open_interest": 1271662344.0
       },
       {
         "asset": "MEGA",
         "funding_rate": 1.25e-05,
-        "price": 0.13533,
-        "volume_24h": 285030.14305,
-        "open_interest": 29507544.0
+        "price": 0.13539,
+        "volume_24h": 284157.28091,
+        "open_interest": 29507982.0
       },
       {
-        "asset": "AERO",
+        "asset": "CC",
         "funding_rate": 1.25e-05,
-        "price": 0.31725,
-        "volume_24h": 247965.2773800001,
-        "open_interest": 6081016.0
+        "price": 0.14867,
+        "volume_24h": 1657629.1695000003,
+        "open_interest": 38763294.0
       },
       {
         "asset": "FOGO",
         "funding_rate": 1.25e-05,
-        "price": 0.023208,
-        "volume_24h": 154664.333048,
-        "open_interest": 33892868.0
+        "price": 0.023085,
+        "volume_24h": 146439.706053,
+        "open_interest": 34084926.0
       },
       {
         "asset": "XMR",
         "funding_rate": 1.25e-05,
-        "price": 335.15,
-        "volume_24h": 2346100.672309999,
-        "open_interest": 75471.91
+        "price": 337.09,
+        "volume_24h": 2355648.0160899987,
+        "open_interest": 75422.862
       },
       {
         "asset": "DASH",
         "funding_rate": 1.25e-05,
-        "price": 30.572,
-        "volume_24h": 290245.4791000001,
-        "open_interest": 71696.22
+        "price": 30.484,
+        "volume_24h": 290093.98669,
+        "open_interest": 71662.18
       },
       {
-        "asset": "XRP",
-        "funding_rate": -1.16096e-05,
-        "price": 1.3482,
-        "volume_24h": 25291690.15720001,
-        "open_interest": 57321840.0
+        "asset": "ARK",
+        "funding_rate": -1.22098e-05,
+        "price": 0.16646,
+        "volume_24h": 4774676.4557500025,
+        "open_interest": 1424946.0
       },
       {
-        "asset": "ICP",
-        "funding_rate": 1.13529e-05,
-        "price": 2.4417,
-        "volume_24h": 356740.1673799999,
-        "open_interest": 389900.0
+        "asset": "TIA",
+        "funding_rate": 1.21993e-05,
+        "price": 0.31516,
+        "volume_24h": 446823.684155,
+        "open_interest": 6137209.4
+      },
+      {
+        "asset": "POL",
+        "funding_rate": -1.20205e-05,
+        "price": 0.095863,
+        "volume_24h": 583220.9330300001,
+        "open_interest": 24766562.0
+      },
+      {
+        "asset": "MEW",
+        "funding_rate": 1.20079e-05,
+        "price": 0.000565,
+        "volume_24h": 26931.290038,
+        "open_interest": 125291658.0
       },
       {
         "asset": "ZEN",
-        "funding_rate": -1.12905e-05,
-        "price": 5.1824,
-        "volume_24h": 208513.217206,
-        "open_interest": 165058.5
+        "funding_rate": 1.19228e-05,
+        "price": 5.1853,
+        "volume_24h": 209053.002254,
+        "open_interest": 164447.7
       },
       {
-        "asset": "GAS",
-        "funding_rate": 1.11733e-05,
-        "price": 1.4961,
-        "volume_24h": 75722.38962,
-        "open_interest": 68845.4
+        "asset": "MET",
+        "funding_rate": 1.15564e-05,
+        "price": 0.1585,
+        "volume_24h": 287238.64299,
+        "open_interest": 11059996.0
       },
       {
-        "asset": "BNB",
-        "funding_rate": -1.11215e-05,
-        "price": 615.26,
-        "volume_24h": 6322269.51709,
-        "open_interest": 45294.758
-      },
-      {
-        "asset": "IO",
-        "funding_rate": 1.07654e-05,
-        "price": 0.10291,
-        "volume_24h": 191256.534914,
-        "open_interest": 3843165.9999999995
-      },
-      {
-        "asset": "MOVE",
-        "funding_rate": 1.00381e-05,
-        "price": 0.020529,
-        "volume_24h": 138078.200468,
-        "open_interest": 22828436.0
-      },
-      {
-        "asset": "IOTA",
-        "funding_rate": 8.8864e-06,
-        "price": 0.064031,
-        "volume_24h": 26728.904726,
-        "open_interest": 4027404.0
-      },
-      {
-        "asset": "TNSR",
-        "funding_rate": -8.665e-06,
-        "price": 0.04602,
-        "volume_24h": 58170.143996,
-        "open_interest": 4593332.4
-      },
-      {
-        "asset": "POLYX",
-        "funding_rate": 8.3294e-06,
-        "price": 0.039455,
-        "volume_24h": 63514.858953,
-        "open_interest": 6309032.0
-      },
-      {
-        "asset": "CC",
-        "funding_rate": 8.1008e-06,
-        "price": 0.14982,
-        "volume_24h": 1655819.0048000002,
-        "open_interest": 38785140.0
+        "asset": "BLUR",
+        "funding_rate": -1.13573e-05,
+        "price": 0.018846,
+        "volume_24h": 77591.730503,
+        "open_interest": 30761516.0
       },
       {
         "asset": "kSHIB",
-        "funding_rate": -8.0136e-06,
-        "price": 0.005313,
-        "volume_24h": 777407.4366760001,
-        "open_interest": 412928300.0
-      },
-      {
-        "asset": "PENGU",
-        "funding_rate": 7.7049e-06,
-        "price": 0.006554,
-        "volume_24h": 713250.526523,
-        "open_interest": 340290178.0
-      },
-      {
-        "asset": "UNI",
-        "funding_rate": -7.6394e-06,
-        "price": 3.6975,
-        "volume_24h": 1206797.0220699997,
-        "open_interest": 2891093.1999999997
-      },
-      {
-        "asset": "SNX",
-        "funding_rate": 7.4655e-06,
-        "price": 0.3082,
-        "volume_24h": 147838.5630860001,
-        "open_interest": 1590380.4
-      },
-      {
-        "asset": "ZETA",
-        "funding_rate": 6.3293e-06,
-        "price": 0.05,
-        "volume_24h": 145635.336641,
-        "open_interest": 9918266.0
-      },
-      {
-        "asset": "BCH",
-        "funding_rate": 6.2091e-06,
-        "price": 443.89,
-        "volume_24h": 2133620.496419999,
-        "open_interest": 49028.082
-      },
-      {
-        "asset": "SUI",
-        "funding_rate": 5.4783e-06,
-        "price": 0.88725,
-        "volume_24h": 16243120.659510992,
-        "open_interest": 19071061.6
-      },
-      {
-        "asset": "ALGO",
-        "funding_rate": 4.7174e-06,
-        "price": 0.0821,
-        "volume_24h": 251744.574921,
-        "open_interest": 10761926.0
-      },
-      {
-        "asset": "BTC",
-        "funding_rate": 4.513e-06,
-        "price": 66317.0,
-        "volume_24h": 2410684739.848731,
-        "open_interest": 22906.70608
-      },
-      {
-        "asset": "PROVE",
-        "funding_rate": -4.1841e-06,
-        "price": 0.26245,
-        "volume_24h": 143133.1438700001,
-        "open_interest": 1643604.0
-      },
-      {
-        "asset": "kBONK",
-        "funding_rate": -4.0036e-06,
-        "price": 0.005635,
-        "volume_24h": 578757.451497,
-        "open_interest": 665196096.0
-      },
-      {
-        "asset": "ANIME",
-        "funding_rate": -3.7667e-06,
-        "price": 0.004475,
-        "volume_24h": 78709.837712,
-        "open_interest": 78151394.0
-      },
-      {
-        "asset": "CRV",
-        "funding_rate": 3.6935e-06,
-        "price": 0.23359,
-        "volume_24h": 2474829.4238270004,
-        "open_interest": 22349328.2
+        "funding_rate": -1.10855e-05,
+        "price": 0.005322,
+        "volume_24h": 801245.435711,
+        "open_interest": 411666508.0
       },
       {
         "asset": "INJ",
-        "funding_rate": -3.4837e-06,
-        "price": 2.8192,
-        "volume_24h": 490022.80732,
-        "open_interest": 818316.9999999999
-      },
-      {
-        "asset": "MORPHO",
-        "funding_rate": 3.2223e-06,
-        "price": 1.8742,
-        "volume_24h": 2276685.49972,
-        "open_interest": 3037026.4
-      },
-      {
-        "asset": "ENA",
-        "funding_rate": -3.0761e-06,
-        "price": 0.099745,
-        "volume_24h": 1925380.68438,
-        "open_interest": 128990890.0
-      },
-      {
-        "asset": "S",
-        "funding_rate": 2.9207e-06,
-        "price": 0.039025,
-        "volume_24h": 133185.927677,
-        "open_interest": 30452266.0
-      },
-      {
-        "asset": "NEO",
-        "funding_rate": 2.444e-06,
-        "price": 2.4422,
-        "volume_24h": 93976.362885,
-        "open_interest": 168909.1
-      },
-      {
-        "asset": "NIL",
-        "funding_rate": -2.2463e-06,
-        "price": 0.047221,
-        "volume_24h": 137017.285108,
-        "open_interest": 6869542.0
-      },
-      {
-        "asset": "ZORA",
-        "funding_rate": -2.0535e-06,
-        "price": 0.017394,
-        "volume_24h": 340622.528729,
-        "open_interest": 71557614.0
+        "funding_rate": -1.10357e-05,
+        "price": 2.8187,
+        "volume_24h": 485421.3544400001,
+        "open_interest": 817865.8
       },
       {
         "asset": "DOGE",
-        "funding_rate": -1.8306e-06,
-        "price": 0.089791,
-        "volume_24h": 6366127.260814996,
-        "open_interest": 239242654.0
+        "funding_rate": -1.06053e-05,
+        "price": 0.089696,
+        "volume_24h": 6463499.559774997,
+        "open_interest": 238898544.0
       },
       {
-        "asset": "ADA",
-        "funding_rate": -1.786e-06,
-        "price": 0.25138,
-        "volume_24h": 2219806.94443,
-        "open_interest": 85729008.0
+        "asset": "ENA",
+        "funding_rate": -1.05979e-05,
+        "price": 0.099685,
+        "volume_24h": 1915141.038654,
+        "open_interest": 128966858.0
       },
       {
-        "asset": "BANANA",
-        "funding_rate": -7.115e-07,
-        "price": 4.8619,
-        "volume_24h": 799061.4968400004,
-        "open_interest": 65091.0
+        "asset": "IOTA",
+        "funding_rate": 1.03274e-05,
+        "price": 0.06395,
+        "volume_24h": 26813.038918,
+        "open_interest": 4027970.0
+      },
+      {
+        "asset": "BCH",
+        "funding_rate": 9.9866e-06,
+        "price": 446.5,
+        "volume_24h": 2090587.8900099993,
+        "open_interest": 49049.188
+      },
+      {
+        "asset": "ORDI",
+        "funding_rate": 9.9112e-06,
+        "price": 2.3424,
+        "volume_24h": 86315.427167,
+        "open_interest": 76719.38
+      },
+      {
+        "asset": "ARB",
+        "funding_rate": 9.6358e-06,
+        "price": 0.09534,
+        "volume_24h": 1168945.6420679998,
+        "open_interest": 28275533.0
+      },
+      {
+        "asset": "AERO",
+        "funding_rate": -9.3821e-06,
+        "price": 0.31926,
+        "volume_24h": 249086.02092,
+        "open_interest": 6087068.0
+      },
+      {
+        "asset": "ICP",
+        "funding_rate": 9.0724e-06,
+        "price": 2.442,
+        "volume_24h": 357682.92341,
+        "open_interest": 391013.6
+      },
+      {
+        "asset": "ETH",
+        "funding_rate": -8.8923e-06,
+        "price": 1950.7,
+        "volume_24h": 893305679.2560495,
+        "open_interest": 577462.8236
+      },
+      {
+        "asset": "ETC",
+        "funding_rate": 8.683e-06,
+        "price": 8.0319,
+        "volume_24h": 281079.47214,
+        "open_interest": 178831.3
+      },
+      {
+        "asset": "ACE",
+        "funding_rate": -8.4499e-06,
+        "price": 0.1414,
+        "volume_24h": 98328.983453,
+        "open_interest": 2542556.72
+      },
+      {
+        "asset": "HBAR",
+        "funding_rate": 8.3193e-06,
+        "price": 0.094475,
+        "volume_24h": 540614.519715,
+        "open_interest": 44129882.0
+      },
+      {
+        "asset": "STRK",
+        "funding_rate": 8.1043e-06,
+        "price": 0.0381,
+        "volume_24h": 191851.046954,
+        "open_interest": 62268380.6
+      },
+      {
+        "asset": "PYTH",
+        "funding_rate": -7.7473e-06,
+        "price": 0.045999,
+        "volume_24h": 508593.3264069999,
+        "open_interest": 18500756.0
+      },
+      {
+        "asset": "SUI",
+        "funding_rate": -7.7346e-06,
+        "price": 0.88626,
+        "volume_24h": 16266624.552610992,
+        "open_interest": 19067548.799999997
+      },
+      {
+        "asset": "PENGU",
+        "funding_rate": -7.6485e-06,
+        "price": 0.006545,
+        "volume_24h": 727403.5075450002,
+        "open_interest": 340993856.0
+      },
+      {
+        "asset": "PENDLE",
+        "funding_rate": 7.5477e-06,
+        "price": 1.1904,
+        "volume_24h": 231329.2599,
+        "open_interest": 3370308.0
+      },
+      {
+        "asset": "PROVE",
+        "funding_rate": -6.8002e-06,
+        "price": 0.26292,
+        "volume_24h": 139163.5068200001,
+        "open_interest": 1643730.0
+      },
+      {
+        "asset": "CRV",
+        "funding_rate": 6.6963e-06,
+        "price": 0.23298,
+        "volume_24h": 2494917.6941500003,
+        "open_interest": 22336101.0
+      },
+      {
+        "asset": "ZETA",
+        "funding_rate": 6.5594e-06,
+        "price": 0.05,
+        "volume_24h": 145787.655052,
+        "open_interest": 9885889.6
+      },
+      {
+        "asset": "LINEA",
+        "funding_rate": 5.4324e-06,
+        "price": 0.003105,
+        "volume_24h": 136683.470551,
+        "open_interest": 536203612.0
+      },
+      {
+        "asset": "BIO",
+        "funding_rate": 5.041e-06,
+        "price": 0.021004,
+        "volume_24h": 94996.215581,
+        "open_interest": 15296400.0
+      },
+      {
+        "asset": "SUPER",
+        "funding_rate": -4.5584e-06,
+        "price": 0.11227,
+        "volume_24h": 64368.90789,
+        "open_interest": 2244636.0
       },
       {
         "asset": "kFLOKI",
-        "funding_rate": 4.476e-07,
-        "price": 0.027665,
-        "volume_24h": 102526.457346,
-        "open_interest": 14454748.0
+        "funding_rate": 4.4963e-06,
+        "price": 0.027573,
+        "volume_24h": 102694.204186,
+        "open_interest": 14436058.0
+      },
+      {
+        "asset": "ALT",
+        "funding_rate": 4.2285e-06,
+        "price": 0.007161,
+        "volume_24h": 244704.138633,
+        "open_interest": 60523916.0
+      },
+      {
+        "asset": "IMX",
+        "funding_rate": 4.1787e-06,
+        "price": 0.14975,
+        "volume_24h": 82097.085662,
+        "open_interest": 6050281.8
+      },
+      {
+        "asset": "AZTEC",
+        "funding_rate": -4.0927e-06,
+        "price": 0.021039,
+        "volume_24h": 408137.514704,
+        "open_interest": 53372150.0
+      },
+      {
+        "asset": "NIL",
+        "funding_rate": -3.4774e-06,
+        "price": 0.047291,
+        "volume_24h": 135392.995702,
+        "open_interest": 6851232.0
+      },
+      {
+        "asset": "RENDER",
+        "funding_rate": 3.4501e-06,
+        "price": 1.3635,
+        "volume_24h": 555984.4214499999,
+        "open_interest": 873420.2
+      },
+      {
+        "asset": "UNI",
+        "funding_rate": -3.1037e-06,
+        "price": 3.7002,
+        "volume_24h": 1214866.7722999998,
+        "open_interest": 2892333.2
+      },
+      {
+        "asset": "ANIME",
+        "funding_rate": -3.0911e-06,
+        "price": 0.004481,
+        "volume_24h": 82250.213129,
+        "open_interest": 79223428.0
+      },
+      {
+        "asset": "ADA",
+        "funding_rate": -3.041e-06,
+        "price": 0.25111,
+        "volume_24h": 2234803.83788,
+        "open_interest": 85697690.0
+      },
+      {
+        "asset": "SCR",
+        "funding_rate": -3.014e-06,
+        "price": 0.03977,
+        "volume_24h": 67854.293547,
+        "open_interest": 6795107.2
+      },
+      {
+        "asset": "YGG",
+        "funding_rate": 2.9232e-06,
+        "price": 0.03688,
+        "volume_24h": 118629.683755,
+        "open_interest": 8421018.0
       },
       {
         "asset": "LTC",
-        "funding_rate": -4.232e-07,
-        "price": 52.952,
-        "volume_24h": 2042104.58054,
-        "open_interest": 291808.0399999999
+        "funding_rate": 2.6017e-06,
+        "price": 52.926,
+        "volume_24h": 2046957.0458799999,
+        "open_interest": 291720.64
+      },
+      {
+        "asset": "MANTA",
+        "funding_rate": -2.4156e-06,
+        "price": 0.06554,
+        "volume_24h": 133514.500863,
+        "open_interest": 3740795.2
+      },
+      {
+        "asset": "SOL",
+        "funding_rate": 2.2375e-06,
+        "price": 82.463,
+        "volume_24h": 242276765.20829993,
+        "open_interest": 3186573.2000000007
+      },
+      {
+        "asset": "NEO",
+        "funding_rate": -1.7338e-06,
+        "price": 2.439,
+        "volume_24h": 95924.375188,
+        "open_interest": 167844.84
+      },
+      {
+        "asset": "LIT",
+        "funding_rate": -1.4787e-06,
+        "price": 1.0072,
+        "volume_24h": 6818284.326100008,
+        "open_interest": 29907062.0
+      },
+      {
+        "asset": "KAS",
+        "funding_rate": 1.1961e-06,
+        "price": 0.029468,
+        "volume_24h": 154059.109984,
+        "open_interest": 25730856.0
+      },
+      {
+        "asset": "MORPHO",
+        "funding_rate": -1.0852e-06,
+        "price": 1.8819,
+        "volume_24h": 2295480.8261899995,
+        "open_interest": 3028664.4
+      },
+      {
+        "asset": "XLM",
+        "funding_rate": -9.837e-07,
+        "price": 0.14925,
+        "volume_24h": 338692.2948900001,
+        "open_interest": 38106838.0
+      },
+      {
+        "asset": "kBONK",
+        "funding_rate": -6.868e-07,
+        "price": 0.005621,
+        "volume_24h": 575445.259773,
+        "open_interest": 665310528.0
+      },
+      {
+        "asset": "S",
+        "funding_rate": 3.813e-07,
+        "price": 0.039259,
+        "volume_24h": 136782.613498,
+        "open_interest": 30358066.0
+      },
+      {
+        "asset": "LDO",
+        "funding_rate": 3.065e-07,
+        "price": 0.28199,
+        "volume_24h": 1061028.1049510005,
+        "open_interest": 12752639.200000001
+      },
+      {
+        "asset": "W",
+        "funding_rate": -5.19e-08,
+        "price": 0.01779,
+        "volume_24h": 90358.313852,
+        "open_interest": 48936368.8
       },
       {
         "asset": "MATIC",
@@ -1940,6 +1940,112 @@
     ]
   },
   "recent_backtest_details": [
+    {
+      "id": "wf_89a76efebd17",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3",
+      "asset": "BTC",
+      "timeframe": "1h",
+      "profit_factor": 0.27,
+      "max_drawdown_pct": 11.98,
+      "total_trades": 22,
+      "win_rate_pct": 18.181818181818183,
+      "total_return_pct": -11.59,
+      "avg_trade_pct": 0.0,
+      "score_total": -0.05,
+      "score_decision": "fail",
+      "score_edge": -0.05,
+      "score_resilience": -0.1198,
+      "score_grade": "D",
+      "score_flags": "[]",
+      "metrics": {
+        "insample": {
+          "total_trades": 17,
+          "profit_factor": 0.443,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 29.411764705882355,
+          "sharpe_ratio": -5.591,
+          "qscore": 0.243,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 22,
+          "profit_factor": 0.27,
+          "max_drawdown_pct": 11.98,
+          "total_return_pct": -11.59,
+          "win_rate_pct": 18.181818181818183,
+          "sharpe_ratio": -9.492,
+          "qscore": -0.05,
+          "decision": "fail",
+          "grade": "D",
+          "flags": "[]"
+        },
+        "degradation_pct": 120.6,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 15
+        }
+      },
+      "regime_metrics": null,
+      "period_start": "1754967600000",
+      "period_end": "1772964000000"
+    },
+    {
+      "id": "wf_b49aebc06503",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.818,
+      "max_drawdown_pct": 4.04,
+      "total_trades": 18,
+      "win_rate_pct": 44.44444444444444,
+      "total_return_pct": 7.98,
+      "avg_trade_pct": 0.0,
+      "score_total": 1.578,
+      "score_decision": "pass",
+      "score_edge": 1.578,
+      "score_resilience": -0.0404,
+      "score_grade": "B",
+      "score_flags": "[]",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.552,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 18,
+          "profit_factor": 1.818,
+          "max_drawdown_pct": 4.04,
+          "total_return_pct": 7.98,
+          "win_rate_pct": 44.44444444444444,
+          "sharpe_ratio": 3.222,
+          "qscore": 1.578,
+          "decision": "pass",
+          "grade": "B",
+          "flags": "[]"
+        },
+        "degradation_pct": -185.9,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 15
+        }
+      },
+      "regime_metrics": null,
+      "period_start": "1754949600000",
+      "period_end": "1772960400000"
+    },
     {
       "id": "wf_96c8c375c32d",
       "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v2",
@@ -2363,112 +2469,6 @@
       "regime_metrics": null,
       "period_start": "1754949600000",
       "period_end": "1772960400000"
-    },
-    {
-      "id": "wf_a86644b44cc3",
-      "strategy_spec_id": "QD-20260308-ETH-CHANNEL-SHORTBIAS-v1",
-      "variant_id": "eth_channel_shortbias_transfer_v1",
-      "asset": "ETH",
-      "timeframe": "1h",
-      "profit_factor": 0.337,
-      "max_drawdown_pct": 14.76,
-      "total_trades": 20,
-      "win_rate_pct": 15.0,
-      "total_return_pct": -14.52,
-      "avg_trade_pct": 0.0,
-      "score_total": -0.011,
-      "score_decision": "fail",
-      "score_edge": -0.011,
-      "score_resilience": -0.1476,
-      "score_grade": "D",
-      "score_flags": "[]",
-      "metrics": {
-        "insample": {
-          "total_trades": 67,
-          "profit_factor": 1.145,
-          "max_drawdown_pct": 0.0,
-          "total_return_pct": 0.0,
-          "win_rate_pct": 41.7910447761194,
-          "sharpe_ratio": 0.803,
-          "qscore": 1.145,
-          "decision": "pass"
-        },
-        "outofsample": {
-          "total_trades": 20,
-          "profit_factor": 0.337,
-          "max_drawdown_pct": 14.76,
-          "total_return_pct": -14.52,
-          "win_rate_pct": 15.0,
-          "sharpe_ratio": -7.159,
-          "qscore": -0.011,
-          "decision": "fail",
-          "grade": "D",
-          "flags": "[]"
-        },
-        "degradation_pct": 101.0,
-        "walk_forward_config": {
-          "train_days": 90,
-          "blind_days": 21,
-          "timeframe": "1h",
-          "min_blind_trades": 15
-        }
-      },
-      "regime_metrics": null,
-      "period_start": "1754949600000",
-      "period_end": "1772960400000"
-    },
-    {
-      "id": "wf_73a09f5da6b3",
-      "strategy_spec_id": "SS-20260308-QD01",
-      "variant_id": "btc_chop_fade_balanced",
-      "asset": "BTC",
-      "timeframe": "4h",
-      "profit_factor": 0.0,
-      "max_drawdown_pct": 0.0,
-      "total_trades": 0,
-      "win_rate_pct": 0.0,
-      "total_return_pct": 0.0,
-      "avg_trade_pct": 0.0,
-      "score_total": -0.5,
-      "score_decision": "fail",
-      "score_edge": -0.5,
-      "score_resilience": 0.0,
-      "score_grade": "D",
-      "score_flags": "[\"low_trade_count\"]",
-      "metrics": {
-        "insample": {
-          "total_trades": 0,
-          "profit_factor": 0.0,
-          "max_drawdown_pct": 0.0,
-          "total_return_pct": 0.0,
-          "win_rate_pct": 0.0,
-          "sharpe_ratio": 0.0,
-          "qscore": -0.5,
-          "decision": "fail"
-        },
-        "outofsample": {
-          "total_trades": 0,
-          "profit_factor": 0.0,
-          "max_drawdown_pct": 0.0,
-          "total_return_pct": 0.0,
-          "win_rate_pct": 0.0,
-          "sharpe_ratio": 0.0,
-          "qscore": -0.5,
-          "decision": "fail",
-          "grade": "D",
-          "flags": "[\"low_trade_count\"]"
-        },
-        "degradation_pct": 100.0,
-        "walk_forward_config": {
-          "train_days": 180,
-          "blind_days": 42,
-          "timeframe": "4h",
-          "min_blind_trades": 15
-        }
-      },
-      "regime_metrics": null,
-      "period_start": "1741392000000",
-      "period_end": "1772928000000"
     }
   ],
   "active_strategy_families": [],

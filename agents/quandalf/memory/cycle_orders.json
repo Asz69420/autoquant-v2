@@ -1,9 +1,9 @@
 {
-  "target_asset": "ETH",
+  "target_asset": "BABY",
   "target_timeframe": "1h",
-  "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "eth_channel_shortbias",
-  "thesis_hint": "Recent quality is improving but still fragile: last 3 visible outcomes are -0.5000 -> 3.7490 -> -0.3480, which means the inverted failed-continuation concept found real edge on ETH but is unstable and too sparse. Stay on ETH 1h and keep the v2 failed-continuation shape, but solve the trade-count problem without losing the edge. Test one lever per variant only: slightly relax the continuation-failure trigger to lift ETH trades from 8 toward 15+, require the same failed-continuation logic to block the weak BTC transfer shape, or add a time-based invalidation that exits faster when downside momentum does not confirm.",
+  "research_direction": "explore_new",
+  "specific_family_to_iterate": null,
+  "thesis_hint": "Recent 3-cycle quality is improving off the earlier failures: ETH channel shortbias moved from a weak/negative baseline into a real pass at QScore 1.578 with 18 trades, so exploration is allowed. Target BABY 1h because funding is deeply negative (-0.000686) with high OI and volume, but do NOT reuse the old BABY reclaim shapes that bled out. Design a post-liquidation reclaim long that only triggers after a washout low plus fast-structure recovery, with a hard veto on flat drift and no passive dip-buying; require enough looseness to reach 15+ trades.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.20, total_trades >= 15, and max_drawdown_pct <= 8.0; abort any variant with total_trades < 10, profit_factor < 1.00, or max_drawdown_pct > 10.0."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.12, total_trades >= 15, and max_drawdown_pct <= 8.0; abort any variant with total_trades < 12, profit_factor < 1.00, or transitional profit_factor < 0.95."
 }
