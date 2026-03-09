@@ -18,6 +18,10 @@ BALROG = r"C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\balrog-validate.p
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
 BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 CARD_STATE_PATH = os.path.join(ROOT, "data", "state", "cycle_postprocess_card_state.json")
+CURRENT_CYCLE_SPECS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
+CURRENT_CYCLE_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
+CURRENT_CYCLE_METRICS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_metrics.json")
+RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
 
 PHASE_EMOJIS = {
     "briefing": "📋",
@@ -161,22 +165,38 @@ def log_token_event(agent, pipeline, description):
         pass
 
 
-def next_cycle_id():
-    counter_path = os.path.join(ROOT, "data", "state", "cycle_counter.json")
+def load_json_file(path):
+    if not os.path.exists(path):
+        return {}
     try:
-        with open(counter_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
     except Exception:
-        data = {"last_cycle_id": 0}
-
-    data["last_cycle_id"] = int(data.get("last_cycle_id", 0)) + 1
-    os.makedirs(os.path.dirname(counter_path), exist_ok=True)
-    with open(counter_path, "w", encoding="utf-8") as f:
-        json.dump(data, f)
-    return data["last_cycle_id"]
+        return {}
 
 
-def current_cycle_id():
+def load_run_state():
+    state = load_json_file(RUN_STATE_PATH)
+    return state if isinstance(state, dict) else {}
+
+
+def persist_run_state(state):
+    os.makedirs(os.path.dirname(RUN_STATE_PATH), exist_ok=True)
+    with open(RUN_STATE_PATH, "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2)
+
+
+def resolve_cycle_id(run_state=None):
+    run_state = run_state or load_run_state()
+    run_cycle_id = int(run_state.get("cycle_id", 0) or 0)
+    if run_cycle_id > 0:
+        return run_cycle_id
+
+    manifest = load_json_file(CURRENT_CYCLE_SPECS_PATH)
+    manifest_cycle_id = int(manifest.get("cycle_id", 0) or 0)
+    if manifest_cycle_id > 0:
+        return manifest_cycle_id
+
     counter_path = os.path.join(ROOT, "data", "state", "cycle_counter.json")
     try:
         with open(counter_path, "r", encoding="utf-8") as f:
@@ -186,47 +206,156 @@ def current_cycle_id():
         return 0
 
 
-def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count):
-    status_path = os.path.join(ROOT, "agents", "quandalf", "memory", "strategy_status.json")
-    status = {}
-    if os.path.exists(status_path):
-        try:
-            with open(status_path, "r", encoding="utf-8") as f:
-                status = json.load(f)
-        except Exception:
-            pass
+def observe_run_state(cycle_id=None):
+    state = load_run_state()
+    now_epoch = time.time()
+    now_iso = datetime.now(timezone.utc).isoformat()
+    state["reporting_last_seen_at_epoch"] = now_epoch
+    state["reporting_last_seen_at_iso"] = now_iso
+    if cycle_id and int(state.get("cycle_id", 0) or 0) <= 0:
+        state["cycle_id"] = int(cycle_id)
+    persist_run_state(state)
+    return state
 
+
+def finalize_run_state(cycle_id):
+    state = observe_run_state(cycle_id)
+    if int(state.get("cycle_id", 0) or 0) != int(cycle_id):
+        return state
+
+    started = float(state.get("started_at_epoch", 0) or 0)
+    if started > 0 and not state.get("ended_at_epoch"):
+        ended = time.time()
+        state["status"] = "completed"
+        state["ended_at_epoch"] = ended
+        state["ended_at_iso"] = datetime.now(timezone.utc).isoformat()
+        state["run_elapsed_seconds"] = round(max(0, ended - started), 1)
+        persist_run_state(state)
+    return state
+
+
+def compute_timing_metrics(run_state):
+    started = float(run_state.get("started_at_epoch", 0) or 0)
+    ended = float(run_state.get("ended_at_epoch", 0) or 0)
+    seen = float(run_state.get("reporting_last_seen_at_epoch", 0) or 0)
+
+    run_elapsed = float(run_state.get("run_elapsed_seconds", 0) or 0)
+    if run_elapsed <= 0 and started > 0:
+        anchor = ended if ended > 0 else time.time()
+        run_elapsed = round(max(0, anchor - started), 1)
+
+    report_delay = 0.0
+    if started > 0 and ended > 0 and seen > ended:
+        report_delay = round(max(0, seen - ended), 1)
+
+    return {
+        "run_elapsed_seconds": run_elapsed,
+        "report_delay_seconds": report_delay,
+        "is_completed": ended > 0,
+        "started_at_epoch": started,
+        "ended_at_epoch": ended,
+    }
+
+
+def safe_int(value, default=0):
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
+def normalize_spec_id(value):
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    base = os.path.basename(text)
+    suffix = ".strategy_spec.json"
+    if base.endswith(suffix):
+        base = base[: -len(suffix)]
+    return base
+
+
+def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_state=None):
     rows_dict = [dict(r) if not isinstance(r, dict) else r for r in rows]
+    cycle_specs = load_json_file(CURRENT_CYCLE_SPECS_PATH)
+    cycle_status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
+    run_state = run_state or load_run_state()
+    timing = compute_timing_metrics(run_state)
 
-    new_families = len(status.get("new_this_cycle", []))
-    abandoned = len(status.get("abandoned_this_cycle", []))
-    active = len(status.get("active_families", []))
-    specs_written = len(status.get("specs_written", []))
+    manifest_cycle_id = safe_int(cycle_specs.get("cycle_id", 0) or 0)
+    status_cycle_id = safe_int(cycle_status.get("cycle_id", 0) or 0)
+    status_matches_cycle = status_cycle_id == int(cycle_id) and status_cycle_id != 0
+
+    manifest_matches_cycle = manifest_cycle_id == int(cycle_id) and manifest_cycle_id != 0
+    spec_paths = cycle_specs.get("spec_paths") or [] if manifest_matches_cycle else []
+    normalized_manifest_spec_ids = {normalize_spec_id(path) for path in spec_paths if normalize_spec_id(path)}
+    row_spec_ids = {normalize_spec_id(r.get("strategy_spec_id")) for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id"))}
+
+    specs_written = int(cycle_specs.get("spec_count", 0) or 0) if manifest_matches_cycle else 0
+    if not specs_written and row_spec_ids:
+        specs_written = len(row_spec_ids)
+
+    new_families = len(cycle_status.get("new_families", [])) if status_matches_cycle else 0
+    iterated_families = len(cycle_status.get("iterated_families", [])) if status_matches_cycle else 0
+    active = new_families + iterated_families
+    abandoned = len(cycle_status.get("abandoned_families", [])) if status_matches_cycle else 0
 
     promotions = sum(1 for r in rows_dict if r.get("score_total") and r["score_total"] >= 3.0)
     best_qs = max((r.get("score_total", 0) or 0 for r in rows_dict), default=0)
 
-    elapsed_str = f"{int(elapsed_seconds // 60)}m {int(elapsed_seconds % 60)}s" if elapsed_seconds else "?"
+    return {
+        "cycle_id": int(cycle_id),
+        "manifest_cycle_id": manifest_cycle_id,
+        "status_cycle_id": status_cycle_id,
+        "status_matches_cycle": status_matches_cycle,
+        "spec_paths": spec_paths,
+        "spec_ids": sorted(normalized_manifest_spec_ids or row_spec_ids),
+        "specs_written": specs_written,
+        "new_families": new_families,
+        "iterated_families": iterated_families,
+        "active_families": active,
+        "backtests": backtest_count,
+        "promotions": promotions,
+        "abandoned_families": abandoned,
+        "best_qscore": best_qs,
+        "elapsed_seconds": elapsed_seconds,
+        "run_elapsed_seconds": timing["run_elapsed_seconds"],
+        "report_delay_seconds": timing["report_delay_seconds"],
+        "is_completed": timing["is_completed"],
+        "started_at_epoch": timing["started_at_epoch"],
+        "ended_at_epoch": timing["ended_at_epoch"],
+    }
+
+
+def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=None):
+    metrics = build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_state=run_state)
+    run_elapsed = metrics.get("run_elapsed_seconds", elapsed_seconds)
+    elapsed_str = f"{int(run_elapsed // 60)}m {int(run_elapsed % 60)}s" if run_elapsed else "?"
 
     lines = []
     lines.append("🍳 Cooking")
-    lines.append(f"{'✅' if promotions > 0 else '⚠️'} | ▶ {elapsed_str} | 🆔 {cycle_id}")
+    header_status = '✅' if metrics['promotions'] > 0 else '⚠️'
+    lines.append(f"{header_status} | ▶ {elapsed_str} run | 🆔 {cycle_id}")
     lines.append("○──activity──────────────────")
-    lines.append(f"New strategies: {specs_written}")
-    lines.append(f"New families: {new_families}")
-    lines.append(f"Active families: {active}")
-    lines.append(f"Backtests: {backtest_count}")
-    lines.append(f"Promotions: {promotions}")
-    lines.append(f"Abandoned: {abandoned}")
+    lines.append(f"New strategies: {metrics['specs_written']}")
+    lines.append(f"New families: {metrics['new_families']}")
+    lines.append(f"Active families: {metrics['active_families']}")
+    lines.append(f"Backtests: {metrics['backtests']}")
+    lines.append(f"Promotions: {metrics['promotions']}")
+    lines.append(f"Abandoned: {metrics['abandoned_families']}")
+    if metrics.get("is_completed"):
+        lines.append(f"Report delay: +{int(metrics['report_delay_seconds'] // 60)}m {int(metrics['report_delay_seconds'] % 60)}s")
     lines.append("○──note──────────────────────")
-    if promotions > 0:
-        lines.append(f"🏆 {promotions} promotion(s)! Best QS: {best_qs:.2f}")
-    elif best_qs > 0:
-        lines.append(f"Best QS: {best_qs:.2f}. Iterating.")
+    if metrics['promotions'] > 0:
+        lines.append(f"🏆 {metrics['promotions']} promotion(s)! Best QS: {metrics['best_qscore']:.2f}")
+    elif metrics['best_qscore'] > 0:
+        lines.append(f"Best QS: {metrics['best_qscore']:.2f}. Iterating.")
     else:
         lines.append("No strong results yet. Quandalf refining.")
+    if metrics.get("is_completed") and metrics.get("report_delay_seconds", 0) > 0:
+        lines.append("Run already completed; this was a later report-only pass.")
 
-    return "\n".join(lines)
+    return "\n".join(lines), metrics
 
 
 def count_backtests(rows):
@@ -239,6 +368,15 @@ def count_backtests(rows):
         if row_id:
             seen_ids.add(str(row_id))
     return len(seen_ids)
+
+
+def write_cycle_metrics(metrics):
+    try:
+        os.makedirs(os.path.dirname(CURRENT_CYCLE_METRICS_PATH), exist_ok=True)
+        with open(CURRENT_CYCLE_METRICS_PATH, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+    except Exception:
+        pass
 
 
 def should_send_card(cycle_id, card_text):
@@ -567,24 +705,18 @@ def main():
         total_rows = conn.execute("SELECT COUNT(*) FROM backtest_results").fetchone()[0]
         conn.close()
 
-        elapsed_seconds = 0
-        start_marker = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
-        try:
-            if os.path.exists(start_marker):
-                with open(start_marker, "r", encoding="utf-8") as f:
-                    marker = json.load(f)
-                started = float(marker.get("started_at_epoch", 0) or 0)
-                if started > 0:
-                    elapsed_seconds = max(0, time.time() - started)
-        except Exception:
-            elapsed_seconds = 0
+        run_state = observe_run_state()
+        cycle_id = resolve_cycle_id(run_state)
+        run_state = observe_run_state(cycle_id)
+        timing = compute_timing_metrics(run_state)
+        elapsed_seconds = timing["run_elapsed_seconds"]
 
-        cycle_id = current_cycle_id()
         backtest_count = count_backtests(rows)
-        log_card = build_log_card(cycle_id, rows, elapsed_seconds, backtest_count)
+        log_card, metrics = build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=run_state)
+        write_cycle_metrics(metrics)
         sent = send_log_card(cycle_id, log_card)
 
-        print(json.dumps({"status": "card_sent" if sent else "card_skipped_duplicate", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "backtests": backtest_count, "total_in_db": total_rows}))
+        print(json.dumps({"status": "card_sent" if sent else "card_skipped_duplicate", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "backtests": backtest_count, "total_in_db": total_rows, "card_metrics": metrics}))
         return
 
     new_backtests = backtest_new_specs() if a.backfill_unbacktested else 0
@@ -610,7 +742,8 @@ def main():
     conn.close()
 
     if not rows:
-        print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests}))
+        run_state = finalize_run_state(resolve_cycle_id())
+        print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": resolve_cycle_id(run_state), "run_state": run_state}))
         return
 
     dm_lines = []
@@ -663,26 +796,20 @@ def main():
         step="notify",
     )
 
-    elapsed = round(time.time() - start_time, 1)
-    start_marker = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
-    try:
-        if os.path.exists(start_marker):
-            with open(start_marker, "r", encoding="utf-8") as f:
-                marker = json.load(f)
-            started = float(marker.get("started_at_epoch", 0) or 0)
-            if started > 0:
-                elapsed = round(max(0, time.time() - started), 1)
-    except Exception:
-        pass
+    run_state = finalize_run_state(resolve_cycle_id())
+    cycle_id = resolve_cycle_id(run_state)
+    run_state = finalize_run_state(cycle_id)
+    timing = compute_timing_metrics(run_state)
+    elapsed = timing["run_elapsed_seconds"] or round(time.time() - start_time, 1)
 
     best_pf = 0
     for r in rows:
         if r["profit_factor"] and r["profit_factor"] > best_pf:
             best_pf = r["profit_factor"]
 
-    cycle_id = current_cycle_id()
     backtest_count = count_backtests(rows)
-    log_card = build_log_card(cycle_id, rows, elapsed, backtest_count)
+    log_card, metrics = build_log_card(cycle_id, rows, elapsed, backtest_count, run_state=run_state)
+    write_cycle_metrics(metrics)
     log_card_sent = send_log_card(cycle_id, log_card)
 
     post_agent_message(
@@ -714,6 +841,7 @@ def main():
                 "log_card_sent": log_card_sent,
                 "journal_sent": journal_sent,
                 "lessons_added": lessons_added,
+                "card_metrics": metrics,
             }
         )
     )

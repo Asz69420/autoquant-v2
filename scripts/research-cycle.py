@@ -89,6 +89,14 @@ def next_cycle_id():
     return data["last_cycle_id"]
 
 
+def load_cycle_run_state() -> dict:
+    path = ROOT / "data" / "state" / "research_cycle_started_at.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def main() -> int:
     # Phase 1 only: Build briefing packet
     leaderboard = _run_skill([PY, str(SKILLS_DIR / "autoquant-leaderboard" / "query.py"), "--limit", "5"])
@@ -130,7 +138,10 @@ def main() -> int:
         backtest_details.append(detail)
 
     now = datetime.now(timezone.utc)
-    cycle_id = next_cycle_id()
+    run_state = load_cycle_run_state()
+    cycle_id = int(run_state.get("cycle_id", 0) or 0)
+    if cycle_id <= 0:
+        cycle_id = next_cycle_id()
 
     packet = {
         "ts_iso": now.isoformat(),
