@@ -52,14 +52,16 @@ def send_tg(message, channel="dm"):
 
 def send_tg_as(message, channel="dm", bot="oragorn"):
     try:
-        subprocess.run(
+        proc = subprocess.run(
             [sys.executable, TG_SCRIPT, "--message", message, "--channel", channel, "--bot", bot],
             capture_output=True,
             text=True,
             timeout=15,
         )
+        return proc.returncode == 0 and '"status": "sent"' in (proc.stdout or "")
     except Exception as e:
         print(f"TG send failed: {e}", file=sys.stderr)
+        return False
 
 
 def post_agent_message(from_agent, to_agent, msg_type, message):
@@ -301,10 +303,28 @@ def send_log_card(cycle_id, log_card):
     return True
 
 
+def read_text_best_effort(path):
+    encodings = ["utf-8", "utf-8-sig", "cp1252", "latin-1"]
+    for encoding in encodings:
+        try:
+            with open(path, "r", encoding=encoding) as f:
+                return f.read()
+        except UnicodeDecodeError:
+            continue
+        except Exception:
+            break
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            return f.read()
+    except Exception:
+        return ""
+
+
 def format_journal_html(raw_text):
+    import html
     import re
 
-    text = raw_text
+    text = html.escape(raw_text)
     text = re.sub(r'^### (.+)$', r'<b>\1</b>', text, flags=re.MULTILINE)
     text = re.sub(r'^## (.+)$', r'<b>\1</b>', text, flags=re.MULTILINE)
     text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
@@ -623,18 +643,17 @@ def main():
 
     journal_text = ""
     if os.path.exists(JOURNAL_PATH):
-        try:
-            with open(JOURNAL_PATH, "r", encoding="utf-8") as f:
-                journal_text = f.read().strip()
-        except Exception:
-            pass
+        journal_text = read_text_best_effort(JOURNAL_PATH).strip()
 
+    journal_sent = False
     if journal_text:
         formatted = format_journal_html(journal_text)
         journal_parts = split_message(formatted, 4000)
+        send_results = []
         for i, part in enumerate(journal_parts):
             header = "🧙 <b>Quandalf's Journal</b>\n\n" if i == 0 else ""
-            send_tg_as(header + part, "hades", "quandalf")
+            send_results.append(send_tg_as(header + part, "hades", "quandalf"))
+        journal_sent = all(send_results) if send_results else False
 
     log_event(
         "notification_sent",
@@ -693,7 +712,7 @@ def main():
                 "best_qscore": best_qscore,
                 "dm_sent": True,
                 "log_card_sent": log_card_sent,
-                "journal_sent": bool(journal_text),
+                "journal_sent": journal_sent,
                 "lessons_added": lessons_added,
             }
         )
