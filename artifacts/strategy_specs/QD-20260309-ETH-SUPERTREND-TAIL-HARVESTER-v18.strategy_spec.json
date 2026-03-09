@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v18",
+  "ts_iso": "2026-03-09T11:53:00Z",
+  "thesis_id": "cycle_150_eth_supertrend_tail_harvester_v18",
+  "name": "ETH Supertrend Tail Harvester v18",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "family_name": "eth_supertrend_tail_harvester",
+  "thesis": "Drawdown-trim exploit variant of the ETH 4h tail-harvester champion. Keep the broad champion-style Supertrend and EMA participation so trade density stays close to the baseline, but require modest VWAP value acceptance and slightly tighter ATR risk so adverse excursions are reduced without turning the setup into a rare event stack.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "purpose": "walk_forward_full"
+    }
+  ],
+  "edge_mechanism": "trend continuation after tail pullback with broad state participation",
+  "expected_regime": "trending to transitional trend continuation",
+  "invalidation_condition": "If walk-forward total trades fall below 75 or profit factor falls materially below the champion while drawdown does not improve, the drawdown-trim thesis is wrong.",
+  "indicators": [
+    "SUPERTd_10_3.0",
+    "EMA_50",
+    "VWAP",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "SUPERTd_10_3.0 > 0",
+      "Close > EMA_50",
+      "Close > VWAP",
+      "ADX_14 >= 13",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "SUPERTd_10_3.0 < 0",
+      "Close < EMA_50",
+      "Close < VWAP",
+      "ADX_14 >= 13",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.92 * ATR_14 below entry",
+      "Take profit: 8.0 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_50",
+      "Time stop: 18 bars"
+    ],
+    "short": [
+      "Stop loss: 0.92 * ATR_14 above entry",
+      "Take profit: 8.0 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_50",
+      "Time stop: 18 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Champion-preserving drawdown trim with value acceptance through VWAP and only a light ADX floor."
+  },
+  "variants": [
+    {
+      "name": "eth_supertrend_tail_harvester_drawdown_trim_v18",
+      "template_name": "supertrend_tail_harvester",
+      "parameters": [
+        {
+          "name": "supertrend_period",
+          "value": 10
+        },
+        {
+          "name": "supertrend_mult",
+          "value": 3.0
+        },
+        {
+          "name": "ema_anchor",
+          "value": 50
+        },
+        {
+          "name": "adx_floor",
+          "value": 13
+        },
+        {
+          "name": "rr_target",
+          "value": 8.0
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 0.92,
+        "tp_type": "atr",
+        "tp_atr_mult": 8.0,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 18
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1"
+      ]
+    }
+  ],
+  "complexity_score": 1.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

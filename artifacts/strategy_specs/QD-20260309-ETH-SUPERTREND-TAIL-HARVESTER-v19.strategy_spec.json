@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v19",
+  "ts_iso": "2026-03-09T11:53:00Z",
+  "thesis_id": "cycle_150_eth_supertrend_tail_harvester_v19",
+  "name": "ETH Supertrend Tail Harvester v19",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "family_name": "eth_supertrend_tail_harvester",
+  "thesis": "Cleaner-context exploit variant of the ETH 4h tail-harvester champion. The goal is not to make entries rare, but to filter for continuation phases where structure, slope, and directional strength already agree before the tail-harvest entry, improving continuation quality while preserving a still-broad 4h participation profile.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "purpose": "walk_forward_full"
+    }
+  ],
+  "edge_mechanism": "cleaner continuation capture inside established supertrend state",
+  "expected_regime": "persistent trending with orderly pullback continuation",
+  "invalidation_condition": "If the added trend-state quality checks materially reduce density below 75 trades or do not improve PF relative to the baseline, the cleaner-context thesis is too selective.",
+  "indicators": [
+    "SUPERTd_10_3.0",
+    "EMA_50",
+    "EMA_50_SLOPE_5",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "SUPERTd_10_3.0 > 0",
+      "Close > EMA_50",
+      "EMA_50_SLOPE_5 > 0",
+      "ADX_14 >= 15",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "SUPERTd_10_3.0 < 0",
+      "Close < EMA_50",
+      "EMA_50_SLOPE_5 < 0",
+      "ADX_14 >= 15",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "RSI_14 <= 49"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.96 * ATR_14 below entry",
+      "Take profit: 8.1 * ATR_14 above entry",
+      "Early exit if SUPERTd_10_3.0 crosses_below 0",
+      "Time stop: 17 bars"
+    ],
+    "short": [
+      "Stop loss: 0.96 * ATR_14 above entry",
+      "Take profit: 8.1 * ATR_14 below entry",
+      "Early exit if SUPERTd_10_3.0 crosses_above 0",
+      "Time stop: 17 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending"
+    ],
+    "detection_method": "Cleaner continuation context using EMA slope, ADX strength, and mild RSI alignment without demanding a fresh flip event."
+  },
+  "variants": [
+    {
+      "name": "eth_supertrend_tail_harvester_cleaner_trend_state_v19",
+      "template_name": "supertrend_tail_harvester",
+      "parameters": [
+        {
+          "name": "supertrend_period",
+          "value": 10
+        },
+        {
+          "name": "supertrend_mult",
+          "value": 3.0
+        },
+        {
+          "name": "ema_anchor",
+          "value": 50
+        },
+        {
+          "name": "adx_floor",
+          "value": 15
+        },
+        {
+          "name": "rsi_long_floor",
+          "value": 51
+        },
+        {
+          "name": "rsi_short_ceiling",
+          "value": 49
+        },
+        {
+          "name": "rr_target",
+          "value": 8.1
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 0.96,
+        "tp_type": "atr",
+        "tp_atr_mult": 8.1,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 17
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1"
+      ]
+    }
+  ],
+  "complexity_score": 2.1,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-SUPERTREND-TAIL-HARVESTER-v20",
+  "ts_iso": "2026-03-09T11:53:00Z",
+  "thesis_id": "cycle_150_eth_supertrend_tail_harvester_v20",
+  "name": "ETH Supertrend Tail Harvester v20",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "family_name": "eth_supertrend_tail_harvester",
+  "thesis": "Faster-invalidation exploit variant of the ETH 4h tail-harvester champion. Keep entries broad and champion-like so the 4h trade stream survives, but cut stale continuation attempts faster once price loses trend structure after entry, aiming to improve realized PF and drawdown without front-loading extra selectivity.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "purpose": "walk_forward_full"
+    }
+  ],
+  "edge_mechanism": "broad trend participation with faster post-entry giveback control",
+  "expected_regime": "trending and transitional continuation with occasional stale-trend reversal",
+  "invalidation_condition": "If faster post-entry exits reduce trade quality without improving drawdown or PF, then the family wins from holding tails longer and this refinement is counterproductive.",
+  "indicators": [
+    "SUPERTd_10_3.0",
+    "EMA_50",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "VWAP"
+  ],
+  "entry_rules": {
+    "long": [
+      "SUPERTd_10_3.0 > 0",
+      "Close > EMA_50",
+      "ADX_14 >= 14",
+      "PLUS_DI_14 > MINUS_DI_14"
+    ],
+    "short": [
+      "SUPERTd_10_3.0 < 0",
+      "Close < EMA_50",
+      "ADX_14 >= 14",
+      "MINUS_DI_14 > PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.90 * ATR_14 below entry",
+      "Take profit: 7.8 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_50 for 1 bar and Close < VWAP",
+      "Time stop: 15 bars"
+    ],
+    "short": [
+      "Stop loss: 0.90 * ATR_14 above entry",
+      "Take profit: 7.8 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_50 for 1 bar and Close > VWAP",
+      "Time stop: 15 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Champion-like broad entry with faster post-entry invalidation once both trend anchor and value anchor are lost."
+  },
+  "variants": [
+    {
+      "name": "eth_supertrend_tail_harvester_faster_invalidation_v20",
+      "template_name": "supertrend_tail_harvester",
+      "parameters": [
+        {
+          "name": "supertrend_period",
+          "value": 10
+        },
+        {
+          "name": "supertrend_mult",
+          "value": 3.0
+        },
+        {
+          "name": "ema_anchor",
+          "value": 50
+        },
+        {
+          "name": "adx_floor",
+          "value": 14
+        },
+        {
+          "name": "rr_target",
+          "value": 7.8
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 0.90,
+        "tp_type": "atr",
+        "tp_atr_mult": 7.8,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 15
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1"
+      ]
+    }
+  ],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
