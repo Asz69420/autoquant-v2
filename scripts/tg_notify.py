@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import html
 import json
 import os
 import sys
@@ -78,19 +77,6 @@ def send_photo(photo_path, caption, chat_id, bot_token, parse_mode="HTML"):
         return False
 
 
-def normalize_message_for_channel(message, channel, parse_mode):
-    if channel != "hades":
-        return message, parse_mode
-    if parse_mode.upper() != "HTML":
-        return message, parse_mode
-    stripped = message.strip()
-    if stripped.startswith("<pre>") and stripped.endswith("</pre>"):
-        return message, parse_mode
-    if stripped.startswith("<code>") and stripped.endswith("</code>"):
-        return message, parse_mode
-    return f"<pre>{html.escape(message)}</pre>", "HTML"
-
-
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--message", required=True)
@@ -116,12 +102,10 @@ def main():
         else:
             chat_id = env.get("ASZ_CHAT_ID", "1801759510")
 
-    message, parse_mode = normalize_message_for_channel(a.message, a.channel, a.parse_mode)
-
     if a.photo and os.path.exists(a.photo):
-        ok = send_photo(a.photo, message, chat_id, token, parse_mode)
+        ok = send_photo(a.photo, a.message, chat_id, token, a.parse_mode)
     else:
-        ok = send_message(message, chat_id, token, parse_mode)
+        ok = send_message(a.message, chat_id, token, a.parse_mode)
 
     print(json.dumps({"status": "sent" if ok else "failed", "bot": a.bot, "channel": a.channel}))
 

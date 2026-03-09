@@ -14,6 +14,8 @@ TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
 BANNERS = os.path.join(ROOT, "assets", "banners")
 GATEWAY_LOG_DIR = r"C:\tmp\openclaw"
 BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
+HEALTH_SEND_STATE_PATH = os.path.join(ROOT, "data", "state", "health_send_state.json")
+HEALTH_COOLDOWN_SECONDS = 4 * 3600  # 4 hours between identical-status sends
 
 
 def send_log(message, bot="logron", channel="log", photo=None):
@@ -394,6 +396,44 @@ def build_health_card(status, stats, issues, auto_fixes):
     return "\n".join(lines)
 
 
+def _load_health_send_state():
+    try:
+        if os.path.exists(HEALTH_SEND_STATE_PATH):
+            with open(HEALTH_SEND_STATE_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+
+def _save_health_send_state(status, issues):
+    os.makedirs(os.path.dirname(HEALTH_SEND_STATE_PATH), exist_ok=True)
+    with open(HEALTH_SEND_STATE_PATH, "w", encoding="utf-8") as f:
+        json.dump({
+            "last_status": status,
+            "last_issues": sorted(issues),
+            "sent_at": time.time(),
+            "sent_at_iso": datetime.now(timezone.utc).isoformat(),
+        }, f, indent=2)
+
+
+def _should_send_health_card(status, issues):
+    prev = _load_health_send_state()
+    if not prev.get("sent_at"):
+        return True  # first run
+    # Always send on status change (e.g. ok -> warn, warn -> fail)
+    if prev.get("last_status") != status:
+        return True
+    # Always send on issue change
+    if sorted(issues) != sorted(prev.get("last_issues", [])):
+        return True
+    # Same status+issues: enforce cooldown
+    elapsed = time.time() - prev["sent_at"]
+    if elapsed >= HEALTH_COOLDOWN_SECONDS:
+        return True
+    return False
+
+
 def main():
     seed_known_fixes_if_empty()
 
@@ -423,19 +463,22 @@ def main():
         status = "warn" if auto_fixes else "ok"
 
     card = build_health_card(status, stats, issues, auto_fixes)
-    banner = os.path.join(BANNERS, "logron.jpg")
-    send_log(f"<pre>{card}</pre>", photo=banner if os.path.exists(banner) else None)
 
-    if status == "fail":
-        alert = "🚨 <b>AutoQuant Alert</b>\n\nLogron detected critical issues:\n"
-        for i in issues:
-            alert += f"• {i}\n"
-        if auto_fixes:
-            alert += "\nAuto-fixes applied:\n"
-            for fx in auto_fixes:
-                alert += f"• {fx.get('pattern', '?')} (success={fx.get('success', False)})\n"
-        alert += "\nCheck the log channel for details."
-        send_alert(alert)
+    if _should_send_health_card(status, issues):
+        banner = os.path.join(BANNERS, "logron.jpg")
+        send_log(f"<pre>{card}</pre>", photo=banner if os.path.exists(banner) else None)
+        _save_health_send_state(status, issues)
+
+        if status == "fail":
+            alert = "🚨 <b>AutoQuant Alert</b>\n\nLogron detected critical issues:\n"
+            for i in issues:
+                alert += f"• {i}\n"
+            if auto_fixes:
+                alert += "\nAuto-fixes applied:\n"
+                for fx in auto_fixes:
+                    alert += f"• {fx.get('pattern', '?')} (success={fx.get('success', False)})\n"
+            alert += "\nCheck the log channel for details."
+            send_alert(alert)
 
     if issues:
         post_agent_message(
