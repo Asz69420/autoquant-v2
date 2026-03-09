@@ -487,43 +487,38 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     run_elapsed = metrics.get("run_elapsed_seconds", elapsed_seconds)
     elapsed_str = f"{int(run_elapsed // 60)}m {int(run_elapsed % 60)}s" if run_elapsed else "?"
 
-    design_done = metrics["specs_produced"] > 0
-    backtests_done = metrics["backtests_queued"] > 0 and metrics["backtests_completed"] >= metrics["backtests_queued"]
-    backtests_active = metrics["backtests_completed"] > 0 and not backtests_done
-    reflecting_done = metrics["has_reflection_note"] and metrics["cycle_results_present"]
-    reflecting_active = metrics["has_reflection_note"] and not metrics["cycle_results_present"]
-    posting_done = metrics.get("is_completed")
+    promotions = metrics["promote_count"]
+    status_emoji = "✅" if promotions > 0 else "⚠️"
+    new_families = len(metrics.get("new_families") or [])
+    active_families = metrics.get("active_families", 0)
+    abandoned = len(metrics.get("abandoned_families") or [])
+    best = metrics.get("best_result")
+
+    note_lines = []
+    if promotions > 0:
+        note_lines.append(f"🏆 {promotions} promotion(s)! Best QS: {metrics['best_qscore']:.2f}")
+    elif (metrics.get("best_qscore") or 0) > 0:
+        note_lines.append(f"Best QS: {metrics['best_qscore']:.2f}. Iterating.")
+    else:
+        note_lines.append("No strong results yet. Quandalf refining.")
+
+    if metrics.get("external_results_present"):
+        note_lines.append(f"Ignored {metrics['external_rows']} off-cycle result(s).")
+    elif metrics.get("backtests_completed", 0) < metrics.get("backtests_queued", 0):
+        note_lines.append(f"{metrics['backtests_completed']}/{metrics['backtests_queued']} current-cycle backtests in.")
 
     lines = []
     lines.append("🍳 Cooking")
-    header_status = "🏆" if metrics["promote_count"] > 0 else "✅" if backtests_done else "▶" if (design_done or backtests_active or reflecting_active) else "⚠️"
-    lines.append(f"{header_status} | ▶ {elapsed_str} run | 🆔 {metrics['cycle_id']} | {metrics['mode']}")
+    lines.append(f"{status_emoji} | ▶ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○──activity──────────────────")
-    lines.append(f"{phase_state(done=design_done)} Designing: {metrics['specs_produced']} specs | new {len(metrics['new_families'])} | iterated {len(metrics['iterated_families'])}")
-    lines.append(f"{phase_state(done=backtests_done, active=backtests_active)} Backtesting: {metrics['backtests_completed']}/{metrics['backtests_queued']} current-cycle results")
-    if reflecting_done:
-        lines.append(f"{phase_state(done=True)} Reflecting: updated from current-cycle results")
-    elif reflecting_active:
-        lines.append(f"{phase_state(active=True)} Reflecting: status updated, waiting on current-cycle results")
-    else:
-        lines.append(f"{phase_state()} Reflecting: no current-cycle reflection yet")
-    lines.append(f"{phase_state(done=posting_done, active=not posting_done)} Posting: {'reported' if posting_done else 'reporting now'}")
-    lines.append("○──batch─────────────────────")
-    lines.append(f"Families: active {metrics['active_families']} | abandoned {len(metrics['abandoned_families'])}")
-    lines.append(f"Pass / Fail / Promote: {metrics['pass_count']} / {metrics['fail_count']} / {metrics['promote_count']}")
-    if metrics.get("is_completed"):
-        lines.append(f"Report delay: +{int(metrics['report_delay_seconds'] // 60)}m {int(metrics['report_delay_seconds'] % 60)}s")
+    lines.append(f"New strategies: {metrics['specs_produced']}")
+    lines.append(f"New families: {new_families}")
+    lines.append(f"Active families: {active_families}")
+    lines.append(f"Backtests: {metrics['backtests_completed']}")
+    lines.append(f"Promotions: {promotions}")
+    lines.append(f"Abandoned: {abandoned}")
     lines.append("○──note──────────────────────")
-    best = metrics.get("best_result")
-    if best:
-        lines.append(f"Best current-cycle result: {best['asset']}/{best['timeframe']} {best['variant_id']} | QS {best['qscore']:.2f} | PF {best['profit_factor']:.2f} | T {best['total_trades']}")
-    else:
-        lines.append("No completed current-cycle backtests yet.")
-    if metrics.get("external_results_present"):
-        lines.append(f"Ignored {metrics['external_rows']} fresh off-cycle result(s) for this card.")
-    lines.append(metrics.get("next_cycle_focus") or "Await next cycle focus.")
-    if metrics.get("is_completed") and metrics.get("report_delay_seconds", 0) > 0:
-        lines.append("Run already completed; this was a later report-only pass.")
+    lines.extend(note_lines)
 
     return "\n".join(lines), metrics
 
@@ -588,8 +583,9 @@ def send_log_card(cycle_id, log_card):
 
     log_card_formatted = f"<pre>{log_card}</pre>"
     banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
+    sent_ok = False
     if os.path.exists(banner_path):
-        subprocess.run(
+        proc = subprocess.run(
             [
                 sys.executable,
                 TG_SCRIPT,
@@ -606,8 +602,12 @@ def send_log_card(cycle_id, log_card):
             text=True,
             timeout=15,
         )
+        sent_ok = proc.returncode == 0 and '"status": "sent"' in (proc.stdout or "")
     else:
-        send_tg_as(log_card_formatted, "log", "logron")
+        sent_ok = send_tg_as(log_card_formatted, "log", "logron")
+
+    if not sent_ok:
+        return False
 
     remember_card_send(cycle_id, log_card, fingerprint)
     return True
