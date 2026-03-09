@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
-BACKTESTER = r"C:\Users\Clamps\.openclaw\skills\autoquant-backtester\engine.py"
+BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
 ASSETS = ["ETH", "BTC", "SOL"]
 

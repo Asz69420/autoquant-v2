@@ -13,12 +13,23 @@ from datetime import datetime, timezone
 def parse_json_from_output(text):
     if not text:
         return None
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    for line in reversed(lines):
-        if not line.startswith("{"):
+
+    text = text.strip()
+    if not text:
+        return None
+
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
+
+    lines = [line for line in text.splitlines() if line.strip()]
+    for start in range(len(lines)):
+        candidate = "\n".join(lines[start:]).strip()
+        if not candidate.startswith("{"):
             continue
         try:
-            return json.loads(line)
+            return json.loads(candidate)
         except Exception:
             continue
     return None
@@ -171,33 +182,11 @@ def worker(job):
             "stderr": stderr_text[:1000],
         }
 
-    result_path = payload.get("backtest_result")
-    trade_list_path = payload.get("trade_list")
-    if not result_path or not os.path.exists(result_path):
-        return {
-            "ok": False,
-            "job": job,
-            "error": "backtest_result_file_missing",
-            "stdout": stdout_text[:1000],
-            "stderr": stderr_text[:1000],
-            "payload": payload,
-        }
-
-    try:
-        with open(result_path, "r", encoding="utf-8") as f:
-            result_doc = json.load(f)
-    except Exception as e:
-        return {
-            "ok": False,
-            "job": job,
-            "error": f"backtest_result_parse_failed: {e}",
-            "result_path": result_path,
-        }
-
-    qscore = (((result_doc.get("qscore") or {}).get("score")) if isinstance(result_doc.get("qscore"), dict) else None)
-    max_dd = (((result_doc.get("results") or {}).get("max_drawdown_pct")) if isinstance(result_doc.get("results"), dict) else None)
-    pf = (((result_doc.get("results") or {}).get("profit_factor")) if isinstance(result_doc.get("results"), dict) else None)
-    result_id = result_doc.get("id")
+    outofsample = payload.get("outofsample") if isinstance(payload.get("outofsample"), dict) else {}
+    qscore = outofsample.get("qscore")
+    max_dd = outofsample.get("max_drawdown_pct")
+    pf = outofsample.get("profit_factor")
+    result_id = payload.get("result_id")
 
     db_result_id = None
     try:
@@ -222,13 +211,14 @@ def worker(job):
         "job": job,
         "result_id": db_result_id or result_id,
         "artifact_result_id": result_id,
-        "backtest_result_path": result_path,
-        "trade_list_path": trade_list_path,
+        "backtest_result_path": None,
+        "trade_list_path": None,
         "qscore": qscore,
         "max_dd": max_dd,
         "pf": pf,
         "stdout": stdout_text[:1000],
         "stderr": stderr_text[:1000],
+        "payload": payload,
     }
 
 

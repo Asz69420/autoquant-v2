@@ -738,23 +738,41 @@ def ensure_schema(conn: sqlite3.Connection):
     conn.commit()
 
 
-def save_result(conn: sqlite3.Connection, spec_id: str, variant_id: str, asset: str, timeframe: str, wf_result: dict):
+def save_result(conn: sqlite3.Connection, spec_id: str, variant_id: str, asset: str, timeframe: str, wf_result: dict, candles: list[dict]):
     ensure_schema(conn)
     oos = wf_result["outofsample_aggregate"]
     ins = wf_result["insample_aggregate"]
     result_id = f"wf_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc).isoformat()
+    period_start = candles[0]["ts"] if candles else now
+    period_end = candles[-1]["ts"] if candles else now
+    candle_count = len(candles)
+    metrics_blob = {
+        "insample": ins,
+        "outofsample": oos,
+        "degradation_pct": wf_result["degradation_pct"],
+        "walk_forward_config": wf_result["walk_forward_config"],
+    }
+    score_details = {
+        "method": "walk_forward_qscore",
+        "insample_qscore": ins["qscore"],
+        "outofsample_qscore": oos["qscore"],
+        "degradation_pct": wf_result["degradation_pct"],
+        "flags": oos.get("flags"),
+    }
     conn.execute(
         """
         INSERT INTO backtest_results (
             id, ts_iso, strategy_spec_id, variant_id, asset, timeframe,
-            profit_factor, max_drawdown_pct, total_trades, win_rate_pct,
-            total_return_pct, avg_trade_pct,
+            period_start, period_end, candle_count,
+            profit_factor, total_return_pct, max_drawdown_pct, total_trades, win_rate_pct,
+            avg_trade_pct, sharpe_ratio, metrics,
             score_total, score_decision, score_edge, score_resilience,
-            score_grade, score_flags,
+            score_grade, score_flags, score_details,
+            walk_forward, status,
             qscore_insample, qscore_outofsample, degradation_pct,
             walk_forward_folds, walk_forward_config, fold_results
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             result_id,
@@ -763,18 +781,26 @@ def save_result(conn: sqlite3.Connection, spec_id: str, variant_id: str, asset: 
             variant_id,
             asset,
             timeframe,
+            period_start,
+            period_end,
+            candle_count,
             oos["profit_factor"],
+            oos["total_return_pct"],
             oos["max_drawdown_pct"],
             oos["total_trades"],
             oos["win_rate_pct"],
-            oos["total_return_pct"],
             0.0,
+            oos["sharpe_ratio"],
+            json.dumps(metrics_blob),
             oos["qscore"],
             oos["decision"],
             oos.get("qscore", 0.0),
             -(oos["max_drawdown_pct"] / 100.0),
             oos["grade"],
             oos["flags"],
+            json.dumps(score_details),
+            json.dumps(True),
+            "complete",
             ins["qscore"],
             oos["qscore"],
             wf_result["degradation_pct"],
@@ -837,7 +863,7 @@ def main():
     if not args.no_db:
         try:
             conn = sqlite3.connect(DB_PATH)
-            result_id = save_result(conn, spec_id, args.variant, args.asset, args.tf, result)
+            result_id = save_result(conn, spec_id, args.variant, args.asset, args.tf, result, candles)
             conn.close()
             result["result_id"] = result_id
             result["db_saved"] = True
