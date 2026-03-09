@@ -15,6 +15,8 @@ ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
 JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
+DAILY_JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "daily_journal.md")
+JOURNAL_ARCHIVE_DIR = os.path.join(ROOT, "agents", "quandalf", "memory", "journal")
 BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
 BALROG = r"C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\balrog-validate.py"
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
@@ -642,6 +644,52 @@ def split_message(text, max_len=4000):
     return parts
 
 
+def extract_latest_journal_entry(raw_text):
+    text = str(raw_text or "").replace("\r\n", "\n").strip()
+    if not text:
+        return ""
+
+    marker = "\n## Entry "
+    idx = text.rfind(marker)
+    if idx != -1:
+        return text[idx + 1 :].strip()
+
+    if text.startswith("## Entry "):
+        return text
+
+    return text
+
+
+def sync_live_journal(cycle_id=None):
+    source_text = ""
+    if os.path.exists(JOURNAL_PATH):
+        source_text = read_text_best_effort(JOURNAL_PATH)
+
+    latest_entry = extract_latest_journal_entry(source_text)
+    if not latest_entry and os.path.exists(DAILY_JOURNAL_PATH):
+        latest_entry = read_text_best_effort(DAILY_JOURNAL_PATH).strip()
+
+    latest_entry = latest_entry.strip()
+    if not latest_entry:
+        return ""
+
+    os.makedirs(os.path.dirname(DAILY_JOURNAL_PATH), exist_ok=True)
+    with open(DAILY_JOURNAL_PATH, "w", encoding="utf-8", newline="\n") as f:
+        f.write(latest_entry + "\n")
+
+    os.makedirs(JOURNAL_ARCHIVE_DIR, exist_ok=True)
+    now_local = datetime.now()
+    archive_parts = [now_local.strftime("%Y-%m-%d-%H%M")]
+    if cycle_id:
+        archive_parts.append(f"cycle-{int(cycle_id)}")
+    archive_path = os.path.join(JOURNAL_ARCHIVE_DIR, "-".join(archive_parts) + ".md")
+    if not os.path.exists(archive_path):
+        with open(archive_path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(latest_entry + "\n")
+
+    return latest_entry
+
+
 def normalize_rule_block(block):
     if isinstance(block, dict):
         long_rules = block.get("long") or []
@@ -1202,9 +1250,7 @@ def main():
     for part in dm_parts:
         send_tg_as(part, "hades", "oragorn")
 
-    journal_text = ""
-    if os.path.exists(JOURNAL_PATH):
-        journal_text = read_text_best_effort(JOURNAL_PATH).strip()
+    journal_text = sync_live_journal(cycle_id)
 
     journal_sent = False
     if journal_text:
