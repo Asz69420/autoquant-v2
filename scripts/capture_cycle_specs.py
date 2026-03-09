@@ -38,8 +38,10 @@ def main() -> int:
         print(json.dumps({"status": "error", "message": "invalid start marker"}))
         return 1
 
-    briefing = load_json(BRIEFING_PATH)
-    cycle_id = int(briefing.get("cycle_id", 0) or 0)
+    cycle_id = int(start_payload.get("cycle_id", 0) or 0)
+    if cycle_id <= 0:
+        briefing = load_json(BRIEFING_PATH)
+        cycle_id = int(briefing.get("cycle_id", 0) or 0)
 
     discovered = []
     for path in SPECS_DIR.glob("*.strategy_spec.json"):

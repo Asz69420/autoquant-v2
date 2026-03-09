@@ -17,6 +17,7 @@ CYCLE_ID_FILES = {
     "manifest": os.path.join(STATE_DIR, "current_cycle_specs.json"),
     "batch_summary": os.path.join(STATE_DIR, "current_cycle_batch_summary.json"),
     "metrics": os.path.join(STATE_DIR, "current_cycle_metrics.json"),
+    "briefing": os.path.join(ROOT, "agents", "quandalf", "memory", "briefing_packet.json"),
     "cycle_status": os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json"),
     "cycle_orders": os.path.join(ROOT, "agents", "quandalf", "memory", "cycle_orders.json"),
 }
@@ -60,8 +61,6 @@ def check_cycle_coherence(new_cycle_id):
     for label, path in CYCLE_ID_FILES.items():
         if label == "cycle_counter":
             continue  # counter is already correct (we just incremented it)
-        if label == "cycle_orders":
-            continue  # orders intentionally point to next cycle
         data = load_json(path)
         if not data:
             continue
