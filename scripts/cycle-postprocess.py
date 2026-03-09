@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import hashlib
 import json
 import os
 import sqlite3
@@ -16,6 +17,7 @@ BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
 BALROG = r"C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\balrog-validate.py"
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
 BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
+CARD_STATE_PATH = os.path.join(ROOT, "data", "state", "cycle_postprocess_card_state.json")
 
 PHASE_EMOJIS = {
     "briefing": "📋",
@@ -182,7 +184,7 @@ def current_cycle_id():
         return 0
 
 
-def build_log_card(cycle_id, rows, elapsed_seconds, new_backtests):
+def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count):
     status_path = os.path.join(ROOT, "agents", "quandalf", "memory", "strategy_status.json")
     status = {}
     if os.path.exists(status_path):
@@ -211,7 +213,7 @@ def build_log_card(cycle_id, rows, elapsed_seconds, new_backtests):
     lines.append(f"New strategies: {specs_written}")
     lines.append(f"New families: {new_families}")
     lines.append(f"Active families: {active}")
-    lines.append(f"Backtests: {new_backtests}")
+    lines.append(f"Backtests: {backtest_count}")
     lines.append(f"Promotions: {promotions}")
     lines.append(f"Abandoned: {abandoned}")
     lines.append("○──note──────────────────────")
@@ -223,6 +225,80 @@ def build_log_card(cycle_id, rows, elapsed_seconds, new_backtests):
         lines.append("No strong results yet. Quandalf refining.")
 
     return "\n".join(lines)
+
+
+def count_backtests(rows):
+    seen_ids = set()
+    for row in rows:
+        if isinstance(row, dict):
+            row_id = row.get("id")
+        else:
+            row_id = row["id"]
+        if row_id:
+            seen_ids.add(str(row_id))
+    return len(seen_ids)
+
+
+def should_send_card(cycle_id, card_text):
+    fingerprint = hashlib.sha256(card_text.encode("utf-8")).hexdigest()
+    state = {}
+    try:
+        if os.path.exists(CARD_STATE_PATH):
+            with open(CARD_STATE_PATH, "r", encoding="utf-8") as f:
+                state = json.load(f)
+    except Exception:
+        state = {}
+
+    last = state.get("last_card") if isinstance(state, dict) else None
+    if isinstance(last, dict) and int(last.get("cycle_id", -1) or -1) == int(cycle_id) and last.get("fingerprint") == fingerprint:
+        return False, fingerprint
+    return True, fingerprint
+
+
+def remember_card_send(cycle_id, card_text, fingerprint):
+    os.makedirs(os.path.dirname(CARD_STATE_PATH), exist_ok=True)
+    state = {
+        "last_card": {
+            "cycle_id": int(cycle_id),
+            "fingerprint": fingerprint,
+            "sent_at_iso": datetime.now(timezone.utc).isoformat(),
+            "preview": card_text.splitlines(),
+        }
+    }
+    with open(CARD_STATE_PATH, "w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2)
+
+
+def send_log_card(cycle_id, log_card):
+    should_send, fingerprint = should_send_card(cycle_id, log_card)
+    if not should_send:
+        return False
+
+    log_card_formatted = f"<pre>{log_card}</pre>"
+    banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
+    if os.path.exists(banner_path):
+        subprocess.run(
+            [
+                sys.executable,
+                TG_SCRIPT,
+                "--message",
+                log_card_formatted,
+                "--channel",
+                "log",
+                "--bot",
+                "logron",
+                "--photo",
+                banner_path,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    else:
+        send_tg_as(log_card_formatted, "log", "logron")
+
+    remember_card_send(cycle_id, log_card, fingerprint)
+    return True
 
 
 def format_journal_html(raw_text):
@@ -484,31 +560,11 @@ def main():
             elapsed_seconds = 0
 
         cycle_id = current_cycle_id()
-        log_card = build_log_card(cycle_id, rows, elapsed_seconds, 0)
-        log_card_formatted = f"<pre>{log_card}</pre>"
-        banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
-        if os.path.exists(banner_path):
-            subprocess.run(
-                [
-                    sys.executable,
-                    TG_SCRIPT,
-                    "--message",
-                    log_card_formatted,
-                    "--channel",
-                    "log",
-                    "--bot",
-                    "logron",
-                    "--photo",
-                    banner_path,
-                ],
-                capture_output=True,
-                text=True,
-                timeout=15,
-            )
-        else:
-            send_tg_as(log_card_formatted, "log", "logron")
+        backtest_count = count_backtests(rows)
+        log_card = build_log_card(cycle_id, rows, elapsed_seconds, backtest_count)
+        sent = send_log_card(cycle_id, log_card)
 
-        print(json.dumps({"status": "card_sent", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "total_in_db": total_rows}))
+        print(json.dumps({"status": "card_sent" if sent else "card_skipped_duplicate", "since_minutes": a.since_minutes, "cycle_id": cycle_id, "rows": len(rows), "backtests": backtest_count, "total_in_db": total_rows}))
         return
 
     new_backtests = backtest_new_specs() if a.backfill_unbacktested else 0
@@ -606,29 +662,9 @@ def main():
             best_pf = r["profit_factor"]
 
     cycle_id = current_cycle_id()
-    log_card = build_log_card(cycle_id, rows, elapsed, new_backtests)
-    log_card_formatted = f"<pre>{log_card}</pre>"
-    banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
-    if os.path.exists(banner_path):
-        subprocess.run(
-            [
-                sys.executable,
-                TG_SCRIPT,
-                "--message",
-                log_card_formatted,
-                "--channel",
-                "log",
-                "--bot",
-                "logron",
-                "--photo",
-                banner_path,
-            ],
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
-    else:
-        send_tg_as(log_card_formatted, "log", "logron")
+    backtest_count = count_backtests(rows)
+    log_card = build_log_card(cycle_id, rows, elapsed, backtest_count)
+    log_card_sent = send_log_card(cycle_id, log_card)
 
     post_agent_message(
         "logron",
@@ -651,11 +687,12 @@ def main():
             {
                 "status": "processed",
                 "new_backtests": new_backtests,
+                "card_backtests": backtest_count,
                 "new_results": len(rows),
                 "total_in_db": total_rows,
                 "best_qscore": best_qscore,
                 "dm_sent": True,
-                "log_card_sent": True,
+                "log_card_sent": log_card_sent,
                 "journal_sent": bool(journal_text),
                 "lessons_added": lessons_added,
             }
