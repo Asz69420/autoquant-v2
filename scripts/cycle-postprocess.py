@@ -211,6 +211,30 @@ def resolve_cycle_id(run_state=None):
         return 0
 
 
+def sync_cycle_status_to_active(cycle_id):
+    """Ensure current_cycle_status.json carries the active cycle_id.
+
+    cycle-start and research-cycle already sync this, but agent steps can
+    overwrite with a stale cycle_id or fail to update it.  Running this
+    before we compute metrics eliminates the lag warning at its source.
+    """
+    cycle_id = int(cycle_id)
+    if cycle_id <= 0:
+        return
+    status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
+    if int(status.get("cycle_id", 0) or 0) == cycle_id:
+        return  # already in sync
+    status["cycle_id"] = cycle_id
+    status.setdefault("mode", "pending")
+    status.setdefault("research_direction", "pending")
+    status.setdefault("spec_paths", [])
+    status.setdefault("specs_produced", 0)
+    status.setdefault("next_cycle_focus", "pending")
+    os.makedirs(os.path.dirname(CURRENT_CYCLE_STATUS_PATH), exist_ok=True)
+    with open(CURRENT_CYCLE_STATUS_PATH, "w", encoding="utf-8") as f:
+        json.dump(status, f, indent=2)
+
+
 def observe_run_state(cycle_id=None):
     state = load_run_state()
     now_epoch = time.time()
@@ -532,13 +556,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines = []
     lines.append("🍳 Cooking")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
-    lines.append("○────────────────activity────────────────")
+    lines.append("○──────────────activity──────────────")
     lines.append(f"Generated: {generated}")
     lines.append(f"Iterated: {iterated}")
     lines.append(f"Passed: {passed}")
     lines.append(f"Aborted: {aborted}")
     lines.append(f"Backtests: {backtests}")
-    lines.append("○──────────────────note──────────────────")
+    lines.append("○───────────────note───────────────")
     lines.append(note)
 
     return "\n".join(lines), metrics
@@ -575,8 +599,12 @@ def write_cycle_metrics(metrics):
         with open(CURRENT_CYCLE_METRICS_PATH, "w", encoding="utf-8") as f:
             json.dump(metrics, f, indent=2)
 
-        should_write_batch_summary = bool(metrics.get("cycle_results_present")) or (
-            int(metrics.get("specs_produced", 0) or 0) > 0 and int(metrics.get("external_rows", 0) or 0) == 0
+        should_write_batch_summary = (
+            metrics.get("status_matches_cycle", False)
+            and (
+                bool(metrics.get("cycle_results_present"))
+                or (int(metrics.get("specs_produced", 0) or 0) > 0 and int(metrics.get("external_rows", 0) or 0) == 0)
+            )
         )
         if should_write_batch_summary:
             with open(CURRENT_CYCLE_BATCH_SUMMARY_PATH, "w", encoding="utf-8") as f:
@@ -1225,6 +1253,7 @@ def main():
 
         run_state = observe_run_state()
         cycle_id = resolve_cycle_id(run_state)
+        sync_cycle_status_to_active(cycle_id)
         run_state = observe_run_state(cycle_id)
         timing = compute_timing_metrics(run_state)
         elapsed_seconds = timing["run_elapsed_seconds"]
@@ -1266,6 +1295,7 @@ def main():
         return
 
     cycle_id_preview = resolve_cycle_id(load_run_state())
+    sync_cycle_status_to_active(cycle_id_preview)
     cycle_rows, preview_metrics = filter_rows_to_current_cycle(rows, cycle_id_preview)
     rows_for_dm = cycle_rows if cycle_rows else []
 
@@ -1325,10 +1355,8 @@ def main():
     log_card_sent = send_log_card(cycle_id, log_card, metrics=metrics)
 
     if metrics.get("state_warning"):
-        warning_message = f"Cycle state warning: {metrics['state_warning']}"
-        post_agent_message("logron", "oragorn", "warning", warning_message)
-        log_event("cycle_state_warning", "logron", warning_message, severity="warn", pipeline="research_cycle", step="postprocess")
-    elif metrics.get("cycle_results_present") or int(metrics.get("specs_produced", 0) or 0) > 0:
+        log_event("cycle_state_warning", "logron", f"Cycle state warning: {metrics['state_warning']}", severity="warn", pipeline="research_cycle", step="postprocess")
+    if log_card_sent and metrics.get("cycle_results_present"):
         post_agent_message(
             "logron",
             "oragorn",

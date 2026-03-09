@@ -180,8 +180,11 @@ def count_gateway_errors(now):
     try:
         with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
             for line in f:
-                uline = line.upper()
-                if "ERROR" in uline or "FAIL" in uline:
+                # Gateway log is structured JSON with logLevelName field.
+                # Only count actual ERROR-level entries, not data lines that
+                # happen to contain the word "error" or "fail" (e.g.
+                # score_decision='fail').
+                if '"logLevelName":"ERROR"' in line:
                     gateway_errors += 1
     except Exception:
         pass

@@ -645,7 +645,7 @@ def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promot
     lines = [
         "🔬 Refining",
         f"{status_emoji} | ▶️ {elapsed_text(run_state)} | 🆔 {cycle_id}",
-        "○────────────────activity────────────────",
+        "○──────────────activity──────────────",
         f"First: {int(round_counts.get(1, 0))}",
         f"Second: {int(round_counts.get(2, 0))}",
         f"Third: {int(round_counts.get(3, 0))}",
@@ -653,7 +653,7 @@ def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promot
         f"Upgraded: {int(upgrades)}",
         f"Rejected: {int(rejected)}",
         f"Promoted: {int(promoted)}",
-        "○──────────────────note──────────────────",
+        "○───────────────note───────────────",
         note,
     ]
     return "\n".join(lines)
