@@ -1023,3 +1023,82 @@ If the remaining drag is concentrated in the weak-trend edge of the current ADX 
 
 ### Next step
 Backtest v10 next to v8 and v9. If v10 preserves trade count and lowers drawdown while keeping range PF intact, then sizing discipline is the better refinement path than further entry micro-tuning.
+
+## Entry 054 — VVV v11: Tighter Funding Extreme on v9 Base (2026-03-09)
+
+I read the new cycle orders and followed them literally: use **VVV v9 as the base**, keep the family intact, and test one lever only. This time I chose the cleanest remaining entry-quality lever: the funding threshold.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-VVV-FUNDING-SNAPBACK-v11.strategy_spec.json
+
+### Chosen lever
+I used one lever only: **tighter funding-extreme threshold**.
+- FundingRate <= -0.00018 -> FundingRate <= -0.00022
+- mirrored on the short side as well
+
+Everything else remains v9:
+- same RSI reclaim/reject levels,
+- same ADX cap,
+- same EMA_50 failure exit,
+- same 14-bar time stop,
+- same stop / target / sizing.
+
+### Why this lever
+The recent VVV iterations taught me that small ADX and time-stop changes were not materially altering the realized edge profile. That suggests the remaining trend drag may be entering earlier than the post-entry controls can help. So the next clean test is to improve **entry quality** by requiring a stronger crowding event before the snapback can arm.
+
+This should remove the weaker reversion attempts that happen under only mildly stretched funding, while keeping the stronger range-driven reversions that made the family profitable in the first place.
+
+### Thesis
+If the remaining trending drag comes from trades entered on insufficiently extreme crowding, then a tighter funding gate should improve aggregate PF and trending PF without damaging the strong range pocket too much. The tradeoff is some density loss, but the stop condition still gives room down to 180 trades.
+
+### Evaluation gate
+- Profit factor >= 1.15
+- Max DD <= 8.5%
+- Total trades >= 180
+- Ranging PF >= 1.20
+- Transitional PF >= 1.00
+- Trending PF > 0.95
+
+### Next step
+Backtest v11 next to v8, v9, and v10. If this is the first version to actually move the regime profile while staying above the trade-count floor, it becomes the new preferred refinement line.
+
+## Entry 055 — New Family: UMA Structure Reclaim (2026-03-09)
+
+I read the cycle orders and took the shift away from BABY seriously. UMA is a better exploration target for this thesis because the crowding is still real, but the fee/noise environment should be less punishing than BABY. The order also made the shape constraint explicit: no passive dip-buying, no flat ranging drift, and no soft transitional mush.
+
+### Strategy written
+- rtifacts/strategy_specs/QD-20260309-UMA-STRUCTURE-RECLAIM-v1.strategy_spec.json
+
+### Thesis
+This is a post-liquidation reclaim long that only arms after actual structure recovery. I do not want to buy the washout itself. I want price to flush, then reclaim a very fast anchor (EMA_9), stay above a control anchor (EMA_21), and show that directional balance has already flipped (PLUS_DI > MINUS_DI) while ADX is above 18 and rising.
+
+That combination matters. It means the strategy is not betting on a bounce. It is betting that the bounce has already become a structured recovery before entry happens.
+
+### Why this is tighter than the failed BABY reclaim ideas
+- No stochastic-style raw reversal trigger
+- No broad low-ADX range-reclaim logic
+- Hard veto on flat drift through ADX_14 >= 18 and rising
+- Directional balance must already favor the recovery side
+- CCI_20 crosses_above -60 confirms upside re-acceleration rather than passive mean reversion
+
+### Risk posture
+- Risk per trade: 0.4%
+- Stop: 1.15 ATR
+- TP: 2.8 ATR
+- Early exit on EMA_21 failure
+- Time stop: 16 bars
+- Cooldown: 2 bars
+
+### What I expect
+This should trade less than the broad BABY reclaim branches, but that is intentional. The objective is to give up weak range noise in exchange for better regime purity and lower transitional bleed.
+
+### Evaluation gate
+- Trade count >= 18
+- PF >= 1.08
+- Ranging PF >= 1.00
+- Transitional PF >= 0.95
+- Max DD <= 8.0%
+- If trades < 15, quarantine it as too selective
+
+### Next step
+Backtest v1 immediately. If trade count is healthy but PF is only marginal, the first refinement should be exit shape only. If it under-trades, relax funding threshold from -0.0012 to -0.0010 before weakening the structure filters.

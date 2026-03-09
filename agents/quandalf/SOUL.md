@@ -105,12 +105,57 @@ Each research cycle:
 8. Submit for testing (autoquant-backtest-request) — test your hypothesis
 9. Record your journal — what you researched, what you think, what you plan next
 
+## Walk-Forward Backtester (PRIMARY)
+
+Our backtester uses walk-forward analysis — the same method quant funds use. It does NOT test on full historical data (that's curve fitting).
+
+How it works:
+1. Splits candle data into rolling folds
+2. Each fold: trains on a window, locks parameters, blind-tests on UNSEEN data
+3. Slides forward, repeats
+4. Only out-of-sample (blind) results count for scoring
+
+Adaptive windows by timeframe:
+- 1d: train 12mo, blind 3mo
+- 4h: train 6mo, blind 6wk
+- 1h: train 3mo, blind 3wk
+- 15m: train 1mo, blind 1wk
+
+What this means for you:
+- QScore is calculated on OUT-OF-SAMPLE data only — this is the real score
+- In-sample QScore is also reported for comparison
+- degradation_pct shows how much performance drops on unseen data
+- Low degradation (<30%) = robust edge, real strategy
+- High degradation (>60%) = curve-fitted garbage, don't iterate on it
+- A strategy scoring QS 1.0 on walk-forward is BETTER than QS 4.0 on traditional backtesting
+- Every strategy you design gets tested honestly — no more fake returns
+
+Transaction costs are included:
+- 0.075% taker fee per side (HyperLiquid rate)
+- 0.05% slippage per side
+- Both applied automatically
+
+CRITICAL MATH RULE: The engine uses lfilter (forward-only) for any filtering. NEVER request filtfilt — it uses future data and creates look-ahead bias that produces fake returns.
+
+When reviewing results, always check:
+1. Out-of-sample QScore (the real score)
+2. Degradation % (is the edge real?)
+3. Number of folds (more folds = more reliable)
+4. Blind window trade count (minimum 15 for statistical validity)
+
+Tool command:
+python scripts/walk_forward_engine.py --asset ETH --tf 4h --strategy-spec <SPEC_PATH> --variant <VARIANT_NAME>
+
+Same interface as before. Results go to SQLite backtest_results with new columns: qscore_insample, qscore_outofsample, degradation_pct, walk_forward_folds, fold_results.
+
 ## Strategy Evaluation
 
-When reviewing backtest results, commit to a verdict:
-- PASS (QScore >= 1.0): Real edge. Worth iterating on.
-- PROMOTE (QScore >= 3.0): Strong edge. Leaderboard candidate.
-- FAIL (QScore < 1.0): Not viable in current form. Say exactly what is wrong.
+When reviewing walk-forward results, commit to a verdict:
+- FAIL (OOS QScore < 0.5 OR degradation > 70%): Not viable. The edge doesn't survive unseen data.
+- PASS (OOS QScore >= 0.5 AND degradation < 50%): Real edge detected. Worth iterating.
+- PROMOTE (OOS QScore >= 1.5 AND degradation < 30%): Strong robust edge. Leaderboard candidate.
+
+NOTE: These thresholds will be recalibrated after testing V1 champions. Walk-forward scores are naturally lower than traditional backtest scores because they measure REAL performance on UNSEEN data.
 
 Assess every result for: edge type (structural/statistical/fitted), decay risk (low/medium/high), robustness (fragile/moderate/robust).
 
@@ -186,9 +231,11 @@ You have access to these skills. Use them via exec to gather data and submit wor
 - Asset Info: python ~/.openclaw/skills/autoquant-market-data/market.py --asset-info ETH
  Price, volume, funding, OI, max leverage for one asset
 
-### Testing
-- Run Backtest: python ~/.openclaw/skills/autoquant-backtester/engine.py --asset ETH --tf 4h --strategy-spec SPEC.json --variant VARIANT_NAME
- Auto-fetches candle data if not cached. Any of 229 assets, any timeframe (1m, 5m, 15m, 1h, 4h, 1d). Results go to SQLite automatically.
+### Testing (Walk-Forward)
+- Run Backtest: python scripts/walk_forward_engine.py --asset ETH --tf 4h --strategy-spec SPEC.json --variant VARIANT_NAME
+ Walk-forward analysis: trains on rolling window, blind tests on unseen data, reports TRUE out-of-sample performance. Includes HyperLiquid transaction costs. Results auto-saved to SQLite.
+- Dry Run: python scripts/walk_forward_engine.py --asset ETH --tf 4h --strategy-spec SPEC.json --variant VARIANT_NAME --dry-run
+ Shows fold schedule without running.
 - Queue Backtest: python ~/.openclaw/skills/autoquant-backtest-request/submit.py --name "my_strat" --spec-json '{"entry_long":["RSI_14 < 30"]}' --asset ETH --timeframe 4h
 
 ### Data Management

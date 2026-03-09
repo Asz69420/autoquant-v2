@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-UMA-STRUCTURE-RECLAIM-v1",
+  "ts_iso": "2026-03-09T23:33:00Z",
+  "thesis_id": "cycle_20260309_uma_structure_reclaim_v1",
+  "name": "UMA Structure Reclaim v1",
+  "version": "1.0",
+  "asset": "UMA",
+  "timeframe": "1h",
+  "indicators": [
+    "FundingRate",
+    "EMA_9",
+    "EMA_21",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "CCI_20",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "FundingRate <= -0.0012",
+      "Close crosses_above EMA_9",
+      "Close > EMA_21",
+      "PLUS_DI_14 > MINUS_DI_14",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "CCI_20 crosses_above -60"
+    ],
+    "short": [
+      "FundingRate >= 0.0012",
+      "Close crosses_below EMA_9",
+      "Close < EMA_21",
+      "MINUS_DI_14 > PLUS_DI_14",
+      "ADX_14 >= 18",
+      "ADX_14 rising",
+      "CCI_20 crosses_below 60"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.15 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_21",
+      "Time stop: 16 bars"
+    ],
+    "short": [
+      "Stop loss: 1.15 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_21",
+      "Time stop: 16 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending"
+    ],
+    "detection_method": "This branch only arms after downside exhaustion has already turned into structure recovery: price must reclaim EMA_9 and hold above EMA_21, directional balance must flip in favor of the recovery side, and ADX_14 must be both above 18 and rising. That explicitly blocks flat ranging drift and avoids the transitional mush that broke the BABY reclaim ideas."
+  },
+  "variants": [
+    {
+      "name": "uma_structure_reclaim_v1",
+      "template_name": "structure_reclaim",
+      "parameters": [
+        { "name": "funding_extreme_neg", "value": -0.0012 },
+        { "name": "funding_extreme_pos", "value": 0.0012 },
+        { "name": "ema_fast", "value": 9 },
+        { "name": "ema_anchor", "value": 21 },
+        { "name": "adx_floor", "value": 18 },
+        { "name": "cci_reclaim", "value": -60 }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.15,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.8,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 16
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 7
+      },
+      "risk_rules": [
+        "cooldown_bars=2",
+        "skip_entry_if_atr_percentile_gt_95"
+      ]
+    }
+  ],
+  "complexity_score": 2.4,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,9 +1,9 @@
 {
-  "target_asset": "VVV",
+  "target_asset": "UMA",
   "target_timeframe": "1h",
-  "research_direction": "iterate_existing",
-  "specific_family_to_iterate": "vvv_funding_snapback",
-  "thesis_hint": "Recent 3-cycle quality is still declining (0.0000 -> 0.0000 -> 0.0000 across the latest BABY reclaim attempts), so stop exploration and return to the best-performing live family. Use VVV funding snapback v7 as the base because it still holds QScore 0.5323 with full grade, acceptable drawdown, and strong ranging PF 1.22. This cycle should attack only the remaining weak point: trending drag. Test one lever per variant only — stronger trend veto, faster time-stop after failed snapback, or reduced size when trend filter weakens — while preserving ranging PF >= 1.20 and transitional PF >= 1.00.",
+  "research_direction": "explore_new",
+  "specific_family_to_iterate": null,
+  "thesis_hint": "Recent 3-cycle quality is improving then stabilising (0.0000 -> 0.5323 -> 0.5323), so exploration is allowed. Target UMA 1h instead of BABY: funding is deeply negative (-0.00119) with decent opportunity score, but crowding/fee drag should be lower than BABY. Design a post-liquidation reclaim long that only arms after downside exhaustion plus reclaim above a fast trend anchor, with a hard veto on entries during flat ranging drift and no passive dip-buying. Keep the shape tighter than the failed BABY reclaim ideas: require structure recovery before entry and avoid transitional bleed.",
   "max_variants": 4,
-  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with profit_factor >= 1.15 and max_drawdown_pct <= 8.5; abort any variant with total_trades < 180, ranging profit_factor < 1.20, transitional profit_factor < 1.00, or trending profit_factor <= 0.95."
+  "stop_condition": "Stop when any variant reaches QScore >= 1.0 with >= 18 trades and max_drawdown_pct <= 8.0; abort any variant with total_trades < 15, profit_factor < 1.08, ranging profit_factor < 1.00, or transitional profit_factor < 0.95."
 }
