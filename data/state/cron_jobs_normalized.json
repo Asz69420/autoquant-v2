@@ -1,0 +1,258 @@
+[
+  {
+    "id": "54078da2-3bff-4b8e-a0bc-42343fa34726",
+    "name": "git-auto-sync",
+    "enabled": true,
+    "schedule": {
+      "kind": "cron",
+      "expr": "15,45 * * * *"
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Sync workspace-oragorn to GitHub. Run: cd C:\\Users\\Clamps\\.openclaw\\workspace-oragorn && git add -A && git diff --cached --quiet || git commit -m 'auto-sync' && git push",
+      "thinking": "off"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "67233d68-d162-4cdd-a777-1489e2a03a01",
+    "name": "research-digest",
+    "enabled": false,
+    "schedule": {
+      "kind": "cron",
+      "expr": "0 */2 * * *",
+      "tz": "Australia/Brisbane",
+      "staggerMs": 300000
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "python C:\\Users\\Clamps\\.openclaw\\skills\\autoquant-youtube-watcher\\watcher.py",
+      "thinking": "low"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "7f94f6c3-04f0-4c65-81e3-8272cbd69fa0",
+    "name": "memory-compress-daily",
+    "enabled": true,
+    "schedule": {
+      "kind": "cron",
+      "expr": "0 0 * * *",
+      "tz": "Australia/Brisbane"
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Daily memory compression. Check all agent memory folders. Compress over 50KB. Prune MEMORY.md if over 100 lines. Archive old decisions to memory_archive table.",
+      "thinking": "low"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "10ca9d0b-6a1a-419b-90c3-c7b1be52fca3",
+    "name": "memory-deep-weekly",
+    "enabled": true,
+    "schedule": {
+      "kind": "cron",
+      "expr": "0 18 * * 0",
+      "tz": "Australia/Brisbane"
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Weekly deep memory maintenance. Full archive rotation. Promote important to MEMORY.md. Rebuild indexes. Dedup. Health report.",
+      "thinking": "medium"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "44feaef0-c3a2-4392-bdb2-d91c49a996e7",
+    "name": "daily-intel-brief",
+    "enabled": false,
+    "schedule": {
+      "kind": "cron",
+      "expr": "30 5 * * *",
+      "tz": "Australia/Brisbane"
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Run the Lobster pipeline with the lobster tool, not CLI text. Use pipeline `pipelines/daily-intel.lobster` and do not set `cwd`.",
+      "thinking": "medium"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "13334734-40f7-4315-840b-2776015df75b",
+    "name": "logron-health-check",
+    "enabled": true,
+    "schedule": {
+      "kind": "cron",
+      "expr": "0 */4 * * *",
+      "tz": "Australia/Brisbane",
+      "staggerMs": 300000
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "exec python C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\scripts\\logron-monitor.py"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "efcaedeb-07d7-48ef-831b-400115d15acb",
+    "name": "quandalf-daily-journal",
+    "enabled": true,
+    "schedule": {
+      "kind": "cron",
+      "expr": "30 17 * * *",
+      "tz": "Australia/Brisbane"
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Write your daily journal entry. STRICT RULES: 1) ONE message only, MAX 4000 characters total. 2) First person, honest, researcher voice. 3) Cover: what you researched today, strategies you're excited or concerned about, what you plan next, market observations. 4) Do NOT write multiple sections or headers. Write it like a short diary entry. 5) Send via: python scripts/tg_notify.py --bot quandalf --channel dm 6) If your draft exceeds 4000 chars, cut it down. Quality over quantity.",
+      "thinking": "medium"
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "a6d9c3e4-2dc2-4a92-8b42-2c5bd7e62111",
+    "name": "research-pipeline",
+    "enabled": false,
+    "schedule": {
+      "kind": "cron",
+      "expr": "2-57/5 * * * *"
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Run the Lobster pipeline with the lobster tool, not CLI text. Use pipeline pipelines/research-cycle.lobster, do not set cwd, and set timeout high enough for the full run.",
+      "thinking": "off",
+      "timeoutSeconds": 1200
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "e682dd88-5d1b-4cac-8b24-c8b1cd6d6c72",
+    "name": "refinement-pipeline",
+    "enabled": false,
+    "schedule": {
+      "kind": "cron",
+      "expr": "4-54/10 * * * *",
+      "staggerMs": 0
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Run the Lobster pipeline with the lobster tool, not CLI text. Use pipeline `pipelines/refinement-cycle.lobster`, do not set `cwd`, and set timeout high enough for the full run.",
+      "thinking": "off",
+      "timeoutSeconds": 1800
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "d65e5b81-d71f-4933-8223-bb7c9b6d59dc",
+    "name": "tv-grabber",
+    "enabled": false,
+    "schedule": {
+      "kind": "cron",
+      "expr": "0,30 * * * *",
+      "staggerMs": 0
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Run the TradingView grab script and write results to the shared data location.",
+      "thinking": "off",
+      "timeoutSeconds": 300
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  },
+  {
+    "id": "25b475d1-9252-46ab-9eb4-74a765b9bbb9",
+    "name": "youtube-grabber",
+    "enabled": false,
+    "schedule": {
+      "kind": "cron",
+      "expr": "15 * * * *",
+      "staggerMs": 0
+    },
+    "sessionTarget": "isolated",
+    "wakeMode": "now",
+    "payload": {
+      "kind": "agentTurn",
+      "message": "Run the YouTube watcher/research digest update and write results to digest files.",
+      "thinking": "off",
+      "timeoutSeconds": 300
+    },
+    "delivery": {
+      "mode": "announce",
+      "channel": "telegram",
+      "to": "-5133891354",
+      "bestEffort": true
+    }
+  }
+]

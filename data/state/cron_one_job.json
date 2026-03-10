@@ -1,0 +1,35 @@
+{
+  "id": "54078da2-3bff-4b8e-a0bc-42343fa34726",
+  "agentId": "main",
+  "name": "git-auto-sync",
+  "enabled": true,
+  "createdAtMs": 1772931207736,
+  "updatedAtMs": 1773177807445,
+  "schedule": {
+    "kind": "cron",
+    "expr": "15,45 * * * *"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Sync workspace-oragorn to GitHub. Run: cd C:\\Users\\Clamps\\.openclaw\\workspace-oragorn && git add -A && git diff --cached --quiet || git commit -m 'auto-sync' && git push",
+    "thinking": "off"
+  },
+  "delivery": {
+    "mode": "announce",
+    "channel": "telegram",
+    "to": "-5133891354",
+    "bestEffort": true
+  },
+  "state": {
+    "nextRunAtMs": 1773179100000,
+    "lastRunAtMs": 1773177300014,
+    "lastRunStatus": "ok",
+    "lastStatus": "ok",
+    "lastDurationMs": 507431,
+    "lastDelivered": true,
+    "lastDeliveryStatus": "delivered",
+    "consecutiveErrors": 0
+  }
+}

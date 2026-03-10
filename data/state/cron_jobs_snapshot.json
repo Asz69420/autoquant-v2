@@ -1,0 +1,399 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "54078da2-3bff-4b8e-a0bc-42343fa34726",
+      "agentId": "main",
+      "name": "git-auto-sync",
+      "enabled": true,
+      "createdAtMs": 1772931207736,
+      "updatedAtMs": 1773177807445,
+      "schedule": {
+        "kind": "cron",
+        "expr": "15,45 * * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Sync workspace-oragorn to GitHub. Run: cd C:\\Users\\Clamps\\.openclaw\\workspace-oragorn && git add -A && git diff --cached --quiet || git commit -m 'auto-sync' && git push",
+        "thinking": "off"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773179100000,
+        "lastRunAtMs": 1773177300014,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 507431,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "67233d68-d162-4cdd-a777-1489e2a03a01",
+      "agentId": "oragorn",
+      "name": "research-digest",
+      "enabled": false,
+      "createdAtMs": 1772931211340,
+      "updatedAtMs": 1773091700746,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */2 * * *",
+        "tz": "Australia/Brisbane",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "python C:\\Users\\Clamps\\.openclaw\\skills\\autoquant-youtube-watcher\\watcher.py",
+        "thinking": "low"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "lastRunAtMs": 1773091048267,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 652479,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "7f94f6c3-04f0-4c65-81e3-8272cbd69fa0",
+      "agentId": "main",
+      "name": "memory-compress-daily",
+      "enabled": true,
+      "createdAtMs": 1772931214915,
+      "updatedAtMs": 1773151442255,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 * * *",
+        "tz": "Australia/Brisbane"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Daily memory compression. Check all agent memory folders. Compress over 50KB. Prune MEMORY.md if over 100 lines. Archive old decisions to memory_archive table.",
+        "thinking": "low"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773237600000,
+        "lastRunAtMs": 1773151200015,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 242240,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "10ca9d0b-6a1a-419b-90c3-c7b1be52fca3",
+      "agentId": "main",
+      "name": "memory-deep-weekly",
+      "enabled": true,
+      "createdAtMs": 1772931218497,
+      "updatedAtMs": 1772977025373,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 18 * * 0",
+        "tz": "Australia/Brisbane"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Weekly deep memory maintenance. Full archive rotation. Promote important to MEMORY.md. Rebuild indexes. Dedup. Health report.",
+        "thinking": "medium"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773561600000,
+        "lastRunAtMs": 1772956818632,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 121763,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "44feaef0-c3a2-4392-bdb2-d91c49a996e7",
+      "agentId": "oragorn",
+      "name": "daily-intel-brief",
+      "enabled": false,
+      "createdAtMs": 1772931222084,
+      "updatedAtMs": 1773134197650,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 5 * * *",
+        "tz": "Australia/Brisbane"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the Lobster pipeline with the lobster tool, not CLI text. Use pipeline `pipelines/daily-intel.lobster` and do not set `cwd`.",
+        "thinking": "medium"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "lastRunAtMs": 1773091886927,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 31727,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "13334734-40f7-4315-840b-2776015df75b",
+      "agentId": "main",
+      "name": "logron-health-check",
+      "enabled": true,
+      "createdAtMs": 1772954465068,
+      "updatedAtMs": 1773165657030,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */4 * * *",
+        "tz": "Australia/Brisbane",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "exec python C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\scripts\\logron-monitor.py"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773180024998,
+        "lastRunAtMs": 1773165625012,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 32018,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "efcaedeb-07d7-48ef-831b-400115d15acb",
+      "agentId": "quandalf",
+      "name": "quandalf-daily-journal",
+      "enabled": true,
+      "createdAtMs": 1772962440155,
+      "updatedAtMs": 1773127867392,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 17 * * *",
+        "tz": "Australia/Brisbane"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Write your daily journal entry. STRICT RULES: 1) ONE message only, MAX 4000 characters total. 2) First person, honest, researcher voice. 3) Cover: what you researched today, strategies you're excited or concerned about, what you plan next, market observations. 4) Do NOT write multiple sections or headers. Write it like a short diary entry. 5) Send via: python scripts/tg_notify.py --bot quandalf --channel dm 6) If your draft exceeds 4000 chars, cut it down. Quality over quantity.",
+        "thinking": "medium"
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1773214200000,
+        "lastRunAtMs": 1773127800029,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 67363,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "a6d9c3e4-2dc2-4a92-8b42-2c5bd7e62111",
+      "agentId": "oragorn",
+      "name": "research-pipeline",
+      "enabled": false,
+      "createdAtMs": 1772967046541,
+      "updatedAtMs": 1773134197542,
+      "schedule": {
+        "kind": "cron",
+        "expr": "2-57/5 * * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the Lobster pipeline with the lobster tool, not CLI text. Use pipeline pipelines/research-cycle.lobster, do not set cwd, and set timeout high enough for the full run.",
+        "thinking": "off",
+        "timeoutSeconds": 1200
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "lastRunAtMs": 1773133920017,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 115038,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": true
+      }
+    },
+    {
+      "id": "e682dd88-5d1b-4cac-8b24-c8b1cd6d6c72",
+      "agentId": "oragorn",
+      "name": "refinement-pipeline",
+      "enabled": false,
+      "createdAtMs": 1773050400000,
+      "updatedAtMs": 1773100640291,
+      "schedule": {
+        "kind": "cron",
+        "expr": "4-54/10 * * * *",
+        "staggerMs": 0
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the Lobster pipeline with the lobster tool, not CLI text. Use pipeline `pipelines/refinement-cycle.lobster`, do not set `cwd`, and set timeout high enough for the full run.",
+        "thinking": "off",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "maxConcurrentRuns": 1,
+      "state": {
+        "lastRunAtMs": 1773100440022,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 23554,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "d65e5b81-d71f-4933-8223-bb7c9b6d59dc",
+      "agentId": "oragorn",
+      "name": "tv-grabber",
+      "enabled": false,
+      "createdAtMs": 1773091040731,
+      "updatedAtMs": 1773134197583,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0,30 * * * *",
+        "staggerMs": 0
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the TradingView grab script and write results to the shared data location.",
+        "thinking": "off",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "lastRunAtMs": 1773133200030,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 60448,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "25b475d1-9252-46ab-9eb4-74a765b9bbb9",
+      "agentId": "oragorn",
+      "name": "youtube-grabber",
+      "enabled": false,
+      "createdAtMs": 1773091044522,
+      "updatedAtMs": 1773134197616,
+      "schedule": {
+        "kind": "cron",
+        "expr": "15 * * * *",
+        "staggerMs": 0
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run the YouTube watcher/research digest update and write results to digest files.",
+        "thinking": "off",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "-5133891354",
+        "bestEffort": true
+      },
+      "state": {
+        "lastRunAtMs": 1773134100019,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 49359,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    }
+  ]
+}
