@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C293-BTC-EMA-PULLBACK-v1",
+  "ts_iso": "2026-03-10T07:07:36Z",
+  "thesis_id": "qd-20260310-c293-btc-ema-pullback-v1_thesis",
+  "name": "BTC EMA Pullback v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "family_name": "btc_ema_pullback",
+  "thesis": "trend pullback continuation after value reclaim",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "trend pullback continuation after value reclaim",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If btc_ema_pullback cannot clear the trade floor or PF > 1 after costs on BTC 4h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_55",
+      "EMA_20 > EMA_55",
+      "low >= EMA_20 - 0.6 * ATR_14",
+      "RSI_14 >= 50",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "Close < EMA_55",
+      "EMA_20 < EMA_55",
+      "high <= EMA_20 + 0.6 * ATR_14",
+      "RSI_14 <= 50",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 2.4 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_20",
+      "Time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 2.4 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_20",
+      "Time stop: 10 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "trade_management": {
+    "entry_style": "one_shot",
+    "exit_style": "one_shot",
+    "position_stages": [
+      {
+        "action": "entry",
+        "trigger": "signal",
+        "size_pct": 100
+      },
+      {
+        "action": "exit",
+        "trigger": "exit_rules",
+        "size_pct": 100
+      }
+    ],
+    "risk_management": {
+      "initial_stop": "1.1 ATR",
+      "trailing_stop": null,
+      "time_stop_bars": 10,
+      "breakeven_trigger": null,
+      "partial_tp_levels": []
+    }
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple BTC 4h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "btc_ema_pullback_v1",
+      "template_name": "ema_pullback",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_anchor",
+          "value": 55
+        },
+        {
+          "name": "pullback_buffer_atr",
+          "value": 0.6
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "fallback_cooker",
+  "fallback_source": true,
+  "research_mode": "fallback"
+}
