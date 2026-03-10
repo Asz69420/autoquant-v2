@@ -1,9 +1,9 @@
 {
-  "cycle_id": 281,
-  "cycle_key": "277",
-  "manifest_cycle_id": 277,
-  "status_cycle_id": 277,
-  "orders_cycle_id": 277,
+  "cycle_id": 282,
+  "cycle_key": "282",
+  "manifest_cycle_id": 282,
+  "status_cycle_id": 282,
+  "orders_cycle_id": 282,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "state_warning": null,
@@ -12,72 +12,72 @@
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "target_asset": "BTC",
-  "target_timeframe": "4h",
+  "target_timeframe": "1h",
   "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "range-failure reversal after a multi-bar breakout loses acceptance and re-enters prior balance",
-      "volatility squeeze expansion with confirmation from trend persistence rather than first-bar breakout entry",
-      "trend continuation after a deeper pullback reset into structural support instead of shallow EMA-touch logic",
-      "failed bearish breakdown reclaim that requires regime improvement and post-reclaim hold before entry"
+      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+      "compression fakeout into re-expansion with directional confirmation"
+    ],
+    "management_styles": [
+      "one-shot entry with one-shot exit",
+      "one-shot entry with partial take-profit and runner",
+      "one-shot entry with trailing-stop exit",
+      "time-based de-risking after entry",
+      "scaled-out exits after confirmation"
     ],
     "assets": [
       "BTC"
     ],
     "timeframes": [
-      "4h"
+      "1h"
     ]
   },
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C276-SOL-EMA-PULLBACK-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C276-SOL-COMPRESSION-BREAK-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C276-SOL-FAILED-BREAKDOWN-RECLAIM-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C282-BTC-EMA-PULLBACK-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260310-C276-SOL-COMPRESSION-BREAK-v1",
-    "QD-20260310-C276-SOL-EMA-PULLBACK-v1",
-    "QD-20260310-C276-SOL-FAILED-BREAKDOWN-RECLAIM-v1"
+    "QD-20260310-C282-BTC-EMA-PULLBACK-v1"
   ],
-  "specs_produced": 3,
-  "specs_written": 3,
+  "specs_produced": 1,
+  "specs_written": 1,
   "new_families": [
-    "sol_ema_pullback",
-    "sol_compression_break",
-    "sol_failed_breakdown_reclaim"
+    "btc_ema_pullback"
   ],
   "iterated_families": [],
   "abandoned_families": [],
-  "active_families": 3,
-  "all_recent_rows": 48,
-  "cycle_rows": 3,
-  "external_rows": 45,
+  "active_families": 1,
+  "all_recent_rows": 1,
+  "cycle_rows": 1,
+  "external_rows": 0,
   "cycle_results_present": true,
-  "external_results_present": true,
-  "backtests_queued": 3,
-  "backtests_completed": 3,
-  "backtests": 3,
+  "external_results_present": false,
+  "backtests_queued": 1,
+  "backtests_completed": 1,
+  "backtests": 1,
   "pass_count": 0,
-  "fail_count": 3,
+  "fail_count": 1,
   "promote_count": 0,
   "promotions": 0,
   "best_result": {
-    "strategy_spec_id": "QD-20260310-C276-SOL-EMA-PULLBACK-v1",
-    "variant_id": "sol_ema_pullback_v1",
-    "asset": "SOL",
-    "timeframe": "1d",
-    "qscore": -0.5,
+    "strategy_spec_id": "QD-20260310-C282-BTC-EMA-PULLBACK-v1",
+    "variant_id": "btc_ema_pullback_v1",
+    "asset": "BTC",
+    "timeframe": "1h",
+    "qscore": 0,
     "profit_factor": 0,
     "total_trades": 0,
     "decision": "fail"
   },
-  "best_qscore": -0.5,
-  "next_cycle_focus": "Evaluate the initial SOL 1d fallback cooking batch and refine only if one clears screen.",
-  "rationale": "Fallback cooker emitted a valid research batch because the interactive design step produced no specs.",
+  "best_qscore": 0,
+  "next_cycle_focus": "Fallback rescue fired after 5 zero-spec cycles. Evaluate the single BTC 1h rescue spec and restore real exploration.",
+  "rationale": "Fallback cooker emitted one rescue spec after 3 consecutive zero-spec cycles from Quandalf.",
   "has_reflection_note": true,
-  "elapsed_seconds": 73.1,
-  "run_elapsed_seconds": 73.1,
+  "elapsed_seconds": 98.4,
+  "run_elapsed_seconds": 98.4,
   "report_delay_seconds": 0.0,
-  "is_completed": true,
-  "started_at_epoch": 1773111124.786745,
-  "ended_at_epoch": 1773111197.8821228
+  "is_completed": false,
+  "started_at_epoch": 1773120423.3314195,
+  "ended_at_epoch": 0.0
 }
