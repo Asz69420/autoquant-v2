@@ -369,7 +369,8 @@ def summarize_best_result(rows_dict):
         return None
 
     def sort_key(row):
-        return (row.get("score_total") or 0, row.get("profit_factor") or 0, row.get("total_trades") or 0)
+        row_dict = dict(row) if not isinstance(row, dict) else row
+        return (row_dict.get("score_total") or 0, row_dict.get("profit_factor") or 0, row_dict.get("total_trades") or 0)
 
     best = max(rows_dict, key=sort_key)
     return {
@@ -591,7 +592,7 @@ def count_backtests(rows):
         if isinstance(row, dict):
             row_id = row.get("id")
         else:
-            row_id = row["id"]
+            row_id = row["id"] if "id" in row.keys() else None
         if row_id:
             seen_ids.add(str(row_id))
     return len(seen_ids)
@@ -1503,7 +1504,7 @@ def main():
     
     families_to_check = set()
     for row in rows:
-        family = str(row.get("strategy_family") or "").strip()
+        family = str(row["strategy_family"] or "").strip()
         if family:
             families_to_check.add(family)
     
