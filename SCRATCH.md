@@ -1,1 +1,1 @@
-Active task: Fix truthful refinement cards, earlier zero-trade rejection, stronger fallback search quality, and canonical cycle truth across orders/specs/queue/results.
+No active task.

@@ -32,7 +32,41 @@ def persist_state(payload):
     write_json(STATE_PATH, payload)
 
 
-def make_spec(spec_id, name, family, asset, timeframe, thesis, indicators, long_rules, short_rules, long_exit, short_exit, variant_name, template_name, params):
+def make_spec(spec_id, name, family, asset, timeframe, thesis, indicators, long_rules, short_rules, long_exit, short_exit, variant_name, template_name, params, management_style="one_shot"):
+    risk_management = {
+        "initial_stop": "1.1 ATR",
+        "trailing_stop": None,
+        "time_stop_bars": 10,
+        "breakeven_trigger": None,
+        "partial_tp_levels": []
+    }
+    exit_style = "one_shot"
+    position_stages = [
+        {"action": "entry", "trigger": "signal", "size_pct": 100},
+        {"action": "exit", "trigger": "exit_rules", "size_pct": 100}
+    ]
+    if management_style == "partial_runner":
+        risk_management["partial_tp_levels"] = [
+            {"trigger": "1.2 ATR", "size_pct": 50},
+            {"trigger": "2.4 ATR", "size_pct": 50}
+        ]
+        risk_management["trailing_stop"] = "0.9 ATR after first partial"
+        exit_style = "partial_runner"
+        position_stages = [
+            {"action": "entry", "trigger": "signal", "size_pct": 100},
+            {"action": "take_profit", "trigger": "1.2 ATR", "size_pct": 50},
+            {"action": "runner_exit", "trigger": "trailing_stop_or_exit_rules", "size_pct": 50}
+        ]
+    elif management_style == "trail_and_timer":
+        risk_management["initial_stop"] = "1.2 ATR"
+        risk_management["trailing_stop"] = "1.0 ATR"
+        risk_management["time_stop_bars"] = 14
+        exit_style = "trailing_time_mix"
+        position_stages = [
+            {"action": "entry", "trigger": "signal", "size_pct": 100},
+            {"action": "de_risk", "trigger": "8 bars in trade", "size_pct": 40},
+            {"action": "exit", "trigger": "trailing_stop_or_exit_rules", "size_pct": 60}
+        ]
     return {
         "schema_version": "1.0",
         "id": spec_id,
@@ -56,18 +90,9 @@ def make_spec(spec_id, name, family, asset, timeframe, thesis, indicators, long_
         "position_sizing": {"risk_per_trade_pct": 0.004},
         "trade_management": {
             "entry_style": "one_shot",
-            "exit_style": "one_shot",
-            "position_stages": [
-                {"action": "entry", "trigger": "signal", "size_pct": 100},
-                {"action": "exit", "trigger": "exit_rules", "size_pct": 100}
-            ],
-            "risk_management": {
-                "initial_stop": "1.1 ATR",
-                "trailing_stop": None,
-                "time_stop_bars": 10,
-                "breakeven_trigger": None,
-                "partial_tp_levels": []
-            }
+            "exit_style": exit_style,
+            "position_stages": position_stages,
+            "risk_management": risk_management
         },
         "regime_filter": {
             "allowed_regimes": ["trending", "transitional"],
@@ -147,11 +172,11 @@ def main():
             asset, timeframe,
             "trend pullback continuation after value reclaim",
             ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
-            ["Close > EMA_55", "EMA_20 > EMA_55", "low >= EMA_20 - 0.6 * ATR_14", "RSI_14 >= 50", "PLUS_DI_14 >= MINUS_DI_14"],
-            ["Close < EMA_55", "EMA_20 < EMA_55", "high <= EMA_20 + 0.6 * ATR_14", "RSI_14 <= 50", "MINUS_DI_14 >= PLUS_DI_14"],
-            ["Stop loss: 1.1 * ATR_14 below entry", "Take profit: 2.4 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 10 bars"],
-            ["Stop loss: 1.1 * ATR_14 above entry", "Take profit: 2.4 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 10 bars"],
-            f"{asset.lower()}_ema_pullback_v1", "ema_pullback", {"ema_fast": 20, "ema_anchor": 55, "pullback_buffer_atr": 0.6, "rsi_mid": 50}
+            ["Close > EMA_55", "EMA_20 > EMA_55", "low >= EMA_20 - 0.9 * ATR_14", "RSI_14 >= 48", "PLUS_DI_14 >= MINUS_DI_14"],
+            ["Close < EMA_55", "EMA_20 < EMA_55", "high <= EMA_20 + 0.9 * ATR_14", "RSI_14 <= 52", "MINUS_DI_14 >= PLUS_DI_14"],
+            ["Stop loss: 1.1 * ATR_14 below entry", "Take profit: 2.4 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 12 bars"],
+            ["Stop loss: 1.1 * ATR_14 above entry", "Take profit: 2.4 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 12 bars"],
+            f"{asset.lower()}_ema_pullback_v1", "ema_pullback", {"ema_fast": 20, "ema_anchor": 55, "pullback_buffer_atr": 0.9, "rsi_mid": 50}, "one_shot"
         ),
         make_spec(
             f"QD-{date_tag}-{cycle_tag}-{asset}-RANGE-RECLAIM-v1",
@@ -160,11 +185,11 @@ def main():
             asset, timeframe,
             "range reclaim continuation after false breakdown and value recovery",
             ["EMA_20", "ATR_14", "RSI_14", "ADX_14"],
-            ["Close > EMA_20", "RSI_14 >= 48", "ADX_14 <= 25"],
-            ["Close < EMA_20", "RSI_14 <= 52", "ADX_14 <= 25"],
+            ["Close > EMA_20", "RSI_14 >= 46", "ADX_14 <= 28"],
+            ["Close < EMA_20", "RSI_14 <= 54", "ADX_14 <= 28"],
             ["Stop loss: 1.0 * ATR_14 below entry", "Take profit: 2.0 * ATR_14 above entry", "Exit if Close crosses_below EMA_20"],
             ["Stop loss: 1.0 * ATR_14 above entry", "Take profit: 2.0 * ATR_14 below entry", "Exit if Close crosses_above EMA_20"],
-            f"{asset.lower()}_range_reclaim_v1", "range_reclaim", {"ema_anchor": 20, "adx_cap": 25, "rsi_mid": 50}
+            f"{asset.lower()}_range_reclaim_v1", "range_reclaim", {"ema_anchor": 20, "adx_cap": 28, "rsi_mid": 50}, "partial_runner"
         ),
         make_spec(
             f"QD-{date_tag}-{cycle_tag}-{asset}-BREAKOUT-HOLD-v1",
@@ -173,11 +198,11 @@ def main():
             asset, timeframe,
             "breakout continuation after hold above broken structure with volatility expansion",
             ["EMA_20", "EMA_55", "ATR_14", "ADX_14"],
-            ["Close > EMA_20", "EMA_20 > EMA_55", "ADX_14 >= 18"],
-            ["Close < EMA_20", "EMA_20 < EMA_55", "ADX_14 >= 18"],
+            ["Close > EMA_20", "EMA_20 > EMA_55", "ADX_14 >= 14"],
+            ["Close < EMA_20", "EMA_20 < EMA_55", "ADX_14 >= 14"],
             ["Stop loss: 1.2 * ATR_14 below entry", "Take profit: 2.8 * ATR_14 above entry", "Trailing stop: 1.0 * ATR_14"],
             ["Stop loss: 1.2 * ATR_14 above entry", "Take profit: 2.8 * ATR_14 below entry", "Trailing stop: 1.0 * ATR_14"],
-            f"{asset.lower()}_breakout_hold_v1", "breakout_hold", {"ema_fast": 20, "ema_anchor": 55, "adx_floor": 18}
+            f"{asset.lower()}_breakout_hold_v1", "breakout_hold", {"ema_fast": 20, "ema_anchor": 55, "adx_floor": 14}, "trail_and_timer"
         )
     ]
 
@@ -211,8 +236,8 @@ def main():
         "iterated_families": [],
         "abandoned_families": [],
         "fallback_source": True,
-        "next_cycle_focus": f"Fallback rescue fired after {zero_spec_streak} zero-spec cycles. Evaluate the single {asset} {timeframe} rescue spec and restore real exploration.",
-        "rationale": "Fallback cooker emitted one rescue spec after 3 consecutive zero-spec cycles from Quandalf.",
+        "next_cycle_focus": f"Fallback rescue fired after {zero_spec_streak} zero-spec cycles. Evaluate the three {asset} {timeframe} rescue families with diversified management and restore real exploration.",
+        "rationale": "Fallback cooker emitted three denser rescue specs with diversified management after 3 consecutive under-minimum cycles from Quandalf.",
     })
     write_json(STATUS, status)
 

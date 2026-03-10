@@ -606,8 +606,10 @@ def enqueue_item(conn, item):
 def build_seed_items(conn, spec_path, variant_mode=None, cycle_id=None):
     spec = load_spec(spec_path)
     family = derive_family_name(spec)
+    timeframe = str(spec.get("timeframe", "4h"))
     bucket, reclass_reason = classify_seed_bucket(conn, spec)
     items = []
+    terminal_zero_trade_skips = family_terminal_skip_count(conn, family, timeframe=timeframe)
     for variant_name in variant_names_for_spec(spec, variant_mode):
         notes = {"message": "cycle seed", "declared_mode": str(spec.get("research_mode") or spec.get("mode") or "explore")}
         mutation_type = str(spec.get("mutation_type") or "initial")
@@ -616,6 +618,30 @@ def build_seed_items(conn, spec_path, variant_mode=None, cycle_id=None):
             notes["reclassified_to"] = "refine"
             notes["reclass_reason"] = reclass_reason
             mutation_type = "reclassified_refine"
+        if terminal_zero_trade_skips >= 2:
+            notes["blocked_reason"] = "repeat_zero_trade_family"
+            notes["blocked_terminal_zero_trade_skips"] = terminal_zero_trade_skips
+            notes["blocked_timeframe"] = timeframe
+            items.append(
+                {
+                    "cycle_id": cycle_id,
+                    "spec_path": spec_path,
+                    "strategy_spec_id": str(spec.get("id") or safe_spec_id_from_path(spec_path)),
+                    "variant_id": variant_name,
+                    "asset": str(spec.get("asset", "ETH")),
+                    "timeframe": timeframe,
+                    "stage": "screen",
+                    "bucket": bucket,
+                    "priority": 3,
+                    "mutation_type": mutation_type,
+                    "family_generation": int(spec.get("family_generation", 1) or 1),
+                    "parent_result_id": spec.get("parent_id"),
+                    "strategy_family": family,
+                    "notes": json.dumps(notes),
+                    "blocked": True,
+                }
+            )
+            continue
         items.append(
             {
                 "cycle_id": cycle_id,
@@ -623,7 +649,7 @@ def build_seed_items(conn, spec_path, variant_mode=None, cycle_id=None):
                 "strategy_spec_id": str(spec.get("id") or safe_spec_id_from_path(spec_path)),
                 "variant_id": variant_name,
                 "asset": str(spec.get("asset", "ETH")),
-                "timeframe": str(spec.get("timeframe", "4h")),
+                "timeframe": timeframe,
                 "stage": "screen",
                 "bucket": bucket,
                 "priority": 3,
@@ -641,15 +667,18 @@ def seed_queue_from_specs(conn, spec_paths, variant_mode=None, cycle_id=None):
     seeded = []
     for spec_path in spec_paths:
         for item in build_seed_items(conn, spec_path, variant_mode=variant_mode, cycle_id=cycle_id):
+            try:
+                note_obj = json.loads(item.get("notes") or "{}")
+            except Exception:
+                note_obj = {}
+            if item.get("blocked"):
+                log_event(conn, "seed_blocked_zero_trade_family", "logron", f"Blocked reseeding {item['strategy_spec_id']}:{item['variant_id']} - family already hit repeated zero-trade terminal skips.", severity="warn", step="seed", artifact_id=item.get("strategy_spec_id"), metadata=note_obj)
+                continue
             qid, created = enqueue_item(conn, item)
             if created:
                 seeded.append(qid)
-                try:
-                    note_obj = json.loads(item.get("notes") or "{}")
-                except Exception:
-                    note_obj = {}
                 if note_obj.get("reclassified_to") == "refine":
-                    log_event(conn, "explore_reclassified", "logron", f"Reclassified {item['strategy_spec_id']} from explore to refine — only parameter changes detected.", severity="warn", step="seed", artifact_id=qid, metadata=note_obj)
+                    log_event(conn, "explore_reclassified", "logron", f"Reclassified {item['strategy_spec_id']} from explore to refine - only parameter changes detected.", severity="warn", step="seed", artifact_id=qid, metadata=note_obj)
     conn.commit()
     return seeded
 
@@ -762,6 +791,34 @@ def mark_failed_back_to_queue(conn, queue_id, notes=None):
         "UPDATE research_funnel_queue SET status = 'queued', started_at = NULL, notes = COALESCE(?, notes) WHERE id = ?",
         (notes, queue_id),
     )
+
+
+def mark_terminal_failure(conn, queue_id, notes=None):
+    conn.execute(
+        "UPDATE research_funnel_queue SET status = 'done', completed_at = ?, started_at = NULL, notes = COALESCE(?, notes) WHERE id = ?",
+        (now_iso(), notes, queue_id),
+    )
+
+
+def family_terminal_skip_count(conn, family_name, timeframe=None, lookback_cycles=12):
+    if not family_name:
+        return 0
+    params = [family_name]
+    sql = """
+        SELECT COUNT(*)
+        FROM research_funnel_queue
+        WHERE lower(COALESCE(strategy_family,'')) = lower(?)
+          AND lower(COALESCE(notes,'')) LIKE '%integrity_skip%'
+          AND lower(COALESCE(notes,'')) LIKE '%zero%trade%'
+    """
+    if timeframe:
+        sql += " AND timeframe = ?"
+        params.append(timeframe)
+    if lookback_cycles:
+        sql += " AND cycle_id >= COALESCE((SELECT MAX(cycle_id) FROM research_funnel_queue), 0) - ?"
+        params.append(int(lookback_cycles))
+    row = conn.execute(sql, params).fetchone()
+    return int(row[0] or 0)
 
 
 def reset_stale_running_jobs(conn, stale_minutes=10):
@@ -1144,7 +1201,8 @@ def execute_job(job):
         return {"ok": False, "job": job, "error": "engine_output_json_not_found", "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200]}
     if str(payload.get("status") or "").lower() == "skipped":
         issue = payload.get("integrity_issue") or {}
-        return {"ok": False, "job": job, "error": f"integrity_skip:{issue.get('reason','unknown')}", "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200]}
+        reason = issue.get("reason") or payload.get("reason") or payload.get("error") or "unknown"
+        return {"ok": False, "job": job, "error": f"integrity_skip:{reason}", "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "terminal": str(reason).lower().startswith("zero_")}
     return {"ok": True, "job": job, "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "result_id": payload.get("result_id")}
 
 
@@ -1331,8 +1389,12 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
                 log_event(conn, "parallel_backtest_complete", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} complete", step="worker", artifact_id=result.get("result_id"), metadata={"queue_id": queue_item["id"], "stage": queue_item["stage"]})
             else:
                 fail_count += 1
-                mark_failed_back_to_queue(conn, queue_item["id"], notes=json.dumps({"status": "retry", "error": result.get("error"), "stderr": result.get("stderr")}))
-                log_event(conn, "parallel_backtest_fail", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} failed", severity="warn", step="worker", artifact_id=queue_item["id"], metadata={"error": result.get("error"), "stderr": result.get("stderr"), "stdout": result.get("stdout")})
+                failure_notes = json.dumps({"status": "terminal_fail" if result.get("terminal") else "retry", "error": result.get("error"), "stderr": result.get("stderr")})
+                if result.get("terminal"):
+                    mark_terminal_failure(conn, queue_item["id"], notes=failure_notes)
+                else:
+                    mark_failed_back_to_queue(conn, queue_item["id"], notes=failure_notes)
+                log_event(conn, "parallel_backtest_fail", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} failed", severity="warn", step="worker", artifact_id=queue_item["id"], metadata={"error": result.get("error"), "stderr": result.get("stderr"), "stdout": result.get("stdout"), "terminal": bool(result.get("terminal"))})
             conn.execute("UPDATE pipeline_runs SET steps_completed = COALESCE(steps_completed,0) + 1 WHERE id=?", (pipeline_id,))
             conn.commit()
 

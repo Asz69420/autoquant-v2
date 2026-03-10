@@ -1367,6 +1367,8 @@ def main():
         "primary_regime": result.get("primary_regime"),
         "result_id": result.get("result_id"),
         "db_saved": result.get("db_saved", False),
+        "integrity_issue": result.get("integrity_issue"),
+        "reason": (result.get("integrity_issue") or {}).get("reason") if isinstance(result.get("integrity_issue"), dict) else None,
         "fold_summary": [
             {
                 "fold": fr["fold"],

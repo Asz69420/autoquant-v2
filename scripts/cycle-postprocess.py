@@ -385,6 +385,51 @@ def summarize_best_result(rows_dict):
     }
 
 
+def fetch_cycle_queue_metrics(cycle_id):
+    try:
+        conn = sqlite3.connect(DB)
+        rows = conn.execute(
+            """
+            SELECT stage, status, notes
+            FROM research_funnel_queue
+            WHERE cycle_id = ?
+            """,
+            (int(cycle_id),),
+        ).fetchall()
+        conn.close()
+    except Exception:
+        rows = []
+
+    out = {
+        "total": 0,
+        "queued": 0,
+        "running": 0,
+        "done": 0,
+        "terminal_failures": 0,
+        "retryable_failures": 0,
+        "done_ok": 0,
+        "done_terminal": 0,
+        "by_stage": {},
+    }
+    for stage, status, notes in rows:
+        stage_key = str(stage or "unknown")
+        status_key = str(status or "unknown")
+        note_text = str(notes or "").lower()
+        bucket = out["by_stage"].setdefault(stage_key, {"queued": 0, "running": 0, "done": 0})
+        bucket[status_key] = bucket.get(status_key, 0) + 1
+        out[status_key] = out.get(status_key, 0) + 1
+        out["total"] += 1
+        if status_key == "done":
+            if '"status": "terminal_fail"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
+                out["terminal_failures"] += 1
+                out["done_terminal"] += 1
+            else:
+                out["done_ok"] += 1
+        elif status_key == "queued" and '"status": "retry"' in note_text:
+            out["retryable_failures"] += 1
+    return out
+
+
 def phase_state(done=False, active=False, blocked=False):
     if blocked:
         return "⛔"
@@ -460,7 +505,13 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     abandoned_families = cycle_status.get("abandoned_families", []) if status_matches_cycle else []
 
     completed_backtests = len({str(r.get('id')) for r in cycle_rows if r.get('id')})
-    queued_backtests = spec_variant_job_count(manifest_spec_paths or spec_paths)
+    queue_metrics = fetch_cycle_queue_metrics(cycle_id)
+    queued_backtests = int(queue_metrics.get("total") or 0) or spec_variant_job_count(manifest_spec_paths or spec_paths)
+    queue_done = int(queue_metrics.get("done") or 0)
+    queue_running = int(queue_metrics.get("running") or 0)
+    queue_pending = int(queue_metrics.get("queued") or 0)
+    queue_terminal_failures = int(queue_metrics.get("terminal_failures") or 0)
+    queue_done_ok = int(queue_metrics.get("done_ok") or max(0, queue_done - queue_terminal_failures))
     if queued_backtests < completed_backtests:
         queued_backtests = completed_backtests
 
@@ -511,6 +562,24 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "backtests_queued": queued_backtests,
         "backtests_completed": completed_backtests,
         "backtests": completed_backtests,
+        "queue_total": queued_backtests,
+        "queue_pending": queue_pending,
+        "queue_running": queue_running,
+        "queue_done": queue_done,
+        "queue_done_ok": queue_done_ok,
+        "queue_terminal_failures": queue_terminal_failures,
+        "queue_retryable_failures": int(queue_metrics.get("retryable_failures") or 0),
+        "stage_kpis": {
+            "specs_written": specs_produced,
+            "queue_total": queued_backtests,
+            "queue_pending": queue_pending,
+            "queue_running": queue_running,
+            "queue_done_ok": queue_done_ok,
+            "queue_terminal_failures": queue_terminal_failures,
+            "db_results": completed_backtests,
+            "pass": pass_count,
+            "promote": promote_count,
+        },
         "pass_count": pass_count,
         "fail_count": fail_count,
         "promote_count": promote_count,

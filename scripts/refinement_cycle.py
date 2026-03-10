@@ -750,13 +750,14 @@ def refinement_activity_metrics(runner_payload, jobs):
         completed = ok + fail
     return {
         "requested": requested,
+        "ran": int(completed),
         "completed": int(completed),
         "ok": ok,
         "fail": fail,
     }
 
 
-def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promoted, round_counts, note, had_error=False):
+def build_card(cycle_id, run_state, activity, upgrades, rejected, promoted, round_counts, note, had_error=False):
     if had_error:
         status_emoji = "❌"
     elif promoted > 0:
@@ -774,7 +775,10 @@ def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promot
         f"First: {int(round_counts.get(1, 0))}",
         f"Second: {int(round_counts.get(2, 0))}",
         f"Third: {int(round_counts.get(3, 0))}",
-        f"Backtests: {int(tests_this_cycle)}",
+        f"Requested: {int(activity.get('requested', 0))}",
+        f"Ran: {int(activity.get('ran', activity.get('completed', 0)))}",
+        f"OK: {int(activity.get('ok', 0))}",
+        f"Fail: {int(activity.get('fail', 0))}",
         f"Upgraded: {int(upgrades)}",
         f"Rejected: {int(rejected)}",
         f"Promoted: {int(promoted)}",
@@ -844,7 +848,7 @@ def main():
             "had_error": had_error,
         }
         append_status_summary(summary)
-        card = build_card(cycle_id, finalized_run_state, activity["completed"], upgrades, rejected, promoted, round_counts, note, had_error=had_error)
+        card = build_card(cycle_id, finalized_run_state, activity, upgrades, rejected, promoted, round_counts, note, had_error=had_error)
         sent = False if args.dry_run else send_log_card(card)
         log_event(conn, "refinement_cycle_complete", "frodex", f"refinement cycle {cycle_id} complete", step="summary", metadata={"jobs": len(jobs), "upgrades": upgrades, "rejected": rejected, "promoted": promoted, "log_card_sent": sent, "dry_run": args.dry_run, "repaired_families": repaired_families})
         conn.close()
