@@ -111,11 +111,15 @@ def sync_current_cycle_status(cycle_id: int) -> None:
         status = {}
     if int(status.get("cycle_id", 0) or 0) != int(cycle_id):
         status["cycle_id"] = int(cycle_id)
-        status.setdefault("mode", "pending")
-        status.setdefault("research_direction", "pending")
-        status.setdefault("spec_paths", [])
-        status.setdefault("specs_produced", 0)
-        status.setdefault("next_cycle_focus", "pending")
+        status["mode"] = "pending"
+        status["research_direction"] = "pending"
+        status["spec_paths"] = []
+        status["specs_produced"] = 0
+        status["new_families"] = []
+        status["iterated_families"] = []
+        status["abandoned_families"] = []
+        status["next_cycle_focus"] = "pending"
+        status["rationale"] = "pending"
         status_path.parent.mkdir(parents=True, exist_ok=True)
         status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
 

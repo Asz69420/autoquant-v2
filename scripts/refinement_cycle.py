@@ -450,6 +450,29 @@ def generate_pack(conn, row, spec, round_number):
     return weaknesses, deduped
 
 
+def backfill_missing_strategy_families(conn):
+    rows = conn.execute("select id, strategy_spec_id from backtest_results where coalesce(strategy_family,'')='' order by ts_iso desc limit 500").fetchall()
+    repaired = 0
+    for row in rows:
+        result_id = row[0]
+        spec_id = row[1]
+        spec_path = find_spec_path(spec_id)
+        if not spec_path:
+            continue
+        try:
+            spec = load_spec(spec_path)
+        except Exception:
+            continue
+        family = str(spec.get("family_name") or derive_family_name(spec)).strip()
+        if not family:
+            continue
+        conn.execute("update backtest_results set strategy_family=? where id=?", (family, result_id))
+        repaired += 1
+    if repaired:
+        conn.commit()
+    return repaired
+
+
 def candidate_rows(conn):
     query = """
     select *
@@ -764,6 +787,7 @@ def main():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     ensure_schema(conn)
+    repaired_families = backfill_missing_strategy_families(conn)
     had_error = False
     payload = {}
     touched_rows = []
@@ -805,7 +829,7 @@ def main():
         append_status_summary(summary)
         card = build_card(cycle_id, finalized_run_state, activity["completed"], upgrades, rejected, promoted, round_counts, note, had_error=had_error)
         sent = False if args.dry_run else send_log_card(card)
-        log_event(conn, "refinement_cycle_complete", "frodex", f"refinement cycle {cycle_id} complete", step="summary", metadata={"jobs": len(jobs), "upgrades": upgrades, "rejected": rejected, "promoted": promoted, "log_card_sent": sent, "dry_run": args.dry_run})
+        log_event(conn, "refinement_cycle_complete", "frodex", f"refinement cycle {cycle_id} complete", step="summary", metadata={"jobs": len(jobs), "upgrades": upgrades, "rejected": rejected, "promoted": promoted, "log_card_sent": sent, "dry_run": args.dry_run, "repaired_families": repaired_families})
         conn.close()
 
     activity = refinement_activity_metrics(payload, jobs)

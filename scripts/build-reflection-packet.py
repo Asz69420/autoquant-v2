@@ -105,7 +105,7 @@ def main():
             management_summary[key]["best_qscore"] = qs if best_qs is None else max(best_qs, qs)
         results.append(entry)
 
-    focus_results = cycle_results if cycle_results else results
+    focus_results = cycle_results if cycle_results else []
 
     packet = {
         "ts_iso": datetime.now(timezone.utc).isoformat(),

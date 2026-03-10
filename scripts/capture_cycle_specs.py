@@ -97,7 +97,8 @@ def main() -> int:
         )
 
     for path in preferred_paths:
-        add_path(path)
+        if spec_matches_cycle(path, cycle_id):
+            add_path(path)
 
     if not discovered:
         for path in SPECS_DIR.glob("*.strategy_spec.json"):
