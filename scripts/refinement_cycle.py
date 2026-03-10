@@ -315,7 +315,7 @@ def build_variant_spec(base_spec, base_variant, source_row, mutation_type, suffi
     spec["parent_id"] = source_row["id"]
     spec["mutation_type"] = mutation_type
     spec["family_generation"] = int(source_row["family_generation"] or 1) + 1
-    family_name = str(source_row.get("strategy_family") or spec.get("family_name") or derive_family_name(spec)).strip()
+    family_name = str(dict(source_row).get("strategy_family") or spec.get("family_name") or derive_family_name(spec)).strip()
     spec["family_name"] = family_name
     spec["source"] = "refinement_cycle"
     spec["ts_iso"] = now_iso()

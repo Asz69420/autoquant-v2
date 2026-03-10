@@ -88,14 +88,15 @@ def load_candles(asset: str, timeframe: str) -> list[dict]:
                 continue
             row = dict(zip(header, parts))
             try:
+                row_dict = dict(row) if not isinstance(row, dict) else row
                 candles.append(
                     {
-                        "ts": row.get("timestamp") or row.get("ts") or row.get("date") or row.get("time"),
+                        "ts": row_dict.get("timestamp") or row_dict.get("ts") or row_dict.get("date") or row_dict.get("time"),
                         "open": float(row["open"]),
                         "high": float(row["high"]),
                         "low": float(row["low"]),
                         "close": float(row["close"]),
-                        "volume": float(row.get("volume", 0)),
+                        "volume": float(row_dict.get("volume", 0)),
                     }
                 )
             except (ValueError, KeyError):
