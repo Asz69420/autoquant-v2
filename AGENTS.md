@@ -9,7 +9,7 @@ All artifacts flow as schema-validated JSON. SQLite is the structured data backb
 ### Agent Roster
 | Agent | Role | Model | Interface |
 |-------|------|-------|-----------|
-| Oragorn | Commander — delegates, never executes | Claude Opus | Telegram DM |
+| Oragorn | Commander — executes directly by default, delegates selectively | Claude Opus | Telegram DM |
 | Quandalf | Strategy brain — ALL strategy decisions | Claude Opus | agent-send |
 | Frodex | Execution — code, data, backtests | OpenClaw Codex | agent-send |
 | Balrog | Firewall — deterministic, immutable rules | No LLM | pipeline step |

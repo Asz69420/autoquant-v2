@@ -800,6 +800,13 @@ def mark_terminal_failure(conn, queue_id, notes=None):
     )
 
 
+def mark_integrity_skip(conn, queue_id, notes=None):
+    conn.execute(
+        "UPDATE research_funnel_queue SET status = 'done', completed_at = ?, started_at = NULL, notes = COALESCE(?, notes) WHERE id = ?",
+        (now_iso(), notes, queue_id),
+    )
+
+
 def family_terminal_skip_count(conn, family_name, timeframe=None, lookback_cycles=12):
     if not family_name:
         return 0
@@ -1202,7 +1209,7 @@ def execute_job(job):
     if str(payload.get("status") or "").lower() == "skipped":
         issue = payload.get("integrity_issue") or {}
         reason = issue.get("reason") or payload.get("reason") or payload.get("error") or "unknown"
-        return {"ok": False, "job": job, "error": f"integrity_skip:{reason}", "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "terminal": str(reason).lower().startswith("zero_")}
+        return {"ok": False, "job": job, "error": f"integrity_skip:{reason}", "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "terminal": False, "classification": "integrity_skip"}
     return {"ok": True, "job": job, "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "result_id": payload.get("result_id")}
 
 
@@ -1389,12 +1396,17 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
                 log_event(conn, "parallel_backtest_complete", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} complete", step="worker", artifact_id=result.get("result_id"), metadata={"queue_id": queue_item["id"], "stage": queue_item["stage"]})
             else:
                 fail_count += 1
-                failure_notes = json.dumps({"status": "terminal_fail" if result.get("terminal") else "retry", "error": result.get("error"), "stderr": result.get("stderr")})
-                if result.get("terminal"):
-                    mark_terminal_failure(conn, queue_item["id"], notes=failure_notes)
+                if result.get("classification") == "integrity_skip":
+                    failure_notes = json.dumps({"status": "integrity_skip", "error": result.get("error"), "stderr": result.get("stderr")})
+                    mark_integrity_skip(conn, queue_item["id"], notes=failure_notes)
+                    log_event(conn, "parallel_backtest_integrity_skip", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} skipped by integrity guard", severity="warn", step="worker", artifact_id=queue_item["id"], metadata={"error": result.get("error"), "stderr": result.get("stderr"), "stdout": result.get("stdout")})
                 else:
-                    mark_failed_back_to_queue(conn, queue_item["id"], notes=failure_notes)
-                log_event(conn, "parallel_backtest_fail", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} failed", severity="warn", step="worker", artifact_id=queue_item["id"], metadata={"error": result.get("error"), "stderr": result.get("stderr"), "stdout": result.get("stdout"), "terminal": bool(result.get("terminal"))})
+                    failure_notes = json.dumps({"status": "terminal_fail" if result.get("terminal") else "retry", "error": result.get("error"), "stderr": result.get("stderr")})
+                    if result.get("terminal"):
+                        mark_terminal_failure(conn, queue_item["id"], notes=failure_notes)
+                    else:
+                        mark_failed_back_to_queue(conn, queue_item["id"], notes=failure_notes)
+                    log_event(conn, "parallel_backtest_fail", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} failed", severity="warn", step="worker", artifact_id=queue_item["id"], metadata={"error": result.get("error"), "stderr": result.get("stderr"), "stdout": result.get("stdout"), "terminal": bool(result.get("terminal"))})
             conn.execute("UPDATE pipeline_runs SET steps_completed = COALESCE(steps_completed,0) + 1 WHERE id=?", (pipeline_id,))
             conn.commit()
 

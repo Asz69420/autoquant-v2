@@ -1,1 +1,1 @@
-No active task.
+Active task: Audit current AutoQuant memory/storage architecture and design a scalable shared+agent memory upgrade with safe migration plan.

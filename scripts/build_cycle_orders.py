@@ -10,6 +10,7 @@ STATUS = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
 METRICS = ROOT / "data" / "state" / "current_cycle_metrics.json"
 ROTATION_HISTORY = ROOT / "data" / "state" / "rotation_history.json"
 REGIME_SUMMARY = ROOT / "data" / "state" / "regime_summary.json"
+EXTERNAL_INTEL_INDEX = ROOT / "data" / "external_intel" / "index.json"
 
 DEFAULT_ASSET_ORDER = ["ETH", "BTC", "SOL", "TAO", "AVAX", "LINK", "DOGE", "ARB", "OP", "INJ"]
 DEFAULT_TF_ORDER = ["4h", "1h", "1d", "15m"]
@@ -30,6 +31,16 @@ CONCEPT_PACKS = [
         "mean reversion from exhaustion only when structure reaccepts prior value",
         "breakout continuation with delayed entry after retest rather than immediate trigger",
     ],
+    [
+        "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+        "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+        "post-expansion partial-profit runner structure that keeps a core position for trend persistence",
+    ],
+    [
+        "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+        "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+        "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough",
+    ],
 ]
 
 MANAGEMENT_STYLES = [
@@ -38,6 +49,8 @@ MANAGEMENT_STYLES = [
     "one-shot entry with trailing-stop exit",
     "time-based de-risking after entry",
     "scaled-out exits after confirmation",
+    "scale-in on improved confirmation, then scale-out into expansion",
+    "partial-profit first target with runner managed by structure instead of fixed take-profit only",
 ]
 
 
@@ -77,6 +90,41 @@ def load_regime_summary() -> dict:
     except Exception:
         pass
     return {}
+
+
+def load_external_intel_index() -> dict:
+    try:
+        if EXTERNAL_INTEL_INDEX.exists():
+            data = json.loads(EXTERNAL_INTEL_INDEX.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                return data
+    except Exception:
+        pass
+    return {"items": [], "sources": []}
+
+
+def select_external_intel(asset: str, timeframe: str, limit: int = 5) -> dict:
+    index_data = load_external_intel_index()
+    items = index_data.get("items") or []
+    asset = str(asset or "").upper()
+    selected = []
+    fallback = []
+    for item in reversed(items):
+        if not isinstance(item, dict):
+            continue
+        scope = [str(x).upper() for x in (item.get("asset_scope") or [])]
+        if asset and asset in scope:
+            selected.append(item)
+        elif not scope:
+            fallback.append(item)
+    chosen = (selected + fallback)[:limit]
+    return {
+        "enabled_sources": [s.get("id") for s in (index_data.get("sources") or []) if isinstance(s, dict) and s.get("enabled")],
+        "recent_items": chosen,
+        "target_asset": asset,
+        "target_timeframe": timeframe,
+        "count": len(chosen),
+    }
 
 
 def pick_asset_timeframe(universe: dict, prior_status: dict) -> tuple[str, str]:
@@ -235,6 +283,8 @@ def main():
     elif current_regime == "TRANSITION":
         regime_hint = "Market transitioning between states — favor adaptive strategies that can handle regime shifts."
 
+    external_intel = select_external_intel(asset, timeframe)
+
     orders = {
         "cycle_id": cycle_id,
         "ts_iso": datetime.now(timezone.utc).isoformat(),
@@ -249,14 +299,21 @@ def main():
         "current_regime": current_regime,
         "regime_confidence": regime_confidence,
         "regime_context": regime_info,
+        "external_intel": external_intel,
+        "design_axes": {
+            "indicator_roles": ["regime filter", "setup qualifier", "trigger", "risk", "exit"],
+            "management_expressions": MANAGEMENT_STYLES,
+            "conceptual_space": ["continuation", "reversal", "mean reversion", "session logic", "inventory reset", "expansion follow-through"],
+            "anti_patterns": ["ceremonial sparse confirmation chains", "same indicator doing every role", "single-bar hero entries with no management logic"]
+        },
         "exploration_targets": {
             "concepts": concept_pack,
             "management_styles": MANAGEMENT_STYLES,
             "assets": [asset],
             "timeframes": [timeframe],
         },
-        "thesis_hint": f"Explore fresh {asset} {timeframe} structures. Current regime: {current_regime} ({regime_confidence}% confidence). {regime_hint} Prioritize dense concepts over ceremonial sparse logic.",
-        "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression.",
+        "thesis_hint": f"Explore fresh {asset} {timeframe} structures. Current regime: {current_regime} ({regime_confidence}% confidence). {regime_hint} Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles and management logic, not just entry triggers.",
+        "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression, and at least one should vary indicator-role assignment rather than only entry conditions.",
         "rotation_reason": f"Deterministic explore rotation away from prior lane ({prior_status.get('target_asset', 'none')} / {prior_status.get('target_timeframe', 'none')}).",
     }
     ORDERS.parent.mkdir(parents=True, exist_ok=True)

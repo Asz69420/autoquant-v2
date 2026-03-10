@@ -1,0 +1,20 @@
+{
+  "version": "known-fixes-registry-v1",
+  "description": "Deterministic registry contract for recurring known-fix capture and self-healing linkage.",
+  "required_fields": [
+    "symptom",
+    "root_cause",
+    "deterministic_fix",
+    "prevention",
+    "source",
+    "confidence"
+  ],
+  "promotion_bucket": "memory/shared/known_fixes",
+  "self_healing_source_of_truth": "config/self-healing.json",
+  "policy": {
+    "promote_after_repeat": true,
+    "require_traceable_source": true,
+    "allow_agent_proposal": true,
+    "governance_script_records": true
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C316-BTC-RANGE-FAILURE-REACCEPTANCE-v1",
+  "ts_iso": "2026-03-10T12:18:00Z",
+  "thesis_id": "cycle_316_btc_range_failure_reacceptance_v1",
+  "name": "BTC Range Failure Reacceptance v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "family_name": "btc_range_failure_reacceptance",
+  "thesis": "On BTC 4h in transition, multi-bar breakouts that fail to hold outside balance can reverse sharply once price re-enters value. The edge should come from fading failed directional acceptance rather than chasing the initial breakout.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "BTC", "timeframe": "4h", "purpose": "walk_forward_screen"}
+  ],
+  "edge_mechanism": "failed breakout and balance reacceptance reversal",
+  "expected_regime": "transitional and range-failure reversal",
+  "invalidation_condition": "If failed-breakout reacceptance does not generate enough trades or cannot sustain PF above 1.0 after costs, then BTC 4h transition reversals need broader balance logic or should be deprioritized.",
+  "indicators": ["EMA_20", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "High > BOLLINGER_UPPER_20_2",
+      "Close < BOLLINGER_UPPER_20_2",
+      "Close > EMA_20",
+      "RSI_14 >= 50"
+    ],
+    "short": [
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close > BOLLINGER_LOWER_20_2",
+      "Close < EMA_20",
+      "RSI_14 <= 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 2.7 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_20",
+      "Time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 2.7 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_20",
+      "Time stop: 7 bars"
+    ]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {
+    "allowed_regimes": ["transitional", "choppy"],
+    "detection_method": "Require a band expansion failure and immediate value reacceptance around EMA_20."
+  },
+  "variants": [
+    {
+      "name": "btc_range_failure_reacceptance_v1",
+      "template_name": "range_failure_reacceptance",
+      "parameters": [
+        {"name": "ema_fast", "value": 20},
+        {"name": "bb_length", "value": 20},
+        {"name": "bb_std", "value": 2}
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.7,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 7
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": ["cooldown_bars=1"]
+    }
+  ],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,24 +1,67 @@
 {
-  "cycle_id": 311,
-  "ts_iso": "2026-03-10T08:42:07.660411+00:00",
+  "cycle_id": 316,
+  "ts_iso": "2026-03-10T13:00:16.476245+00:00",
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "BTC",
+  "target_asset": "SOL",
   "target_timeframe": "4h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
   "iterate_target": null,
   "current_regime": "TRANSITION",
-  "regime_confidence": 100.0,
+  "regime_confidence": 65.0,
   "regime_context": {
     "current": "TRANSITION",
-    "confidence": 100.0,
-    "adx14": 23.1611,
-    "atr14": 1075.545477,
+    "confidence": 65.0,
+    "adx14": 20.2902,
+    "atr14": 1.870052,
     "distribution_20bar": {
-      "TRANSITION": 100.0
+      "TRANSITION": 65.0,
+      "CHOP": 35.0
     }
+  },
+  "external_intel": {
+    "enabled_sources": [
+      "youtube-research-watch",
+      "tradingview-research-watch",
+      "regime-scan"
+    ],
+    "recent_items": [],
+    "target_asset": "SOL",
+    "target_timeframe": "4h",
+    "count": 0
+  },
+  "design_axes": {
+    "indicator_roles": [
+      "regime filter",
+      "setup qualifier",
+      "trigger",
+      "risk",
+      "exit"
+    ],
+    "management_expressions": [
+      "one-shot entry with one-shot exit",
+      "one-shot entry with partial take-profit and runner",
+      "one-shot entry with trailing-stop exit",
+      "time-based de-risking after entry",
+      "scaled-out exits after confirmation",
+      "scale-in on improved confirmation, then scale-out into expansion",
+      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
+    ],
+    "conceptual_space": [
+      "continuation",
+      "reversal",
+      "mean reversion",
+      "session logic",
+      "inventory reset",
+      "expansion follow-through"
+    ],
+    "anti_patterns": [
+      "ceremonial sparse confirmation chains",
+      "same indicator doing every role",
+      "single-bar hero entries with no management logic"
+    ]
   },
   "exploration_targets": {
     "concepts": [
@@ -31,16 +74,18 @@
       "one-shot entry with partial take-profit and runner",
       "one-shot entry with trailing-stop exit",
       "time-based de-risking after entry",
-      "scaled-out exits after confirmation"
+      "scaled-out exits after confirmation",
+      "scale-in on improved confirmation, then scale-out into expansion",
+      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "BTC"
+      "SOL"
     ],
     "timeframes": [
       "4h"
     ]
   },
-  "thesis_hint": "Explore fresh BTC 4h structures. Current regime: TRANSITION (100.0% confidence). Market transitioning between states \u2014 favor adaptive strategies that can handle regime shifts. Prioritize dense concepts over ceremonial sparse logic.",
-  "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression.",
-  "rotation_reason": "Deterministic explore rotation away from prior lane (None / None)."
+  "thesis_hint": "Explore fresh SOL 4h structures. Current regime: TRANSITION (65.0% confidence). Market transitioning between states \u2014 favor adaptive strategies that can handle regime shifts. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles and management logic, not just entry triggers.",
+  "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression, and at least one should vary indicator-role assignment rather than only entry conditions.",
+  "rotation_reason": "Deterministic explore rotation away from prior lane (none / none)."
 }

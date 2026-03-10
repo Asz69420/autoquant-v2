@@ -1,0 +1,109 @@
+{
+  "version": "market-intelligence-v1",
+  "owner": "quandalf",
+  "purpose": "Govern external market intelligence ingestion so Quandalf gains useful context without polluting active memory.",
+  "source_categories": {
+    "market_microstructure": {
+      "sources": [
+        "HyperLiquid liquidations",
+        "HyperLiquid funding and open interest",
+        "market maker / positioning snapshots",
+        "order-flow imbalance summaries"
+      ],
+      "priority": "high",
+      "destination": "deterministic_facts_then_shared_regime_notes"
+    },
+    "market_context": {
+      "sources": [
+        "economic calendar events",
+        "major crypto/news catalysts",
+        "exchange-specific incidents",
+        "listing/delisting events"
+      ],
+      "priority": "high",
+      "destination": "shared_intelligence_handoffs"
+    },
+    "research_media": {
+      "sources": [
+        "YouTube subscribed channels",
+        "TradingView ideas",
+        "manual transcript drops",
+        "research cards"
+      ],
+      "priority": "medium",
+      "destination": "cold_archive_then_shared_lessons_if_promoted"
+    },
+    "structural_regime_inputs": {
+      "sources": [
+        "regime tagger output",
+        "cross-asset volatility summaries",
+        "funding-extremes scan",
+        "breadth or rotation summaries"
+      ],
+      "priority": "high",
+      "destination": "deterministic_facts_and_shared_regimes"
+    }
+  },
+  "noise_filters": {
+    "drop_if": [
+      "duplicate headline with no new market implication",
+      "single-source rumor with no confirmation",
+      "generic motivational content",
+      "low-signal social commentary",
+      "research that cannot map to regime, entry, exit, risk, or family-level edge"
+    ],
+    "promote_if": [
+      "changes expected market behavior",
+      "changes regime interpretation",
+      "changes family suitability",
+      "suggests testable strategy adjustment",
+      "repeats across independent sources",
+      "explains repeated failure or repeated edge"
+    ],
+    "throttle_rules": {
+      "max_shared_promotions_per_cycle": 3,
+      "max_media_items_per_source_batch": 10,
+      "require_summary_before_promotion": true
+    }
+  },
+  "promotion_policy": {
+    "db_first": [
+      "liquidation aggregates",
+      "funding snapshots",
+      "open interest snapshots",
+      "event timestamps",
+      "source metadata",
+      "per-asset regime context"
+    ],
+    "shared_memory_buckets": {
+      "regimes": "persistent regime behavior observations",
+      "lessons": "reusable strategy or market lessons",
+      "strategy_families": "family-specific suitability or failure patterns",
+      "handoffs": "short-lived but important cross-agent context"
+    },
+    "private_only": [
+      "draft thesis fragments",
+      "speculative interpretations with low confidence",
+      "raw transcript notes before relevance filtering"
+    ]
+  },
+  "retrieval_contract": {
+    "quandalf_default": [
+      "shared regime notes",
+      "family memory relevant to target asset or mechanism",
+      "recent promoted lessons",
+      "latest deterministic market snapshots"
+    ],
+    "quandalf_on_demand": [
+      "raw transcripts",
+      "archived research cards",
+      "older handoffs",
+      "cold archive media"
+    ],
+    "oragorn_default": [
+      "shared handoffs",
+      "task board status",
+      "high-level regime and lesson summaries"
+    ]
+  }
+}

@@ -14,6 +14,7 @@ from text_io import read_text_best_effort
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
+TASK_GOVERNOR = os.path.join(ROOT, "scripts", "task_governor.py")
 JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
 DAILY_JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "daily_journal.md")
 JOURNAL_ARCHIVE_DIR = os.path.join(ROOT, "agents", "quandalf", "memory", "journal")
@@ -77,6 +78,39 @@ def send_tg_as(message, channel="dm", bot="oragorn"):
     except Exception as e:
         print(f"TG send failed: {e}", file=sys.stderr)
         return False
+
+
+def record_pipeline_completion(record_prefix, actor, summary, outcome, significance, files_touched=None, evidence=None, notes=None, task_ids=None):
+    files_touched = files_touched or []
+    evidence = evidence or []
+    task_ids = task_ids or []
+    try:
+        cmd = [
+            sys.executable,
+            TASK_GOVERNOR,
+            "record",
+            "--record-prefix",
+            str(record_prefix),
+            "--actor",
+            str(actor),
+            "--summary",
+            str(summary),
+            "--outcome",
+            str(outcome),
+            "--significance",
+            str(significance),
+        ]
+        for item in files_touched:
+            cmd.extend(["--file", str(item)])
+        for item in evidence:
+            cmd.extend(["--evidence", str(item)])
+        for item in task_ids:
+            cmd.extend(["--task-id", str(item)])
+        if notes:
+            cmd.extend(["--notes", str(notes)])
+        subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+    except Exception as e:
+        print(f"Completion record failed: {e}", file=sys.stderr)
 
 
 def post_agent_message(from_agent, to_agent, msg_type, message):
@@ -406,6 +440,7 @@ def fetch_cycle_queue_metrics(cycle_id):
         "running": 0,
         "done": 0,
         "terminal_failures": 0,
+        "integrity_skips": 0,
         "retryable_failures": 0,
         "done_ok": 0,
         "done_terminal": 0,
@@ -420,9 +455,12 @@ def fetch_cycle_queue_metrics(cycle_id):
         out[status_key] = out.get(status_key, 0) + 1
         out["total"] += 1
         if status_key == "done":
-            if '"status": "terminal_fail"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
+            if '"status": "terminal_fail"' in note_text:
                 out["terminal_failures"] += 1
                 out["done_terminal"] += 1
+            elif '"status": "integrity_skip"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
+                out["integrity_skips"] += 1
+                out["done_ok"] += 1
             else:
                 out["done_ok"] += 1
         elif status_key == "queued" and '"status": "retry"' in note_text:
@@ -1591,6 +1629,28 @@ def main():
         log_card, metrics = build_log_card(cycle_id, [], elapsed_seconds, 0, run_state=run_state)
         write_cycle_metrics(metrics)
         sent = send_log_card(cycle_id, log_card, metrics=metrics)
+        if int(metrics.get("queue_terminal_failures", 0) or 0) > 0:
+            record_pipeline_completion(
+                record_prefix="CYCLE-{0}".format(cycle_id),
+                actor="logron",
+                summary="Cycle {0} postprocess observed terminal queue failures without fresh DB results.".format(cycle_id),
+                outcome="partial",
+                significance="medium",
+                files_touched=[
+                    "data/state/current_cycle_metrics.json",
+                    "data/state/current_cycle_batch_summary.json",
+                ],
+                evidence=[
+                    "data/state/current_cycle_metrics.json",
+                    "data/state/current_cycle_batch_summary.json",
+                ],
+                notes="queue_terminal_failures={0}; queue_done={1}; sent_card={2}".format(
+                    metrics.get("queue_terminal_failures", 0),
+                    metrics.get("queue_done", 0),
+                    sent,
+                ),
+                task_ids=["TASK-0004"],
+            )
         print(json.dumps({"status": "card_sent_waiting" if sent else "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": cycle_id, "run_state": run_state, "card_metrics": metrics}))
         return
 
@@ -1687,6 +1747,37 @@ def main():
         pipeline="research_cycle",
         step="postprocess",
     )
+
+    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
+        record_pipeline_completion(
+            record_prefix="CYCLE-{0}".format(cycle_id),
+            actor="logron",
+            summary="Cycle {0} postprocess completed: {1} specs, {2}/{3} backtests complete, passes {4}, promotions {5}.".format(
+                cycle_id,
+                metrics.get("specs_produced", 0),
+                metrics.get("backtests_completed", 0),
+                metrics.get("backtests_queued", 0),
+                metrics.get("pass_count", 0),
+                metrics.get("promote_count", 0),
+            ),
+            outcome="success" if int(metrics.get("promote_count", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 else "partial",
+            significance="high" if int(metrics.get("promote_count", 0) or 0) > 0 else "medium",
+            files_touched=[
+                "data/state/current_cycle_metrics.json",
+                "data/state/current_cycle_batch_summary.json",
+                "agents/quandalf/memory/current_cycle_status.json",
+            ],
+            evidence=[
+                "data/state/current_cycle_metrics.json",
+                "data/state/current_cycle_batch_summary.json",
+            ],
+            notes="best_qscore={0}; lessons_added={1}; terminal_failures={2}".format(
+                round(float(metrics.get("best_qscore", 0) or 0), 2),
+                lessons_added,
+                metrics.get("queue_terminal_failures", 0),
+            ),
+            task_ids=["TASK-0004"],
+        )
 
     print(
         json.dumps(

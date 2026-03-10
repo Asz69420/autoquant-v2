@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C316-BTC-DEEP-TREND-RESET-CONTINUATION-v1",
+  "ts_iso": "2026-03-10T12:18:10Z",
+  "thesis_id": "cycle_316_btc_deep_trend_reset_continuation_v1",
+  "name": "BTC Deep Trend Reset Continuation v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "family_name": "btc_deep_trend_reset_continuation",
+  "thesis": "BTC 4h trends often resume after deeper pullbacks that reset momentum without fully breaking medium-term structure. The edge should come from buying/selling after trend re-alignment following a meaningful reset rather than shallow touch-and-go continuation.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "BTC", "timeframe": "4h", "purpose": "walk_forward_screen"}
+  ],
+  "edge_mechanism": "deeper pullback reset followed by trend continuation",
+  "expected_regime": "trending and transitional continuation",
+  "invalidation_condition": "If deeper reset continuation still fails to clear the trade floor or PF > 1.0 after costs, then BTC 4h continuation needs either a looser structural definition or different trade management.",
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 > EMA_50",
+      "Low <= EMA_50 + 0.25 * ATR_14",
+      "Close > EMA_20",
+      "RSI_14 >= 52",
+      "ADX_14 >= 18"
+    ],
+    "short": [
+      "EMA_20 < EMA_50",
+      "High >= EMA_50 - 0.25 * ATR_14",
+      "Close < EMA_20",
+      "RSI_14 <= 48",
+      "ADX_14 >= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.5 * ATR_14 above entry for 50% size",
+      "Trail remaining position using EMA_20",
+      "Time-based de-risk: reduce 50% after 4 bars if unrealized gain < 0.75 * ATR_14",
+      "Final exit if Close crosses_below EMA_20 or at 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.5 * ATR_14 below entry for 50% size",
+      "Trail remaining position using EMA_20",
+      "Time-based de-risk: reduce 50% after 4 bars if unrealized gain < 0.75 * ATR_14",
+      "Final exit if Close crosses_above EMA_20 or at 10 bars"
+    ]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {
+    "allowed_regimes": ["trending", "transitional"],
+    "detection_method": "Require fast-over-medium trend alignment, a deeper ATR-scaled pullback into EMA_50, then close-based recovery through EMA_20 with positive momentum."
+  },
+  "variants": [
+    {
+      "name": "btc_deep_trend_reset_continuation_v1",
+      "template_name": "deep_trend_reset_continuation",
+      "parameters": [
+        {"name": "ema_fast", "value": 20},
+        {"name": "ema_medium", "value": 50},
+        {"name": "reset_buffer_atr", "value": 0.25},
+        {"name": "adx_floor", "value": 18}
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "scaled_exit_and_trail",
+        "tp_atr_mult": 1.5,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": ["cooldown_bars=0", "partial_take_profit=50pct", "runner_trail=ema20"]
+    }
+  ],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

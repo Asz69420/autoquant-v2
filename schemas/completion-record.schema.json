@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "autoquant://schemas/completion-record",
+  "title": "Completion Record",
+  "description": "Proof-oriented record emitted when a significant task or milestone is completed.",
+  "type": "object",
+  "required": [
+    "version",
+    "id",
+    "ts_iso",
+    "actor",
+    "summary",
+    "outcome",
+    "significance",
+    "tasks_completed",
+    "files_touched",
+    "follow_up_titles"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "completion-record-v1" },
+    "id": { "type": "string", "pattern": "^COMP-[0-9]{8}-[0-9]{6}-[A-Z0-9]{4}$" },
+    "ts_iso": { "type": "string", "format": "date-time" },
+    "actor": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1 },
+    "outcome": { "type": "string", "enum": ["success", "partial", "fail", "info"] },
+    "significance": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "tasks_completed": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^TASK-[0-9]{4}$" }
+    },
+    "files_touched": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "follow_up_titles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": ["string", "null"] },
+    "memory_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["bucket", "title", "summary"],
+        "properties": {
+          "bucket": {
+            "type": "string",
+            "enum": ["lessons", "decisions", "known_fixes", "regimes", "strategy_families", "postmortems", "handoffs"]
+          },
+          "title": { "type": "string" },
+          "summary": { "type": "string" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

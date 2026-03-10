@@ -1,0 +1,36 @@
+{
+  "version": "agent-feedback-v1",
+  "description": "Compact agent feedback and Oragorn synthesis loop with low file fragmentation.",
+  "cadence": {
+    "operational_window_hours": 6,
+    "strategic_window_hours": 24
+  },
+  "sources": {
+    "message_board": "data/state/agent_messages.json",
+    "quandalf_status": "agents/quandalf/memory/current_cycle_status.json",
+    "quandalf_journal": "agents/quandalf/memory/latest_journal.md",
+    "frodex_status": "agents/frodex/memory/current_status.md",
+    "logron_status": "agents/logron/memory/current_status.md",
+    "task_board": "data/state/task_board.json",
+    "governance_audit": "data/state/memory_governance_audit.json"
+  },
+  "routing": {
+    "self_heal_if": [
+      "known deterministic fix exists",
+      "repeated low-risk operational issue"
+    ],
+    "daily_intel_if": [
+      "meaningful strategic change",
+      "important recurring weakness",
+      "new promotable lesson"
+    ],
+    "escalate_if": [
+      "critical failure",
+      "blocked automation",
+      "risk to live operation"
+    ]
+  },
+  "output": {
+    "summary_path": "data/state/agent_feedback_summary.json"
+  }
+}

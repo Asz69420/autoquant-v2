@@ -1,0 +1,623 @@
+{
+  "version": "task-board-v1",
+  "generated_at": "2026-03-10T13:00:52.561921+00:00",
+  "summary": {
+    "queued": 2,
+    "active": 2,
+    "blocked": 0,
+    "done": 20,
+    "dropped": 0,
+    "total": 24
+  },
+  "tasks": [
+    {
+      "id": "TASK-0017",
+      "title": "Add agent feedback loop and Oragorn synthesis",
+      "type": "feature",
+      "status": "active",
+      "priority": "high",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [],
+      "acceptance": [],
+      "evidence": [],
+      "tags": [],
+      "notes": "Scheduled agent feedback loop with Oragorn synthesis, self-healing routing, and tidy low-fragmentation outputs.",
+      "created_at": "2026-03-10T12:02:50.047897+00:00",
+      "updated_at": "2026-03-10T12:02:50.047897+00:00",
+      "completed_at": null
+    },
+    {
+      "id": "TASK-0023",
+      "title": "Clean misleading zero-trade history, inspect gateway errors, and audit Quandalf strategy loop",
+      "type": "maintenance",
+      "status": "active",
+      "priority": "high",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [],
+      "acceptance": [],
+      "evidence": [],
+      "tags": [],
+      "notes": "Normalize old misleading zero-trade failure history, reduce stale message noise, inspect real gateway errors, and verify Quandalf is set up for effective strategy learning/iteration.",
+      "created_at": "2026-03-10T12:41:44.283950+00:00",
+      "updated_at": "2026-03-10T12:41:44.283950+00:00",
+      "completed_at": null
+    },
+    {
+      "id": "TASK-0016",
+      "title": "Implement concrete HyperLiquid and macro feed fetchers when endpoint/provider decisions are finalized",
+      "type": "feature",
+      "status": "queued",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0015"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "docs/HYPERLIQUID_INTEGRATION_TODO.md"
+      ],
+      "tags": [
+        "follow-up",
+        "hyperliquid",
+        "external-intel"
+      ],
+      "notes": "Future work: implement concrete HyperLiquid liquidations/positioning fetchers and optional macro provider fetchers. Plug them into scripts/external_intel_registry.py -> scripts/external_intel_relevance.py -> briefing/cycle_orders retrieval path. See docs/HYPERLIQUID_INTEGRATION_TODO.md.",
+      "created_at": "2026-03-10T11:54:36.888001+00:00",
+      "updated_at": "2026-03-10T11:57:00.836574+00:00",
+      "completed_at": null
+    },
+    {
+      "id": "TASK-0024",
+      "title": "Trace and neutralize duplicate watchdog launcher instances if gateway-noise still persists after the patched watchdog is the active instance",
+      "type": "feature",
+      "status": "queued",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0022"
+      ],
+      "acceptance": [],
+      "evidence": [],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Auto-created from completion record for TASK-0022.",
+      "created_at": "2026-03-10T13:00:52.560391+00:00",
+      "updated_at": "2026-03-10T13:00:52.560391+00:00",
+      "completed_at": null
+    },
+    {
+      "id": "TASK-0001",
+      "title": "Bootstrap memory governance spine",
+      "type": "governance",
+      "status": "done",
+      "priority": "critical",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [],
+      "acceptance": [
+        "memory governance config exists",
+        "task board exists",
+        "completion records exist",
+        "roadmap sync exists"
+      ],
+      "evidence": [
+        "ROADMAP.md",
+        "data/state/task_board.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0001--COMP-20260310-095601-6F57.completion_record.json"
+      ],
+      "tags": [
+        "memory-v2",
+        "governance",
+        "bootstrap"
+      ],
+      "notes": "Initial governance layer is live and self-updating.",
+      "created_at": "2026-03-10T09:55:15.655409+00:00",
+      "updated_at": "2026-03-10T09:56:01.070238+00:00",
+      "completed_at": "2026-03-10T09:56:01.070217+00:00"
+    },
+    {
+      "id": "TASK-0002",
+      "title": "Bootstrap shared intelligence memory buckets",
+      "type": "migration",
+      "status": "done",
+      "priority": "high",
+      "owner": "logron",
+      "shared": true,
+      "depends_on": [
+        "TASK-0001"
+      ],
+      "acceptance": [
+        "shared memory directories exist",
+        "shared index exists",
+        "promotion script is working"
+      ],
+      "evidence": [
+        "memory/shared/INDEX.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0002--COMP-20260310-095633-BF64.completion_record.json"
+      ],
+      "tags": [
+        "memory-v2",
+        "shared-memory"
+      ],
+      "notes": "Shared long-term memory is now live and can accept promoted lessons, decisions, and fixes.",
+      "created_at": "2026-03-10T09:55:15.655422+00:00",
+      "updated_at": "2026-03-10T09:56:33.438893+00:00",
+      "completed_at": "2026-03-10T09:56:33.438873+00:00"
+    },
+    {
+      "id": "TASK-0003",
+      "title": "Backfill Quandalf lessons into shared intelligence",
+      "type": "migration",
+      "status": "done",
+      "priority": "high",
+      "owner": "quandalf",
+      "shared": true,
+      "depends_on": [
+        "TASK-0002"
+      ],
+      "acceptance": [
+        "pilot lessons promoted from journals",
+        "shared lesson index is populated",
+        "no raw journal bloat in active context"
+      ],
+      "evidence": [
+        "memory/shared/lessons/20260310-intraday-strategy-grammar-must-be-broader-and-less-event-driven.md",
+        "memory/shared/lessons/20260310-chronically-extreme-funding-thresholds-become-non-selective.md",
+        "memory/shared/lessons/20260310-fast-exit-anchors-can-destroy-trade-economics.md",
+        "memory/shared/lessons/20260310-iteration-budget-should-favor-converging-families-before-noisy-exploration.md",
+        "scripts/backfill_quandalf_lessons.py",
+        "scripts/backfill_quandalf_lessons.py",
+        "memory/shared/INDEX.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0003--COMP-20260310-101804-D234.completion_record.json"
+      ],
+      "tags": [
+        "memory-v2",
+        "quandalf",
+        "lessons"
+      ],
+      "notes": "Pilot backfill is complete and shared lesson index is populated; future work is expansion, not first-time migration.",
+      "created_at": "2026-03-10T09:55:15.655493+00:00",
+      "updated_at": "2026-03-10T10:18:04.152907+00:00",
+      "completed_at": "2026-03-10T10:18:04.152889+00:00"
+    },
+    {
+      "id": "TASK-0004",
+      "title": "Integrate completion records into recurring pipelines",
+      "type": "feature",
+      "status": "done",
+      "priority": "high",
+      "owner": "frodex",
+      "shared": true,
+      "depends_on": [
+        "TASK-0001"
+      ],
+      "acceptance": [
+        "significant pipeline steps emit completion records",
+        "task board updates after meaningful milestones",
+        "roadmap sync can run unattended"
+      ],
+      "evidence": [
+        "artifacts/completions/20260310/TEST-INTEGRATION--COMP-20260310-101421-BCA3.completion_record.json",
+        "data/state/current_cycle_metrics.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0004--COMP-20260310-101434-50B2.completion_record.json"
+      ],
+      "tags": [
+        "memory-v2",
+        "pipelines",
+        "automation"
+      ],
+      "notes": "Recurring pipeline milestones can now emit completion records without requiring manual task completion.",
+      "created_at": "2026-03-10T09:55:15.655504+00:00",
+      "updated_at": "2026-03-10T10:14:34.454160+00:00",
+      "completed_at": "2026-03-10T10:14:34.454143+00:00"
+    },
+    {
+      "id": "TASK-0018",
+      "title": "Fix delegation reliability and align souls with actual execution model",
+      "type": "feature",
+      "status": "done",
+      "priority": "high",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [],
+      "acceptance": [],
+      "evidence": [
+        "SOUL.md",
+        "docs/DELEGATION_RELIABILITY.md",
+        "scripts/verify_delegated_run.py",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0018--COMP-20260310-120811-61FC.completion_record.json"
+      ],
+      "tags": [],
+      "notes": "Direct execution is now the default bias; delegated/background work should be verified before trusted.",
+      "created_at": "2026-03-10T12:07:57.326807+00:00",
+      "updated_at": "2026-03-10T12:08:11.372314+00:00",
+      "completed_at": "2026-03-10T12:08:11.372296+00:00"
+    },
+    {
+      "id": "TASK-0005",
+      "title": "Design external market intelligence ingestion for Quandalf",
+      "type": "research",
+      "status": "done",
+      "priority": "medium",
+      "owner": "quandalf",
+      "shared": true,
+      "depends_on": [
+        "TASK-0002"
+      ],
+      "acceptance": [
+        "ingestion sources are categorized",
+        "promotion policy is defined",
+        "noise filtering rules exist"
+      ],
+      "evidence": [
+        "config/market-intelligence.json",
+        "docs/QUANDALF_MARKET_INTELLIGENCE.md",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0005--COMP-20260310-101858-9FEC.completion_record.json"
+      ],
+      "tags": [
+        "market-intel",
+        "quandalf",
+        "future"
+      ],
+      "notes": "Design is complete; implementation of source registry and structured ingestion can now proceed on top of this policy.",
+      "created_at": "2026-03-10T09:55:15.655512+00:00",
+      "updated_at": "2026-03-10T10:18:58.537998+00:00",
+      "completed_at": "2026-03-10T10:18:58.537982+00:00"
+    },
+    {
+      "id": "TASK-0006",
+      "title": "Implement source registry and normalized external intel storage",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0005"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "data/external_intel/index.json",
+        "data/state/external_intel_state.json",
+        "data/external_intel/normalized/20260310/EXT-20260310-105628-6F7F.external_intel_item.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0006--COMP-20260310-105650-E296.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "External intelligence now has a normalized storage spine and live ingest proof.",
+      "created_at": "2026-03-10T10:18:58.538009+00:00",
+      "updated_at": "2026-03-10T10:56:50.196274+00:00",
+      "completed_at": "2026-03-10T10:56:50.196262+00:00"
+    },
+    {
+      "id": "TASK-0007",
+      "title": "Wire external-intel retrieval into Quandalf briefing and cycle orders",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0006"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "data/external_intel/index.json",
+        "agents/quandalf/memory/cycle_orders.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0007--COMP-20260310-105918-A259.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Cycle orders now carry an external_intel slice filtered to the target asset when available.",
+      "created_at": "2026-03-10T10:56:50.196281+00:00",
+      "updated_at": "2026-03-10T10:59:18.086492+00:00",
+      "completed_at": "2026-03-10T10:59:18.086471+00:00"
+    },
+    {
+      "id": "TASK-0008",
+      "title": "Expand shared memory automation to Frodex and Logron lessons/known-fixes",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0007"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "scripts/backfill_agent_memory.py",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0008--COMP-20260310-111940-9EFC.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Frodex and Logron now have a repeatable path into shared decisions and known-fixes memory.",
+      "created_at": "2026-03-10T10:59:18.086510+00:00",
+      "updated_at": "2026-03-10T11:19:40.773309+00:00",
+      "completed_at": "2026-03-10T11:19:40.773289+00:00"
+    },
+    {
+      "id": "TASK-0009",
+      "title": "Add dedupe/aging compaction for shared memory and task evidence",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0008"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "scripts/compact_shared_memory.py",
+        "data/state/memory_compaction_state.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0009--COMP-20260310-113025-4C8C.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Compaction is deterministic, archive-friendly, and avoids touching canonical rules or DB facts.",
+      "created_at": "2026-03-10T11:19:40.773322+00:00",
+      "updated_at": "2026-03-10T11:30:25.094634+00:00",
+      "completed_at": "2026-03-10T11:30:25.094609+00:00"
+    },
+    {
+      "id": "TASK-0010",
+      "title": "Schedule automatic memory compaction and retention checks in recurring automation",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0009"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "pipelines/daily-maintenance.lobster",
+        "config/quandalf-briefing.json",
+        "data/state/memory_compaction_state.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0010--COMP-20260310-113449-959F.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Recurring maintenance now includes compaction, queue housekeeping, archiving, and bounded retrieval defaults.",
+      "created_at": "2026-03-10T11:30:25.094649+00:00",
+      "updated_at": "2026-03-10T11:34:49.196333+00:00",
+      "completed_at": "2026-03-10T11:34:49.196314+00:00"
+    },
+    {
+      "id": "TASK-0011",
+      "title": "Add recurring promotion/backfill automation for shared memory across all agents",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0010"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "pipelines/daily-maintenance.lobster",
+        "docs/SHARED_MEMORY_AUTOMATION.md",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0011--COMP-20260310-114629-F6FF.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Shared memory promotion is now part of recurring maintenance, not a manual step.",
+      "created_at": "2026-03-10T11:34:49.196346+00:00",
+      "updated_at": "2026-03-10T11:46:29.570062+00:00",
+      "completed_at": "2026-03-10T11:46:29.570048+00:00"
+    },
+    {
+      "id": "TASK-0012",
+      "title": "Add recurring validation/audit checks for memory governance health",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0011"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "data/state/memory_governance_audit.json",
+        "pipelines/daily-maintenance.lobster",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0012--COMP-20260310-114818-8A85.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Audit is deterministic and currently reports healthy governance state.",
+      "created_at": "2026-03-10T11:46:29.570072+00:00",
+      "updated_at": "2026-03-10T11:48:18.658114+00:00",
+      "completed_at": "2026-03-10T11:48:18.658102+00:00"
+    },
+    {
+      "id": "TASK-0013",
+      "title": "Expand automatic promotion coverage to more source files and agent memory types",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0012"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "scripts/backfill_agent_memory.py",
+        "memory/shared/INDEX.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0013--COMP-20260310-115014-C054.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Agent promotion coverage now includes decisions, known-fixes, goals, and current-status handoffs.",
+      "created_at": "2026-03-10T11:48:18.658120+00:00",
+      "updated_at": "2026-03-10T11:50:14.464909+00:00",
+      "completed_at": "2026-03-10T11:50:14.464891+00:00"
+    },
+    {
+      "id": "TASK-0014",
+      "title": "Add memory-governance status summary view for quick health and progress checks",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0013"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "data/state/memory_governance_status.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0014--COMP-20260310-115252-8C8C.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Status summary now exposes task progress, shared-memory size, audit status, compaction status, and enabled external sources.",
+      "created_at": "2026-03-10T11:50:14.464922+00:00",
+      "updated_at": "2026-03-10T11:52:52.945658+00:00",
+      "completed_at": "2026-03-10T11:52:52.945644+00:00"
+    },
+    {
+      "id": "TASK-0015",
+      "title": "Implement richer live external feed ingestion and relevance scoring",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0014"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "data/state/external_intel_relevance.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0015--COMP-20260310-115436-1FF4.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Live-feed scaffolding and relevance scoring are in place; disabled feeds still need concrete endpoint integrations later.",
+      "created_at": "2026-03-10T11:52:52.945665+00:00",
+      "updated_at": "2026-03-10T11:54:36.887988+00:00",
+      "completed_at": "2026-03-10T11:54:36.887969+00:00"
+    },
+    {
+      "id": "TASK-0019",
+      "title": "Audit pipeline and soul files for optimization and over-complexity with direct-execution bias",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0018"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "AGENTS.md",
+        "docs/PIPELINE_AND_SOUL_AUDIT.md",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0019--COMP-20260310-121116-DF32.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Main outcome: direct execution should remain default until delegation reliability improves; next best step is the agent feedback/synthesis loop plus root-cause work on gateway/backtest failures.",
+      "created_at": "2026-03-10T12:08:11.372325+00:00",
+      "updated_at": "2026-03-10T12:11:16.547462+00:00",
+      "completed_at": "2026-03-10T12:11:16.547439+00:00"
+    },
+    {
+      "id": "TASK-0020",
+      "title": "Implement scheduled agent feedback loop and Oragorn synthesis with noise reduction",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0019"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "data/state/agent_feedback_summary.json",
+        "config/throttle.json",
+        "pipelines/research-cycle.lobster",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0020--COMP-20260310-121857-0DFB.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Throttle current_mode is normal, not paused. Observed cycle 141 ran from the canonical pipeline and completed without breaking the orchestration path; refinement simply had no eligible PASS family to act on.",
+      "created_at": "2026-03-10T12:11:16.547473+00:00",
+      "updated_at": "2026-03-10T12:18:57.383864+00:00",
+      "completed_at": "2026-03-10T12:18:57.383851+00:00"
+    },
+    {
+      "id": "TASK-0021",
+      "title": "Root-cause recurring gateway/backtest terminal-failure pattern and reduce logron alert repetition",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0020"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "docs/DB_AND_BACKTEST_REFERENCE.md",
+        "data/state/db_schema_snapshot.json",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0021--COMP-20260310-123816-C988.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Zero-trade integrity skips are now classified separately from terminal failures for future runs. Existing historical rows still reflect the old note format. Remaining work is root-causing actual gateway ERROR lines and reducing over-sparse strategy generation.",
+      "created_at": "2026-03-10T12:18:57.383872+00:00",
+      "updated_at": "2026-03-10T12:38:16.861483+00:00",
+      "completed_at": "2026-03-10T12:38:16.861468+00:00"
+    },
+    {
+      "id": "TASK-0022",
+      "title": "Root-cause actual gateway ERROR log lines and review over-sparse screen-stage spec generation",
+      "type": "feature",
+      "status": "done",
+      "priority": "medium",
+      "owner": "oragorn",
+      "shared": true,
+      "depends_on": [
+        "TASK-0021"
+      ],
+      "acceptance": [],
+      "evidence": [
+        "agents/quandalf/memory/cycle_orders.json",
+        "C:/Users/Clamps/.openclaw/logs/gateway-watchdog.log",
+        "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\completions\\20260310\\TASK-0022--COMP-20260310-130052-4053.completion_record.json"
+      ],
+      "tags": [
+        "follow-up"
+      ],
+      "notes": "Watchdog now checks port 18789 before starting. Quandalf orders now carry design axes, broader management expressions, and mechanism-first guidance without hard-caging exploration.",
+      "created_at": "2026-03-10T12:38:16.861494+00:00",
+      "updated_at": "2026-03-10T13:00:52.560384+00:00",
+      "completed_at": "2026-03-10T13:00:52.560372+00:00"
+    }
+  ]
+}

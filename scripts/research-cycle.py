@@ -262,6 +262,19 @@ def main() -> int:
     except Exception:
         packet["regime_summary"] = {}
 
+    # Inject normalized external intelligence if available
+    external_intel_index_path = ROOT / "data" / "external_intel" / "index.json"
+    try:
+        if external_intel_index_path.exists():
+            external_intel = json.loads(external_intel_index_path.read_text(encoding="utf-8"))
+            packet["external_intel_sources"] = [
+                s for s in (external_intel.get("sources") or []) if isinstance(s, dict) and s.get("enabled")
+            ]
+            packet["external_intel_recent"] = list(reversed(external_intel.get("items") or []))[:10]
+    except Exception:
+        packet["external_intel_sources"] = []
+        packet["external_intel_recent"] = []
+
     BRIEFING_PATH.parent.mkdir(parents=True, exist_ok=True)
     BRIEFING_PATH.write_text(json.dumps(packet, indent=2), encoding="utf-8")
 

@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C316-BTC-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "ts_iso": "2026-03-10T12:18:20Z",
+  "thesis_id": "cycle_316_btc_compression_fakeout_reexpansion_v1",
+  "name": "BTC Compression Fakeout Re-Expansion v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "family_name": "btc_compression_fakeout_reexpansion",
+  "thesis": "BTC 4h in transition often produces a false break from compression before the real expansion begins in the opposite direction. The edge should come from waiting for the fakeout rejection, then entering the genuine re-expansion with directional confirmation.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "BTC", "timeframe": "4h", "purpose": "walk_forward_screen"}
+  ],
+  "edge_mechanism": "compression fakeout followed by directional re-expansion",
+  "expected_regime": "transitional expansion and fake-break traps",
+  "invalidation_condition": "If fakeout-and-reexpansion cannot produce dense enough trades or a post-cost PF above 1.0, then BTC 4h compression traps are either too rare or need a looser compression threshold.",
+  "indicators": ["BOLLINGER_BANDS_20_2", "ATR_14", "EMA_20", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 0.9 * ATR_14",
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close > EMA_20",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 0.9 * ATR_14",
+      "High > BOLLINGER_UPPER_20_2",
+      "Close < EMA_20",
+      "RSI_14 <= 49"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Scaled-out exits: 40% at 1.2 * ATR_14, 30% at 2.0 * ATR_14",
+      "Trail final 30% using 1.3 * ATR_14 chandelier stop",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Scaled-out exits: 40% at 1.2 * ATR_14, 30% at 2.0 * ATR_14",
+      "Trail final 30% using 1.3 * ATR_14 chandelier stop",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {
+    "allowed_regimes": ["transitional", "choppy"],
+    "detection_method": "Require narrow Bollinger width, then a false break outside the band and close-based reclaim of EMA_20 in the opposite direction."
+  },
+  "variants": [
+    {
+      "name": "btc_compression_fakeout_reexpansion_v1",
+      "template_name": "compression_fakeout_reexpansion",
+      "parameters": [
+        {"name": "bb_length", "value": 20},
+        {"name": "bb_std", "value": 2},
+        {"name": "compression_width_atr", "value": 0.9},
+        {"name": "ema_fast", "value": 20}
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "scaled_ladder_and_trail",
+        "tp_atr_mult": 2.0,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 8
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": ["cooldown_bars=1", "scale_out=40_30_30", "trail_stop=chandelier_1.3atr"]
+    }
+  ],
+  "complexity_score": 1.9,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

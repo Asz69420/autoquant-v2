@@ -1,0 +1,29 @@
+{
+  "version": "completion-record-v1",
+  "id": "COMP-20260310-123816-C988",
+  "ts_iso": "2026-03-10T12:38:16.861901+00:00",
+  "actor": "oragorn",
+  "summary": "Fixed misleading zero-trade classification, added gateway-alert dedupe, and added DB/backtest reference tooling for faster diagnosis.",
+  "outcome": "success",
+  "significance": "high",
+  "tasks_completed": [
+    "TASK-0021"
+  ],
+  "files_touched": [
+    "scripts/parallel_runner.py",
+    "scripts/cycle-postprocess.py",
+    "scripts/logron-monitor.py",
+    "scripts/db_schema_snapshot.py",
+    "docs/DB_AND_BACKTEST_REFERENCE.md",
+    "data/state/db_schema_snapshot.json"
+  ],
+  "evidence": [
+    "docs/DB_AND_BACKTEST_REFERENCE.md",
+    "data/state/db_schema_snapshot.json"
+  ],
+  "follow_up_titles": [
+    "Root-cause actual gateway ERROR log lines and review over-sparse screen-stage spec generation"
+  ],
+  "notes": "Zero-trade integrity skips are now classified separately from terminal failures for future runs. Existing historical rows still reflect the old note format. Remaining work is root-causing actual gateway ERROR lines and reducing over-sparse strategy generation.",
+  "memory_candidates": []
+}

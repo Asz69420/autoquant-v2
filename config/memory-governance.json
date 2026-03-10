@@ -1,0 +1,169 @@
+{
+  "version": "memory-governance-v2",
+  "description": "Governance rules for shared intelligence, agent-private memory, roadmap state, and completion-driven task updates.",
+  "goals": [
+    "keep active memory lean",
+    "promote durable intelligence into shared memory",
+    "keep deterministic facts in SQLite/state JSON",
+    "prevent agent personality drift",
+    "support hands-free long-term operation",
+    "control memory bloat with hot/warm/cold lifecycle"
+  ],
+  "precedence_order": [
+    "canonical_rules",
+    "approved_shared_intelligence",
+    "deterministic_facts",
+    "agent_private_working_memory",
+    "raw_artifacts_and_logs"
+  ],
+  "memory_classes": {
+    "canonical_rules": {
+      "paths": [
+        "SOUL.md",
+        "AGENTS.md",
+        "USER.md",
+        "MEMORY.md",
+        "config/*.json",
+        "agents/*/SOUL.md"
+      ],
+      "notes": "Lowest drift tolerance. Never derived from journals. Approved edits only."
+    },
+    "live_operational_state": {
+      "paths": [
+        "SCRATCH.md",
+        "data/state/*.json",
+        "agents/*/SCRATCH.md",
+        "agents/*/memory/current_status.md"
+      ],
+      "notes": "Short-lived and frequently updated."
+    },
+    "shared_intelligence": {
+      "root": "memory/shared",
+      "buckets": [
+        "lessons",
+        "decisions",
+        "known_fixes",
+        "regimes",
+        "strategy_families",
+        "postmortems",
+        "handoffs"
+      ],
+      "notes": "Curated, promoted, searchable long-term memory."
+    },
+    "agent_private_working_memory": {
+      "paths": [
+        "agents/*/memory/journal",
+        "agents/*/memory/goals.md",
+        "agents/*/memory/decisions.md",
+        "agents/*/memory/research_notes.md",
+        "agents/*/memory/latest_journal.md"
+      ],
+      "notes": "Role-shaped, temporary or semi-durable notes. Can propose promotion into shared intelligence."
+    },
+    "deterministic_facts": {
+      "paths": [
+        "db/autoquant.db",
+        "data/state/*.json",
+        "artifacts/**/*.json"
+      ],
+      "notes": "Anything that needs exact filtering, joins, counts, ranking, or automation."
+    },
+    "cold_archive": {
+      "paths": [
+        "logs/archive",
+        "artifacts/session_dumps",
+        "artifacts/research",
+        "artifacts/backtests",
+        "artifacts/transcripts_tmp"
+      ],
+      "notes": "Retained for evidence and retrieval, never default-loaded."
+    }
+  },
+  "promotion_rules": {
+    "shared_lesson_requires": [
+      "clear observation",
+      "implication for future action",
+      "evidence source",
+      "at least one concrete tag"
+    ],
+    "known_fix_requires": [
+      "symptom",
+      "root_cause",
+      "deterministic_fix",
+      "prevention note"
+    ],
+    "db_first_for": [
+      "scores",
+      "counts",
+      "statuses",
+      "lineage",
+      "queue state",
+      "leaderboard metrics",
+      "regime assignments"
+    ],
+    "never_promote": [
+      "secrets",
+      "tokens",
+      "private credentials",
+      "raw noisy logs without summary"
+    ]
+  },
+  "task_system": {
+    "roadmap_path": "ROADMAP.md",
+    "task_board_path": "data/state/task_board.json",
+    "completion_records_dir": "artifacts/completions",
+    "task_governor_script": "scripts/task_governor.py",
+    "sync_roadmap_after_change": true,
+    "completion_record_required_for_done": true
+  },
+  "automation": {
+    "memory_governor_script": "scripts/memory_governor.py",
+    "daily_compaction": true,
+    "weekly_deep_archive": true,
+    "dedupe_shared_index": true,
+    "logron_audits_stale_tasks": true,
+    "agents_propose_promotions": true,
+    "pipelines_write_completions": true
+  },
+  "retention": {
+    "hot_window_days": 7,
+    "warm_window_days": 30,
+    "cold_archive_rotation": "monthly",
+    "journal_summary_cadence": "daily",
+    "task_done_keep_days": 30
+  },
+  "agent_lenses": {
+    "quandalf": [
+      "strategy lessons",
+      "regime observations",
+      "market structure interpretation",
+      "research relevance",
+      "family-level edge memory"
+    ],
+    "frodex": [
+      "implementation runbooks",
+      "pipeline gotchas",
+      "debug patterns",
+      "schema hygiene",
+      "backtest reliability"
+    ],
+    "logron": [
+      "failure signatures",
+      "alert patterns",
+      "known fixes",
+      "reporting state",
+      "governance audits"
+    ],
+    "oragorn": [
+      "priorities",
+      "delegation state",
+      "roadmap control",
+      "system synthesis"
+    ],
+    "smaug": [
+      "risk execution rules",
+      "position management",
+      "broker/exchange state"
+    ]
+  }
+}

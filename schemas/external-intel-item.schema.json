@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "autoquant://schemas/external-intel-item",
+  "title": "External Intelligence Item",
+  "description": "Normalized external market intelligence record for structured ingestion before promotion.",
+  "type": "object",
+  "required": ["version", "id", "ts_iso", "source_id", "category", "asset_scope", "importance", "summary", "raw_path", "status"],
+  "properties": {
+    "version": { "type": "string", "const": "external-intel-item-v1" },
+    "id": { "type": "string", "pattern": "^EXT-[0-9]{8}-[0-9]{6}-[A-Z0-9]{4}$" },
+    "ts_iso": { "type": "string", "format": "date-time" },
+    "source_id": { "type": "string", "minLength": 1 },
+    "category": { "type": "string", "enum": ["market_microstructure", "market_context", "research_media", "structural_regime_inputs"] },
+    "asset_scope": { "type": "array", "items": { "type": "string" } },
+    "importance": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "market_implication": { "type": ["string", "null"] },
+    "promotion_candidate": { "type": "boolean" },
+    "raw_path": { "type": "string", "minLength": 1 },
+    "normalized_path": { "type": ["string", "null"] },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "status": { "type": "string", "enum": ["ingested", "filtered", "promoted", "archived", "discarded"] }
+  },
+  "additionalProperties": false
+}

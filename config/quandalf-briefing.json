@@ -5,7 +5,9 @@
  "agents/quandalf/memory/goals.md",
  "agents/quandalf/memory/decisions.md",
  "agents/quandalf/memory/current_status.md",
- "agents/quandalf/memory/research_notes.md"
+ "agents/quandalf/memory/research_notes.md",
+ "ROADMAP.md",
+ "memory/shared/INDEX.json"
  ],
  "briefing_packet_queries": {
  "top_leaderboard": "SELECT * FROM leaderboard_promoted LIMIT 5",
@@ -29,5 +31,30 @@
  "Complete library search",
  "Historical regime data",
  "Token spend analysis"
- ]
+ ],
+ "shared_memory_defaults": {
+  "lessons_limit": 5,
+  "strategy_family_limit": 5,
+  "known_fixes_limit": 5,
+  "handoffs_limit": 3
+ },
+ "design_directives": [
+  "Prefer mechanism-first reasoning over generic indicator stacking",
+  "Use indicator roles deliberately: regime filter, setup, trigger, risk, exit",
+  "Actively explore management variations such as partial profits, runners, trailing exits, scale-out, and time-based de-risking",
+  "Session-specific ideas are valid when tied to actual market behavior",
+  "Do not default to ceremonial sparse confirmation chains"
+ ],
+ "retrieval_contract": {
+  "prefer": [
+   "shared memory summaries before raw archives",
+   "DB/state facts before prose when exactness matters",
+   "asset-relevant external intel before general research media"
+  ],
+  "avoid": [
+   "loading all historical journals by default",
+   "loading raw transcripts by default",
+   "loading unrelated agent-private memory"
+  ]
+ }
 }
