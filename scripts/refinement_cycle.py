@@ -473,6 +473,12 @@ def backfill_missing_strategy_families(conn):
     return repaired
 
 
+def load_abandoned_families():
+    status = load_json(CURRENT_STATUS_PATH, {})
+    families = [str(x).strip().lower() for x in (status.get("abandoned_families") or []) if str(x).strip()]
+    return set(families)
+
+
 def candidate_rows(conn):
     query = """
     select *
@@ -486,7 +492,18 @@ def candidate_rows(conn):
     order by coalesce(refinement_round,0) asc, score_total desc, ts_iso asc
     """
     conn.row_factory = sqlite3.Row
-    return conn.execute(query).fetchall()
+    rows = conn.execute(query).fetchall()
+    abandoned = load_abandoned_families()
+    filtered = []
+    for row in rows:
+        family = str(row["strategy_family"] or "").strip().lower()
+        if family and family in abandoned:
+            continue
+        # Quarantine repeated weak refinements that never improve meaningfully
+        if int(row["refinement_round"] or 0) >= 2 and float(row["score_total"] or 0.0) < 1.2:
+            continue
+        filtered.append(row)
+    return filtered
 
 
 def build_jobs(conn, cycle_id, max_jobs):

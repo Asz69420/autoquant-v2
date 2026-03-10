@@ -26,6 +26,7 @@
 - scripts/db_utils.py — shared DB connection helper (WAL + busy_timeout)
 - scripts/archive_old_specs.py — archives specs >48h old (not promoted)
 - scripts/compact_strategy_status.py — trims strategy_status.json bloat
+- scripts/queue_housekeeping.py — resets stale running queue jobs + discards orphan legacy queued work
 
 ## Scoring
 - QScore: pass >= 1.0, promote >= 3.0, hard fail < 15 trades

@@ -114,46 +114,79 @@ def main():
     cycle_tag = f"C{cycle_id}"
 
     existing_paths = [str(p).strip() for p in (status.get("spec_paths") or []) if str(p).strip()]
-    quandalf_produced = int(status.get("specs_produced", 0) or 0) > 0 or len(existing_paths) > 0
+    minimum_spec_count = int(orders.get("minimum_spec_count", 3) or 3)
+    produced_count = max(int(status.get("specs_produced", 0) or 0), len(existing_paths))
+    quandalf_produced = produced_count >= minimum_spec_count
 
     recent_cycles = list(state.get("recent_cycles") or [])
     recent_cycles = [item for item in recent_cycles if int(item.get("cycle_id", -1) or -1) != cycle_id]
 
     if quandalf_produced:
         state["zero_spec_streak"] = 0
-        recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": False})
+        recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": False, "quandalf_under_minimum": False})
         state["recent_cycles"] = recent_cycles[-10:]
         persist_state(state)
-        print(json.dumps({"status": "skipped", "reason": "quandalf_produced_specs", "cycle_id": cycle_id}))
+        print(json.dumps({"status": "skipped", "reason": "quandalf_produced_minimum_specs", "cycle_id": cycle_id, "produced_count": produced_count, "minimum_spec_count": minimum_spec_count}))
         return
 
     zero_spec_streak = int(state.get("zero_spec_streak", 0) or 0) + 1
     state["zero_spec_streak"] = zero_spec_streak
 
     if zero_spec_streak < 3:
-        recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": True})
+        recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": produced_count == 0, "quandalf_under_minimum": produced_count < minimum_spec_count})
         state["recent_cycles"] = recent_cycles[-10:]
         persist_state(state)
-        print(json.dumps({"status": "skipped", "reason": "fallback_guard_active", "cycle_id": cycle_id, "zero_spec_streak": zero_spec_streak}))
+        print(json.dumps({"status": "skipped", "reason": "fallback_guard_active", "cycle_id": cycle_id, "zero_spec_streak": zero_spec_streak, "produced_count": produced_count, "minimum_spec_count": minimum_spec_count}))
         return
 
-    spec = make_spec(
-        f"QD-{date_tag}-{cycle_tag}-{asset}-EMA-PULLBACK-v1",
-        f"{asset} EMA Pullback v1",
-        f"{asset.lower()}_ema_pullback",
-        asset, timeframe,
-        "trend pullback continuation after value reclaim",
-        ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
-        ["Close > EMA_55", "EMA_20 > EMA_55", "low >= EMA_20 - 0.6 * ATR_14", "RSI_14 >= 50", "PLUS_DI_14 >= MINUS_DI_14"],
-        ["Close < EMA_55", "EMA_20 < EMA_55", "high <= EMA_20 + 0.6 * ATR_14", "RSI_14 <= 50", "MINUS_DI_14 >= PLUS_DI_14"],
-        ["Stop loss: 1.1 * ATR_14 below entry", "Take profit: 2.4 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 10 bars"],
-        ["Stop loss: 1.1 * ATR_14 above entry", "Take profit: 2.4 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 10 bars"],
-        f"{asset.lower()}_ema_pullback_v1", "ema_pullback", {"ema_fast": 20, "ema_anchor": 55, "pullback_buffer_atr": 0.6, "rsi_mid": 50}
-    )
+    fallback_specs = [
+        make_spec(
+            f"QD-{date_tag}-{cycle_tag}-{asset}-EMA-PULLBACK-v1",
+            f"{asset} EMA Pullback v1",
+            f"{asset.lower()}_ema_pullback",
+            asset, timeframe,
+            "trend pullback continuation after value reclaim",
+            ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
+            ["Close > EMA_55", "EMA_20 > EMA_55", "low >= EMA_20 - 0.6 * ATR_14", "RSI_14 >= 50", "PLUS_DI_14 >= MINUS_DI_14"],
+            ["Close < EMA_55", "EMA_20 < EMA_55", "high <= EMA_20 + 0.6 * ATR_14", "RSI_14 <= 50", "MINUS_DI_14 >= PLUS_DI_14"],
+            ["Stop loss: 1.1 * ATR_14 below entry", "Take profit: 2.4 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 10 bars"],
+            ["Stop loss: 1.1 * ATR_14 above entry", "Take profit: 2.4 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 10 bars"],
+            f"{asset.lower()}_ema_pullback_v1", "ema_pullback", {"ema_fast": 20, "ema_anchor": 55, "pullback_buffer_atr": 0.6, "rsi_mid": 50}
+        ),
+        make_spec(
+            f"QD-{date_tag}-{cycle_tag}-{asset}-RANGE-RECLAIM-v1",
+            f"{asset} Range Reclaim v1",
+            f"{asset.lower()}_range_reclaim",
+            asset, timeframe,
+            "range reclaim continuation after false breakdown and value recovery",
+            ["EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+            ["Close > EMA_20", "RSI_14 >= 48", "ADX_14 <= 25"],
+            ["Close < EMA_20", "RSI_14 <= 52", "ADX_14 <= 25"],
+            ["Stop loss: 1.0 * ATR_14 below entry", "Take profit: 2.0 * ATR_14 above entry", "Exit if Close crosses_below EMA_20"],
+            ["Stop loss: 1.0 * ATR_14 above entry", "Take profit: 2.0 * ATR_14 below entry", "Exit if Close crosses_above EMA_20"],
+            f"{asset.lower()}_range_reclaim_v1", "range_reclaim", {"ema_anchor": 20, "adx_cap": 25, "rsi_mid": 50}
+        ),
+        make_spec(
+            f"QD-{date_tag}-{cycle_tag}-{asset}-BREAKOUT-HOLD-v1",
+            f"{asset} Breakout Hold v1",
+            f"{asset.lower()}_breakout_hold",
+            asset, timeframe,
+            "breakout continuation after hold above broken structure with volatility expansion",
+            ["EMA_20", "EMA_55", "ATR_14", "ADX_14"],
+            ["Close > EMA_20", "EMA_20 > EMA_55", "ADX_14 >= 18"],
+            ["Close < EMA_20", "EMA_20 < EMA_55", "ADX_14 >= 18"],
+            ["Stop loss: 1.2 * ATR_14 below entry", "Take profit: 2.8 * ATR_14 above entry", "Trailing stop: 1.0 * ATR_14"],
+            ["Stop loss: 1.2 * ATR_14 above entry", "Take profit: 2.8 * ATR_14 below entry", "Trailing stop: 1.0 * ATR_14"],
+            f"{asset.lower()}_breakout_hold_v1", "breakout_hold", {"ema_fast": 20, "ema_anchor": 55, "adx_floor": 18}
+        )
+    ]
 
-    path = OUT_DIR / f"{spec['id']}.strategy_spec.json"
-    write_json(path, spec)
-    paths = [str(path)]
+    generated_paths = []
+    for spec in fallback_specs:
+        path = OUT_DIR / f"{spec['id']}.strategy_spec.json"
+        write_json(path, spec)
+        generated_paths.append(str(path))
+    paths = list(dict.fromkeys(existing_paths + generated_paths))
 
     recent_cycles.append({"cycle_id": cycle_id, "fallback_used": True, "quandalf_zero": True})
     rolling = recent_cycles[-10:]
@@ -174,7 +207,7 @@ def main():
         "iterate_target": orders.get("iterate_target"),
         "spec_paths": paths,
         "specs_produced": len(paths),
-        "new_families": [spec["family_name"]],
+        "new_families": [spec["family_name"] for spec in fallback_specs],
         "iterated_families": [],
         "abandoned_families": [],
         "fallback_source": True,

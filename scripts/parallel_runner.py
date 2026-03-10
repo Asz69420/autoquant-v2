@@ -764,6 +764,38 @@ def mark_failed_back_to_queue(conn, queue_id, notes=None):
     )
 
 
+def reset_stale_running_jobs(conn, stale_minutes=10):
+    cutoff_sql = f"-{int(stale_minutes)} minutes"
+    rows = conn.execute(
+        "SELECT id, cycle_id, stage, strategy_spec_id, variant_id FROM research_funnel_queue WHERE status='running' AND datetime(started_at) <= datetime('now', ?) ",
+        (cutoff_sql,),
+    ).fetchall()
+    for row in rows:
+        conn.execute(
+            "UPDATE research_funnel_queue SET status='queued', started_at=NULL, notes=? WHERE id=?",
+            (json.dumps({"status": "reset_stale_running", "reason": "stale_running_timeout", "reset_at": now_iso()}), row[0]),
+        )
+    if rows:
+        log_event(conn, "queue_stale_reset", "logron", f"Reset {len(rows)} stale running queue jobs", severity="warn", step="queue_housekeeping", metadata={"count": len(rows), "rows": [dict(zip(['id','cycle_id','stage','strategy_spec_id','variant_id'], r)) for r in rows[:10]]})
+    return len(rows)
+
+
+def cleanup_orphan_queue(conn, max_valid_gap=20):
+    max_cycle = conn.execute("SELECT COALESCE(MAX(cycle_id),0) FROM research_funnel_queue WHERE cycle_id < 90000").fetchone()[0] or 0
+    rows = conn.execute(
+        "SELECT id, cycle_id, status, stage, strategy_spec_id, variant_id FROM research_funnel_queue WHERE status='queued' AND (cycle_id >= 90000 OR cycle_id < ?)",
+        (max(0, int(max_cycle) - int(max_valid_gap)),),
+    ).fetchall()
+    for row in rows:
+        conn.execute(
+            "UPDATE research_funnel_queue SET status='done', completed_at=?, notes=? WHERE id=?",
+            (now_iso(), json.dumps({"status": "orphan_discarded", "reason": "orphan_or_legacy_cycle", "discarded_at": now_iso()}), row[0]),
+        )
+    if rows:
+        log_event(conn, "queue_orphan_cleanup", "logron", f"Discarded {len(rows)} orphan queued jobs", severity="warn", step="queue_housekeeping", metadata={"count": len(rows), "rows": [dict(zip(['id','cycle_id','status','stage','strategy_spec_id','variant_id'], r)) for r in rows[:10]]})
+    return len(rows)
+
+
 def timeframe_neighbors(tf):
     if tf not in TIMEFRAME_ORDER:
         return None, None
@@ -1233,6 +1265,11 @@ def process_result_effects(conn, queue_item, result):
 
 def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, max_parallel=None, max_jobs=None, apply_effects=True):
     ensure_schema(conn)
+    stale_reset = reset_stale_running_jobs(conn, stale_minutes=10)
+    orphan_discarded = cleanup_orphan_queue(conn, max_valid_gap=20)
+    if stale_reset or orphan_discarded:
+        conn.commit()
+
     quotas = bucket_quota(SCREEN_LIMIT + FULL_LIMIT + VALIDATION_LIMIT)
     bucket_used = {k: 0 for k in quotas}
     stage_used = {"screen": 0, "full": 0, "validation": 0}
