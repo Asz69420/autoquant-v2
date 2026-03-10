@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C278-BTC-VALUE-RECLAIM-PULLBACK-CONTINUATION-v1",
+  "ts_iso": "2026-03-10T03:17:30Z",
+  "thesis_id": "cycle_278_btc_value_reclaim_pullback_continuation_v1",
+  "name": "BTC Value Reclaim Pullback Continuation v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "family_name": "btc_value_reclaim_pullback_continuation",
+  "thesis": "When BTC reclaims fast trend value after a shallow pullback while medium trend remains aligned, the next leg often resumes quickly on 1h. The edge should come from entering after acceptance back above the fast anchor instead of chasing extension.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "trend pullback continuation after fast value reclaim",
+  "expected_regime": "trending and transitional continuation",
+  "invalidation_condition": "If reclaiming fast trend value after a shallow pullback still cannot sustain >=15 blind trades or PF > 1.0 after costs, this BTC 1h continuation framing is too weak or too ceremonial.",
+  "indicators": [
+    "EMA_20",
+    "EMA_50",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "EMA_20 > EMA_50",
+      "Close > EMA_20",
+      "Low <= EMA_20 + 0.15 * ATR_14",
+      "RSI_14 >= 52",
+      "ADX_14 >= 18"
+    ],
+    "short": [
+      "EMA_20 < EMA_50",
+      "Close < EMA_20",
+      "High >= EMA_20 - 0.15 * ATR_14",
+      "RSI_14 <= 48",
+      "ADX_14 >= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_20",
+      "Time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_20",
+      "Time stop: 10 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Fast-over-medium trend alignment plus close-based reclaim of EMA_20 after a shallow ATR-scaled pullback."
+  },
+  "variants": [
+    {
+      "name": "btc_value_reclaim_pullback_continuation_v1",
+      "template_name": "value_reclaim_pullback_continuation",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_medium",
+          "value": 50
+        },
+        {
+          "name": "pullback_touch_buffer_atr",
+          "value": 0.15
+        },
+        {
+          "name": "rsi_bias_long",
+          "value": 52
+        },
+        {
+          "name": "adx_floor",
+          "value": 18
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.8,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf",
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

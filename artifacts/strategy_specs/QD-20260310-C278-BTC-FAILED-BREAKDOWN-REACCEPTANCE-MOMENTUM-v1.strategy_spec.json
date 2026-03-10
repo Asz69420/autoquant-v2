@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C278-BTC-FAILED-BREAKDOWN-REACCEPTANCE-MOMENTUM-v1",
+  "ts_iso": "2026-03-10T03:17:50Z",
+  "thesis_id": "cycle_278_btc_failed_breakdown_reacceptance_momentum_v1",
+  "name": "BTC Failed Breakdown Reacceptance Momentum v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "family_name": "btc_failed_breakdown_reacceptance_momentum",
+  "thesis": "On BTC 1h, breakdown attempts that quickly snap back through short-term value can fuel an asymmetric reversal as trapped shorts cover. The edge should come from demanding a real washout below the lower band followed by immediate value reacceptance with momentum confirmation.",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "failed breakdown trap and value reacceptance reversal",
+  "expected_regime": "transitional and reversal-from-exhaustion",
+  "invalidation_condition": "If explicit failed-breakdown reacceptance cannot generate enough trades or a post-cost PF above 1.0, then BTC 1h reversals need broader trap detection or should be deprioritized.",
+  "indicators": [
+    "EMA_20",
+    "BOLLINGER_BANDS_20_2",
+    "ATR_14",
+    "RSI_14",
+    "STOCH_K_14_3_3"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close > EMA_20",
+      "RSI_14 >= 50",
+      "STOCH_K_14_3_3 >= 35",
+      "Close >= Open"
+    ],
+    "short": [
+      "High > BOLLINGER_UPPER_20_2",
+      "Close < EMA_20",
+      "RSI_14 <= 50",
+      "STOCH_K_14_3_3 <= 65",
+      "Close <= Open"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 2.5 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_20",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 2.5 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_20",
+      "Time stop: 6 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "choppy"
+    ],
+    "detection_method": "Require a band violation followed by close-based reacceptance of EMA_20 and minimal momentum confirmation to catch trap reversals rather than raw falling knives."
+  },
+  "variants": [
+    {
+      "name": "btc_failed_breakdown_reacceptance_momentum_v1",
+      "template_name": "failed_breakdown_reacceptance_momentum",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "bb_length",
+          "value": 20
+        },
+        {
+          "name": "bb_std",
+          "value": 2
+        },
+        {
+          "name": "stoch_reclaim_long",
+          "value": 35
+        },
+        {
+          "name": "stoch_reclaim_short",
+          "value": 65
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.5,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 6
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1"
+      ]
+    }
+  ],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf",
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -12,12 +12,23 @@
   "primary_asset": "SOL",
   "primary_timeframe": "4h",
   "validation_targets": [
-    {"asset": "SOL", "timeframe": "4h", "purpose": "walk_forward_screen"}
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
   ],
   "edge_mechanism": "continuous trend participation with shallow reset continuation",
   "expected_regime": "trending and transitional continuation",
   "invalidation_condition": "If this broader trend-state definition still cannot clear the 15-trade floor or hold PF above 1 after costs, then the continuation state is not actually live enough on SOL 4h.",
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
   "entry_rules": {
     "long": [
       "Close > EMA_55",
@@ -48,39 +59,62 @@
       "Time stop: 8 bars"
     ]
   },
-  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
   "regime_filter": {
-    "allowed_regimes": ["trending","transitional"],
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
     "detection_method": "Continuous SOL 4h trend state using only EMA stack acceptance, shallow ATR reset allowance, and mild directional confirmation."
   },
-  "variants": [{
-    "name": "sol_continuous_trend_state_pullback_v1",
-    "template_name": "continuous_trend_state_pullback",
-    "parameters": [
-      {"name": "ema_fast", "value": 20},
-      {"name": "ema_anchor", "value": 55},
-      {"name": "pullback_buffer_atr", "value": 0.55},
-      {"name": "rsi_mid", "value": 50}
-    ],
-    "risk_policy": {
-      "stop_type": "atr",
-      "stop_atr_mult": 1.05,
-      "tp_type": "atr",
-      "tp_atr_mult": 2.7,
-      "risk_per_trade_pct": 0.004,
-      "max_concurrent_positions": 1,
-      "max_holding_bars": 8
-    },
-    "execution_policy": {
-      "entry_fill": "bar_close",
-      "tie_break": "worst_case",
-      "allow_reverse": true,
-      "slippage_bps": 8,
-      "fee_bps": 6
-    },
-    "risk_rules": ["cooldown_bars=0"]
-  }],
+  "variants": [
+    {
+      "name": "sol_continuous_trend_state_pullback_v1",
+      "template_name": "continuous_trend_state_pullback",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_anchor",
+          "value": 55
+        },
+        {
+          "name": "pullback_buffer_atr",
+          "value": 0.55
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.05,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.7,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 8
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
   "complexity_score": 1.5,
   "status": "ready_to_test",
-  "source": "quandalf"
+  "source": "quandalf",
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }
