@@ -251,6 +251,16 @@ def main() -> int:
         packet["active_strategy_families"] = []
         packet["recently_abandoned"] = []
 
+    # Inject regime summary if available
+    regime_summary_path = ROOT / "data" / "state" / "regime_summary.json"
+    try:
+        if regime_summary_path.exists():
+            regime_data = json.loads(regime_summary_path.read_text(encoding="utf-8"))
+            packet["regime_summary"] = regime_data.get("pairs", {})
+            packet["regime_generated_at"] = regime_data.get("generated_at")
+    except Exception:
+        packet["regime_summary"] = {}
+
     BRIEFING_PATH.parent.mkdir(parents=True, exist_ok=True)
     BRIEFING_PATH.write_text(json.dumps(packet, indent=2), encoding="utf-8")
 

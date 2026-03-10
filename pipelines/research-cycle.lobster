@@ -4,6 +4,10 @@ steps:
     # File/state handoff root: allocate cycle/run state marker for the whole run.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-start.py'
 
+  - id: regime-refresh
+    # Refresh regime tags for all candle data before briefing so Quandalf gets current market context.
+    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\refresh_regimes.py'
+
   - id: briefing
     # File/state handoff: writes agents/quandalf/memory/briefing_packet.json.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\research-cycle.py'

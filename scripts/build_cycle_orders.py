@@ -8,9 +8,12 @@ BRIEFING = ROOT / "agents" / "quandalf" / "memory" / "briefing_packet.json"
 ORDERS = ROOT / "agents" / "quandalf" / "memory" / "cycle_orders.json"
 STATUS = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
 METRICS = ROOT / "data" / "state" / "current_cycle_metrics.json"
+ROTATION_HISTORY = ROOT / "data" / "state" / "rotation_history.json"
+REGIME_SUMMARY = ROOT / "data" / "state" / "regime_summary.json"
 
 DEFAULT_ASSET_ORDER = ["ETH", "BTC", "SOL", "TAO", "AVAX", "LINK", "DOGE", "ARB", "OP", "INJ"]
 DEFAULT_TF_ORDER = ["4h", "1h", "1d", "15m"]
+ROTATION_LOOKBACK = 5  # avoid repeating asset/tf pair from last N cycles
 CONCEPT_PACKS = [
     [
         "trend pullback continuation after deeper value reclaim into structural support",
@@ -49,12 +52,38 @@ def load_json(path: Path, default):
     return default
 
 
+def load_rotation_history() -> list:
+    try:
+        if ROTATION_HISTORY.exists():
+            data = json.loads(ROTATION_HISTORY.read_text(encoding="utf-8"))
+            if isinstance(data, list):
+                return data
+    except Exception:
+        pass
+    return []
+
+
+def save_rotation_history(history: list):
+    ROTATION_HISTORY.parent.mkdir(parents=True, exist_ok=True)
+    # Keep last 20 entries
+    ROTATION_HISTORY.write_text(json.dumps(history[-20:], indent=2), encoding="utf-8")
+
+
+def load_regime_summary() -> dict:
+    try:
+        if REGIME_SUMMARY.exists():
+            data = json.loads(REGIME_SUMMARY.read_text(encoding="utf-8"))
+            return data.get("pairs", {})
+    except Exception:
+        pass
+    return {}
+
+
 def pick_asset_timeframe(universe: dict, prior_status: dict) -> tuple[str, str]:
     assets_by_tf = universe.get("assets_by_timeframe") or {}
     timeframes_by_asset = universe.get("timeframes_by_asset") or {}
-    prev_asset = str(prior_status.get("target_asset") or "").upper()
-    prev_tf = str(prior_status.get("target_timeframe") or "")
 
+    # Build all valid candidate pairs
     candidate_pairs = []
     for tf in DEFAULT_TF_ORDER:
         for asset in DEFAULT_ASSET_ORDER:
@@ -65,12 +94,39 @@ def pick_asset_timeframe(universe: dict, prior_status: dict) -> tuple[str, str]:
             for tf in tfs:
                 candidate_pairs.append((asset, tf))
 
-    for asset, tf in candidate_pairs:
-        if asset != prev_asset and tf != prev_tf:
-            return asset, tf
+    # Load rotation history — avoid pairs used in last N cycles
+    history = load_rotation_history()
+    recent_pairs = set()
+    for entry in history[-ROTATION_LOOKBACK:]:
+        a = str(entry.get("asset", "")).upper()
+        t = str(entry.get("timeframe", ""))
+        if a and t:
+            recent_pairs.add((a, t))
+
+    # Also track recent assets (not just pairs) to force diversity
+    recent_assets = []
+    for entry in history[-ROTATION_LOOKBACK:]:
+        a = str(entry.get("asset", "")).upper()
+        if a:
+            recent_assets.append(a)
+
+    # Prefer pairs not seen in recent history, and assets not recently used
+    fresh_pairs = [(a, t) for a, t in candidate_pairs if (a, t) not in recent_pairs and a not in recent_assets]
+    if fresh_pairs:
+        return fresh_pairs[0]
+
+    # Fallback: at least different pair from recent
+    different_pairs = [(a, t) for a, t in candidate_pairs if (a, t) not in recent_pairs]
+    if different_pairs:
+        return different_pairs[0]
+
+    # Last fallback: different from immediately previous
+    prev_asset = str(prior_status.get("target_asset") or "").upper()
+    prev_tf = str(prior_status.get("target_timeframe") or "")
     for asset, tf in candidate_pairs:
         if asset != prev_asset:
             return asset, tf
+
     return candidate_pairs[0] if candidate_pairs else ("ETH", "4h")
 
 
@@ -158,6 +214,27 @@ def main():
     asset, timeframe = pick_asset_timeframe(universe, prior_status)
     concept_pack = pick_concept_pack(cycle_id, prior_status)
 
+    # Load regime context for the target pair
+    regimes = load_regime_summary()
+    pair_key = f"{asset}/{timeframe}"
+    regime_info = regimes.get(pair_key, {"current": "UNKNOWN", "confidence": 0.0})
+    current_regime = regime_info.get("current", "UNKNOWN")
+    regime_confidence = regime_info.get("confidence", 0.0)
+
+    regime_hint = ""
+    if current_regime == "TREND_UP":
+        regime_hint = "Market is trending up — favor continuation and pullback entries over mean reversion."
+    elif current_regime == "TREND_DOWN":
+        regime_hint = "Market is trending down — favor short continuation or reversal setups, avoid blind long entries."
+    elif current_regime == "CHOP":
+        regime_hint = "Market is choppy/ranging — favor mean reversion and range-bound strategies, avoid trend-following."
+    elif current_regime == "EXPANSION":
+        regime_hint = "Volatility expanding — favor breakout and momentum strategies with wider stops."
+    elif current_regime == "COMPRESSION":
+        regime_hint = "Volatility compressing — favor squeeze breakout setups, expect imminent expansion."
+    elif current_regime == "TRANSITION":
+        regime_hint = "Market transitioning between states — favor adaptive strategies that can handle regime shifts."
+
     orders = {
         "cycle_id": cycle_id,
         "ts_iso": datetime.now(timezone.utc).isoformat(),
@@ -169,18 +246,26 @@ def main():
         "research_direction": "explore_new",
         "specific_family_to_iterate": None,
         "iterate_target": None,
+        "current_regime": current_regime,
+        "regime_confidence": regime_confidence,
+        "regime_context": regime_info,
         "exploration_targets": {
             "concepts": concept_pack,
             "management_styles": MANAGEMENT_STYLES,
             "assets": [asset],
             "timeframes": [timeframe],
         },
-        "thesis_hint": f"Explore fresh {asset} {timeframe} structures across distinct mechanisms and trade-management styles. Prioritize dense concepts over ceremonial sparse logic.",
+        "thesis_hint": f"Explore fresh {asset} {timeframe} structures. Current regime: {current_regime} ({regime_confidence}% confidence). {regime_hint} Prioritize dense concepts over ceremonial sparse logic.",
         "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression.",
         "rotation_reason": f"Deterministic explore rotation away from prior lane ({prior_status.get('target_asset', 'none')} / {prior_status.get('target_timeframe', 'none')}).",
     }
     ORDERS.parent.mkdir(parents=True, exist_ok=True)
     ORDERS.write_text(json.dumps(orders, indent=2), encoding="utf-8")
+
+    # Record rotation history
+    history = load_rotation_history()
+    history.append({"cycle_id": cycle_id, "asset": asset, "timeframe": timeframe, "regime": current_regime, "ts": datetime.now(timezone.utc).isoformat()})
+    save_rotation_history(history)
     sync_status_to_orders(cycle_id, orders)
     sync_metrics_to_orders(cycle_id, orders)
     print(json.dumps({"status": "ok", "cycle_id": cycle_id, "orders_path": str(ORDERS), "target_asset": asset, "target_timeframe": timeframe}))
