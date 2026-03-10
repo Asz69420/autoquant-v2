@@ -646,23 +646,28 @@ def update_source_statuses(conn, touched_rows):
             rejected += 1
         if new_status == "PROMOTE.CANDIDATE":
             promoted += 1
-        family_label = original.get("strategy_family") or original.get("strategy_spec_id") or "This family"
+        family_label = humanize_refinement_label(original.get("strategy_family") or original.get("strategy_spec_id") or "This family")
         status_phrase = {
             "PASS.REFINING": "moved into active refinement",
             "PASS.STABLE": "looked stable after refinement",
             "PASS.STALLED": "stalled during refinement",
             "PASS.REJECTED": "failed to hold up under refinement",
             "PROMOTE.CANDIDATE": "improved enough to become a promotion candidate",
-        }.get(new_status, f"ended the cycle at {new_status.lower()}")
-        simplification_phrase = "held up in simplification" if evaluation["simplification_hold"] else "weakened in simplification"
-        trend_phrase = str(evaluation.get("qscore_trend") or "flat").replace("_", " ")
+        }.get(new_status, "finished the cycle in an unknown state")
+        simplification_phrase = "held up when simplified" if evaluation["simplification_hold"] else "weakened when simplified"
+        trend_raw = str(evaluation.get("qscore_trend") or "flat").replace("_", " ")
+        trend_phrase = {
+            "up": "an improving",
+            "down": "a weakening",
+            "flat": "a flat",
+        }.get(trend_raw, f"a {trend_raw}")
         note_parts.append(
             f"{family_label} {status_phrase}, with {evaluation['neighbor_passes']} neighbor pass{'es' if evaluation['neighbor_passes'] != 1 else ''}, "
-            f"{evaluation['cross_asset_passes']} cross-asset pass{'es' if evaluation['cross_asset_passes'] != 1 else ''}, {simplification_phrase}, and a {trend_phrase} QScore trend"
+            f"{evaluation['cross_asset_passes']} cross-asset pass{'es' if evaluation['cross_asset_passes'] != 1 else ''}, {simplification_phrase}, and {trend_phrase} QScore trend."
         )
     conn.commit()
     if note_parts:
-        primary = note_parts[0].rstrip(";,. ")
+        primary = note_parts[0].strip()
         note = primary[:349].rstrip(";,. ") + "."
     else:
         note = "No eligible PASS family produced a refinement decision this cycle."
@@ -754,4 +759,21 @@ def main():
         append_status_summary(summary)
         card = build_card(cycle_id, finalized_run_state, len(jobs), upgrades, rejected, promoted, round_counts, note, had_error=had_error)
         sent = False if args.dry_run else send_log_card(card)
-        log_event(conn, "refinement_cycle
+        log_event(conn, "refinement_cycle_complete", "frodex", f"refinement cycle {cycle_id} complete", step="summary", metadata={"jobs": len(jobs), "upgrades": upgrades, "rejected": rejected, "promoted": promoted, "log_card_sent": sent, "dry_run": args.dry_run})
+        conn.close()
+
+    out = {
+        "status": "error" if had_error else "ok",
+        "cycle_id": cycle_id,
+        "jobs": len(jobs),
+        "runner": payload,
+        "card": card,
+        "log_card_sent": sent,
+        "touched_families": [row["strategy_family"] for row in touched_rows],
+    }
+    print(json.dumps(out, indent=2))
+    return 1 if had_error else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

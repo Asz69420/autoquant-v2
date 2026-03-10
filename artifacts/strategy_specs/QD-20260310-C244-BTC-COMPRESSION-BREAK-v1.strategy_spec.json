@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C244-BTC-COMPRESSION-BREAK-v1",
+  "ts_iso": "2026-03-10T00:07:20Z",
+  "thesis_id": "qd-20260310-c244-btc-compression-break-v1_thesis",
+  "name": "BTC Compression Break v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "family_name": "btc_compression_break",
+  "thesis": "volatility compression release with directional filter",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "volatility compression release with directional filter",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If btc_compression_break cannot clear the trade floor or PF > 1 after costs on BTC 1h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_55",
+      "EMA_20 > EMA_55",
+      "ATR_14 >= ATR_14[1]",
+      "ADX_14 >= 18",
+      "RSI_14 >= 52"
+    ],
+    "short": [
+      "Close < EMA_55",
+      "EMA_20 < EMA_55",
+      "ATR_14 >= ATR_14[1]",
+      "ADX_14 >= 18",
+      "RSI_14 <= 48"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Early exit if RSI_14 < 48",
+      "Time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Early exit if RSI_14 > 52",
+      "Time stop: 8 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple BTC 1h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "btc_compression_break_v1",
+      "template_name": "compression_break",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_anchor",
+          "value": 55
+        },
+        {
+          "name": "adx_min",
+          "value": 18
+        },
+        {
+          "name": "rsi_bias",
+          "value": 52
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "fallback_cooker"
+}
