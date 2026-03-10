@@ -662,8 +662,13 @@ def remember_card_send(cycle_id, card_text, fingerprint):
 
 def send_log_card(cycle_id, log_card, metrics=None):
     metrics = metrics or {}
-    has_current_cycle_results = bool(metrics.get("cycle_results_present")) or int(metrics.get("backtests_completed", 0) or 0) > 0
-    if not has_current_cycle_results:
+    should_emit = (
+        bool(metrics.get("cycle_results_present"))
+        or int(metrics.get("backtests_completed", 0) or 0) > 0
+        or int(metrics.get("specs_produced", 0) or 0) > 0
+        or bool(metrics.get("state_warning"))
+    )
+    if not should_emit:
         return False
 
     should_send, fingerprint = should_send_card(cycle_id, log_card)
@@ -762,6 +767,8 @@ def sync_live_journal(cycle_id=None):
 
     os.makedirs(os.path.dirname(DAILY_JOURNAL_PATH), exist_ok=True)
     with open(DAILY_JOURNAL_PATH, "w", encoding="utf-8", newline="\n") as f:
+        f.write(latest_entry + "\n")
+    with open(JOURNAL_PATH, "w", encoding="utf-8", newline="\n") as f:
         f.write(latest_entry + "\n")
 
     os.makedirs(JOURNAL_ARCHIVE_DIR, exist_ok=True)
@@ -1507,7 +1514,14 @@ def main():
 
     if not rows:
         run_state = finalize_run_state(resolve_cycle_id())
-        print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": resolve_cycle_id(run_state), "run_state": run_state}))
+        cycle_id = resolve_cycle_id(run_state)
+        sync_cycle_status_to_active(cycle_id)
+        timing = compute_timing_metrics(run_state)
+        elapsed_seconds = timing["run_elapsed_seconds"]
+        log_card, metrics = build_log_card(cycle_id, [], elapsed_seconds, 0, run_state=run_state)
+        write_cycle_metrics(metrics)
+        sent = send_log_card(cycle_id, log_card, metrics=metrics)
+        print(json.dumps({"status": "card_sent_waiting" if sent else "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": cycle_id, "run_state": run_state, "card_metrics": metrics}))
         return
 
     sync_cycle_status_to_active(cycle_id_preview)
