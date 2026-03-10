@@ -251,34 +251,90 @@ def resolve_cycle_id(run_state=None):
         return 0
 
 
-def sync_cycle_status_to_active(cycle_id):
-    """Ensure current_cycle_status.json carries the active cycle_id.
+def infer_cycle_lane_from_spec_paths(spec_paths):
+    asset = None
+    timeframe = None
+    for p in spec_paths or []:
+        name = os.path.basename(str(p)).upper()
+        parts = name.split('-')
+        for token in parts:
+            if token in {"ETH", "BTC", "SOL", "TAO", "AVAX", "LINK", "DOGE", "ARB", "OP", "INJ", "BABY"}:
+                asset = token
+                break
+        if ".STRATEGY_SPEC.JSON" in name:
+            pass
+        if "-1H-" in name:
+            timeframe = "1h"
+        elif "-4H-" in name:
+            timeframe = "4h"
+        elif "-15M-" in name:
+            timeframe = "15m"
+        elif "-30M-" in name:
+            timeframe = "30m"
+    return asset, timeframe
 
-    cycle-start and research-cycle already sync this, but agent steps can
-    overwrite with a stale cycle_id or fail to update it.  Running this
-    before we compute metrics eliminates the lag warning at its source.
+
+def sync_cycle_status_to_active(cycle_id):
+    """Ensure current_cycle_status.json carries coherent data for the active cycle.
+
+    cycle-start and research-cycle sync the cycle id, but agent steps can overwrite
+    only some fields and leave a split-brain status file behind. This function now
+    also reconciles same-cycle status using the current orders + spec manifest.
     """
     cycle_id = int(cycle_id)
     if cycle_id <= 0:
         return
     status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
-    if int(status.get("cycle_id", 0) or 0) == cycle_id:
-        return  # already in sync
-    status["cycle_id"] = cycle_id
-    status["mode"] = "pending"
-    status["research_direction"] = "pending"
-    status["target_asset"] = None
-    status["target_timeframe"] = None
-    status["exploration_targets"] = {}
-    status["iterate_target"] = None
-    status["specific_family_to_iterate"] = None
-    status["spec_paths"] = []
-    status["specs_produced"] = 0
-    status["new_families"] = []
-    status["iterated_families"] = []
-    status["abandoned_families"] = []
-    status["next_cycle_focus"] = "pending"
-    status["rationale"] = "pending"
+    orders = load_json_file(os.path.join(ROOT, "agents", "quandalf", "memory", "cycle_orders.json"))
+    manifest = load_json_file(CURRENT_CYCLE_SPECS_PATH)
+
+    same_cycle = int(status.get("cycle_id", 0) or 0) == cycle_id
+    if not same_cycle:
+        status["cycle_id"] = cycle_id
+        status["mode"] = "pending"
+        status["research_direction"] = "pending"
+        status["target_asset"] = None
+        status["target_timeframe"] = None
+        status["exploration_targets"] = {}
+        status["iterate_target"] = None
+        status["specific_family_to_iterate"] = None
+        status["spec_paths"] = []
+        status["specs_produced"] = 0
+        status["new_families"] = []
+        status["iterated_families"] = []
+        status["abandoned_families"] = []
+        status["next_cycle_focus"] = "pending"
+        status["rationale"] = "pending"
+
+    if int(orders.get("cycle_id", 0) or 0) == cycle_id:
+        status["mode"] = orders.get("mode") or status.get("mode") or "pending"
+        status["research_direction"] = orders.get("research_direction") or status.get("research_direction") or "pending"
+        status["target_asset"] = orders.get("target_asset")
+        status["target_timeframe"] = orders.get("target_timeframe")
+        status["exploration_targets"] = orders.get("exploration_targets") or {}
+        status["iterate_target"] = orders.get("iterate_target")
+        status["specific_family_to_iterate"] = orders.get("specific_family_to_iterate")
+
+    if int(manifest.get("cycle_id", 0) or 0) == cycle_id:
+        status["spec_paths"] = list(manifest.get("spec_paths") or [])
+        status["specs_produced"] = int(manifest.get("spec_count", len(status.get("spec_paths") or [])) or 0)
+        inferred_asset, inferred_timeframe = infer_cycle_lane_from_spec_paths(status.get("spec_paths") or [])
+        if inferred_asset:
+            status["target_asset"] = inferred_asset
+        if inferred_timeframe:
+            status["target_timeframe"] = inferred_timeframe
+
+    order_asset = str(status.get("target_asset") or "").strip().upper()
+    spec_paths = status.get("spec_paths") or []
+    if order_asset and spec_paths:
+        mismatched = [p for p in spec_paths if f"-{order_asset}-" not in os.path.basename(str(p)).upper()]
+        if mismatched:
+            status["next_cycle_focus"] = "pending"
+            status["rationale"] = "pending"
+            status["new_families"] = []
+            status["iterated_families"] = []
+            status["abandoned_families"] = []
+
     os.makedirs(os.path.dirname(CURRENT_CYCLE_STATUS_PATH), exist_ok=True)
     with open(CURRENT_CYCLE_STATUS_PATH, "w", encoding="utf-8") as f:
         json.dump(status, f, indent=2)
