@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260310-C267-ETH-EMA-PULLBACK-v1",
+  "ts_iso": "2026-03-10T02:02:38Z",
+  "thesis_id": "qd-20260310-c267-eth-ema-pullback-v1_thesis",
+  "name": "ETH EMA Pullback v1",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "family_name": "eth_ema_pullback",
+  "thesis": "trend pullback continuation after value reclaim",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "trend pullback continuation after value reclaim",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If eth_ema_pullback cannot clear the trade floor or PF > 1 after costs on ETH 4h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_55",
+      "EMA_20 > EMA_55",
+      "low >= EMA_20 - 0.6 * ATR_14",
+      "RSI_14 >= 50",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "Close < EMA_55",
+      "EMA_20 < EMA_55",
+      "high <= EMA_20 + 0.6 * ATR_14",
+      "RSI_14 <= 50",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 2.4 * ATR_14 above entry",
+      "Early exit if Close crosses_below EMA_20",
+      "Time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 2.4 * ATR_14 below entry",
+      "Early exit if Close crosses_above EMA_20",
+      "Time stop: 10 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple ETH 4h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "eth_ema_pullback_v1",
+      "template_name": "ema_pullback",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_anchor",
+          "value": 55
+        },
+        {
+          "name": "pullback_buffer_atr",
+          "value": 0.6
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "fallback_cooker"
+}
