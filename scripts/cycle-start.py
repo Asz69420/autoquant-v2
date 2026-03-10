@@ -70,11 +70,15 @@ def check_cycle_coherence(new_cycle_id):
         if old_cid is not None and int(old_cid) != target_cycle:
             data["cycle_id"] = target_cycle
             if label == "cycle_status":
-                data.setdefault("mode", "pending")
-                data.setdefault("research_direction", "pending")
-                data.setdefault("spec_paths", [])
-                data.setdefault("specs_produced", 0)
-                data.setdefault("next_cycle_focus", "pending")
+                data["mode"] = "pending"
+                data["research_direction"] = "pending"
+                data["spec_paths"] = []
+                data["specs_produced"] = 0
+                data["new_families"] = []
+                data["iterated_families"] = []
+                data["abandoned_families"] = []
+                data["next_cycle_focus"] = "pending"
+                data["rationale"] = "pending"
             try:
                 with open(path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2)

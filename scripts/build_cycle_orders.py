@@ -10,10 +10,30 @@ STATUS = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
 
 DEFAULT_ASSET_ORDER = ["ETH", "BTC", "SOL", "TAO", "AVAX", "LINK", "DOGE", "ARB", "OP", "INJ"]
 DEFAULT_TF_ORDER = ["4h", "1h", "1d", "15m"]
-DEFAULT_CONCEPTS = [
-    "trend pullback continuation after value reclaim",
-    "volatility compression release with directional filter",
-    "failed breakdown reacceptance with momentum confirmation",
+CONCEPT_PACKS = [
+    [
+        "trend pullback continuation after deeper value reclaim into structural support",
+        "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
+        "failed breakdown reclaim that must hold before continuation entry",
+    ],
+    [
+        "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+        "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+        "compression fakeout into re-expansion with directional confirmation",
+    ],
+    [
+        "state-change momentum after regime improvement and post-break hold",
+        "mean reversion from exhaustion only when structure reaccepts prior value",
+        "breakout continuation with delayed entry after retest rather than immediate trigger",
+    ],
+]
+
+MANAGEMENT_STYLES = [
+    "one-shot entry with one-shot exit",
+    "one-shot entry with partial take-profit and runner",
+    "one-shot entry with trailing-stop exit",
+    "time-based de-risking after entry",
+    "scaled-out exits after confirmation",
 ]
 
 
@@ -53,12 +73,23 @@ def pick_asset_timeframe(universe: dict, prior_status: dict) -> tuple[str, str]:
     return candidate_pairs[0] if candidate_pairs else ("ETH", "4h")
 
 
+def pick_concept_pack(cycle_id: int, prior_status: dict) -> list[str]:
+    prior_concepts = ((prior_status.get("exploration_targets") or {}).get("concepts") or []) if isinstance(prior_status, dict) else []
+    start_idx = int(cycle_id or 0) % len(CONCEPT_PACKS)
+    for offset in range(len(CONCEPT_PACKS)):
+        pack = CONCEPT_PACKS[(start_idx + offset) % len(CONCEPT_PACKS)]
+        if pack != prior_concepts:
+            return pack
+    return CONCEPT_PACKS[start_idx]
+
+
 def main():
     briefing = load_json(BRIEFING, {})
     prior_status = load_json(STATUS, {})
     cycle_id = int(briefing.get("cycle_id", 0) or 0)
     universe = briefing.get("supported_backtest_universe") or {}
     asset, timeframe = pick_asset_timeframe(universe, prior_status)
+    concept_pack = pick_concept_pack(cycle_id, prior_status)
 
     orders = {
         "cycle_id": cycle_id,
@@ -72,12 +103,13 @@ def main():
         "specific_family_to_iterate": None,
         "iterate_target": None,
         "exploration_targets": {
-            "concepts": DEFAULT_CONCEPTS,
+            "concepts": concept_pack,
+            "management_styles": MANAGEMENT_STYLES,
             "assets": [asset],
             "timeframes": [timeframe],
         },
-        "thesis_hint": f"Explore fresh {asset} {timeframe} structures with simple, testable rules and distinct concepts.",
-        "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only.",
+        "thesis_hint": f"Explore fresh {asset} {timeframe} structures across distinct mechanisms and trade-management styles. Prioritize dense concepts over ceremonial sparse logic.",
+        "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression.",
         "rotation_reason": f"Deterministic explore rotation away from prior lane ({prior_status.get('target_asset', 'none')} / {prior_status.get('target_timeframe', 'none')}).",
     }
     ORDERS.parent.mkdir(parents=True, exist_ok=True)

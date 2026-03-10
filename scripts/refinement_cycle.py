@@ -279,6 +279,22 @@ def complexity_score(spec):
     return indicators + rule_count
 
 
+def derive_family_name(spec):
+    explicit = str(spec.get("family_name") or "").strip()
+    if explicit:
+        return explicit
+    indicators = spec.get("indicators") or []
+    names = []
+    for item in indicators:
+        if isinstance(item, str):
+            names.append(item.lower())
+        elif isinstance(item, dict):
+            names.append(str(item.get("name") or "").lower())
+    if names:
+        return "-".join(sorted(n for n in names if n))[:120]
+    return str(spec.get("name") or spec.get("id") or "unknown-family").strip().lower().replace(" ", "-")
+
+
 def build_variant_spec(base_spec, base_variant, source_row, mutation_type, suffix, *, asset=None, timeframe=None, param_updates=None, regime_filter=None, complexity_reduce=False, stop_override=None, trailing=False):
     spec = copy.deepcopy(base_spec)
     variant = copy.deepcopy(base_variant)
@@ -299,6 +315,8 @@ def build_variant_spec(base_spec, base_variant, source_row, mutation_type, suffi
     spec["parent_id"] = source_row["id"]
     spec["mutation_type"] = mutation_type
     spec["family_generation"] = int(source_row["family_generation"] or 1) + 1
+    family_name = str(source_row.get("strategy_family") or spec.get("family_name") or derive_family_name(spec)).strip()
+    spec["family_name"] = family_name
     spec["source"] = "refinement_cycle"
     spec["ts_iso"] = now_iso()
     spec["id"] = f"{source_row['strategy_spec_id']}-{suffix}-{uuid.uuid4().hex[:6]}"
@@ -483,7 +501,7 @@ def build_jobs(conn, cycle_id, max_jobs):
                     "mutation_type": kind,
                     "family_generation": int(spec_obj.get("family_generation") or 1),
                     "parent_result_id": row["id"],
-                    "strategy_family": row["strategy_family"],
+                    "strategy_family": str(row["strategy_family"] or spec_obj.get("family_name") or derive_family_name(spec_obj)),
                     "validation_target": json.dumps({"asset": spec_obj["asset"], "timeframe": spec_obj["timeframe"], "kind": kind}),
                     "notes": json.dumps({"source": "refinement_cycle", "refinement_round": next_round, "weakness_profile": weaknesses}),
                     "refinement_round": next_round,

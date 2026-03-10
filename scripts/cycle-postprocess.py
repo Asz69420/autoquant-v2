@@ -454,8 +454,8 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     if queued_backtests < completed_backtests:
         queued_backtests = completed_backtests
 
-    pass_count = sum(1 for r in cycle_rows if (r.get("score_total") or 0) >= 1.0)
-    promote_count = sum(1 for r in cycle_rows if (r.get("score_total") or 0) >= 3.0)
+    pass_count = sum(1 for r in cycle_rows if str(r.get("score_decision") or "").lower() in {"pass", "promote"})
+    promote_count = sum(1 for r in cycle_rows if str(r.get("score_decision") or "").lower() == "promote")
     fail_count = max(0, completed_backtests - pass_count)
     best_result = summarize_best_result(cycle_rows)
     best_qs = best_result.get("qscore", 0) if best_result else 0
@@ -548,6 +548,8 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
         note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
     if backtests == 0 and generated > 0:
         note_candidates.append(f"This {mode} cycle generated fresh work but still has no completed backtests, so the batch is waiting for scored evidence before any family gets advanced or cut.")
+    if backtests > 0 and passed == 0 and generated > 0:
+        note_candidates.append(f"This {mode} cycle tested fresh ideas but none cleared the evidence gate, so the right move is to abandon these mechanisms and try a different concept or management style.")
     if aborted > 0 and best_qs > 0:
         note_candidates.append(f"This {mode} cycle cut {aborted} weak family{'ies' if aborted != 1 else ''} while preserving the better branch with best QS {best_qs:.2f} for the next decision pass.")
     if metrics.get("external_results_present"):
