@@ -21,8 +21,8 @@ CYCLE_ID_FILES = {
     "cycle_status": os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json"),
     "cycle_orders": os.path.join(ROOT, "agents", "quandalf", "memory", "cycle_orders.json"),
 }
-ACTIVE_CYCLE_FILES = {"run_state", "briefing", "cycle_status", "cycle_orders"}
-LAST_COMPLETED_FILES = {"manifest", "batch_summary", "metrics"}
+ACTIVE_CYCLE_FILES = {"run_state", "briefing", "cycle_status", "cycle_orders", "manifest", "metrics"}
+LAST_COMPLETED_FILES = {"batch_summary"}
 
 
 def load_json(path):
@@ -72,6 +72,11 @@ def check_cycle_coherence(new_cycle_id):
             if label == "cycle_status":
                 data["mode"] = "pending"
                 data["research_direction"] = "pending"
+                data["target_asset"] = None
+                data["target_timeframe"] = None
+                data["exploration_targets"] = {}
+                data["iterate_target"] = None
+                data["specific_family_to_iterate"] = None
                 data["spec_paths"] = []
                 data["specs_produced"] = 0
                 data["new_families"] = []
@@ -79,6 +84,47 @@ def check_cycle_coherence(new_cycle_id):
                 data["abandoned_families"] = []
                 data["next_cycle_focus"] = "pending"
                 data["rationale"] = "pending"
+            elif label == "manifest":
+                data["status"] = "pending"
+                data["spec_count"] = 0
+                data["latest_spec_path"] = None
+                data["spec_paths"] = []
+                data["spec_ids"] = []
+                data["specs"] = []
+                data["started_at_epoch"] = None
+                data["started_at_iso"] = None
+                data["captured_at_epoch"] = None
+                data["captured_at_iso"] = None
+            elif label == "metrics":
+                data = {
+                    "cycle_id": target_cycle,
+                    "status": "pending",
+                    "mode": "pending",
+                    "research_direction": "pending",
+                    "target_asset": None,
+                    "target_timeframe": None,
+                    "exploration_targets": {},
+                    "spec_paths": [],
+                    "spec_ids": [],
+                    "specs_produced": 0,
+                    "specs_written": 0,
+                    "cycle_rows": 0,
+                    "external_rows": 0,
+                    "cycle_results_present": False,
+                    "external_results_present": False,
+                    "backtests_queued": 0,
+                    "backtests_completed": 0,
+                    "pass_count": 0,
+                    "fail_count": 0,
+                    "promote_count": 0,
+                    "best_result": None,
+                    "best_qscore": 0,
+                    "next_cycle_focus": "pending",
+                    "rationale": "pending",
+                    "status_matches_cycle": True,
+                    "manifest_matches_cycle": False,
+                    "state_warning": None,
+                }
             try:
                 with open(path, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2)

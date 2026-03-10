@@ -113,6 +113,11 @@ def sync_current_cycle_status(cycle_id: int) -> None:
         status["cycle_id"] = int(cycle_id)
         status["mode"] = "pending"
         status["research_direction"] = "pending"
+        status["target_asset"] = None
+        status["target_timeframe"] = None
+        status["exploration_targets"] = {}
+        status["iterate_target"] = None
+        status["specific_family_to_iterate"] = None
         status["spec_paths"] = []
         status["specs_produced"] = 0
         status["new_families"] = []

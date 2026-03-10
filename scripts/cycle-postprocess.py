@@ -231,11 +231,20 @@ def sync_cycle_status_to_active(cycle_id):
     if int(status.get("cycle_id", 0) or 0) == cycle_id:
         return  # already in sync
     status["cycle_id"] = cycle_id
-    status.setdefault("mode", "pending")
-    status.setdefault("research_direction", "pending")
-    status.setdefault("spec_paths", [])
-    status.setdefault("specs_produced", 0)
-    status.setdefault("next_cycle_focus", "pending")
+    status["mode"] = "pending"
+    status["research_direction"] = "pending"
+    status["target_asset"] = None
+    status["target_timeframe"] = None
+    status["exploration_targets"] = {}
+    status["iterate_target"] = None
+    status["specific_family_to_iterate"] = None
+    status["spec_paths"] = []
+    status["specs_produced"] = 0
+    status["new_families"] = []
+    status["iterated_families"] = []
+    status["abandoned_families"] = []
+    status["next_cycle_focus"] = "pending"
+    status["rationale"] = "pending"
     os.makedirs(os.path.dirname(CURRENT_CYCLE_STATUS_PATH), exist_ok=True)
     with open(CURRENT_CYCLE_STATUS_PATH, "w", encoding="utf-8") as f:
         json.dump(status, f, indent=2)
