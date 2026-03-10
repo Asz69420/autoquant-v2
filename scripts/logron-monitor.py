@@ -517,7 +517,6 @@ def main():
 
     if _should_send_health_card(status, issues):
         banner = os.path.join(BANNERS, "logron.jpg")
-        send_hades(f"<pre>{card}</pre>", bot="logron")
         send_log(f"<pre>{card}</pre>", photo=banner if os.path.exists(banner) else None)
         prev_state = _load_health_send_state()
         prior_fail_streak = int(prev_state.get("consecutive_fail_count") or 0)
