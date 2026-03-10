@@ -674,6 +674,30 @@ def update_source_statuses(conn, touched_rows):
     return upgrades, rejected, promoted, per_round, note
 
 
+def refinement_activity_metrics(runner_payload, jobs):
+    payload = runner_payload if isinstance(runner_payload, dict) else {}
+    results = payload.get("results") or []
+    completed = len(results)
+    ok = int(payload.get("ok", completed) or 0)
+    fail = int(payload.get("fail", 0) or 0)
+    requested = len(jobs or [])
+    dry_run = bool(payload.get("dry_run"))
+    if completed <= 0:
+        completed = ok + fail
+    if dry_run:
+        completed = 0
+        ok = 0
+        fail = 0
+    elif completed <= 0 and (ok > 0 or fail > 0):
+        completed = ok + fail
+    return {
+        "requested": requested,
+        "completed": int(completed),
+        "ok": ok,
+        "fail": fail,
+    }
+
+
 def build_card(cycle_id, run_state, tests_this_cycle, upgrades, rejected, promoted, round_counts, note, had_error=False):
     if had_error:
         status_emoji = "❌"
@@ -747,25 +771,33 @@ def main():
         log_event(conn, "refinement_cycle_error", "frodex", str(exc), severity="error", step="run")
     finally:
         finalized_run_state = finalize_run_state(run_state)
+        activity = refinement_activity_metrics(payload, jobs)
         summary = {
             "cycle_id": cycle_id,
             "started_at": finalized_run_state.get("started_at_iso") or started_at,
             "finished_at": finalized_run_state.get("ended_at_iso") or now_iso(),
             "run_elapsed_seconds": finalized_run_state.get("run_elapsed_seconds"),
-            "jobs_requested": len(jobs),
+            "jobs_requested": activity["requested"],
+            "backtests_completed": activity["completed"],
+            "runner_ok": activity["ok"],
+            "runner_fail": activity["fail"],
             "runner": payload,
             "had_error": had_error,
         }
         append_status_summary(summary)
-        card = build_card(cycle_id, finalized_run_state, len(jobs), upgrades, rejected, promoted, round_counts, note, had_error=had_error)
+        card = build_card(cycle_id, finalized_run_state, activity["completed"], upgrades, rejected, promoted, round_counts, note, had_error=had_error)
         sent = False if args.dry_run else send_log_card(card)
         log_event(conn, "refinement_cycle_complete", "frodex", f"refinement cycle {cycle_id} complete", step="summary", metadata={"jobs": len(jobs), "upgrades": upgrades, "rejected": rejected, "promoted": promoted, "log_card_sent": sent, "dry_run": args.dry_run})
         conn.close()
 
+    activity = refinement_activity_metrics(payload, jobs)
     out = {
         "status": "error" if had_error else "ok",
         "cycle_id": cycle_id,
-        "jobs": len(jobs),
+        "jobs_requested": activity["requested"],
+        "backtests_completed": activity["completed"],
+        "runner_ok": activity["ok"],
+        "runner_fail": activity["fail"],
         "runner": payload,
         "card": card,
         "log_card_sent": sent,
