@@ -8,15 +8,36 @@ from datetime import datetime
 
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 OUT_PATH = ROOT / "docs" / "shared" / "council_debate.md"
+OPENCLAW_BIN = r"C:\Users\Clamps\AppData\Roaming\npm\openclaw.cmd"
+
+
+def _extract_json_blob(stdout: str) -> dict | None:
+    text = (stdout or "").strip()
+    if not text:
+        return None
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
+    start = text.find("{")
+    end = text.rfind("}")
+    if start >= 0 and end > start:
+        candidate = text[start:end + 1]
+        try:
+            return json.loads(candidate)
+        except Exception:
+            return None
+    return None
 
 
 def call_agent(agent: str, message: str, timeout_seconds: int = 120, session_id: str | None = None) -> str:
     cmd = [
-        "openclaw", "agent",
+        OPENCLAW_BIN, "agent",
         "--agent", agent,
         "--message", message,
         "--timeout", str(timeout_seconds),
         "--json",
+        "--thinking", "minimal",
     ]
     if session_id:
         cmd.extend(["--session-id", session_id])
@@ -26,17 +47,16 @@ def call_agent(agent: str, message: str, timeout_seconds: int = 120, session_id:
         return "NO RESPONSE"
     if proc.returncode != 0:
         return "NO RESPONSE"
-    try:
-        payload = json.loads(proc.stdout)
-        texts = []
-        for p in payload.get("result", {}).get("payloads", []):
-            t = (p or {}).get("text")
-            if t:
-                texts.append(t.strip())
-        text = "\n\n".join(t for t in texts if t).strip()
-        return text if text else "NO RESPONSE"
-    except Exception:
+    payload = _extract_json_blob(proc.stdout)
+    if not payload:
         return "NO RESPONSE"
+    texts = []
+    for p in payload.get("result", {}).get("payloads", []):
+        t = (p or {}).get("text")
+        if t:
+            texts.append(t.strip())
+    text = "\n\n".join(t for t in texts if t).strip()
+    return text if text else "NO RESPONSE"
 
 
 def clamp_words(text: str, max_words: int) -> str:
@@ -102,31 +122,31 @@ def main():
     topic = args.topic.strip()
     context = args.context.strip()
 
-    q1 = f"This is a 3-round council debate. Round 1 of 3. Word limit: 300. Lead with substance. COUNCIL ROUND 1. Topic: {topic}. Give your position in 300 words max. Focus on strategy, market, and research implications. You have not seen other agents' positions. Lead with your strongest argument. Do not hedge or caveat — commit to a position. Context: {context}" 
-    f1 = f"This is a 3-round council debate. Round 1 of 3. Word limit: 300. Lead with substance. COUNCIL ROUND 1. Topic: {topic}. Give your position in 300 words max. Focus on technical feasibility, implementation, infrastructure implications. You have not seen other agents' positions. Lead with your strongest argument. Do not hedge or caveat — commit to a position. Context: {context}" 
+    q1 = f"3-round council debate, round 1 of 3, 300 words max. Topic: {topic}. Focus on strategy, market, and research implications. No hedging. Strongest recommendation first. Context: {context}"
+    f1 = f"3-round council debate, round 1 of 3, 300 words max. Topic: {topic}. Focus on technical feasibility, implementation, and infrastructure implications. No hedging. Strongest recommendation first. Context: {context}"
 
     r1 = {
         "oragorn": commander_round(topic, context, 1),
-        "quandalf": call_agent("quandalf", q1, 120, "council-quandalf"),
-        "frodex": call_agent("frodex", f1, 120, "council-frodex"),
+        "quandalf": call_agent("quandalf", q1, 120),
+        "frodex": call_agent("frodex", f1, 120),
     }
 
     round1_blob = f"Oragorn:\n{r1['oragorn']}\n\nQuandalf:\n{r1['quandalf']}\n\nFrodex:\n{r1['frodex']}"
-    q2 = f"This is a 3-round council debate. Round 2 of 3. Word limit: 200. Lead with substance. COUNCIL ROUND 2. Read all Round 1 positions: {round1_blob}. In 200 words max: What do you agree with? What do you challenge? What did the others miss? Update or strengthen your position based on what you've read."
+    q2 = f"3-round council debate, round 2 of 3, 200 words max. Read these round 1 positions and respond with: what you agree with, what you challenge, and what the others missed. Keep it direct. Round 1 positions: {round1_blob}"
     f2 = q2
     r2 = {
         "oragorn": commander_round(topic, context, 2, round1_blob),
-        "quandalf": call_agent("quandalf", q2, 120, "council-quandalf"),
-        "frodex": call_agent("frodex", f2, 120, "council-frodex"),
+        "quandalf": call_agent("quandalf", q2, 120),
+        "frodex": call_agent("frodex", f2, 120),
     }
 
     round2_blob = f"Oragorn:\n{r2['oragorn']}\n\nQuandalf:\n{r2['quandalf']}\n\nFrodex:\n{r2['frodex']}"
-    q3 = f"This is a 3-round council debate. Round 3 of 3. Word limit: 150. Lead with substance. COUNCIL ROUND 3 — FINAL. This is your last input. In 150 words max: Give your final recommendation. State clearly: do it / don't do it / do it with these changes. No hedging. Topic: {topic}. Prior positions: {round1_blob}\n\nRound 2: {round2_blob}"
+    q3 = f"3-round council debate, round 3 of 3, 150 words max. Final recommendation only. State clearly: do it / don't do it / do it with these changes. No hedging. Topic: {topic}. Prior positions: {round1_blob}\n\nRound 2: {round2_blob}"
     f3 = q3
     r3 = {
         "oragorn": commander_round(topic, context, 3, round1_blob + "\n\n" + round2_blob),
-        "quandalf": call_agent("quandalf", q3, 120, "council-quandalf"),
-        "frodex": call_agent("frodex", f3, 120, "council-frodex"),
+        "quandalf": call_agent("quandalf", q3, 120),
+        "frodex": call_agent("frodex", f3, 120),
     }
 
     synthesis = (

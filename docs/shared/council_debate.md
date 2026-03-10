@@ -1,7 +1,7 @@
 # Fellowship Council Debate
 
 **Topic:** Should we prioritize fixing the YouTube digest split or building the strategic dashboard next?
-**Generated:** 2026-03-10T11:17:41
+**Generated:** 2026-03-10T11:44:28
 
 ## Context
 Current system is operational but still being stabilized. The YouTube digest split affects information routing quality. The strategic dashboard would improve visibility, but it is not required for core pipeline execution.
