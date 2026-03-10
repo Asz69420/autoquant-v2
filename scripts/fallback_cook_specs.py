@@ -54,6 +54,21 @@ def make_spec(spec_id, name, family, asset, timeframe, thesis, indicators, long_
         "entry_rules": {"long": long_rules, "short": short_rules},
         "exit_rules": {"long": long_exit, "short": short_exit},
         "position_sizing": {"risk_per_trade_pct": 0.004},
+        "trade_management": {
+            "entry_style": "one_shot",
+            "exit_style": "one_shot",
+            "position_stages": [
+                {"action": "entry", "trigger": "signal", "size_pct": 100},
+                {"action": "exit", "trigger": "exit_rules", "size_pct": 100}
+            ],
+            "risk_management": {
+                "initial_stop": "1.1 ATR",
+                "trailing_stop": None,
+                "time_stop_bars": 10,
+                "breakeven_trigger": None,
+                "partial_tp_levels": []
+            }
+        },
         "regime_filter": {
             "allowed_regimes": ["trending", "transitional"],
             "detection_method": f"Simple {asset} {timeframe} trend/transition filter.",

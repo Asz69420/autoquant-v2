@@ -28,8 +28,9 @@ CURRENT_CYCLE_METRICS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_
 CURRENT_CYCLE_BATCH_SUMMARY_PATH = os.path.join(ROOT, "data", "state", "current_cycle_batch_summary.json")
 RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
 FALLBACK_CONTROL_PATH = os.path.join(ROOT, "data", "state", "fallback_control.json")
-MIN_PASS_TRADES = 30
+MIN_PASS_TRADES = 50
 MIN_PROMOTE_TRADES = 50
+SCREEN_MIN_TRADES = 30
 MIN_IMPROVEMENT_DELTA = 0.05
 MIN_POSITIVE_REGIME_PF = 1.2
 
@@ -878,9 +879,10 @@ def analyze_result_row(row):
     except Exception:
         score_flags = []
     trades_blob = metrics.get("outofsample", {}).get("trades") or metrics.get("trades") or []
-    if row[6] < 5:
+    if row[6] < MIN_PASS_TRADES:
         auto_fail = True
         score_flags.append("auto_fail_low_trade_count")
+        score_flags.append("below_scoring_floor")
     if (row[4] or 0) > 10 and (row[6] or 0) < 20:
         suspicious = True
         score_flags.append("suspicious_overfit")
@@ -915,12 +917,25 @@ def apply_family_kill_rules(conn, family_name):
     best_trades = max(int(r[4] or 0) for r in rows)
     first_qs = float(rows[0][2] or 0.0)
     total_improvement = round(best_qs - first_qs, 4)
+    zero_trade_count = sum(1 for r in rows if int(r[4] or 0) == 0)
+    weak_pf_first = float(rows[0][2] or 0.0) < 0.5
+    structural_fail_count = sum(1 for r in rows if str(r[5] or "").lower() in {"param_tweak", "reclassified_refine", "initial"} and str(r[1] or "").lower() == "fail")
 
     reason = None
-    if max_generation >= 3 and total_improvement <= 0.1:
+    if zero_trade_count > 0:
+        reason = "0 trades observed in family run"
+    elif best_trades < SCREEN_MIN_TRADES and max_generation >= 1:
+        reason = f"screen-stage density below {SCREEN_MIN_TRADES} trades"
+    elif structural_fail_count >= 3:
+        reason = "3 structurally similar fails"
+    elif weak_pf_first:
+        reason = "PF/QScore too weak on first full backtest"
+    elif max_generation >= 3 and total_improvement <= 0.1:
         reason = f"3+ refinement rounds with total QScore improvement <= 0.1 ({total_improvement:.3f})"
     elif max_generation >= 5 and pass_count == 0:
         reason = f"5+ generations with no PASS result"
+    elif max_generation >= 5 and best_qs < 0.5:
+        reason = "best variant still below PASS threshold after 5 generations"
     elif max_generation >= 3 and best_trades < MIN_PASS_TRADES:
         reason = f"best variant trade_count still < {MIN_PASS_TRADES} after 3 generations"
 
@@ -1235,9 +1250,9 @@ def extract_lessons(rows):
         elif pf < 1.0:
             observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} is slightly losing (PF {pf:.3f}). Edge exists but costs eat it."
             implication = "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-        elif pf >= 1.0 and trades < 15:
-            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} shows edge (PF {pf:.3f}) but too few trades ({trades}). Signal is too rare."
-            implication = "Relax entry conditions slightly to increase trade frequency while monitoring if PF holds."
+        elif pf >= 1.0 and trades < MIN_PASS_TRADES:
+            observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} shows thin edge (PF {pf:.3f}) but too few trades ({trades}). Mechanism is too sparse."
+            implication = "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
         elif pf >= 1.5:
             observation = f"Strategy {spec_id} on {r['asset']}/{r['timeframe']} shows strong edge (PF {pf:.3f}, {trades} trades). Worth iterating."
             implication = "Test across multiple assets for robustness. If PF holds, candidate for promotion."
@@ -1295,10 +1310,10 @@ def validate_and_classify_specs(conn, cycle_id):
                 spec_paths.append(os.path.join(specs_dir, fname))
 
     recent_results = conn.execute(
-        "SELECT strategy_spec_id, research_mode FROM backtest_results WHERE research_mode='explore' ORDER BY ts_iso DESC LIMIT 10"
+        "SELECT strategy_spec_id FROM backtest_results ORDER BY ts_iso DESC LIMIT 10"
     ).fetchall()
     recent_specs = {}
-    for spec_id, _ in recent_results:
+    for (spec_id,) in recent_results:
         spec_path = os.path.join(specs_dir, f"{spec_id}.strategy_spec.json")
         if os.path.exists(spec_path):
             try:
@@ -1334,8 +1349,14 @@ def validate_and_classify_specs(conn, cycle_id):
                 if "trailing" in text:
                     spec_exit.add("trailing_stop")
 
+        tm = spec.get("trade_management") if isinstance(spec.get("trade_management"), dict) else {}
+        spec_tm = (str(tm.get("entry_style") or "one_shot").strip().lower(), str(tm.get("exit_style") or "one_shot").strip().lower())
         spec_regime = str(spec.get("expected_regime") or "").strip().lower()
         spec_asset = str(spec.get("primary_asset") or spec.get("asset") or "").strip().upper()
+        spec_holding = tuple(sorted(holding for holding in [
+            'time_stop' if ((tm.get('risk_management') or {}).get('time_stop_bars') is not None) else '',
+            'position_stages' if tm.get('position_stages') else ''
+        ] if holding))
 
         truly_new = True
         for recent_id, recent_spec in recent_specs.items():
@@ -1354,17 +1375,27 @@ def validate_and_classify_specs(conn, cycle_id):
                     if "trailing" in text:
                         recent_exit.add("trailing_stop")
 
+            recent_tm_obj = recent_spec.get("trade_management") if isinstance(recent_spec.get("trade_management"), dict) else {}
+            recent_tm = (str(recent_tm_obj.get("entry_style") or "one_shot").strip().lower(), str(recent_tm_obj.get("exit_style") or "one_shot").strip().lower())
             recent_regime = str(recent_spec.get("expected_regime") or "").strip().lower()
             recent_asset = str(recent_spec.get("primary_asset") or recent_spec.get("asset") or "").strip().upper()
+            recent_holding = tuple(sorted(holding for holding in [
+                'time_stop' if ((recent_tm_obj.get('risk_management') or {}).get('time_stop_bars') is not None) else '',
+                'position_stages' if recent_tm_obj.get('position_stages') else ''
+            ] if holding))
 
             differences = 0
             if spec_indicators != recent_indicators:
                 differences += 1
             if spec_exit != recent_exit:
                 differences += 1
+            if spec_tm != recent_tm:
+                differences += 1
             if spec_regime != recent_regime:
                 differences += 1
             if spec_asset != recent_asset:
+                differences += 1
+            if spec_holding != recent_holding:
                 differences += 1
 
             if differences < 2:
@@ -1377,7 +1408,7 @@ def validate_and_classify_specs(conn, cycle_id):
             spec["mutation_type"] = "reclassified_refine"
             with open(spec_path, 'w', encoding='utf-8') as f:
                 json.dump(spec, f, indent=2)
-            log_event("explore_reclassified", "logron", f"Reclassified {spec_id} from explore to refine — only parameter changes detected", severity="info", pipeline="research_cycle", step="validation")
+            log_event("explore_reclassified", "logron", f"Reclassified {spec_id} from explore to refine — parameter change only", severity="info", pipeline="research_cycle", step="validation")
             reclassified.append(spec_id)
 
     return reclassified

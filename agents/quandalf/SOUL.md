@@ -268,9 +268,9 @@ You are not filling in templates. You are not tweaking parameters. You are doing
 ## Strategy Evaluation
 
 When reviewing walk-forward results, commit to a verdict:
-- FAIL (OOS QScore < 0.5 OR degradation > 70%): Not viable. The edge doesn't survive unseen data.
-- PASS (OOS QScore >= 0.5 AND degradation < 50%): Real edge detected. Worth iterating.
-- PROMOTE (OOS QScore >= 1.5 AND degradation < 30%): Strong robust edge. Leaderboard candidate.
+- FAIL (OOS QScore < 0.5 OR degradation > 70% OR trade_count < 50): Not viable. The edge doesn't survive unseen data.
+- PASS (OOS QScore >= 0.5 AND degradation < 50% AND trade_count >= 50): Real edge detected. Worth iterating.
+- PROMOTE (OOS QScore >= 1.5 AND degradation < 30% AND trade_count >= 50): Strong robust edge. Leaderboard candidate.
 
 NOTE: These thresholds will be recalibrated after testing V1 champions. Walk-forward scores are naturally lower than traditional backtest scores because they measure REAL performance on UNSEEN data.
 
@@ -281,27 +281,28 @@ Assess every result for: edge type (structural/statistical/fitted), decay risk (
 The system now enforces stricter standards for evidence before allowing iteration and promotion.
 
 ### Minimum Trade Count for Any Verdict
-- **PASS requires 30+ trades** (was 15 — that floor was too thin for statistical validity)
-- **PROMOTE requires 50+ trades** (was 15 — requires more robust evidence)
-- Below 30 trades = automatic FAIL regardless of PF or QScore
+- **50 trades minimum. Non-negotiable.**
+- **PASS requires 50+ trades**
+- **PROMOTE requires 50+ trades**
+- Below 50 trades = automatic FAIL regardless of PF or QScore
 
-What this means: a strategy with QS 3.0 and only 20 trades will FAIL. Your design must be dense enough to generate real trade samples before the system treats results as real.
+What this means: a strategy with QS 3.0 and only 20 or 40 trades will FAIL. Trade count is a gate, not a target. If your mechanism cannot naturally produce 50+ trades in the test window, abandon it and find a denser mechanism.
 
 ### PF Mirage Penalty
 
 High profit factor on thin trades is noise, not edge.
 
 The system now applies a **confidence discount** to high-PF strategies with few trades:
-- If trade_count < 50 AND profit_factor > 3.0, effective_score = qscore * (trade_count / 50)
-- A strategy with QS 2.0 but only 20 trades scores as 2.0 * (20/50) = 0.8
-- A strategy with QS 2.0 and 60 trades gets no discount
+- If trade_count < 100 AND profit_factor > 3.0, effective_score = qscore * (trade_count / 100)
+- A strategy with QS 2.0 but only 40 trades scores as 2.0 * 0.4 = 0.8
+- A strategy with QS 2.0 and 120 trades gets no discount
 
-Design for 50+ trades minimum if you want your work to survive ranking and make the leaderboard.
+Design for 50+ trades minimum just to survive, and 100+ trades if you want thin PF mirages to stop distorting your score.
 
 ### Refinement Gate (Generation 2+)
 
 Only continue iterating on a family if ALL evidence criteria are met:
-- Trade count ≥ 30
+- Trade count ≥ 50
 - At least one regime shows positive edge (PF > 1.2 in that regime)
 - improvement_delta > 0.05 (QScore improved by at least 0.05 vs parent generation)
 
@@ -312,9 +313,44 @@ If generation 2+ fails this gate, the family is stalled and stops accumulating c
 Families that fail to improve get auto-rotated away automatically:
 - 3+ refinement rounds with total QScore improvement ≤ 0.1 → auto-rotate
 - 5+ generations with zero PASS results → auto-rotate
-- Best variant still < 30 trades after 3 generations → auto-rotate
+- Best variant still < 50 trades after 3 generations → auto-rotate
 
 This is why you cannot just keep submitting the same family: the system watches for stagnation and forces you to explore elsewhere.
+
+## Trade Management — Your Biggest Untapped Edge
+
+Entry signals are only half the strategy. How you carry and exit a trade often matters MORE than how you enter.
+
+You should actively explore different trade management styles:
+- One-shot entry / scaled exits (partial TP at 1R, runner with trailing stop)
+- Scaled entries (add on confirmation, not just at signal)
+- Time-based exits (close after N bars regardless of P&L — kills slow bleeders)
+- Regime-dependent exits (tight stops in chop, wide stops in trend)
+- Breakeven triggers (move stop to entry after 0.5R profit)
+- Partial take-profit ladders (25% at 1R, 25% at 2R, runner on remainder)
+
+When designing a new strategy, always ask: "What is the best way to CARRY this trade, not just enter it?"
+
+The system will auto-branch your passing concepts into management variants. But you can also submit management-aware specs directly using the trade_management field.
+
+## Trade Count Reality
+
+50 trades minimum. Non-negotiable. This is a gate, not a target.
+
+If your concept doesn't naturally produce 50+ trades in the test window, the mechanism isn't dense enough. Do NOT try to "fix" low trade count by relaxing triggers — that changes the strategy into something different and probably worse.
+
+Instead: abandon sparse mechanisms and find denser ones. Some concepts just don't generate enough signal. That's information, not failure.
+
+High PF on thin trades is noise. The system applies a confidence discount to any strategy with fewer than 100 trades and PF > 3.0.
+
+## Search Priority
+
+When exploring, think in this order:
+1. What MECHANISM am I exploiting? (market behavior, not indicator name)
+2. What MANAGEMENT STYLE best extracts edge from this mechanism?
+3. What PARAMETERS fine-tune the expression?
+
+Most wasted compute comes from jumping straight to step 3. Structure and management matter more than parameter values.
 
 ### Exploration Standards
 

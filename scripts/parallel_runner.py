@@ -29,8 +29,9 @@ FULL_CONCURRENCY_CAP = 2
 VALIDATION_CONCURRENCY_CAP = 2
 BUCKET_RATIOS = {"explore": 0.4, "refine": 0.4, "validate": 0.2}
 TIMEFRAME_ORDER = ["1m", "5m", "15m", "1h", "4h", "1d"]
-MIN_REFINE_TRADES = 30
+MIN_REFINE_TRADES = 50
 MIN_PROMOTE_TRADES = 50
+SCREEN_KILL_TRADES = 30
 MIN_IMPROVEMENT_DELTA = 0.05
 MIN_POSITIVE_REGIME_PF = 1.2
 
@@ -276,6 +277,14 @@ def exit_logic_signature(spec):
     return signatures
 
 
+def trade_management_signature(spec):
+    tm = spec.get("trade_management") if isinstance(spec.get("trade_management"), dict) else {}
+    return {
+        "entry_style": str(tm.get("entry_style") or "one_shot").strip().lower(),
+        "exit_style": str(tm.get("exit_style") or "one_shot").strip().lower(),
+    }
+
+
 def holding_logic_signature(spec):
     signatures = set()
     variant = (spec.get("variants") or [{}])[0]
@@ -286,6 +295,16 @@ def holding_logic_signature(spec):
         signatures.add("atr_stop")
     if risk_policy.get("tp_atr_mult") is not None:
         signatures.add("atr_take_profit")
+    tm = spec.get("trade_management") if isinstance(spec.get("trade_management"), dict) else {}
+    risk_management = tm.get("risk_management") if isinstance(tm.get("risk_management"), dict) else {}
+    if risk_management.get("time_stop_bars") is not None:
+        signatures.add("tm_time_stop")
+    if risk_management.get("trailing_stop"):
+        signatures.add("tm_trailing_stop")
+    if risk_management.get("partial_tp_levels"):
+        signatures.add("tm_partial_tp")
+    if tm.get("position_stages"):
+        signatures.add("tm_position_stages")
     for side, rules in (spec.get("exit_rules") or {}).items() if isinstance(spec.get("exit_rules"), dict) else []:
         for rule in rules or []:
             text = str(rule or "").lower()
@@ -297,9 +316,11 @@ def holding_logic_signature(spec):
 
 
 def spec_identity_dimensions(spec):
+    tm = trade_management_signature(spec)
     return {
         "entry_mechanism": tuple(sorted(indicator_family_set(spec))),
         "exit_mechanism": tuple(sorted(exit_logic_signature(spec))),
+        "trade_management_style": (tm.get("entry_style"), tm.get("exit_style")),
         "regime_target": str(spec.get("expected_regime") or "").strip().lower(),
         "holding_logic": tuple(sorted(holding_logic_signature(spec))),
         "asset_class": str(spec.get("primary_asset") or spec.get("asset") or "").strip().upper(),
@@ -332,7 +353,7 @@ def classify_seed_bucket(conn, spec):
     for recent in recent_specs:
         prior_dims = spec_identity_dimensions(recent)
         differences = 0
-        for key in ("entry_mechanism", "exit_mechanism", "regime_target", "holding_logic", "asset_class"):
+        for key in ("entry_mechanism", "exit_mechanism", "trade_management_style", "regime_target", "holding_logic", "asset_class"):
             if current_dims.get(key) != prior_dims.get(key):
                 differences += 1
         if differences < 2:
@@ -855,7 +876,7 @@ def queue_validation_items(conn, queue_item, spec, full_result, promote=False):
     return created
 
 
-def queue_branch_items(conn, queue_item, spec, full_result):
+def queue_parameter_neighbor_items(conn, queue_item, spec, full_result):
     created = []
     base_variant = None
     for variant in spec.get("variants") or []:
@@ -870,125 +891,104 @@ def queue_branch_items(conn, queue_item, spec, full_result):
     parent_result_id = full_result.get("result_id")
     family = queue_item.get("strategy_family") or derive_family_name(spec)
     params = variant_parameter_map(base_variant)
-    numeric_keys = [k for k, v in params.items() if isinstance(v, (int, float)) and not isinstance(v, bool)]
-    numeric_keys = numeric_keys[:3]
-    perturbations = [-0.1, -0.05, 0.05, 0.1, 0.15]
+    numeric_keys = [k for k, v in params.items() if isinstance(v, (int, float)) and not isinstance(v, bool)][:3]
+    perturbations = [-0.1, -0.05, 0.05, 0.1]
 
-    for idx, pct in enumerate(perturbations[: max(3, min(5, len(perturbations)))]):
+    for idx, pct in enumerate(perturbations):
         if not numeric_keys:
             break
-        updates = {}
         key = numeric_keys[idx % len(numeric_keys)]
-        updates[key] = perturb_value(params[key], pct)
+        updates = {key: perturb_value(params[key], pct)}
         new_variant = clone_variant_with_params(base_variant, updates, f"{queue_item['variant_id']}_param_{idx + 1}")
         branch_path, branch_spec = write_generated_spec(spec, queue_item["spec_path"], queue_item["asset"], queue_item["timeframe"], new_variant, "param_tweak", next_generation, parent_result_id)
         dedupe_key = branch_dedupe_key(branch_spec, new_variant, branch_spec["asset"], branch_spec["timeframe"])
         if dedupe_key in recent_queue_keys(conn, limit=50):
-            log_event(conn, "branch_duplicate_skipped", "frodex", f"Skipped duplicate auto-branch {branch_spec['id']}", step="dedupe", artifact_id=queue_item["id"], metadata={"dedupe_key": dedupe_key})
-        else:
-            novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
-            qid, was_created = enqueue_item(
-                conn,
-                {
-                "cycle_id": queue_item.get("cycle_id"),
-                "spec_path": branch_path,
-                "strategy_spec_id": branch_spec["id"],
-                "variant_id": new_variant["name"],
-                "asset": branch_spec["asset"],
-                "timeframe": branch_spec["timeframe"],
-                "stage": "screen",
-                "bucket": "refine",
-                "priority": 2,
-                "mutation_type": "param_tweak",
-                "family_generation": next_generation,
-                "parent_result_id": parent_result_id,
-                "strategy_family": family,
-                "source_queue_id": queue_item["id"],
-                "notes": json.dumps({"message": f"auto branch param tweak {updates}", "dedupe_key": dedupe_key}),
-                "novelty_score": novelty,
-            },
-            )
-            if was_created:
-                created.append(qid)
-
-    faster, slower = timeframe_neighbors(queue_item["timeframe"])
-    for tf in [faster, slower]:
-        if not tf:
             continue
-        branch_path, branch_spec = write_generated_spec(spec, queue_item["spec_path"], queue_item["asset"], tf, copy.deepcopy(base_variant), "tf_transfer", next_generation, parent_result_id)
-        dedupe_key = branch_dedupe_key(branch_spec, new_variant, branch_spec["asset"], branch_spec["timeframe"])
-        if dedupe_key in recent_queue_keys(conn, limit=50):
-            log_event(conn, "branch_duplicate_skipped", "frodex", f"Skipped duplicate auto-branch {branch_spec['id']}", step="dedupe", artifact_id=queue_item["id"], metadata={"dedupe_key": dedupe_key})
-        else:
-            novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
-            qid, was_created = enqueue_item(
-                conn,
-                {
-                "cycle_id": queue_item.get("cycle_id"),
-                "spec_path": branch_path,
-                "strategy_spec_id": branch_spec["id"],
-                "variant_id": str(branch_spec["variants"][0].get("name") or "default"),
-                "asset": branch_spec["asset"],
-                "timeframe": branch_spec["timeframe"],
-                "stage": "screen",
-                "bucket": "refine",
-                "priority": 2,
-                "mutation_type": "tf_transfer",
-                "family_generation": next_generation,
-                "parent_result_id": parent_result_id,
-                "strategy_family": family,
-                "source_queue_id": queue_item["id"],
-                "notes": json.dumps({"message": f"auto branch timeframe {tf}", "dedupe_key": dedupe_key}),
-                "novelty_score": novelty,
-            },
-            )
+        novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
+        qid, was_created = enqueue_item(conn, {
+            "cycle_id": queue_item.get("cycle_id"),
+            "spec_path": branch_path,
+            "strategy_spec_id": branch_spec["id"],
+            "variant_id": new_variant["name"],
+            "asset": branch_spec["asset"],
+            "timeframe": branch_spec["timeframe"],
+            "stage": "screen",
+            "bucket": "refine",
+            "priority": 2,
+            "mutation_type": "param_tweak",
+            "family_generation": next_generation,
+            "parent_result_id": parent_result_id,
+            "strategy_family": family,
+            "source_queue_id": queue_item["id"],
+            "notes": json.dumps({"message": f"parameter neighbor {updates}", "dedupe_key": dedupe_key}),
+            "novelty_score": novelty,
+        })
         if was_created:
             created.append(qid)
+    return created
 
-    targets = spec.get("validation_targets") or []
-    transfer_target = None
-    for raw_target in targets:
-        target = normalize_validation_target(raw_target, fallback_timeframe=queue_item["timeframe"])
-        if target and str(target.get("asset") or "").upper() != str(queue_item["asset"] or "").upper():
-            transfer_target = target
-            break
-    if transfer_target:
-        branch_path, branch_spec = write_generated_spec(
-            spec,
-            queue_item["spec_path"],
-            str(transfer_target["asset"]),
-            str(transfer_target.get("timeframe") or queue_item["timeframe"]),
-            copy.deepcopy(base_variant),
-            "asset_transfer",
-            next_generation,
-            parent_result_id,
-        )
-        dedupe_key = branch_dedupe_key(branch_spec, new_variant, branch_spec["asset"], branch_spec["timeframe"])
+
+def queue_management_variant_items(conn, queue_item, spec, screen_result):
+    created = []
+    base_variant = copy.deepcopy((spec.get("variants") or [{}])[0])
+    parent_result_id = screen_result.get("result_id")
+    family = queue_item.get("strategy_family") or derive_family_name(spec)
+    next_generation = int(queue_item.get("family_generation") or 1) + 1
+    base_tm = spec.get("trade_management") if isinstance(spec.get("trade_management"), dict) else {}
+    management_variants = [
+        {
+            "label": "trailing",
+            "trade_management": {"entry_style": "one_shot", "exit_style": "trailing", "position_stages": [{"action": "entry", "trigger": "signal", "size_pct": 100}, {"action": "exit", "trigger": "trailing_stop", "size_pct": 100}], "risk_management": {"initial_stop": "1.0 ATR", "trailing_stop": "1.5 ATR", "time_stop_bars": None, "breakeven_trigger": "0.5R", "partial_tp_levels": []}},
+            "risk_updates": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "open", "max_holding_bars": 20},
+        },
+        {
+            "label": "partial_tp_runner",
+            "trade_management": {"entry_style": "one_shot", "exit_style": "partial_tp_runner", "position_stages": [{"action": "entry", "trigger": "signal", "size_pct": 100}, {"action": "reduce", "trigger": "1R", "size_pct": 50}, {"action": "exit", "trigger": "runner_trailing_stop", "size_pct": 50}], "risk_management": {"initial_stop": "1.0 ATR", "trailing_stop": "1.5 ATR", "time_stop_bars": None, "breakeven_trigger": "0.5R", "partial_tp_levels": ["50% @ 1R"]}},
+            "risk_updates": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "atr", "tp_atr_mult": 1.0, "max_holding_bars": 24},
+        },
+        {
+            "label": "time_based",
+            "trade_management": {"entry_style": "one_shot", "exit_style": "time_based", "position_stages": [{"action": "entry", "trigger": "signal", "size_pct": 100}, {"action": "exit", "trigger": "time_stop", "size_pct": 100}], "risk_management": {"initial_stop": "1.0 ATR", "trailing_stop": None, "time_stop_bars": 8, "breakeven_trigger": None, "partial_tp_levels": []}},
+            "risk_updates": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "atr", "tp_atr_mult": 2.0, "max_holding_bars": 8},
+        },
+        {
+            "label": "scaled_out",
+            "trade_management": {"entry_style": "one_shot", "exit_style": "scaled_out", "position_stages": [{"action": "entry", "trigger": "signal", "size_pct": 100}, {"action": "reduce", "trigger": "1R", "size_pct": 25}, {"action": "reduce", "trigger": "2R", "size_pct": 25}, {"action": "exit", "trigger": "trend_failure", "size_pct": 50}], "risk_management": {"initial_stop": "1.0 ATR", "trailing_stop": "1.25 ATR", "time_stop_bars": 18, "breakeven_trigger": "0.5R", "partial_tp_levels": ["25% @ 1R", "25% @ 2R"]}},
+            "risk_updates": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "atr", "tp_atr_mult": 2.5, "max_holding_bars": 18},
+        },
+    ]
+    for mv in management_variants:
+        spec_copy = copy.deepcopy(spec)
+        merged_tm = copy.deepcopy(base_tm)
+        merged_tm.update(mv["trade_management"])
+        spec_copy["trade_management"] = merged_tm
+        variant_copy = copy.deepcopy(base_variant)
+        variant_copy["name"] = f"{queue_item['variant_id']}_{mv['label']}"
+        variant_copy.setdefault("risk_policy", {})
+        variant_copy["risk_policy"].update(mv["risk_updates"])
+        branch_path, branch_spec = write_generated_spec(spec_copy, queue_item["spec_path"], queue_item["asset"], queue_item["timeframe"], variant_copy, "management_variant", next_generation, parent_result_id)
+        dedupe_key = branch_dedupe_key(branch_spec, variant_copy, branch_spec["asset"], branch_spec["timeframe"])
         if dedupe_key in recent_queue_keys(conn, limit=50):
-            log_event(conn, "branch_duplicate_skipped", "frodex", f"Skipped duplicate auto-branch {branch_spec['id']}", step="dedupe", artifact_id=queue_item["id"], metadata={"dedupe_key": dedupe_key})
-        else:
-            novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
-            qid, was_created = enqueue_item(
-                conn,
-                {
-                "cycle_id": queue_item.get("cycle_id"),
-                "spec_path": branch_path,
-                "strategy_spec_id": branch_spec["id"],
-                "variant_id": str(branch_spec["variants"][0].get("name") or "default"),
-                "asset": branch_spec["asset"],
-                "timeframe": branch_spec["timeframe"],
-                "stage": "screen",
-                "bucket": "refine",
-                "priority": 4,
-                "mutation_type": "asset_transfer",
-                "family_generation": next_generation,
-                "parent_result_id": parent_result_id,
-                "strategy_family": family,
-                "source_queue_id": queue_item["id"],
-                "notes": json.dumps({"message": "auto branch validation asset transfer", "dedupe_key": dedupe_key}),
-                "novelty_score": novelty,
-            },
-            )
+            continue
+        novelty = novelty_score_for_spec(conn, branch_spec, branch_spec["asset"], branch_spec["timeframe"])
+        qid, was_created = enqueue_item(conn, {
+            "cycle_id": queue_item.get("cycle_id"),
+            "spec_path": branch_path,
+            "strategy_spec_id": branch_spec["id"],
+            "variant_id": variant_copy["name"],
+            "asset": branch_spec["asset"],
+            "timeframe": branch_spec["timeframe"],
+            "stage": "full",
+            "bucket": "refine",
+            "priority": 2,
+            "mutation_type": "management_variant",
+            "family_generation": next_generation,
+            "parent_result_id": parent_result_id,
+            "strategy_family": family,
+            "source_queue_id": queue_item["id"],
+            "notes": json.dumps({"message": f"management variant {mv['label']}", "dedupe_key": dedupe_key}),
+            "novelty_score": novelty,
+        })
         if was_created:
             created.append(qid)
     return created
@@ -1171,29 +1171,16 @@ def process_result_effects(conn, queue_item, result):
     payload = result.get("payload") or {}
     spec = load_spec(queue_item["spec_path"])
     if queue_item["stage"] == "screen":
+        out = payload.get("outofsample") or {}
+        trades = int(out.get("total_trades") or 0)
+        pf = float(out.get("profit_factor") or 0.0)
+        if trades == 0 or trades < SCREEN_KILL_TRADES or pf < 0.8:
+            log_event(conn, "screen_family_kill", "logron", f"Immediate kill for {queue_item['strategy_spec_id']}:{queue_item['variant_id']} trades={trades} pf={pf:.3f}", severity="warn", step="screen", artifact_id=payload.get("result_id"))
+            stall_family(conn, queue_item.get("strategy_family") or derive_family_name(spec), f"screen too sparse/weak (trades={trades}, pf={pf:.3f})", artifact_id=payload.get("result_id"))
+            return {"screen_to_full": False}
         if payload.get("screen_passed"):
-            priority = 2 if near_pass_priority(payload) else 3
-            enqueue_item(
-                conn,
-                {
-                    "cycle_id": queue_item.get("cycle_id"),
-                    "spec_path": queue_item["spec_path"],
-                    "strategy_spec_id": queue_item["strategy_spec_id"],
-                    "variant_id": queue_item["variant_id"],
-                    "asset": queue_item["asset"],
-                    "timeframe": queue_item["timeframe"],
-                    "stage": "full",
-                    "bucket": queue_item.get("bucket") or "explore",
-                    "priority": priority,
-                    "mutation_type": queue_item.get("mutation_type") or "screen_passed",
-                    "family_generation": int(queue_item.get("family_generation") or 1),
-                    "parent_result_id": queue_item.get("parent_result_id"),
-                    "strategy_family": queue_item.get("strategy_family") or derive_family_name(spec),
-                    "source_queue_id": queue_item["id"],
-                    "notes": "queued from screen pass",
-                },
-            )
-            return {"screen_to_full": True}
+            management_ids = queue_management_variant_items(conn, queue_item, spec, payload)
+            return {"screen_to_full": bool(management_ids), "management_variant_queue_ids": management_ids}
         log_event(conn, "screen_failed", "frodex", f"Screen failed for {queue_item['strategy_spec_id']}:{queue_item['variant_id']}", severity="warn", step="screen", artifact_id=queue_item["id"])
         return {"screen_to_full": False}
 
@@ -1226,7 +1213,7 @@ def process_result_effects(conn, queue_item, result):
         if family_refinement_owned(conn, family_name):
             log_event(conn, "funnel_branch_skip_refinement_owned", "frodex", f"Skipped auto-branch for refinement-owned family {family_name}", step="full", artifact_id=payload.get("result_id"))
         else:
-            effects["branch_queue_ids"] = queue_branch_items(conn, queue_item, spec, payload)
+            effects["branch_queue_ids"] = queue_parameter_neighbor_items(conn, queue_item, spec, payload)
         log_event(conn, "funnel_full_pass", "frodex", f"Full PASS {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}% trades={trades} improvement_delta={gate['improvement_delta']}", step="full", artifact_id=payload.get("result_id"))
         if promoted:
             effects["reduced_queue_ids"] = queue_reduced_complexity_variant(conn, queue_item, spec, payload)

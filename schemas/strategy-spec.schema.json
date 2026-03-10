@@ -19,7 +19,7 @@
     "primary_asset": { "type": "string" },
     "primary_timeframe": { "type": "string" },
     "parent_id": { "type": "string" },
-    "mutation_type": { "type": "string", "enum": ["initial", "screen_passed", "param_tweak", "tf_transfer", "asset_transfer", "validation_seed"] },
+    "mutation_type": { "type": "string", "enum": ["initial", "screen_passed", "param_tweak", "tf_transfer", "asset_transfer", "validation_seed", "management_variant", "reclassified_refine"] },
     "family_generation": { "type": "integer", "minimum": 1 },
     "validation_targets": {
       "type": "array",
@@ -134,6 +134,41 @@
       ]
     },
     "position_sizing": { "type": "object", "additionalProperties": true },
+    "trade_management": {
+      "type": ["object", "null"],
+      "properties": {
+        "entry_style": { "type": "string", "enum": ["one_shot", "scaled_in", "conditional_add"] },
+        "exit_style": { "type": "string", "enum": ["one_shot", "scaled_out", "partial_tp_runner", "time_based", "trailing"] },
+        "position_stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "action": { "type": "string", "enum": ["entry", "add", "reduce", "exit"] },
+              "trigger": { "type": "string" },
+              "size_pct": { "type": "number" }
+            },
+            "required": ["action", "trigger", "size_pct"],
+            "additionalProperties": true
+          }
+        },
+        "risk_management": {
+          "type": "object",
+          "properties": {
+            "initial_stop": { "type": ["string", "null"] },
+            "trailing_stop": { "type": ["string", "null"] },
+            "time_stop_bars": { "type": ["integer", "null"] },
+            "breakeven_trigger": { "type": ["string", "null"] },
+            "partial_tp_levels": {
+              "type": "array",
+              "items": { "oneOf": [{ "type": "string" }, { "type": "object", "additionalProperties": true }] }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
     "regime_filter": { "type": ["object", "null"], "additionalProperties": true },
     "variants": {
       "type": "array",

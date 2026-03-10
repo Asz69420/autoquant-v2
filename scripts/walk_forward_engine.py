@@ -56,11 +56,12 @@ WINDOW_CONFIG = {
     "1m": (7, 2),
 }
 
-MIN_BLIND_TRADES = 30
-MIN_PASS_TRADES = 30
+MIN_BLIND_TRADES = 50
+MIN_PASS_TRADES = 50
 MIN_PROMOTE_TRADES = 50
 PF_MIRAGE_THRESHOLD = 3.0
-PF_MIRAGE_TRADE_FLOOR = 50
+PF_MIRAGE_TRADE_FLOOR = 100
+SCREEN_MIN_TRADES = 30
 
 
 def load_candles(asset: str, timeframe: str) -> list[dict]:
@@ -352,6 +353,18 @@ def parse_strategy_spec(spec_path: str, variant_name: str = "default") -> dict:
     if variant is None:
         variant = {}
 
+    trade_management = spec.get("trade_management") if isinstance(spec.get("trade_management"), dict) else {}
+    entry_style = str(trade_management.get("entry_style") or "one_shot").strip().lower()
+    exit_style = str(trade_management.get("exit_style") or "one_shot").strip().lower()
+    supported_entry_styles = {"one_shot"}
+    supported_exit_styles = {"one_shot"}
+    management_supported = entry_style in supported_entry_styles and exit_style in supported_exit_styles
+    unsupported = []
+    if entry_style not in supported_entry_styles:
+        unsupported.append(f"entry_style:{entry_style}")
+    if exit_style not in supported_exit_styles:
+        unsupported.append(f"exit_style:{exit_style}")
+
     return {
         "spec": spec,
         "variant": variant,
@@ -361,6 +374,9 @@ def parse_strategy_spec(spec_path: str, variant_name: str = "default") -> dict:
         "parameters": normalize_parameter_map(variant.get("parameters", spec.get("parameters", {}))),
         "risk": normalize_risk(spec, variant),
         "declared_indicators": list(spec.get("indicators") or []),
+        "trade_management": trade_management,
+        "management_supported": management_supported,
+        "unsupported_management_styles": unsupported,
     }
 
 
@@ -536,6 +552,7 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
 
 def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override: dict | None = None) -> dict:
     params = dict(strategy.get("parameters", {}))
+    unsupported_management_styles = list(strategy.get("unsupported_management_styles") or [])
     if params_override:
         params.update(params_override)
 
@@ -670,7 +687,10 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
         )
         equity_curve.append(equity_curve[-1] * (1 + net_pnl_pct / 100.0))
 
-    return compute_metrics(trades, equity_curve)
+    metrics = compute_metrics(trades, equity_curve)
+    if unsupported_management_styles:
+        metrics["unsupported_management_style"] = unsupported_management_styles
+    return metrics
 
 
 def compute_metrics(trades: list[dict], equity_curve: list[float]) -> dict:
@@ -740,13 +760,14 @@ def calculate_qscore(metrics: dict) -> dict:
         flags.append("suspect_overfit")
     if trades < MIN_PASS_TRADES:
         flags.append("low_trade_count")
+        flags.append("below_scoring_floor")
 
     if trades >= MIN_PROMOTE_TRADES and score_total >= 1.5:
         decision, grade = "promote", "A"
     elif trades >= MIN_PASS_TRADES and score_total >= 0.5:
         decision, grade = "pass", "B"
     else:
-        decision, grade = ("fail", "C") if score_total >= 0.5 else ("fail", "D")
+        decision, grade = "fail", ("C" if score_total >= 0.5 else "D")
 
     return {
         "score_total": round(score_total, 3),
@@ -840,7 +861,7 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
         regime_payload = get_regime_tags("screen", timeframe, candles=screen_candles, force=True)
         regime_scores, regime_concentration, primary_regime, regime_flags = compute_regime_scores(screen_metrics["trades"], regime_payload)
         passed = (
-            screen_metrics["total_trades"] >= 10
+            screen_metrics["total_trades"] >= SCREEN_MIN_TRADES
             and screen_metrics["profit_factor"] >= 1.0
             and screen_metrics["max_drawdown_pct"] <= 15.0
         )
@@ -883,7 +904,7 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
                 "qscore": screen_qscore["score_total"],
                 "decision": "pass" if passed else "fail",
                 "grade": "S" if passed else "F",
-                "flags": json.dumps((["screen_pass" if passed else "screen_fail"] + regime_flags)),
+                "flags": json.dumps((["screen_pass" if passed else "screen_fail"] + regime_flags + (screen_metrics.get("unsupported_management_style") or []))),
                 "regime_scores": regime_scores,
                 "regime_concentration": regime_concentration,
                 "primary_regime": primary_regime,
@@ -1009,6 +1030,12 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
     elif oos_qs_val >= 0.5:
         final_grade = "C"
 
+    final_flags = sorted(set(json.loads(oos_qscore["score_flags"]) + regime_flags))
+    if agg_oos["total_trades"] < MIN_PASS_TRADES:
+        final_flags.append("below_scoring_floor")
+    if agg_oos["total_trades"] < MIN_PASS_TRADES or degradation_pct > 70.0:
+        final_decision = "fail"
+
     return {
         "status": "ok",
         "folds": len(fold_results),
@@ -1035,7 +1062,7 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
             "confidence_discount": oos_qscore.get("confidence_discount", 1.0),
             "decision": final_decision,
             "grade": final_grade,
-            "flags": json.dumps(sorted(set(json.loads(oos_qscore["score_flags"]) + regime_flags))),
+            "flags": json.dumps(sorted(set(final_flags))),
             "regime_scores": regime_scores,
             "regime_concentration": regime_concentration,
             "primary_regime": primary_regime,
@@ -1044,6 +1071,7 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
         "regime_scores": regime_scores,
         "regime_concentration": regime_concentration,
         "primary_regime": primary_regime,
+        "unsupported_management_style": agg_oos.get("unsupported_management_style") or [],
         "walk_forward_config": {
             "train_days": train_days,
             "blind_days": blind_days,
