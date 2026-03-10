@@ -27,6 +27,11 @@ CURRENT_CYCLE_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "
 CURRENT_CYCLE_METRICS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_metrics.json")
 CURRENT_CYCLE_BATCH_SUMMARY_PATH = os.path.join(ROOT, "data", "state", "current_cycle_batch_summary.json")
 RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
+FALLBACK_CONTROL_PATH = os.path.join(ROOT, "data", "state", "fallback_control.json")
+MIN_PASS_TRADES = 30
+MIN_PROMOTE_TRADES = 50
+MIN_IMPROVEMENT_DELTA = 0.05
+MIN_POSITIVE_REGIME_PF = 1.2
 
 PHASE_EMOJIS = {
     "briefing": "📋",
@@ -839,6 +844,25 @@ def get_family_context(conn, family_name):
     return rows, parent_id, next_generation
 
 
+def regime_has_positive_edge(regime_scores):
+    if isinstance(regime_scores, str):
+        try:
+            regime_scores = json.loads(regime_scores)
+        except Exception:
+            regime_scores = {}
+    for data in (regime_scores or {}).values():
+        try:
+            if float((data or {}).get("profit_factor") or 0.0) > MIN_POSITIVE_REGIME_PF:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def load_fallback_control():
+    return load_json_file(FALLBACK_CONTROL_PATH)
+
+
 def analyze_result_row(row):
     metrics = {}
     score_flags = []
@@ -875,7 +899,7 @@ def analyze_result_row(row):
 def apply_family_kill_rules(conn, family_name):
     rows = conn.execute(
         """
-        SELECT id, score_decision, score_total, family_generation
+        SELECT id, score_decision, score_total, family_generation, total_trades, mutation_type
         FROM backtest_results
         WHERE lower(COALESCE(strategy_family, '')) = lower(?)
         ORDER BY ts_iso ASC
@@ -884,29 +908,55 @@ def apply_family_kill_rules(conn, family_name):
     ).fetchall()
     if not rows:
         return None
-    consecutive_failures = 0
+
     best_qs = max(float(r[2] or 0) for r in rows)
     max_generation = max(int(r[3] or 1) for r in rows)
-    for row in reversed(rows):
-        if str(row[1] or "").lower() == "fail":
-            consecutive_failures += 1
-        else:
-            break
+    pass_count = sum(1 for r in rows if str(r[1] or "").lower() in {"pass", "promote"})
+    best_trades = max(int(r[4] or 0) for r in rows)
+    first_qs = float(rows[0][2] or 0.0)
+    total_improvement = round(best_qs - first_qs, 4)
+
     reason = None
-    if consecutive_failures >= 3:
-        reason = f"3 consecutive FAILs in family {family_name}"
-    elif max_generation >= 3 and best_qs < 0.8:
-        reason = f"best QS {best_qs:.2f} below 0.8 after {max_generation} generations for {family_name}"
+    if max_generation >= 3 and total_improvement <= 0.1:
+        reason = f"3+ refinement rounds with total QScore improvement <= 0.1 ({total_improvement:.3f})"
+    elif max_generation >= 5 and pass_count == 0:
+        reason = f"5+ generations with no PASS result"
+    elif max_generation >= 3 and best_trades < MIN_PASS_TRADES:
+        reason = f"best variant trade_count still < {MIN_PASS_TRADES} after 3 generations"
+
     if not reason:
         return None
+
     conn.execute(
         "UPDATE backtest_results SET killed = 1 WHERE lower(COALESCE(strategy_family, '')) = lower(?)",
         (family_name,),
     )
-    event_message = f"Family killed: {reason}"
-    log_event("family_killed", "logron", event_message, severity="warn", pipeline="research_cycle", step="postprocess")
+    try:
+        existing = {row[1] for row in conn.execute("PRAGMA table_info(mechanism_priors)")}
+        if "last_rotation_reason" not in existing:
+            conn.execute("ALTER TABLE mechanism_priors ADD COLUMN last_rotation_reason TEXT")
+        if "last_rotation_family" not in existing:
+            conn.execute("ALTER TABLE mechanism_priors ADD COLUMN last_rotation_family TEXT")
+        mechanism = "unknown"
+        latest_spec_id_row = conn.execute("SELECT strategy_spec_id FROM backtest_results WHERE lower(COALESCE(strategy_family,''))=lower(?) ORDER BY ts_iso DESC LIMIT 1", (family_name,)).fetchone()
+        if latest_spec_id_row and latest_spec_id_row[0]:
+            spec_path = os.path.join(SPECS_DIR, str(latest_spec_id_row[0]) + '.strategy_spec.json')
+            if os.path.exists(spec_path):
+                with open(spec_path, 'r', encoding='utf-8') as handle:
+                    spec = json.load(handle)
+                mechanism = str(spec.get('edge_mechanism') or 'unknown').strip()
+        conn.execute(
+            "INSERT INTO mechanism_priors(mechanism, success_rate, total_tested, avg_best_qs, priority_modifier, updated_at, last_rotation_reason, last_rotation_family) VALUES (?, 0, 0, 0, 0.5, ?, ?, ?) ON CONFLICT(mechanism) DO UPDATE SET priority_modifier=MIN(priority_modifier, 0.5), updated_at=excluded.updated_at, last_rotation_reason=excluded.last_rotation_reason, last_rotation_family=excluded.last_rotation_family",
+            (mechanism, datetime.now(timezone.utc).isoformat(), reason, family_name),
+        )
+    except Exception:
+        pass
+
+    event_message = f"Family {family_name} auto-rotated: {reason}"
+    log_event("family_auto_rotated", "logron", event_message, severity="warn", pipeline="research_cycle", step="postprocess")
     status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
     status.setdefault("family_kill_events", []).append({"ts_iso": datetime.now(timezone.utc).isoformat(), "family": family_name, "reason": reason})
+    status.setdefault("abandoned_families", []).append(family_name)
     with open(CURRENT_CYCLE_STATUS_PATH, "w", encoding="utf-8") as f:
         json.dump(status, f, indent=2)
     return reason
@@ -1224,7 +1274,117 @@ def extract_lessons(rows):
     return lessons_added
 
 
+def check_fallback_dominance(conn):
+    try:
+        control = load_fallback_control()
+        fallback_share = float(control.get("fallback_share_10_cycle") or 0.0)
+        if fallback_share > 0.2:
+            log_event("fallback_dominance_warning", "logron", f"Fallback dominance detected: {fallback_share*100:.1f}% of last 10 cycles used fallback — Quandalf may be stuck", severity="warn", pipeline="research_cycle", step="postprocess")
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def validate_and_classify_specs(conn, cycle_id):
+    spec_paths = []
+    specs_dir = SPECS_DIR
+    if os.path.exists(specs_dir):
+        for fname in os.listdir(specs_dir):
+            if fname.endswith(".strategy_spec.json"):
+                spec_paths.append(os.path.join(specs_dir, fname))
+
+    recent_results = conn.execute(
+        "SELECT strategy_spec_id, research_mode FROM backtest_results WHERE research_mode='explore' ORDER BY ts_iso DESC LIMIT 10"
+    ).fetchall()
+    recent_specs = {}
+    for spec_id, _ in recent_results:
+        spec_path = os.path.join(specs_dir, f"{spec_id}.strategy_spec.json")
+        if os.path.exists(spec_path):
+            try:
+                with open(spec_path, 'r', encoding='utf-8') as f:
+                    recent_specs[spec_id] = json.load(f)
+            except Exception:
+                pass
+
+    reclassified = []
+    for spec_path in spec_paths:
+        try:
+            with open(spec_path, 'r', encoding='utf-8') as f:
+                spec = json.load(f)
+        except Exception:
+            continue
+
+        declared_mode = str(spec.get("research_mode") or spec.get("mode") or "explore").lower()
+        if declared_mode != "explore":
+            continue
+
+        spec_indicators = set()
+        for item in spec.get("indicators") or []:
+            token = str(item if isinstance(item, str) else item.get("name") if isinstance(item, dict) else "").strip().upper()
+            if token:
+                spec_indicators.add(token.split("_")[0])
+
+        spec_exit = set()
+        for side, rules in (spec.get("exit_rules") or {}).items() if isinstance(spec.get("exit_rules"), dict) else []:
+            for rule in rules or []:
+                text = str(rule or "").lower()
+                if "time stop" in text:
+                    spec_exit.add("time_stop")
+                if "trailing" in text:
+                    spec_exit.add("trailing_stop")
+
+        spec_regime = str(spec.get("expected_regime") or "").strip().lower()
+        spec_asset = str(spec.get("primary_asset") or spec.get("asset") or "").strip().upper()
+
+        truly_new = True
+        for recent_id, recent_spec in recent_specs.items():
+            recent_indicators = set()
+            for item in recent_spec.get("indicators") or []:
+                token = str(item if isinstance(item, str) else item.get("name") if isinstance(item, dict) else "").strip().upper()
+                if token:
+                    recent_indicators.add(token.split("_")[0])
+
+            recent_exit = set()
+            for side, rules in (recent_spec.get("exit_rules") or {}).items() if isinstance(recent_spec.get("exit_rules"), dict) else []:
+                for rule in rules or []:
+                    text = str(rule or "").lower()
+                    if "time stop" in text:
+                        recent_exit.add("time_stop")
+                    if "trailing" in text:
+                        recent_exit.add("trailing_stop")
+
+            recent_regime = str(recent_spec.get("expected_regime") or "").strip().lower()
+            recent_asset = str(recent_spec.get("primary_asset") or recent_spec.get("asset") or "").strip().upper()
+
+            differences = 0
+            if spec_indicators != recent_indicators:
+                differences += 1
+            if spec_exit != recent_exit:
+                differences += 1
+            if spec_regime != recent_regime:
+                differences += 1
+            if spec_asset != recent_asset:
+                differences += 1
+
+            if differences < 2:
+                truly_new = False
+                break
+
+        if not truly_new:
+            spec_id = spec.get("id") or os.path.basename(spec_path).replace(".strategy_spec.json", "")
+            spec["research_mode"] = "refine"
+            spec["mutation_type"] = "reclassified_refine"
+            with open(spec_path, 'w', encoding='utf-8') as f:
+                json.dump(spec, f, indent=2)
+            log_event("explore_reclassified", "logron", f"Reclassified {spec_id} from explore to refine — only parameter changes detected", severity="info", pipeline="research_cycle", step="validation")
+            reclassified.append(spec_id)
+
+    return reclassified
+
+
 def main():
+
     p = argparse.ArgumentParser()
     p.add_argument("--since-minutes", type=int, default=30)
     p.add_argument("--send-card-only", action="store_true")
@@ -1277,7 +1437,7 @@ def main():
         """
         SELECT id, strategy_spec_id, variant_id, asset, timeframe,
                profit_factor, max_drawdown_pct, total_trades, win_rate_pct,
-               score_total, score_decision, ts_iso
+               score_total, score_decision, ts_iso, strategy_family
         FROM backtest_results
         WHERE ts_iso >= ?
         GROUP BY id
@@ -1287,6 +1447,20 @@ def main():
     ).fetchall()
 
     total_rows = conn.execute("SELECT COUNT(*) FROM backtest_results").fetchone()[0]
+    
+    check_fallback_dominance(conn)
+    cycle_id_preview = resolve_cycle_id(load_run_state())
+    validate_and_classify_specs(conn, cycle_id_preview)
+    
+    families_to_check = set()
+    for row in rows:
+        family = str(row.get("strategy_family") or "").strip()
+        if family:
+            families_to_check.add(family)
+    
+    for family in families_to_check:
+        apply_family_kill_rules(conn, family)
+    
     conn.close()
 
     if not rows:
@@ -1294,7 +1468,6 @@ def main():
         print(json.dumps({"status": "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": resolve_cycle_id(run_state), "run_state": run_state}))
         return
 
-    cycle_id_preview = resolve_cycle_id(load_run_state())
     sync_cycle_status_to_active(cycle_id_preview)
     cycle_rows, preview_metrics = filter_rows_to_current_cycle(rows, cycle_id_preview)
     rows_for_dm = cycle_rows if cycle_rows else []

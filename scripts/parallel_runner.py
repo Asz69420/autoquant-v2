@@ -29,6 +29,10 @@ FULL_CONCURRENCY_CAP = 2
 VALIDATION_CONCURRENCY_CAP = 2
 BUCKET_RATIOS = {"explore": 0.4, "refine": 0.4, "validate": 0.2}
 TIMEFRAME_ORDER = ["1m", "5m", "15m", "1h", "4h", "1d"]
+MIN_REFINE_TRADES = 30
+MIN_PROMOTE_TRADES = 50
+MIN_IMPROVEMENT_DELTA = 0.05
+MIN_POSITIVE_REGIME_PF = 1.2
 
 
 def now_iso():
@@ -238,6 +242,143 @@ def safe_spec_id_from_path(spec_path):
     return os.path.basename(spec_path).replace(".strategy_spec.json", "").replace(".json", "")
 
 
+def indicator_family_set(spec):
+    names = set()
+    for item in spec.get("indicators") or []:
+        raw = item if isinstance(item, str) else item.get("name") if isinstance(item, dict) else ""
+        token = str(raw or "").strip().upper()
+        if not token:
+            continue
+        names.add(token.split("_")[0])
+    return names
+
+
+def exit_logic_signature(spec):
+    signatures = set()
+    for side, rules in (spec.get("exit_rules") or {}).items() if isinstance(spec.get("exit_rules"), dict) else []:
+        for rule in rules or []:
+            text = str(rule or "").lower()
+            if "time stop" in text:
+                signatures.add("time_stop")
+            if "trailing" in text:
+                signatures.add("trailing_stop")
+            if "take profit" in text:
+                signatures.add("take_profit")
+            if "stop loss" in text:
+                signatures.add("stop_loss")
+            if "cross" in text:
+                signatures.add("cross_exit")
+    variant = (spec.get("variants") or [{}])[0]
+    risk_policy = variant.get("risk_policy") if isinstance(variant, dict) else {}
+    for key in ("stop_type", "tp_type"):
+        if risk_policy.get(key):
+            signatures.add(f"{key}:{risk_policy.get(key)}")
+    return signatures
+
+
+def holding_logic_signature(spec):
+    signatures = set()
+    variant = (spec.get("variants") or [{}])[0]
+    risk_policy = variant.get("risk_policy") if isinstance(variant, dict) else {}
+    if risk_policy.get("max_holding_bars") is not None:
+        signatures.add("max_holding_bars")
+    if risk_policy.get("stop_atr_mult") is not None:
+        signatures.add("atr_stop")
+    if risk_policy.get("tp_atr_mult") is not None:
+        signatures.add("atr_take_profit")
+    for side, rules in (spec.get("exit_rules") or {}).items() if isinstance(spec.get("exit_rules"), dict) else []:
+        for rule in rules or []:
+            text = str(rule or "").lower()
+            if "time stop" in text:
+                signatures.add("time_stop")
+            if "trailing" in text:
+                signatures.add("trailing_stop")
+    return signatures
+
+
+def spec_identity_dimensions(spec):
+    return {
+        "entry_mechanism": tuple(sorted(indicator_family_set(spec))),
+        "exit_mechanism": tuple(sorted(exit_logic_signature(spec))),
+        "regime_target": str(spec.get("expected_regime") or "").strip().lower(),
+        "holding_logic": tuple(sorted(holding_logic_signature(spec))),
+        "asset_class": str(spec.get("primary_asset") or spec.get("asset") or "").strip().upper(),
+    }
+
+
+def load_recent_spec_payloads(conn, limit=10):
+    rows = conn.execute(
+        "SELECT strategy_spec_id FROM backtest_results ORDER BY ts_iso DESC LIMIT ?",
+        (int(limit),),
+    ).fetchall()
+    specs = []
+    for (spec_id,) in rows:
+        path = os.path.join(SPECS_DIR, str(spec_id) + ".strategy_spec.json")
+        if not os.path.exists(path):
+            continue
+        try:
+            specs.append(load_spec(path))
+        except Exception:
+            continue
+    return specs
+
+
+def classify_seed_bucket(conn, spec):
+    declared_mode = str(spec.get("research_mode") or spec.get("mode") or "explore").strip().lower()
+    if declared_mode != "explore":
+        return "refine", None
+    current_dims = spec_identity_dimensions(spec)
+    recent_specs = load_recent_spec_payloads(conn, limit=10)
+    for recent in recent_specs:
+        prior_dims = spec_identity_dimensions(recent)
+        differences = 0
+        for key in ("entry_mechanism", "exit_mechanism", "regime_target", "holding_logic", "asset_class"):
+            if current_dims.get(key) != prior_dims.get(key):
+                differences += 1
+        if differences < 2:
+            return "refine", f"only parameter changes detected versus recent explore lineage ({differences} substantive differences)"
+    return "explore", None
+
+
+def has_positive_regime_edge(payload):
+    regime_scores = payload.get("regime_scores") or (payload.get("outofsample") or {}).get("regime_scores") or {}
+    if isinstance(regime_scores, str):
+        try:
+            regime_scores = json.loads(regime_scores)
+        except Exception:
+            regime_scores = {}
+    for data in (regime_scores or {}).values():
+        try:
+            if float((data or {}).get("profit_factor") or 0.0) > MIN_POSITIVE_REGIME_PF:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def fetch_parent_metrics(conn, parent_result_id):
+    if not parent_result_id:
+        return None
+    conn.row_factory = sqlite3.Row
+    row = conn.execute(
+        "SELECT id, score_total, total_trades, family_generation FROM backtest_results WHERE id = ? LIMIT 1",
+        (parent_result_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def family_failure_stats(conn, family_name):
+    row = conn.execute(
+        "SELECT COALESCE(MAX(family_generation),1), SUM(CASE WHEN lower(COALESCE(score_decision,'')) IN ('pass','promote') THEN 1 ELSE 0 END), MAX(COALESCE(total_trades,0)) FROM backtest_results WHERE lower(COALESCE(strategy_family,'')) = lower(?)",
+        (family_name,),
+    ).fetchone()
+    return {
+        "max_generation": int((row or [1, 0, 0])[0] or 1),
+        "pass_count": int((row or [1, 0, 0])[1] or 0),
+        "best_trades": int((row or [1, 0, 0])[2] or 0),
+    }
+
+
 def variant_names_for_spec(spec, variant_mode=None):
     variants = spec.get("variants") or []
     if variant_mode == "all":
@@ -441,11 +582,19 @@ def enqueue_item(conn, item):
     return qid, True
 
 
-def build_seed_items(spec_path, variant_mode=None, cycle_id=None):
+def build_seed_items(conn, spec_path, variant_mode=None, cycle_id=None):
     spec = load_spec(spec_path)
     family = derive_family_name(spec)
+    bucket, reclass_reason = classify_seed_bucket(conn, spec)
     items = []
     for variant_name in variant_names_for_spec(spec, variant_mode):
+        notes = {"message": "cycle seed", "declared_mode": str(spec.get("research_mode") or spec.get("mode") or "explore")}
+        mutation_type = str(spec.get("mutation_type") or "initial")
+        if reclass_reason:
+            notes["reclassified_from"] = "explore"
+            notes["reclassified_to"] = "refine"
+            notes["reclass_reason"] = reclass_reason
+            mutation_type = "reclassified_refine"
         items.append(
             {
                 "cycle_id": cycle_id,
@@ -455,13 +604,13 @@ def build_seed_items(spec_path, variant_mode=None, cycle_id=None):
                 "asset": str(spec.get("asset", "ETH")),
                 "timeframe": str(spec.get("timeframe", "4h")),
                 "stage": "screen",
-                "bucket": "explore",
+                "bucket": bucket,
                 "priority": 3,
-                "mutation_type": str(spec.get("mutation_type") or "initial"),
+                "mutation_type": mutation_type,
                 "family_generation": int(spec.get("family_generation", 1) or 1),
                 "parent_result_id": spec.get("parent_id"),
                 "strategy_family": family,
-                "notes": "cycle seed",
+                "notes": json.dumps(notes),
             }
         )
     return items
@@ -470,10 +619,16 @@ def build_seed_items(spec_path, variant_mode=None, cycle_id=None):
 def seed_queue_from_specs(conn, spec_paths, variant_mode=None, cycle_id=None):
     seeded = []
     for spec_path in spec_paths:
-        for item in build_seed_items(spec_path, variant_mode=variant_mode, cycle_id=cycle_id):
+        for item in build_seed_items(conn, spec_path, variant_mode=variant_mode, cycle_id=cycle_id):
             qid, created = enqueue_item(conn, item)
             if created:
                 seeded.append(qid)
+                try:
+                    note_obj = json.loads(item.get("notes") or "{}")
+                except Exception:
+                    note_obj = {}
+                if note_obj.get("reclassified_to") == "refine":
+                    log_event(conn, "explore_reclassified", "logron", f"Reclassified {item['strategy_spec_id']} from explore to refine — only parameter changes detected.", severity="warn", step="seed", artifact_id=qid, metadata=note_obj)
     conn.commit()
     return seeded
 
@@ -974,6 +1129,44 @@ def near_pass_priority(payload):
     return 2 if 0.4 <= qs < 0.5 else None
 
 
+def evaluate_refinement_gate(conn, queue_item, payload):
+    out = payload.get("outofsample") or {}
+    trades = int(out.get("total_trades") or 0)
+    qscore = float(out.get("qscore") or 0.0)
+    generation = int(queue_item.get("family_generation") or 1)
+    parent = fetch_parent_metrics(conn, queue_item.get("parent_result_id")) if generation > 1 else None
+    improvement_delta = None
+    if parent:
+        improvement_delta = round(qscore - float(parent.get("score_total") or 0.0), 4)
+
+    reasons = []
+    if trades < MIN_REFINE_TRADES:
+        reasons.append(f"trade_count<{MIN_REFINE_TRADES}")
+    if not has_positive_regime_edge(payload):
+        reasons.append(f"no_regime_pf>{MIN_POSITIVE_REGIME_PF}")
+    if generation > 1 and (improvement_delta is None or improvement_delta <= MIN_IMPROVEMENT_DELTA):
+        reasons.append(f"improvement_delta<={MIN_IMPROVEMENT_DELTA}")
+
+    return {
+        "eligible": len(reasons) == 0,
+        "generation": generation,
+        "improvement_delta": improvement_delta,
+        "reasons": reasons,
+        "qscore": qscore,
+        "trades": trades,
+    }
+
+
+def stall_family(conn, family_name, reason, artifact_id=None):
+    if not family_name:
+        return
+    conn.execute(
+        "UPDATE research_funnel_queue SET status='done', completed_at=?, notes=? WHERE lower(COALESCE(strategy_family,'')) = lower(?) AND status IN ('queued','running')",
+        (now_iso(), json.dumps({"status": "stalled", "reason": reason}), family_name),
+    )
+    log_event(conn, "family_stalled", "logron", f"Family {family_name} stalled: {reason}", severity="warn", step="selection_pressure", artifact_id=artifact_id)
+
+
 def process_result_effects(conn, queue_item, result):
     payload = result.get("payload") or {}
     spec = load_spec(queue_item["spec_path"])
@@ -1008,18 +1201,33 @@ def process_result_effects(conn, queue_item, result):
         out = payload.get("outofsample") or {}
         qs = float(out.get("qscore") or 0)
         degradation = float(payload.get("degradation_pct") or 0)
-        passed = qs >= 0.5 and degradation < 50.0
-        promoted = qs >= 1.5 and degradation < 30.0
-        effects = {"full_pass": passed, "promote": promoted, "branch_queue_ids": [], "validation_queue_ids": [], "reduced_queue_ids": []}
-        if passed:
-            effects["validation_queue_ids"] = queue_validation_items(conn, queue_item, spec, payload, promote=promoted)
-            if family_refinement_owned(conn, queue_item.get("strategy_family") or derive_family_name(spec)):
-                log_event(conn, "funnel_branch_skip_refinement_owned", "frodex", f"Skipped auto-branch for refinement-owned family {(queue_item.get('strategy_family') or derive_family_name(spec))}", step="full", artifact_id=payload.get("result_id"))
+        trades = int(out.get("total_trades") or 0)
+        passed = qs >= 0.5 and degradation < 50.0 and trades >= MIN_REFINE_TRADES
+        promoted = qs >= 1.5 and degradation < 30.0 and trades >= MIN_PROMOTE_TRADES
+        gate = evaluate_refinement_gate(conn, queue_item, payload)
+        family_name = queue_item.get("strategy_family") or derive_family_name(spec)
+        effects = {"full_pass": False, "promote": False, "branch_queue_ids": [], "validation_queue_ids": [], "reduced_queue_ids": [], "gate": gate}
+        if not passed:
+            log_event(conn, "funnel_full_fail", "frodex", f"Full FAIL {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}% trades={trades}", severity="warn", step="full", artifact_id=payload.get("result_id"))
+            if gate["generation"] > 1:
+                stall_family(conn, family_name, f"selection gate failed after generation {gate['generation']}: {', '.join(gate['reasons'])}", artifact_id=payload.get("result_id"))
+            return effects
+
+        if not gate["eligible"]:
+            if gate["generation"] <= 1:
+                log_event(conn, "selection_gate_fail", "logron", f"Generation 1 failed evidence gate for {queue_item['strategy_spec_id']}: {', '.join(gate['reasons'])}", severity="warn", step="selection_pressure", artifact_id=payload.get("result_id"))
             else:
-                effects["branch_queue_ids"] = queue_branch_items(conn, queue_item, spec, payload)
-            log_event(conn, "funnel_full_pass", "frodex", f"Full PASS {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}%", step="full", artifact_id=payload.get("result_id"))
+                stall_family(conn, family_name, f"selection gate failed: {', '.join(gate['reasons'])}", artifact_id=payload.get("result_id"))
+            return effects
+
+        effects["full_pass"] = True
+        effects["promote"] = promoted
+        effects["validation_queue_ids"] = queue_validation_items(conn, queue_item, spec, payload, promote=promoted)
+        if family_refinement_owned(conn, family_name):
+            log_event(conn, "funnel_branch_skip_refinement_owned", "frodex", f"Skipped auto-branch for refinement-owned family {family_name}", step="full", artifact_id=payload.get("result_id"))
         else:
-            log_event(conn, "funnel_full_fail", "frodex", f"Full FAIL {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}%", severity="warn", step="full", artifact_id=payload.get("result_id"))
+            effects["branch_queue_ids"] = queue_branch_items(conn, queue_item, spec, payload)
+        log_event(conn, "funnel_full_pass", "frodex", f"Full PASS {queue_item['strategy_spec_id']}:{queue_item['variant_id']} QS={qs:.3f} degradation={degradation:.1f}% trades={trades} improvement_delta={gate['improvement_delta']}", step="full", artifact_id=payload.get("result_id"))
         if promoted:
             effects["reduced_queue_ids"] = queue_reduced_complexity_variant(conn, queue_item, spec, payload)
             note_leaderboard_candidate(payload, spec)

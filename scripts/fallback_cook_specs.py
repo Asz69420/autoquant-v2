@@ -7,6 +7,7 @@ ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 ORDERS = ROOT / "agents" / "quandalf" / "memory" / "cycle_orders.json"
 STATUS = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
 OUT_DIR = ROOT / "artifacts" / "strategy_specs"
+STATE_PATH = ROOT / "data" / "state" / "fallback_control.json"
 
 
 def load_json(path: Path, default):
@@ -21,6 +22,14 @@ def load_json(path: Path, default):
 def write_json(path: Path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def load_state():
+    return load_json(STATE_PATH, {"zero_spec_streak": 0, "recent_cycles": []})
+
+
+def persist_state(payload):
+    write_json(STATE_PATH, payload)
 
 
 def make_spec(spec_id, name, family, asset, timeframe, thesis, indicators, long_rules, short_rules, long_exit, short_exit, variant_name, template_name, params):
@@ -74,20 +83,46 @@ def make_spec(spec_id, name, family, asset, timeframe, thesis, indicators, long_
         "complexity_score": 1.4,
         "status": "ready_to_test",
         "source": "fallback_cooker",
+        "fallback_source": True,
+        "research_mode": "fallback",
     }
 
 
 def main():
     orders = load_json(ORDERS, {})
     status = load_json(STATUS, {})
+    state = load_state()
     cycle_id = int(orders.get("cycle_id", 0) or 0)
     asset = str(orders.get("target_asset") or "ETH").upper()
     timeframe = str(orders.get("target_timeframe") or "4h")
     date_tag = datetime.now(timezone.utc).strftime("%Y%m%d")
     cycle_tag = f"C{cycle_id}"
 
-    specs = []
-    specs.append(make_spec(
+    existing_paths = [str(p).strip() for p in (status.get("spec_paths") or []) if str(p).strip()]
+    quandalf_produced = int(status.get("specs_produced", 0) or 0) > 0 or len(existing_paths) > 0
+
+    recent_cycles = list(state.get("recent_cycles") or [])
+    recent_cycles = [item for item in recent_cycles if int(item.get("cycle_id", -1) or -1) != cycle_id]
+
+    if quandalf_produced:
+        state["zero_spec_streak"] = 0
+        recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": False})
+        state["recent_cycles"] = recent_cycles[-10:]
+        persist_state(state)
+        print(json.dumps({"status": "skipped", "reason": "quandalf_produced_specs", "cycle_id": cycle_id}))
+        return
+
+    zero_spec_streak = int(state.get("zero_spec_streak", 0) or 0) + 1
+    state["zero_spec_streak"] = zero_spec_streak
+
+    if zero_spec_streak < 3:
+        recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": True})
+        state["recent_cycles"] = recent_cycles[-10:]
+        persist_state(state)
+        print(json.dumps({"status": "skipped", "reason": "fallback_guard_active", "cycle_id": cycle_id, "zero_spec_streak": zero_spec_streak}))
+        return
+
+    spec = make_spec(
         f"QD-{date_tag}-{cycle_tag}-{asset}-EMA-PULLBACK-v1",
         f"{asset} EMA Pullback v1",
         f"{asset.lower()}_ema_pullback",
@@ -99,39 +134,18 @@ def main():
         ["Stop loss: 1.1 * ATR_14 below entry", "Take profit: 2.4 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 10 bars"],
         ["Stop loss: 1.1 * ATR_14 above entry", "Take profit: 2.4 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 10 bars"],
         f"{asset.lower()}_ema_pullback_v1", "ema_pullback", {"ema_fast": 20, "ema_anchor": 55, "pullback_buffer_atr": 0.6, "rsi_mid": 50}
-    ))
-    specs.append(make_spec(
-        f"QD-{date_tag}-{cycle_tag}-{asset}-COMPRESSION-BREAK-v1",
-        f"{asset} Compression Break v1",
-        f"{asset.lower()}_compression_break",
-        asset, timeframe,
-        "volatility compression release with directional filter",
-        ["EMA_20", "EMA_55", "ATR_14", "ADX_14", "RSI_14"],
-        ["Close > EMA_55", "EMA_20 > EMA_55", "ATR_14 >= ATR_14[1]", "ADX_14 >= 18", "RSI_14 >= 52"],
-        ["Close < EMA_55", "EMA_20 < EMA_55", "ATR_14 >= ATR_14[1]", "ADX_14 >= 18", "RSI_14 <= 48"],
-        ["Stop loss: 1.0 * ATR_14 below entry", "Take profit: 2.8 * ATR_14 above entry", "Early exit if RSI_14 < 48", "Time stop: 8 bars"],
-        ["Stop loss: 1.0 * ATR_14 above entry", "Take profit: 2.8 * ATR_14 below entry", "Early exit if RSI_14 > 52", "Time stop: 8 bars"],
-        f"{asset.lower()}_compression_break_v1", "compression_break", {"ema_fast": 20, "ema_anchor": 55, "adx_min": 18, "rsi_bias": 52}
-    ))
-    specs.append(make_spec(
-        f"QD-{date_tag}-{cycle_tag}-{asset}-FAILED-BREAKDOWN-RECLAIM-v1",
-        f"{asset} Failed Breakdown Reclaim v1",
-        f"{asset.lower()}_failed_breakdown_reclaim",
-        asset, timeframe,
-        "failed breakdown reacceptance with momentum confirmation",
-        ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
-        ["Close > EMA_20", "Close > EMA_55", "RSI_14 >= 52", "PLUS_DI_14 > MINUS_DI_14"],
-        ["Close < EMA_20", "Close < EMA_55", "RSI_14 <= 48", "MINUS_DI_14 > PLUS_DI_14"],
-        ["Stop loss: 0.9 * ATR_14 below entry", "Take profit: 2.1 * ATR_14 above entry", "Early exit if Close crosses_below EMA_55", "Time stop: 6 bars"],
-        ["Stop loss: 0.9 * ATR_14 above entry", "Take profit: 2.1 * ATR_14 below entry", "Early exit if Close crosses_above EMA_55", "Time stop: 6 bars"],
-        f"{asset.lower()}_failed_breakdown_reclaim_v1", "failed_breakdown_reclaim", {"ema_fast": 20, "ema_anchor": 55, "rsi_trigger": 52}
-    ))
+    )
 
-    paths = []
-    for spec in specs:
-        path = OUT_DIR / f"{spec['id']}.strategy_spec.json"
-        write_json(path, spec)
-        paths.append(str(path))
+    path = OUT_DIR / f"{spec['id']}.strategy_spec.json"
+    write_json(path, spec)
+    paths = [str(path)]
+
+    recent_cycles.append({"cycle_id": cycle_id, "fallback_used": True, "quandalf_zero": True})
+    rolling = recent_cycles[-10:]
+    state["recent_cycles"] = rolling
+    fallback_share = sum(1 for item in rolling if item.get("fallback_used")) / max(1, len(rolling))
+    state["fallback_share_10_cycle"] = round(fallback_share, 3)
+    persist_state(state)
 
     status.update({
         "cycle_id": cycle_id,
@@ -145,14 +159,17 @@ def main():
         "iterate_target": orders.get("iterate_target"),
         "spec_paths": paths,
         "specs_produced": len(paths),
-        "new_families": [spec["family_name"] for spec in specs],
+        "new_families": [spec["family_name"]],
         "iterated_families": [],
         "abandoned_families": [],
-        "next_cycle_focus": f"Evaluate the initial {asset} {timeframe} fallback cooking batch and refine only if one clears screen.",
-        "rationale": "Fallback cooker emitted a valid research batch because the interactive design step produced no specs.",
+        "fallback_source": True,
+        "next_cycle_focus": f"Fallback rescue fired after {zero_spec_streak} zero-spec cycles. Evaluate the single {asset} {timeframe} rescue spec and restore real exploration.",
+        "rationale": "Fallback cooker emitted one rescue spec after 3 consecutive zero-spec cycles from Quandalf.",
     })
     write_json(STATUS, status)
-    print(json.dumps({"status": "ok", "cycle_id": cycle_id, "spec_count": len(paths), "spec_paths": paths}))
+
+    warning = "Fallback dominance detected — Quandalf may be stuck" if fallback_share > 0.2 and len(rolling) >= 5 else None
+    print(json.dumps({"status": "ok", "cycle_id": cycle_id, "spec_count": len(paths), "spec_paths": paths, "fallback_share_10_cycle": round(fallback_share, 3), "warning": warning}))
 
 
 if __name__ == "__main__":

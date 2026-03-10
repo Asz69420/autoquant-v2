@@ -56,7 +56,11 @@ WINDOW_CONFIG = {
     "1m": (7, 2),
 }
 
-MIN_BLIND_TRADES = 15
+MIN_BLIND_TRADES = 30
+MIN_PASS_TRADES = 30
+MIN_PROMOTE_TRADES = 50
+PF_MIRAGE_THRESHOLD = 3.0
+PF_MIRAGE_TRADE_FLOOR = 50
 
 
 def load_candles(asset: str, timeframe: str) -> list[dict]:
@@ -717,33 +721,43 @@ def compute_metrics(trades: list[dict], equity_curve: list[float]) -> dict:
 
 
 def calculate_qscore(metrics: dict) -> dict:
-    pf = metrics.get("profit_factor", 0.0)
-    dd = metrics.get("max_drawdown_pct", 0.0)
-    trades = metrics.get("total_trades", 0)
+    pf = float(metrics.get("profit_factor", 0.0) or 0.0)
+    dd = float(metrics.get("max_drawdown_pct", 0.0) or 0.0)
+    trades = int(metrics.get("total_trades", 0) or 0)
     score_edge = pf
     score_resilience = -(dd / 100.0)
-    gate_penalty = 0.5 if trades < 15 else (0.2 if trades < 30 else 0.0)
-    suspect = pf > 4.0 and trades < 25
-    score_total = score_edge + score_resilience - gate_penalty
-    if score_total >= 3.0:
+    raw_score_total = score_edge + score_resilience
+    confidence_discount = 1.0
+    flags = []
+
+    if trades < PF_MIRAGE_TRADE_FLOOR and pf > PF_MIRAGE_THRESHOLD:
+        confidence_discount = max(0.0, min(1.0, trades / float(PF_MIRAGE_TRADE_FLOOR)))
+        flags.append("pf_mirage_discount")
+
+    score_total = raw_score_total * confidence_discount
+    suspect = pf > 4.0 and trades < PF_MIRAGE_TRADE_FLOOR
+    if suspect:
+        flags.append("suspect_overfit")
+    if trades < MIN_PASS_TRADES:
+        flags.append("low_trade_count")
+
+    if trades >= MIN_PROMOTE_TRADES and score_total >= 1.5:
         decision, grade = "promote", "A"
-    elif score_total >= 1.0:
+    elif trades >= MIN_PASS_TRADES and score_total >= 0.5:
         decision, grade = "pass", "B"
     else:
         decision, grade = ("fail", "C") if score_total >= 0.5 else ("fail", "D")
-    flags = []
-    if suspect:
-        flags.append("suspect_overfit")
-    if trades < 15:
-        flags.append("low_trade_count")
+
     return {
         "score_total": round(score_total, 3),
         "score_edge": round(score_edge, 3),
         "score_resilience": round(score_resilience, 3),
         "score_decision": decision,
         "score_grade": grade,
-        "score_flags": json.dumps(flags),
+        "score_flags": json.dumps(sorted(set(flags))),
         "suspect": suspect,
+        "raw_score_total": round(raw_score_total, 3),
+        "confidence_discount": round(confidence_discount, 3),
     }
 
 
@@ -984,6 +998,17 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
     oos_qs_val = oos_qscore["score_total"]
     degradation_pct = round((1.0 - oos_qs_val / is_qs_val) * 100.0, 1) if is_qs_val > 0 else (0.0 if oos_qs_val >= 0 else 100.0)
 
+    final_decision = "fail"
+    final_grade = "D"
+    if agg_oos["total_trades"] >= MIN_PROMOTE_TRADES and oos_qs_val >= 1.5 and degradation_pct < 30.0:
+        final_decision = "promote"
+        final_grade = "A"
+    elif agg_oos["total_trades"] >= MIN_PASS_TRADES and oos_qs_val >= 0.5 and degradation_pct < 50.0:
+        final_decision = "pass"
+        final_grade = "B"
+    elif oos_qs_val >= 0.5:
+        final_grade = "C"
+
     return {
         "status": "ok",
         "folds": len(fold_results),
@@ -1006,8 +1031,10 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
             "win_rate_pct": agg_oos["win_rate_pct"],
             "sharpe_ratio": agg_oos["sharpe_ratio"],
             "qscore": oos_qscore["score_total"],
-            "decision": oos_qscore["score_decision"],
-            "grade": oos_qscore["score_grade"],
+            "raw_qscore": oos_qscore.get("raw_score_total", oos_qscore["score_total"]),
+            "confidence_discount": oos_qscore.get("confidence_discount", 1.0),
+            "decision": final_decision,
+            "grade": final_grade,
             "flags": json.dumps(sorted(set(json.loads(oos_qscore["score_flags"]) + regime_flags))),
             "regime_scores": regime_scores,
             "regime_concentration": regime_concentration,
@@ -1050,6 +1077,7 @@ def ensure_schema(conn: sqlite3.Connection):
         "refinement_status": "TEXT",
         "refinement_round": "INTEGER DEFAULT 0",
         "weakness_profile": "TEXT",
+        "fallback_source": "INTEGER DEFAULT 0",
     }
     for col, col_type in new_columns.items():
         if col not in existing:
@@ -1079,6 +1107,7 @@ def save_result(
     validation_target: str | None = None,
     family_generation: int = 1,
     refinement_round: int = 0,
+    fallback_source: int = 0,
 ):
     ensure_schema(conn)
     oos = wf_result["outofsample_aggregate"]
@@ -1120,8 +1149,8 @@ def save_result(
             qscore_insample, qscore_outofsample, degradation_pct,
             walk_forward_folds, walk_forward_config, fold_results,
             strategy_family, parent_id, mutation_type, stage, validation_target, family_generation, killed,
-            regime_scores, regime_concentration, primary_regime, portability_score, refinement_status, refinement_round, weakness_profile
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            regime_scores, regime_concentration, primary_regime, portability_score, refinement_status, refinement_round, weakness_profile, fallback_source
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             result_id,
@@ -1170,6 +1199,7 @@ def save_result(
             None,
             int(refinement_round or 0),
             None,
+            int(fallback_source or 0),
         ),
     )
     conn.commit()
@@ -1204,6 +1234,7 @@ def main():
         return 1
 
     spec_id = os.path.basename(args.strategy_spec).replace(".strategy_spec.json", "").replace(".json", "")
+    fallback_source = 1 if str((strategy.get("spec") or {}).get("source") or "").strip().lower() == "fallback_cooker" or bool((strategy.get("spec") or {}).get("fallback_source")) else 0
 
     if args.dry_run:
         train_days, blind_days = WINDOW_CONFIG[args.tf]
@@ -1249,6 +1280,7 @@ def main():
                 validation_target=args.validation_target or None,
                 family_generation=args.family_generation,
                 refinement_round=args.refinement_round,
+                fallback_source=fallback_source,
             )
             conn.close()
             result["result_id"] = result_id

@@ -276,6 +276,61 @@ NOTE: These thresholds will be recalibrated after testing V1 champions. Walk-for
 
 Assess every result for: edge type (structural/statistical/fitted), decay risk (low/medium/high), robustness (fragile/moderate/robust).
 
+## Updated Thresholds (Policy Changes, Current)
+
+The system now enforces stricter standards for evidence before allowing iteration and promotion.
+
+### Minimum Trade Count for Any Verdict
+- **PASS requires 30+ trades** (was 15 — that floor was too thin for statistical validity)
+- **PROMOTE requires 50+ trades** (was 15 — requires more robust evidence)
+- Below 30 trades = automatic FAIL regardless of PF or QScore
+
+What this means: a strategy with QS 3.0 and only 20 trades will FAIL. Your design must be dense enough to generate real trade samples before the system treats results as real.
+
+### PF Mirage Penalty
+
+High profit factor on thin trades is noise, not edge.
+
+The system now applies a **confidence discount** to high-PF strategies with few trades:
+- If trade_count < 50 AND profit_factor > 3.0, effective_score = qscore * (trade_count / 50)
+- A strategy with QS 2.0 but only 20 trades scores as 2.0 * (20/50) = 0.8
+- A strategy with QS 2.0 and 60 trades gets no discount
+
+Design for 50+ trades minimum if you want your work to survive ranking and make the leaderboard.
+
+### Refinement Gate (Generation 2+)
+
+Only continue iterating on a family if ALL evidence criteria are met:
+- Trade count ≥ 30
+- At least one regime shows positive edge (PF > 1.2 in that regime)
+- improvement_delta > 0.05 (QScore improved by at least 0.05 vs parent generation)
+
+If generation 2+ fails this gate, the family is stalled and stops accumulating compute. No endless tinkering.
+
+### Stalled Family Auto-Rotation
+
+Families that fail to improve get auto-rotated away automatically:
+- 3+ refinement rounds with total QScore improvement ≤ 0.1 → auto-rotate
+- 5+ generations with zero PASS results → auto-rotate
+- Best variant still < 30 trades after 3 generations → auto-rotate
+
+This is why you cannot just keep submitting the same family: the system watches for stagnation and forces you to explore elsewhere.
+
+### Exploration Standards
+
+Changing RSI from 49 to 50 is NOT exploration. Real exploration means substance.
+
+A spec counts as genuine exploration ONLY if it differs in at least 2 of these dimensions from recent specs:
+- **Entry mechanism** (different indicator family — Vortex vs RSI, not just RSI 14 vs RSI 13)
+- **Exit mechanism** (different exit logic — time-stop vs trailing-stop, not just values)
+- **Regime target** (different expected_regime — targeting TRANSITION vs TREND_UP)
+- **Holding logic** (different stops/trailing — ATR-stop vs fixed %, not just the multiplier)
+- **Asset class** (different primary_asset — testing SOL instead of only ETH)
+
+If your spec only changes parameter values, the system reclassifies it from EXPLORE to REFINE automatically.
+
+This prevents parameter-tweaking from masquerading as research.
+
 ## How Your Work Flows Through The System
 
 You are the researcher. The automation handles everything after you submit a spec.
