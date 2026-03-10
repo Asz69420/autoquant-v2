@@ -16,6 +16,8 @@ GATEWAY_LOG_DIR = r"C:\tmp\openclaw"
 BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 HEALTH_SEND_STATE_PATH = os.path.join(ROOT, "data", "state", "health_send_state.json")
 HEALTH_COOLDOWN_SECONDS = 24 * 3600  # daily-only resend for identical health state
+INTEGRITY_SCRIPT = os.path.join(ROOT, "scripts", "db_integrity_check.py")
+HADES_CHAT_ID = "-5133891354"
 
 
 def send_log(message, bot="logron", channel="log", photo=None):
@@ -32,6 +34,32 @@ def send_alert(message):
     try:
         subprocess.run(
             [sys.executable, TG_SCRIPT, "--message", message, "--channel", "dm", "--bot", "oragorn"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception:
+        pass
+
+
+def send_hades(message, bot="logron"):
+    try:
+        subprocess.run(
+            [sys.executable, TG_SCRIPT, "--message", message, "--channel", "hades", "--bot", bot, "--chat-id", HADES_CHAT_ID],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+    except Exception:
+        pass
+
+
+def send_critical_escalation(message):
+    send_hades(message, bot="logron")
+    send_alert(message)
+    try:
+        subprocess.run(
+            [sys.executable, TG_SCRIPT, "--message", message, "--channel", "dm", "--bot", "oragorn", "--chat-id", "1801759510"],
             capture_output=True,
             text=True,
             timeout=15,
@@ -293,9 +321,22 @@ def check_health():
     if strategy_specs_24h == 0:
         issues.append("No strategy specs in 24h")
 
+    # DB integrity checks — failures must be loud, not silent
+    try:
+        proc = subprocess.run([sys.executable, INTEGRITY_SCRIPT], capture_output=True, text=True, timeout=20)
+        integrity = json.loads((proc.stdout or "{}").strip() or "{}") if proc.returncode == 0 else {"status": "error", "stdout": proc.stdout, "stderr": proc.stderr}
+    except Exception as e:
+        integrity = {"status": "error", "error": str(e)}
+    stats["integrity"] = integrity
+    if integrity.get("status") == "fail":
+        for issue in integrity.get("issues", []):
+            issues.append(f"Integrity: {issue}")
+    elif integrity.get("status") == "error":
+        issues.append("Integrity check failed to run")
+
     if len(issues) == 0:
         status = "ok"
-    elif any("stalled" in i or "missing" in i for i in issues):
+    elif any(("stalled" in i or "missing" in i or "Integrity:" in i or "failed to run" in i) for i in issues):
         status = "fail"
     else:
         status = "warn"
@@ -411,12 +452,19 @@ def _load_health_send_state():
 
 def _save_health_send_state(status, issues):
     os.makedirs(os.path.dirname(HEALTH_SEND_STATE_PATH), exist_ok=True)
+    prev = _load_health_send_state()
+    fail_streak = int(prev.get("consecutive_fail_count") or 0)
+    if status == "fail":
+        fail_streak += 1
+    else:
+        fail_streak = 0
     with open(HEALTH_SEND_STATE_PATH, "w", encoding="utf-8") as f:
         json.dump({
             "last_status": status,
             "last_issues": sorted(issues),
             "sent_at": time.time(),
             "sent_at_iso": datetime.now(timezone.utc).isoformat(),
+            "consecutive_fail_count": fail_streak,
         }, f, indent=2)
 
 
@@ -469,7 +517,10 @@ def main():
 
     if _should_send_health_card(status, issues):
         banner = os.path.join(BANNERS, "logron.jpg")
+        send_hades(f"<pre>{card}</pre>", bot="logron")
         send_log(f"<pre>{card}</pre>", photo=banner if os.path.exists(banner) else None)
+        prev_state = _load_health_send_state()
+        prior_fail_streak = int(prev_state.get("consecutive_fail_count") or 0)
         _save_health_send_state(status, issues)
 
         if status == "fail":
@@ -480,8 +531,11 @@ def main():
                 alert += "\nAuto-fixes applied:\n"
                 for fx in auto_fixes:
                     alert += f"• {fx.get('pattern', '?')} (success={fx.get('success', False)})\n"
-            alert += "\nCheck the log channel for details."
+            alert += "\nDetails sent to Hades."
+            send_hades(alert, bot="logron")
             send_alert(alert)
+            if prior_fail_streak >= 1:
+                send_critical_escalation("🔥 <b>Repeated critical AutoQuant failure</b>\n\nThis is not the first consecutive failed health check. Review Hades and Oragorn alerts now.")
 
     if issues:
         post_agent_message(

@@ -1132,6 +1132,7 @@ def save_result(
     stage: str = "full",
     strategy_family: str | None = None,
     parent_id: str | None = None,
+    # NOTE: 0-trade guard added at top of function body
     mutation_type: str | None = None,
     validation_target: str | None = None,
     family_generation: int = 1,
@@ -1141,6 +1142,30 @@ def save_result(
     ensure_schema(conn)
     oos = wf_result["outofsample_aggregate"]
     ins = wf_result["insample_aggregate"]
+
+    # GUARD: Do not write 0-trade results to DB — they are noise, not signal
+    oos_trades = int(oos.get("total_trades", 0) or 0)
+    ins_trades = int(ins.get("total_trades", 0) or 0)
+    if oos_trades == 0 and ins_trades == 0:
+        return {
+            "status": "skipped",
+            "reason": "zero_trades_both_samples",
+            "spec_id": spec_id,
+            "variant_id": variant_id,
+            "asset": asset,
+            "timeframe": timeframe,
+        }
+    if oos_trades == 0:
+        return {
+            "status": "skipped",
+            "reason": "zero_oos_trades",
+            "spec_id": spec_id,
+            "variant_id": variant_id,
+            "asset": asset,
+            "timeframe": timeframe,
+            "insample_trades": ins_trades,
+        }
+
     result_id = f"wf_{uuid.uuid4().hex[:12]}"
     now = datetime.now(timezone.utc).isoformat()
     period_start = candles[0]["ts"] if candles else now
@@ -1294,7 +1319,7 @@ def main():
     if not args.no_db:
         try:
             conn = sqlite3.connect(DB_PATH)
-            result_id = save_result(
+            save_outcome = save_result(
                 conn,
                 spec_id,
                 args.variant,
@@ -1312,8 +1337,14 @@ def main():
                 fallback_source=fallback_source,
             )
             conn.close()
-            result["result_id"] = result_id
-            result["db_saved"] = True
+            if isinstance(save_outcome, dict) and save_outcome.get("status") == "skipped":
+                result["status"] = "skipped"
+                result["result_id"] = None
+                result["db_saved"] = False
+                result["integrity_issue"] = save_outcome
+            else:
+                result["result_id"] = save_outcome
+                result["db_saved"] = True
         except Exception as e:
             result["db_saved"] = False
             result["db_error"] = str(e)

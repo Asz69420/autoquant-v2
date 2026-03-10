@@ -1110,6 +1110,9 @@ def execute_job(job):
         return {"ok": False, "job": job, "returncode": proc.returncode, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "payload": payload}
     if not payload:
         return {"ok": False, "job": job, "error": "engine_output_json_not_found", "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200]}
+    if str(payload.get("status") or "").lower() == "skipped":
+        issue = payload.get("integrity_issue") or {}
+        return {"ok": False, "job": job, "error": f"integrity_skip:{issue.get('reason','unknown')}", "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200]}
     return {"ok": True, "job": job, "payload": payload, "stdout": (proc.stdout or "")[:1200], "stderr": (proc.stderr or "")[:1200], "result_id": payload.get("result_id")}
 
 

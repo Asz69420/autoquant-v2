@@ -39,6 +39,9 @@
 - strategy_status.json: 925KB → 17KB
 - v1-* legacy files: moved to agents/quandalf/memory/archive/
 - Old specs: archiver script ready, 4 archived
+- DB integrity hardening: zero-trade results no longer saved; integrity skips surface as worker failures
+- DB cleanup run completed: removed 516 poisoned rows (506 zero-trade + 10 impossible PF/WR rows), backup in artifacts/db_backups/
+- Logron routing hardened: routine watcher cards → Hades (-5133891354), failures → Hades + Oragorn DM, repeated critical failures → Hades + Oragorn + Asz
 
 ## Credentials (refs only — NEVER paste tokens)
 - Bot tokens: in ~/.openclaw/openclaw.json under channels.telegram.accounts.*.botToken

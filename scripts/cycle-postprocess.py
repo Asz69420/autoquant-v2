@@ -1552,11 +1552,17 @@ def main():
     dm_lines.append("")
     dm_lines.append(f"Total in DB: {total_rows} | New this cycle: {len(rows_for_dm)}")
 
+    healthy_rows = [r for r in rows_for_dm if int(r["total_trades"] or 0) >= 15 and float(r["profit_factor"] or 0) > 0 and float(r["win_rate_pct"] or 0) > 0]
+
     if rows_for_dm:
         dm_text = "\n".join(dm_lines)
         dm_parts = split_message(dm_text, 3900)
         for part in dm_parts:
             send_tg_as(f"<pre>{part}</pre>", "hades", "oragorn")
+
+    if rows_for_dm and not healthy_rows:
+        send_tg_as("<pre>🚨 Research cycle integrity alert\nCycle produced results, but none were healthy enough for reflection (need trades>=15, PF>0, WR>0). Check backtester/output integrity.</pre>", "hades", "logron")
+        send_tg_as("<pre>🚨 Research cycle integrity alert\nNo healthy rows this cycle. Reflection quality is compromised. Check Hades.</pre>", "dm", "oragorn")
 
     journal_sent = False
 
