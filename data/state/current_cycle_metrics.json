@@ -1,15 +1,24 @@
 {
-  "cycle_id": 289,
-  "status": "pending",
+  "cycle_id": 290,
+  "cycle_key": "290",
+  "manifest_cycle_id": 290,
+  "status_cycle_id": 290,
+  "orders_cycle_id": 290,
+  "status_matches_cycle": true,
+  "manifest_matches_cycle": true,
+  "state_warning": null,
   "mode": "explore",
   "research_direction": "explore_new",
-  "target_asset": "BTC",
+  "minimum_spec_count": 3,
+  "maximum_spec_count": 4,
+  "target_asset": "SOL",
   "target_timeframe": "4h",
+  "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
-      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
-      "compression fakeout into re-expansion with directional confirmation"
+      "state-change momentum after regime improvement and post-break hold",
+      "mean reversion from exhaustion only when structure reaccepts prior value",
+      "breakout continuation with delayed entry after retest rather than immediate trigger"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -19,31 +28,61 @@
       "scaled-out exits after confirmation"
     ],
     "assets": [
-      "BTC"
+      "SOL"
     ],
     "timeframes": [
       "4h"
     ]
   },
-  "spec_paths": [],
-  "spec_ids": [],
-  "specs_produced": 0,
-  "specs_written": 0,
-  "cycle_rows": 0,
-  "external_rows": 0,
-  "cycle_results_present": false,
-  "external_results_present": false,
-  "backtests_queued": 0,
-  "backtests_completed": 0,
+  "spec_paths": [
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C290-SOL-EMA-PULLBACK-v1.strategy_spec.json"
+  ],
+  "spec_ids": [
+    "QD-20260310-C290-SOL-EMA-PULLBACK-v1"
+  ],
+  "specs_produced": 1,
+  "specs_written": 1,
+  "new_families": [
+    "sol_ema_pullback"
+  ],
+  "iterated_families": [],
+  "abandoned_families": [
+    "eth_ema_pullback",
+    "btc_ema_pullback",
+    "atr_14-ema_100-ema_20-rsi_14",
+    "sol_ema_pullback"
+  ],
+  "active_families": 1,
+  "all_recent_rows": 31,
+  "cycle_rows": 1,
+  "external_rows": 30,
+  "cycle_results_present": true,
+  "external_results_present": true,
+  "backtests_queued": 1,
+  "backtests_completed": 1,
+  "backtests": 1,
   "pass_count": 0,
-  "fail_count": 0,
+  "fail_count": 1,
   "promote_count": 0,
-  "best_result": null,
+  "promotions": 0,
+  "best_result": {
+    "strategy_spec_id": "QD-20260310-C290-SOL-EMA-PULLBACK-v1",
+    "variant_id": "sol_ema_pullback_v1",
+    "asset": "SOL",
+    "timeframe": "4h",
+    "qscore": 0,
+    "profit_factor": 0,
+    "total_trades": 0,
+    "decision": "fail"
+  },
   "best_qscore": 0,
-  "next_cycle_focus": "pending",
-  "rationale": "pending",
-  "status_matches_cycle": true,
-  "manifest_matches_cycle": false,
-  "state_warning": null,
-  "iterate_target": null
+  "next_cycle_focus": "Fallback rescue fired after 20 zero-spec cycles. Evaluate the single SOL 4h rescue spec and restore real exploration.",
+  "rationale": "Fallback cooker emitted one rescue spec after 3 consecutive zero-spec cycles from Quandalf.",
+  "has_reflection_note": true,
+  "elapsed_seconds": 86.4,
+  "run_elapsed_seconds": 86.4,
+  "report_delay_seconds": 0.0,
+  "is_completed": true,
+  "started_at_epoch": 1773124925.0417907,
+  "ended_at_epoch": 1773125011.4310725
 }
