@@ -12,7 +12,8 @@ TG_SCRIPT = os.path.join(ROOT, "scripts", "tg_notify.py")
 
 
 def short_name(row):
-    base = row.get("variant_id") or row.get("strategy_spec_id") or "STRAT"
+    row_dict = dict(row) if not isinstance(row, dict) else row
+    base = row_dict.get("variant_id") or row_dict.get("strategy_spec_id") or "STRAT"
     cleaned = "".join(ch for ch in str(base).upper() if ch.isalnum())
     return (cleaned[:4] if cleaned else "STR?").ljust(4)
 

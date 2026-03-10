@@ -1,10 +1,10 @@
 {
-  "ts_iso": "2026-03-10T06:12:35.679604+00:00",
+  "ts_iso": "2026-03-10T06:32:37.271983+00:00",
   "type": "reflection",
   "recent_results": [
     {
-      "id": "wf_6c7655994207",
-      "strategy_spec_id": "QD-20260310-C284-ETH-EMA-PULLBACK-v1",
+      "id": "wf_a2a014a8a790",
+      "strategy_spec_id": "QD-20260310-C288-ETH-EMA-PULLBACK-v1",
       "variant_id": "eth_ema_pullback_v1",
       "asset": "ETH",
       "timeframe": "4h",
@@ -63,66 +63,453 @@
   ],
   "external_context_results": [
     {
-      "id": "wf_f9b2100a8834",
-      "strategy_spec_id": "QD-20260310-C283-BTC-EMA-PULLBACK-v1",
-      "variant_id": "btc_ema_pullback_v1",
-      "asset": "BTC",
+      "id": "wf_7e50beccc3a5",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor3-23f4d7-neighbor2-2770b4-neighbor2-9c7661",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor3_neighbor2_neighbor2",
+      "asset": "ETH",
       "timeframe": "1h",
-      "profit_factor": 0.0,
-      "max_drawdown_pct": 0.0,
-      "total_trades": 0,
-      "win_rate_pct": 0.0,
-      "total_return_pct": 0.0,
-      "score_total": 0.0,
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
       "score_decision": "fail",
       "metrics": {
         "insample": {
-          "total_trades": 0,
-          "profit_factor": 0.0,
+          "total_trades": 23,
+          "profit_factor": 0.752,
           "max_drawdown_pct": 0.0,
           "total_return_pct": 0.0,
-          "win_rate_pct": 0.0,
-          "sharpe_ratio": 0.0,
-          "qscore": 0.0,
-          "decision": "screen"
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
         },
         "outofsample": {
-          "total_trades": 0,
-          "profit_factor": 0.0,
-          "max_drawdown_pct": 0.0,
-          "total_return_pct": 0.0,
-          "win_rate_pct": 0.0,
-          "sharpe_ratio": 0.0,
-          "qscore": 0.0,
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
           "decision": "fail",
-          "grade": "F",
-          "flags": "[\"screen_fail\"]",
-          "regime_scores": {},
-          "regime_concentration": 0.0,
-          "primary_regime": "UNKNOWN"
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
         },
-        "degradation_pct": 0.0,
+        "degradation_pct": -27.1,
         "walk_forward_config": {
-          "stage": "screen",
-          "months": 3,
-          "folds": 1,
+          "train_days": 90,
+          "blind_days": 21,
           "timeframe": "1h",
-          "transaction_cost_pct": 0.125
+          "min_blind_trades": 50
         },
-        "regime_scores": {},
-        "regime_concentration": 0.0,
-        "primary_regime": "UNKNOWN"
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
       },
       "regime_metrics": null,
-      "strategy_family": "btc_ema_pullback",
-      "mutation_type": "initial",
-      "refinement_round": 0,
-      "family_generation": 1,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
       "is_current_cycle": false
     },
     {
-      "id": "wf_d95b74f78f9f",
-      "strategy_spec_id": "QD-20260310-C283-ETH-EMA-PULLBACK-v1",
+      "id": "wf_183119fb7207",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor3-23f4d7-neighbor2-2770b4-neighbor1-fefb76",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor3_neighbor2_neighbor1",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_8de50376d4a0",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor3-23f4d7-neighbor1-65ff40-neighbor3-43b18a",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor3_neighbor1_neighbor3",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_aa5914ac9e28",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor3-23f4d7-neighbor1-65ff40-neighbor1-e5b09d",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor3_neighbor1_neighbor1",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_3e816765d1d8",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor3-23f4d7-neighbor1-65ff40-neighbor2-f2710b",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor3_neighbor1_neighbor2",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_038764d84efe",
+      "strategy_spec_id": "QD-20260310-C287-ETH-EMA-PULLBACK-v1",
       "variant_id": "eth_ema_pullback_v1",
       "asset": "ETH",
       "timeframe": "4h",
@@ -179,73 +566,417 @@
       "is_current_cycle": false
     },
     {
-      "id": "wf_63f03c32c064",
-      "strategy_spec_id": "QD-20260310-C282-BTC-EMA-PULLBACK-v1",
-      "variant_id": "btc_ema_pullback_v1",
-      "asset": "BTC",
+      "id": "wf_e8b6b37215bb",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor5-f300c4-neighbor2-e4bcce",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor2_neighbor5_neighbor2",
+      "asset": "ETH",
       "timeframe": "1h",
-      "profit_factor": 0.0,
-      "max_drawdown_pct": 0.0,
-      "total_trades": 0,
-      "win_rate_pct": 0.0,
-      "total_return_pct": 0.0,
-      "score_total": 0.0,
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
       "score_decision": "fail",
       "metrics": {
         "insample": {
-          "total_trades": 0,
-          "profit_factor": 0.0,
+          "total_trades": 23,
+          "profit_factor": 0.752,
           "max_drawdown_pct": 0.0,
           "total_return_pct": 0.0,
-          "win_rate_pct": 0.0,
-          "sharpe_ratio": 0.0,
-          "qscore": 0.0,
-          "decision": "screen"
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
         },
         "outofsample": {
-          "total_trades": 0,
-          "profit_factor": 0.0,
-          "max_drawdown_pct": 0.0,
-          "total_return_pct": 0.0,
-          "win_rate_pct": 0.0,
-          "sharpe_ratio": 0.0,
-          "qscore": 0.0,
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
           "decision": "fail",
-          "grade": "F",
-          "flags": "[\"screen_fail\"]",
-          "regime_scores": {},
-          "regime_concentration": 0.0,
-          "primary_regime": "UNKNOWN"
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
         },
-        "degradation_pct": 0.0,
+        "degradation_pct": -27.1,
         "walk_forward_config": {
-          "stage": "screen",
-          "months": 3,
-          "folds": 1,
+          "train_days": 90,
+          "blind_days": 21,
           "timeframe": "1h",
-          "transaction_cost_pct": 0.125
+          "min_blind_trades": 50
         },
-        "regime_scores": {},
-        "regime_concentration": 0.0,
-        "primary_regime": "UNKNOWN"
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
       },
       "regime_metrics": null,
-      "strategy_family": "btc_ema_pullback",
-      "mutation_type": "initial",
-      "refinement_round": 0,
-      "family_generation": 1,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_c90f2ad79788",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor5-f300c4-neighbor1-3e0c5d",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor2_neighbor5_neighbor1",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_e760ebc17325",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor4-0a0966-neighbor3-a11dad",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor2_neighbor4_neighbor3",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
+      "is_current_cycle": false
+    },
+    {
+      "id": "wf_e2ad420b3ecf",
+      "strategy_spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor4-0a0966-neighbor1-a0903e",
+      "variant_id": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor2_neighbor4_neighbor1",
+      "asset": "ETH",
+      "timeframe": "1h",
+      "profit_factor": 1.066,
+      "max_drawdown_pct": 11.02,
+      "total_trades": 31,
+      "win_rate_pct": 38.70967741935484,
+      "total_return_pct": 0.91,
+      "score_total": 0.956,
+      "score_decision": "fail",
+      "metrics": {
+        "insample": {
+          "total_trades": 23,
+          "profit_factor": 0.752,
+          "max_drawdown_pct": 0.0,
+          "total_return_pct": 0.0,
+          "win_rate_pct": 30.434782608695656,
+          "sharpe_ratio": -1.921,
+          "qscore": 0.752,
+          "decision": "fail"
+        },
+        "outofsample": {
+          "total_trades": 31,
+          "profit_factor": 1.066,
+          "max_drawdown_pct": 11.02,
+          "total_return_pct": 0.91,
+          "win_rate_pct": 38.70967741935484,
+          "sharpe_ratio": 0.38,
+          "qscore": 0.956,
+          "raw_qscore": 0.956,
+          "confidence_discount": 1.0,
+          "decision": "fail",
+          "grade": "C",
+          "flags": "[\"below_scoring_floor\", \"low_trade_count\"]",
+          "regime_scores": {
+            "TRANSITION": {
+              "trade_count": 18,
+              "profit_factor": 1.335,
+              "win_rate": 38.89,
+              "avg_return": 0.264,
+              "qscore": 1.335
+            },
+            "CHOP": {
+              "trade_count": 13,
+              "profit_factor": 0.635,
+              "win_rate": 38.46,
+              "avg_return": -0.249,
+              "qscore": null
+            }
+          },
+          "regime_concentration": 58.06,
+          "primary_regime": "TRANSITION"
+        },
+        "degradation_pct": -27.1,
+        "walk_forward_config": {
+          "train_days": 90,
+          "blind_days": 21,
+          "timeframe": "1h",
+          "min_blind_trades": 50
+        },
+        "regime_scores": {
+          "TRANSITION": {
+            "trade_count": 18,
+            "profit_factor": 1.335,
+            "win_rate": 38.89,
+            "avg_return": 0.264,
+            "qscore": 1.335
+          },
+          "CHOP": {
+            "trade_count": 13,
+            "profit_factor": 0.635,
+            "win_rate": 38.46,
+            "avg_return": -0.249,
+            "qscore": null
+          }
+        },
+        "regime_concentration": 58.06,
+        "primary_regime": "TRANSITION"
+      },
+      "regime_metrics": null,
+      "strategy_family": "atr_14-ema_100-ema_20-rsi_14",
+      "mutation_type": "param_neighbor",
+      "refinement_round": 3,
+      "family_generation": 5,
       "is_current_cycle": false
     }
   ],
-  "recent_lessons": [],
+  "recent_lessons": [
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor4-0a0966-neighbor2-e72206 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor4-0a0966-neighbor1-a0903e on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor4-0a0966-neighbor3-a11dad on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor5-f300c4-neighbor1-3e0c5d on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor5-f300c4-neighbor2-e4bcce on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor1-4af297-neighbor1-cac304 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor1-4af297-neighbor2-76d06c on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor1-4af297-neighbor3-8a4382 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor3-dbfde2-neighbor1-5b5410 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    },
+    {
+      "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor2-35ebf2-neighbor3-dbfde2-neighbor2-d49c08 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
+    }
+  ],
   "result_count": 1,
   "current_cycle_result_count": 1,
-  "external_result_count": 3,
+  "external_result_count": 21,
   "management_summary": {
     "initial": {
-      "count": 4,
+      "count": 7,
       "pass": 0,
       "best_qscore": 0.0
+    },
+    "param_neighbor": {
+      "count": 15,
+      "pass": 0,
+      "best_qscore": 0.956
     }
   },
   "any_promising": false,

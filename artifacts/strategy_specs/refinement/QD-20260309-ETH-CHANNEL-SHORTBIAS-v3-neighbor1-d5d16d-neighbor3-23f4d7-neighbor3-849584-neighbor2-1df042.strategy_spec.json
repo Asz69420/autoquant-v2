@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor1-d5d16d-neighbor3-23f4d7-neighbor3-849584-neighbor2-1df042",
+  "ts_iso": "2026-03-10T06:33:23.543790+00:00",
+  "thesis_id": "cycle_20260309_eth_channel_shortbias_relaxed_failed_continuation_v3",
+  "name": "ETH EMA Channel Short-Bias Relaxed Failed Continuation v3 [neighbor1] [neighbor3] [neighbor3] [neighbor2]",
+  "version": "3.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "indicators": [
+    "EMA_20",
+    "EMA_100",
+    "RSI_14",
+    "ATR_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close < EMA_20",
+      "RSI_14 crosses_above 50"
+    ],
+    "short": [
+      "Close > EMA_20",
+      "RSI_14 crosses_below 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: 3.8 * ATR_14 above entry",
+      "Early exit if RSI_14 crosses_below 48",
+      "Time stop: 20 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: 3.8 * ATR_14 below entry",
+      "Early exit if RSI_14 crosses_above 52",
+      "Time stop: 20 bars"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.0045
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "transitional",
+      "trending"
+    ],
+    "detection_method": "v2 failed-continuation structure preserved; only the continuation-failure trigger is relaxed by one RSI point on each side so ETH can arm more often while staying inside the same inverted channel-rejection thesis."
+  },
+  "variants": [
+    {
+      "name": "eth_channel_shortbias_relaxed_failed_continuation_v3_neighbor1_neighbor3_neighbor3_neighbor2",
+      "template_name": "ema_channel_switch",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 18
+        },
+        {
+          "name": "ema_slow",
+          "value": 95
+        },
+        {
+          "name": "rsi_long_trigger",
+          "value": 55
+        },
+        {
+          "name": "rsi_short_trigger",
+          "value": 50
+        },
+        {
+          "name": "trigger_mode",
+          "value": "inverted_failed_continuation"
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 3.8,
+        "risk_per_trade_pct": 0.0045,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 20
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": false,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=1",
+        "skip_entry_if_atr_percentile_gt_97"
+      ]
+    }
+  ],
+  "complexity_score": 2.1,
+  "status": "ready_to_test",
+  "source": "refinement_cycle",
+  "parent_id": "wf_a5ec2bf3f323",
+  "mutation_type": "param_neighbor_r3",
+  "family_generation": 5,
+  "family_name": "atr_14-ema_100-ema_20-rsi_14"
+}

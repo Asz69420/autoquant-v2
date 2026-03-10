@@ -178,7 +178,15 @@ def main() -> int:
     lessons = _run_skill([PY, str(SKILLS_DIR / "autoquant-lessons" / "query.py"), "--limit", "5"])
     digest = _run_skill([PY, str(SKILLS_DIR / "autoquant-research-fetch" / "query.py"), "--limit", "5", "--unprocessed"])
     scan = _run_skill([PY, str(SKILLS_DIR / "autoquant-market-data" / "market.py"), "--scan"])
-    funding = _run_skill([PY, str(SKILLS_DIR / "autoquant-market-data" / "market.py"), "--funding"])
+    funding_raw = _run_skill([PY, str(SKILLS_DIR / "autoquant-market-data" / "market.py"), "--funding"])
+    # Trim funding to top 5 by absolute rate to save tokens
+    if isinstance(funding_raw, dict) and "rates" in funding_raw:
+        rates = funding_raw["rates"]
+        if isinstance(rates, list) and len(rates) > 5:
+            rates.sort(key=lambda x: abs(float(x.get("rate", 0) or 0)), reverse=True)
+            funding_raw["rates"] = rates[:5]
+            funding_raw["trimmed_from"] = len(rates)
+    funding = funding_raw
 
     db_path = ROOT / "db" / "autoquant.db"
     conn = sqlite3.connect(str(db_path))
@@ -191,7 +199,7 @@ def main() -> int:
                score_edge, score_resilience, score_grade, score_flags,
                metrics, regime_metrics, period_start, period_end
         FROM backtest_results
-        ORDER BY ts_iso DESC LIMIT 10
+        ORDER BY ts_iso DESC LIMIT 5
         """
     ).fetchall()
     conn.close()
@@ -199,16 +207,9 @@ def main() -> int:
     backtest_details = []
     for r in recent_results:
         detail = dict(r)
-        if detail.get("metrics"):
-            try:
-                detail["metrics"] = json.loads(detail["metrics"])
-            except Exception:
-                pass
-        if detail.get("regime_metrics"):
-            try:
-                detail["regime_metrics"] = json.loads(detail["regime_metrics"])
-            except Exception:
-                pass
+        # Strip heavy nested JSON blobs — Quandalf only needs top-level scores
+        detail.pop("metrics", None)
+        detail.pop("regime_metrics", None)
         backtest_details.append(detail)
 
     now = datetime.now(timezone.utc)

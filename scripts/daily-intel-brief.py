@@ -126,8 +126,9 @@ def main():
     if funding.get("funding"):
         lines.append("💸 <b>Funding Extremes</b>")
         for row in funding.get("funding", [])[:3]:
+            row_dict = dict(row) if not isinstance(row, dict) else row
             lines.append(
-                f"<code> {row.get('asset','?')} fr={row.get('funding_rate',0)}</code>"
+                f"<code> {row_dict.get('asset','?')} fr={row_dict.get('funding_rate',0)}</code>"
             )
         lines.append("")
 
