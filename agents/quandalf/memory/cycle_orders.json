@@ -1,24 +1,25 @@
 {
   "cycle_id": 370,
-  "ts_iso": "2026-03-11T05:04:39.423885+00:00",
+  "ts_iso": "2026-03-11T05:26:39.682927+00:00",
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "SOL",
+  "target_asset": "TAO",
   "target_timeframe": "4h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
   "iterate_target": null,
-  "current_regime": "CHOP",
-  "regime_confidence": 50.0,
+  "current_regime": "TREND_UP",
+  "regime_confidence": 20.0,
   "regime_context": {
-    "current": "CHOP",
-    "confidence": 50.0,
-    "adx14": 13.5678,
-    "atr14": 1.84943,
+    "current": "TREND_UP",
+    "confidence": 20.0,
+    "adx14": 28.3376,
+    "atr14": 6.180245,
     "distribution_20bar": {
-      "TRANSITION": 50.0,
-      "CHOP": 50.0
+      "CHOP": 60.0,
+      "TRANSITION": 20.0,
+      "TREND_UP": 20.0
     }
   },
   "external_intel": {
@@ -28,7 +29,7 @@
       "regime-scan"
     ],
     "recent_items": [],
-    "target_asset": "SOL",
+    "target_asset": "TAO",
     "target_timeframe": "4h",
     "count": 0
   },
@@ -65,9 +66,9 @@
   },
   "exploration_targets": {
     "concepts": [
-      "trend pullback continuation after deeper value reclaim into structural support",
-      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
-      "failed breakdown reclaim that must hold before continuation entry"
+      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+      "compression fakeout into re-expansion with directional confirmation"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -79,25 +80,19 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
+      "AXS",
       "ETH",
-      "SOL",
       "TAO"
     ],
     "timeframes": [
-      "1h",
       "4h"
     ]
   },
   "validation_basket": [
     {
-      "asset": "SOL",
+      "asset": "TAO",
       "timeframe": "4h",
       "role": "primary"
-    },
-    {
-      "asset": "SOL",
-      "timeframe": "1h",
-      "role": "adjacent_timeframe"
     },
     {
       "asset": "ETH",
@@ -105,21 +100,16 @@
       "role": "similar_asset"
     },
     {
-      "asset": "TAO",
+      "asset": "AXS",
       "timeframe": "4h",
       "role": "structurally_different_asset"
     }
   ],
   "allowed_lanes": [
     {
-      "asset": "SOL",
+      "asset": "TAO",
       "timeframe": "4h",
       "role": "primary"
-    },
-    {
-      "asset": "SOL",
-      "timeframe": "1h",
-      "role": "adjacent_timeframe"
     },
     {
       "asset": "ETH",
@@ -127,7 +117,7 @@
       "role": "similar_asset"
     },
     {
-      "asset": "TAO",
+      "asset": "AXS",
       "timeframe": "4h",
       "role": "structurally_different_asset"
     }
@@ -137,7 +127,7 @@
     "auto_fetch_missing_data": true,
     "instruction": "Choose the best-fit asset/timeframe based on thesis. Use the validation basket deliberately. If you need a lane inside the supported universe that is not already cached, request it through the spec and the system will prepare the candles before backtest."
   },
-  "thesis_hint": "Explore fresh SOL 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: CHOP (50.0% confidence). Market is choppy/ranging \u2014 favor mean reversion and range-bound strategies, avoid trend-following. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
+  "thesis_hint": "Explore fresh TAO 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: TREND_UP (20.0% confidence). Market is trending up \u2014 favor continuation and pullback entries over mean reversion. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
   "stop_condition": "Write 3-4 materially different specs using the best-fit lanes from the allowed basket. At least one spec should test a meaningfully different trade-management expression, at least one should vary indicator-role assignment rather than only entry conditions, and chosen lanes must be justified by thesis.",
-  "rotation_reason": "Deterministic explore rotation away from prior lane (None / None) while preserving freedom to choose the best-fit lane from the basket."
+  "rotation_reason": "Deterministic explore rotation away from prior lane (SOL / 4h) while preserving freedom to choose the best-fit lane from the basket."
 }
