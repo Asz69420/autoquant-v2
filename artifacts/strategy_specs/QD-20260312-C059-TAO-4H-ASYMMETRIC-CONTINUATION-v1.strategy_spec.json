@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C059-TAO-4H-ASYMMETRIC-CONTINUATION-v1",
+  "cycle_id": 59,
+  "family_name": "tao_4h_asymmetric_continuation_v059",
+  "name": "TAO 4h Asymmetric Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a continuation trigger is taken only after directional pressure reasserts above fast structure, while risk and exit logic are intentionally separated from the trigger to create asymmetric payoff",
+  "expected_regime": "TRANSITION_TO_TREND",
+  "thesis": "The cycle asks for continuation with asymmetric exit logic. TAO 4h is the best fit lane because it retains some trend-up contamination and enough amplitude for continuation to matter, unlike pure-chop ETH 4h. The edge is not every continuation print; it is continuation after reset with exits structured independently from the trigger.",
+  "invalidation_condition": "If TAO continuation remains too sparse or if continuation signals mostly fail before the asymmetric exit design can express itself, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A reset ends, directional pressure returns, price holds above fast structure, and continuation develops into a move large enough that a small first partial plus trailing remainder makes sense.",
+    "why_edge_should_exist": "TAO is the only allowed lane with meaningful trend-up contamination. Separating trigger, stop logic, and runner management should better fit a market where continuation exists but is not constant.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it can produce larger continuation legs after resets, while ETH 4h is too purely chop-oriented for this to be the primary lane.",
+    "indicator_role_map": {
+      "EMA_20": "trigger and short-term directional hold",
+      "EMA_55": "structural invalidation and remaining-position context",
+      "ATR_14": "risk normalization",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure confirmation",
+      "ADX_14": "avoid dead-flat continuation attempts"
+    },
+    "expected_regime": "TRANSITION_TO_TREND",
+    "likely_failure_mode": "What looks like continuation may just be chop rebound, producing entries too late in the move and leaving no room for payoff asymmetry.",
+    "first_refinement_path": "If triggers exist but continuation stalls, tighten the structure-hold requirement before lowering the ADX gate.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than mean reversion, more scratches and small wins, but occasional larger runners that justify the asymmetric design.",
+    "what_would_count_as_success": "TAO 4h produces enough continuation-after-reset trades to clear screen density, and the separated exit logic yields better asymmetry than one-shot exits.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or runner design that never adds value over early partials.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but acceptable because the sequence is simplified to hold-plus-pressure, not breakout ritual",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane in the basket for asymmetric continuation after reset.",
+      "continue_if": "TAO 4h shows enough continuation-after-reset sequences with positive post-cost asymmetry.",
+      "rotate_away_if": "TAO 4h still behaves like chop and kills continuation before it can pay.",
+      "expected_if_right": "Moderate count with a few materially larger runner outcomes."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same continuation structure survives on a slower large-cap lane.",
+      "continue_if": "BTC 4h preserves the trigger-risk-exit separation with cleaner but smaller moves.",
+      "rotate_away_if": "BTC 4h is too choppy and suppresses continuation entirely.",
+      "expected_if_right": "Lower count, cleaner asymmetric payout than TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary_context_check",
+      "why_included": "Ensures the cycle's primary lane is still represented, even if not the best fit for this thesis.",
+      "continue_if": "ETH 4h shows occasional continuation-after-reset structure despite chop bias.",
+      "rotate_away_if": "ETH 4h confirms that continuation is the wrong mechanism here.",
+      "expected_if_right": "Sparse but cleaner holds than TAO."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.12 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 18"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.12 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.96 * ATR_14 below entry or below EMA_55, whichever is tighter",
+      "Take profit: 0.58 * ATR_14 on 20% size",
+      "Trail remaining 80% by 0.85 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.96 * ATR_14 above entry or above EMA_55, whichever is tighter",
+      "Take profit: 0.58 * ATR_14 on 20% size",
+      "Trail remaining 80% by 0.85 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

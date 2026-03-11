@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C055-SOL-4H-VALUE-RECLAIM-SCALEIN-v1",
+  "cycle_id": 55,
+  "family_name": "sol_4h_value_reclaim_scalein_v055",
+  "name": "SOL 4h Value Reclaim Scale-In v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "failed downside auction reclaims value, confirmation improves across bars, and the position scales in only after structure proves the reclaim is holding",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "SOL 4h sits in mixed chop/transition rather than clean trend. That makes raw continuation fragile, but a failed breakdown that reclaims value and then proves hold quality over multiple bars can still create tradable rotations. The edge is not immediate catch-the-knife timing; it is delayed participation after value recovery begins to stabilize.",
+  "invalidation_condition": "If reclaim events remain too sparse, if the second-bar confirmation never arrives often enough, or if reclaimed value is repeatedly lost before price can rotate materially, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, reclaims it, then stabilizes for one more bar so improved confirmation justifies adding rather than going all-in immediately.",
+    "why_edge_should_exist": "In choppy 4h structure, failed breaks often mean-revert once late downside positioning is trapped. Delaying the full size until reclaim quality improves should reduce bad knife-catches without requiring ceremonial confirmation chains.",
+    "asset_timeframe_fit": "SOL 4h is the best fit because it has enough amplitude for post-reclaim rotations to clear costs, while still producing more structure than TAO for a scale-in approach.",
+    "indicator_role_map": {
+      "VWAP": "value line / reclaim anchor",
+      "EMA_20": "first confirmation that price is back above fast structure",
+      "EMA_55": "rotation target and remaining-position management anchor",
+      "ATR_14": "flush threshold and risk sizing",
+      "RSI_14": "stretch qualifier so we only engage after real inventory displacement",
+      "ADX_14": "regime veto against mature trend expansion"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The market may reclaim value briefly and then continue through it, turning the improved-confirmation add into a larger loss rather than a better entry.",
+    "first_refinement_path": "If density is adequate but reclaim quality is poor, reduce the add-on requirement to a smaller structure hold instead of widening the entire setup.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "First entry captures the initial reversal, add-on improves exposure only on stronger holds, and most profits come from rotation back toward medium balance rather than long persistent trends.",
+    "what_would_count_as_success": "Screen shows non-sparse reclaim participation, the second-step add improves average trade quality, and the same behavior appears on ETH 4h or SOL 1h with different density.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or reclaim entries that repeatedly fail before the first scale-out target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate; reclaim, stretch, and ADX veto are compatible, while the add-on uses sequential confirmation rather than a separate rare event",
+      "event_sparsity": "controlled; the trigger is a flush-and-reclaim rather than a multi-bar breakout ceremony",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for testing a value-reclaim scale-in structure under mixed chop and transition.",
+      "continue_if": "SOL 4h produces enough reclaim events and the add-on improves trade quality instead of just adding heat.",
+      "rotate_away_if": "SOL 4h reclaims are too sparse or too unstable after the first bar.",
+      "expected_if_right": "Regular failed-break reclaims with decent travel back toward EMA_55 and better expectancy on the added tranche."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reclaim-and-improve logic survives on a cleaner major with stronger chop reading.",
+      "continue_if": "ETH 4h preserves the same reclaim pattern with slightly cleaner execution.",
+      "rotate_away_if": "ETH 4h loses the mechanism or becomes too inert.",
+      "expected_if_right": "Lower amplitude than SOL but cleaner reclaim holds."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Checks whether the mechanism densifies naturally on 1h without losing its structure.",
+      "continue_if": "SOL 1h delivers healthier trade count with the same reclaim-and-hold sequence.",
+      "rotate_away_if": "SOL 1h becomes noisy and invalidates the scale-in logic.",
+      "expected_if_right": "Higher count, smaller rotations, same two-step confirmation behavior."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.45 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_20 - 0.05 * ATR_14",
+      "RSI_14 >= 43",
+      "ADX_14 <= 24"
+    ],
+    "short": [
+      "High >= VWAP + 0.45 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_20 + 0.05 * ATR_14",
+      "RSI_14 <= 57",
+      "ADX_14 <= 24"
+    ]
+  },
+  "scale_in_rules": {
+    "long": [
+      "Add 40% when next bar closes >= EMA_20 and stays above VWAP"
+    ],
+    "short": [
+      "Add 40% when next bar closes <= EMA_20 and stays below VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Initial stop loss: 0.90 * ATR_14 below first entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Exit remaining 30% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Initial stop loss: 0.90 * ATR_14 above first entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Exit remaining 30% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

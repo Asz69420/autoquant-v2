@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C057-DOGE-4H-STATE-CHANGE-HOLD-EXPANSION-v1",
+  "cycle_id": 57,
+  "family_name": "doge_4h_state_change_hold_expansion_v057",
+  "name": "DOGE 4h State Change Hold Expansion v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a chop-dominant market begins to improve directionally, reclaims fast structure, holds it on the following bar, and then expands enough for runner-friendly continuation",
+  "expected_regime": "TRANSITION_FROM_CHOP",
+  "thesis": "DOGE 4h is the primary lane and currently sits in chop with only low-confidence transition. That makes immediate breakout chasing fragile, but a regime-improvement sequence that reclaims structure and then proves hold quality on the next bar can still create tradable expansion without relying on ceremonial confirmation chains.",
+  "invalidation_condition": "If DOGE 4h rarely transitions out of chop cleanly enough for a hold-and-expand sequence, or if the hold bars repeatedly fail before even modest expansion, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price moves from chop toward directional improvement, reclaims fast structure, confirms that reclaim on the next bar, and then expands as participation improves.",
+    "why_edge_should_exist": "Transition regimes often begin with a value reclaim and a successful hold before the real directional leg. Waiting for the hold should reduce false starts while still leaving enough move for continuation when DOGE actually state-changes.",
+    "asset_timeframe_fit": "DOGE 4h is the best fit because it is expressive enough to produce visible state changes, but still choppy enough that improvement-after-hold is more meaningful than first-break entries.",
+    "indicator_role_map": {
+      "EMA_20": "state-improvement reclaim line",
+      "EMA_55": "higher-structure anchor and runner context",
+      "ATR_14": "hold tolerance and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional improvement confirmation",
+      "ADX_14": "regime-improvement filter so we avoid dead flat conditions"
+    },
+    "expected_regime": "TRANSITION_FROM_CHOP",
+    "likely_failure_mode": "DOGE may print apparent improvement bars inside unresolved chop, causing continuation entries to arrive before any real state change exists.",
+    "first_refinement_path": "If it trades but the runner underperforms, shorten the remainder and increase early scale-out before changing the entry sequence.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A moderate number of continuation attempts, with several modest first-target captures and fewer larger runner outcomes when regime improvement is real.",
+    "what_would_count_as_success": "DOGE 4h produces enough hold-and-expand sequences to clear screen density, and at least one cross-lane shows the same mechanism with cleaner structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated hold confirmations that fail before the first target.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated hold confirmations that fail before the first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because the hold is a simple next-bar confirmation, not a multi-stage ritual",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Primary lane and best fit for transition-state improvement from chop.",
+      "continue_if": "DOGE 4h shows enough reclaim-hold-expansion sequences with positive post-cost first-target behavior.",
+      "rotate_away_if": "DOGE 4h remains too rotational and hold confirmations keep failing immediately.",
+      "expected_if_right": "Moderate participation with several quick first-target captures and some runner follow-through."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same state-change grammar survives on a cleaner major chop lane.",
+      "continue_if": "ETH 4h preserves reclaim-hold-expansion with cleaner structure.",
+      "rotate_away_if": "ETH 4h is too flat or too sparse for this mechanism.",
+      "expected_if_right": "Lower amplitude but cleaner state-change continuation than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same state-change logic survives on a more expressive, trend-contaminated lane.",
+      "continue_if": "TAO 4h keeps the same reclaim-hold-improve sequence with enough structure.",
+      "rotate_away_if": "TAO 4h turns the mechanism into late-entry trend chasing.",
+      "expected_if_right": "Lower count than DOGE but larger continuation legs."
+    }
+  ],
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 14"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar low stays >= EMA_20 - 0.10 * ATR_14 and close remains >= EMA_20"
+    ],
+    "short": [
+      "Enter only if next bar high stays <= EMA_20 + 0.10 * ATR_14 and close remains <= EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 35% size",
+      "Take profit: 0.98 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.78 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 35% size",
+      "Take profit: 0.98 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.78 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

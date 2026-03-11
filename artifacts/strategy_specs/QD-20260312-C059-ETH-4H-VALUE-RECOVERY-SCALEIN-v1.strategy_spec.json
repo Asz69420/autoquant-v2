@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C059-ETH-4H-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 59,
+  "family_name": "eth_4h_value_recovery_scalein_v059",
+  "name": "ETH 4h Value Recovery Scale-In v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "failed downside displacement reclaims value, confirmation improves across bars, and size is added only after recovery proves durable",
+  "expected_regime": "CHOP",
+  "thesis": "ETH 4h is the cleanest primary lane in the basket and is currently pure chop. In that environment, failed excursions should rotate back toward balance more often than they trend cleanly. The edge is not a one-bar catch; it is entering the value recovery and scaling only if the reclaim continues to hold.",
+  "invalidation_condition": "If reclaim events remain too sparse, if the add-on confirmation almost never appears, or if recovered value is routinely lost before partial exits, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price dislocates below fast value, reclaims it, stabilizes for another bar, and then rotates back toward medium balance.",
+    "why_edge_should_exist": "A 100% chop regime should create repeated failed excursions. Using scale-in after improved confirmation expresses that mechanism without demanding perfect timing on the first reclaim bar.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because it is the cleanest chop lane in the allowed basket and offers enough move size to clear costs even with moderate trade count.",
+    "indicator_role_map": {
+      "VWAP": "value reclaim anchor",
+      "EMA_20": "improved-confirmation add trigger",
+      "EMA_55": "medium balance target and remaining-position anchor",
+      "ATR_14": "displacement threshold and stop sizing",
+      "RSI_14": "stretch qualifier",
+      "ADX_14": "regime veto against late trend expansion"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "The reclaim may be temporary noise inside a genuine directional move, causing the scale-in tranche to amplify a bad mean-reversion read.",
+    "first_refinement_path": "If density is acceptable but the add-on hurts expectancy, keep the initial entry and remove or tighten the add condition before touching the base reclaim logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Frequent first-target captures, fewer second-target completions, and most edge coming from balanced recovery rather than runners.",
+    "what_would_count_as_success": "ETH 4h trades enough to avoid sparse failure, first partials clear costs regularly, and the add-on improves average outcome instead of adding heat.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated reclaim failures before first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable; reclaim plus one-bar hold is materially denser than prior ceremonial chains",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit chop lane for value-recovery scale-in logic.",
+      "continue_if": "ETH 4h shows enough reclaim-and-hold events with positive post-cost first-target behavior.",
+      "rotate_away_if": "ETH 4h still produces sparse or unstable reclaims.",
+      "expected_if_right": "Moderate participation with many modest balance recoveries and improved quality on the add tranche."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks portability on another large-cap chop lane with different volatility amplitude.",
+      "continue_if": "BTC 4h preserves the same reclaim-and-recover structure with cleaner execution.",
+      "rotate_away_if": "BTC 4h suppresses the mechanism into low density.",
+      "expected_if_right": "Lower count than ETH but cleaner recovery moves."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism densifies naturally on a faster lane.",
+      "continue_if": "ETH 1h preserves reclaim logic with healthier count and acceptable noise.",
+      "rotate_away_if": "ETH 1h becomes too noisy for scale-in to help.",
+      "expected_if_right": "Higher count, smaller recoveries, same role separation."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.40 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 43",
+      "RSI_14 <= 58",
+      "ADX_14 <= 22"
+    ],
+    "short": [
+      "High >= VWAP + 0.40 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 57",
+      "RSI_14 >= 42",
+      "ADX_14 <= 22"
+    ]
+  },
+  "scale_in_rules": {
+    "long": [
+      "Add 40% when next bar closes >= EMA_20 and remains above VWAP"
+    ],
+    "short": [
+      "Add 40% when next bar closes <= EMA_20 and remains below VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below initial entry",
+      "Take profit: 0.46 * ATR_14 on 35% size",
+      "Take profit: 0.86 * ATR_14 on 35% size",
+      "Exit remaining 30% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above initial entry",
+      "Take profit: 0.46 * ATR_14 on 35% size",
+      "Take profit: 0.86 * ATR_14 on 35% size",
+      "Exit remaining 30% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

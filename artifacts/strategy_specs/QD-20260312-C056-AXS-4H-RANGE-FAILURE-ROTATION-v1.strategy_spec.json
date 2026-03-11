@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C056-AXS-4H-RANGE-FAILURE-ROTATION-v1",
+  "cycle_id": 56,
+  "family_name": "axs_4h_range_failure_rotation_v056",
+  "name": "AXS 4h Range Failure Rotation v1",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "range-edge overshoot loses acceptance and rotates back through balance, but management emphasizes quick partials and strict time exits instead of waiting for full reversal",
+  "expected_regime": "CHOP",
+  "thesis": "AXS 4h is fully choppy in the regime map and structurally different from ETH/TAO. That makes it the best lane for testing whether failed range-edge excursions can be harvested through fast partials and hard time exits, without depending on long clean reversals.",
+  "invalidation_condition": "If AXS range-edge failures remain too sparse or the overshoot-to-balance move is too noisy to clear the first partial consistently, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches beyond a short-term range edge, cannot hold there, re-enters balance, and snaps back toward the center before the next impulse.",
+    "why_edge_should_exist": "AXS 4h sits in pure chop. In that environment, failed edge auctions should outnumber clean continuation events. The right expression is fast monetization of the return toward balance rather than heroic reversal holding.",
+    "asset_timeframe_fit": "AXS 4h is the best fit because it is sufficiently expressive to overshoot range edges, yet still in a regime where balance reversion should dominate.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "range edge detector",
+      "EMA_20": "balance reacceptance trigger",
+      "ATR_14": "overshoot threshold and stop normalization",
+      "RSI_14": "stretch qualifier rather than standalone signal",
+      "ADX_14": "chop filter to avoid fighting real expansion"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "AXS may be too noisy, causing many apparent failed edges that do not travel far enough back into range.",
+    "first_refinement_path": "If first targets hit but remainder loses too much, cut runner size and tighten the time stop before changing entry grammar.",
+    "expected_trade_density": "Moderate-to-high relative to the other specs in this batch.",
+    "expected_outcome_pattern": "A larger number of small-to-medium wins and quick stop-outs, with expectancy carried by density and early partial capture rather than large runners.",
+    "what_would_count_as_success": "AXS 4h generates enough range-failure participation and first partial hit rate is high enough to survive costs.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated range-failure entries that cannot even reach the first partial before reverting.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low relative to the rest of the batch because failed edge auctions in pure chop should recur",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane in the basket for pure chop range-failure rotation.",
+      "continue_if": "AXS 4h shows enough failed edge auctions and early partials clear costs reliably.",
+      "rotate_away_if": "AXS 4h turns range failures into noise with weak return-to-balance behavior.",
+      "expected_if_right": "Higher participation and more fast partial captures than ETH or TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the same failed-edge logic survives on a cleaner chop lane.",
+      "continue_if": "ETH 4h preserves the same return-to-balance pattern with slightly lower count.",
+      "rotate_away_if": "ETH 4h does not express the same failed-edge behavior.",
+      "expected_if_right": "Lower density but cleaner mean reversion than AXS."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "amplitude_check",
+      "why_included": "Tests whether the same concept survives on a larger-amplitude lane with more trend contamination.",
+      "continue_if": "TAO 4h still shows failed edge reacceptance with enough structure.",
+      "rotate_away_if": "TAO 4h turns the setup into trend continuation rather than range rotation.",
+      "expected_if_right": "Fewer but larger balance rotations than AXS."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.16 * ATR_14",
+      "Close >= DONCHIAN_LOW_20",
+      "Close >= EMA_20 - 0.10 * ATR_14",
+      "RSI_14 >= 40",
+      "ADX_14 <= 21"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.16 * ATR_14",
+      "Close <= DONCHIAN_HIGH_20",
+      "Close <= EMA_20 + 0.10 * ATR_14",
+      "RSI_14 <= 60",
+      "ADX_14 <= 21"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.42 * ATR_14 on 50% size",
+      "Take profit: 0.78 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_20 + 0.35 * ATR_14 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.42 * ATR_14 on 50% size",
+      "Take profit: 0.78 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_20 - 0.35 * ATR_14 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

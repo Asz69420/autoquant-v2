@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C056-TAO-4H-DEEP-RESET-PERSISTENCE-v1",
+  "cycle_id": 56,
+  "family_name": "tao_4h_deep_reset_persistence_v056",
+  "name": "TAO 4h Deep Reset Persistence v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "uptrend impulse cools through a deeper pullback, fast structure is reclaimed, and directional pressure reasserts for the next persistence leg",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "TAO 4h is the best home lane for deeper reset continuation because the asset has enough amplitude to flush weak trend participants and still resume higher if the underlying directional pressure remains intact. The edge is not shallow EMA-touch continuation; it is waiting for a meaningful reset and then joining the resumed persistence leg.",
+  "invalidation_condition": "If deeper pullbacks mostly represent broken trend rather than reset opportunity, or if the reclaim and persistence sequence still stays too sparse, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional move pauses through a deeper pullback, fast structure is reclaimed, directional pressure flips back in favor of trend, and the next leg continues.",
+    "why_edge_should_exist": "Trend-up regimes with chop contamination often require larger resets before the next leg can travel. TAO is expressive enough that shallow continuation logic fails, but deeper resets can create cleaner entries with better reward-to-risk.",
+    "asset_timeframe_fit": "TAO 4h fits this thesis best because the move amplitudes are large enough for reset-and-resume behavior, while the 4h frame preserves structural pullbacks instead of micro-noise.",
+    "indicator_role_map": {
+      "EMA_55": "medium-term trend structure hold",
+      "EMA_20": "re-entry trigger after reset",
+      "ATR_14": "required pullback depth and stop normalization",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure reassertion",
+      "RSI_14": "momentum recentering after reset"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "The reset may actually be distribution or reversal, so entries trigger into a broken structure rather than resumed trend.",
+    "first_refinement_path": "If it trades but loses too often, tighten the structure-hold requirement around EMA_55 before touching pullback depth.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer but larger continuation trades, with most edge coming from second-leg persistence after a genuine reset rather than many small scalps.",
+    "what_would_count_as_success": "TAO 4h shows credible reset participation and at least one cross-lane preserves the same reset-and-persist sequence with positive post-cost behavior.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated entries that reveal the reset was really structural failure.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but improved versus prior TAO families because the sequence is simplified to depth, reclaim, and pressure handoff",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane in the basket for meaningful deep-reset continuation behavior.",
+      "continue_if": "TAO 4h shows enough reset-and-persist sequences with acceptable density and asymmetry.",
+      "rotate_away_if": "TAO resets keep becoming broken trends or remain too sparse.",
+      "expected_if_right": "Moderate trade count with larger continuation legs after reset."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reset-persistence mechanism survives on a cleaner major.",
+      "continue_if": "ETH 4h preserves the same behavior with cleaner but smaller second legs.",
+      "rotate_away_if": "ETH 4h loses the sequence entirely or becomes too inert.",
+      "expected_if_right": "Lower amplitude, cleaner reset continuation than TAO."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether the concept survives on a thinner higher-noise lane.",
+      "continue_if": "AXS 4h preserves reset continuation with enough structure.",
+      "rotate_away_if": "AXS noise overwhelms the reset-and-resume logic.",
+      "expected_if_right": "Messier but sharper continuation bursts than ETH."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.55 * ATR_14",
+      "Close >= EMA_20 - 0.05 * ATR_14",
+      "Close >= EMA_55 - 0.18 * ATR_14",
+      "PLUS_DI_14 >= 0.92 * MINUS_DI_14",
+      "RSI_14 >= 47"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.55 * ATR_14",
+      "Close <= EMA_20 + 0.05 * ATR_14",
+      "Close <= EMA_55 + 0.18 * ATR_14",
+      "MINUS_DI_14 >= 0.92 * PLUS_DI_14",
+      "RSI_14 <= 53"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.98 * ATR_14 below entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.12 * ATR_14 on 25% size",
+      "Take profit: 1.60 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.82 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.98 * ATR_14 above entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.12 * ATR_14 on 25% size",
+      "Take profit: 1.60 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.82 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

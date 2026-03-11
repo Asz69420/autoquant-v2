@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C055-TAO-4H-FAILED-BREAKDOWN-HOLD-v1",
+  "cycle_id": 55,
+  "family_name": "tao_4h_failed_breakdown_hold_v055",
+  "name": "TAO 4h Failed Breakdown Hold v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a breakdown fails, price reclaims structure, then must hold that reclaim before continuation into the reversal leg is allowed",
+  "expected_regime": "TRANSITION",
+  "thesis": "TAO 4h is not clean chop, but its regime mix is mostly chop with some trend-up and transition. That makes failed breakdowns interesting only if the reclaim actually holds. The edge is not the reclaim bar itself; it is continuation after the market proves the failed break has been absorbed.",
+  "invalidation_condition": "If failed breakdowns do not occur often enough, if hold confirmation remains too sparse, or if TAO tends to overshoot back through the reclaim line before continuation can develop, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks below short-term structure, quickly reclaims it, holds that reclaim on the next bar, and then continues higher as the failed downside move unwinds.",
+    "why_edge_should_exist": "TAO is expressive enough that failed breaks can create sharp unwind moves, but only when the reclaim is real. Requiring a hold should separate actual absorption from one-bar noise.",
+    "asset_timeframe_fit": "TAO 4h fits this mechanism because the asset produces meaningful flushes and unwinds on 4h, while still allowing enough room for continuation after a reclaim hold.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "breakdown level and reclaim line",
+      "EMA_20": "fast support hold after reclaim",
+      "ATR_14": "break distance and stop sizing",
+      "RSI_14": "flush qualifier so the breakdown was meaningful",
+      "EMA_55": "runner management and structural take-profit zone"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "TAO may reclaim quickly but fail to hold, causing continuation entries to arrive into exhaustion rather than a real unwind trend.",
+    "first_refinement_path": "If the hold logic trades but overextends too early, move more profit to the first scale-out before touching the entry grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A smaller number of sharper reversal-continuation moves, with early partials doing most of the work and occasional runners when the unwind persists.",
+    "what_would_count_as_success": "TAO 4h shows a credible count of failed-breakdown holds and reaches early targets often enough to validate the continuation-after-hold thesis.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or reclaim-hold entries that repeatedly fail before the first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate; reclaim and hold are sequential, not redundant, and RSI is only a flush qualifier",
+      "event_sparsity": "moderate but still denser than the killed failed-break repair families because the rules are simpler and role-separated",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane in the basket for expressive failed-breakdown unwinds that can continue after reclaim hold.",
+      "continue_if": "TAO 4h generates enough failed-breakdown holds and early scale-outs clear costs consistently.",
+      "rotate_away_if": "TAO 4h reclaim holds are too rare or too unstable.",
+      "expected_if_right": "Fewer but larger continuation-after-reclaim trades than ETH or SOL."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "major_crosscheck",
+      "why_included": "Checks whether the same failed-breakdown hold logic survives on a more liquid major lane.",
+      "continue_if": "SOL 4h shows the same absorption-and-hold behavior with slightly cleaner structure.",
+      "rotate_away_if": "SOL 4h invalidates the mechanism or reduces it to noise.",
+      "expected_if_right": "Slightly higher count than TAO with smaller average amplitude."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe_density_check",
+      "why_included": "Tests whether the mechanism becomes dense enough on a faster lane without losing the hold requirement.",
+      "continue_if": "SOL 1h preserves reclaim-hold continuation with improved trade count.",
+      "rotate_away_if": "SOL 1h turns the pattern into noisy false holds.",
+      "expected_if_right": "Higher participation with smaller but more frequent early target hits."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_20", "EMA_55", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.20 * ATR_14",
+      "Close >= DONCHIAN_LOW_20",
+      "Close >= EMA_20 - 0.08 * ATR_14",
+      "RSI_14 >= 42"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.20 * ATR_14",
+      "Close <= DONCHIAN_HIGH_20",
+      "Close <= EMA_20 + 0.08 * ATR_14",
+      "RSI_14 <= 58"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar low stays >= DONCHIAN_LOW_20 - 0.05 * ATR_14 and close remains above EMA_20"
+    ],
+    "short": [
+      "Enter only if next bar high stays <= DONCHIAN_HIGH_20 + 0.05 * ATR_14 and close remains below EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 1.05 * ATR_14 on 30% size",
+      "Exit remaining 30% on loss of EMA_20 or touch of EMA_55",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 1.05 * ATR_14 on 30% size",
+      "Exit remaining 30% on regain of EMA_20 or touch of EMA_55",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

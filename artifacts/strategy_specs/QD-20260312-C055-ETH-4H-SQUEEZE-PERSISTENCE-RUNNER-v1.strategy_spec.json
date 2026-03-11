@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C055-ETH-4H-SQUEEZE-PERSISTENCE-RUNNER-v1",
+  "cycle_id": 55,
+  "family_name": "eth_4h_squeeze_persistence_runner_v055",
+  "name": "ETH 4h Squeeze Persistence Runner v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression resolves, but entry waits for persistence after the first breakout bar and de-risks quickly if expansion fails to build",
+  "expected_regime": "CHOP_TO_EXPANSION",
+  "thesis": "ETH 4h is 100% chop in the regime snapshot, which is exactly where fake first breaks happen. Instead of buying the first expansion print, the edge should come from joining only when compression starts to persist across bars, then using a time-based de-risk if the supposed expansion stalls.",
+  "invalidation_condition": "If squeezes do not occur often enough, if persistence confirmation is still too sparse, or if most post-squeeze moves mean-revert immediately after entry, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, price starts to leave the compression, a second bar confirms persistence, and the trade either expands quickly or gets de-risked by time.",
+    "why_edge_should_exist": "The first breakout bar in chop is often a trap. Requiring persistence on the next bar should remove some false starts while keeping enough opportunities because compression regimes cluster.",
+    "asset_timeframe_fit": "ETH 4h is the cleanest lane in the allowed basket for a compression-persistence idea because its current regime is deeply choppy and its structure is cleaner than TAO for squeeze behavior.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "post-breakout directional bias",
+      "ATR_14": "stop and trailing normalization",
+      "PLUS_DI_14/MINUS_DI_14": "persistence handoff after squeeze release",
+      "ADX_14": "confirm that expansion is starting rather than already exhausted"
+    },
+    "expected_regime": "CHOP_TO_EXPANSION",
+    "likely_failure_mode": "The squeeze release may not persist enough on a second bar, making the strategy still too sparse or causing entry after the best part of the move is already gone.",
+    "first_refinement_path": "If signals exist but runner expectancy is poor, shorten the runner and increase early profit-taking before loosening the persistence rule.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than mean reversion, but better asymmetry when real post-squeeze expansion develops; most losing trades should be cut by the time-based de-risk.",
+    "what_would_count_as_success": "Screen shows non-zero, credible squeeze participation and the time-based de-risk contains false breaks while runners benefit from real persistence.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or the second-bar persistence rule still admits mostly failed breaks.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate; compression and persistence are sequential rather than redundant",
+      "event_sparsity": "moderate but deliberate; using persistence-after-break rather than multi-stage breakout ritual",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best fit for compression-to-persistence logic in a confirmed chop environment.",
+      "continue_if": "ETH 4h produces enough squeezes that survive into a second-bar hold with positive post-cost asymmetry.",
+      "rotate_away_if": "ETH 4h squeezes remain too rare or persistence comes too late to matter.",
+      "expected_if_right": "Moderate participation with occasional strong runner outcomes and contained failed-release losses."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "higher_beta_check",
+      "why_included": "Tests whether the same squeeze-persistence grammar becomes more expressive on a higher-beta major.",
+      "continue_if": "SOL 4h shows the same pattern with slightly higher amplitude and acceptable noise.",
+      "rotate_away_if": "SOL 4h turns the pattern into breakout noise rather than persistence.",
+      "expected_if_right": "Fewer clean traps than ETH, larger runner legs when persistence holds."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether the logic survives a more explosive asset without collapsing into chaos.",
+      "continue_if": "TAO 4h preserves squeeze persistence with enough structure.",
+      "rotate_away_if": "TAO 4h invalidates the persistence idea with over-violent fake releases.",
+      "expected_if_right": "Lower count but larger winners than ETH 4h."
+    }
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 12"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar also closes >= EMA_20 and high exceeds prior bar high"
+    ],
+    "short": [
+      "Enter only if next bar also closes <= EMA_20 and low breaks prior bar low"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.60 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.85 * ATR_14",
+      "De-risk to break-even if no 0.35 * ATR_14 expansion within 2 bars",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.60 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.85 * ATR_14",
+      "De-risk to break-even if no 0.35 * ATR_14 expansion within 2 bars",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

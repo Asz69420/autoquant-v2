@@ -1,85 +1,113 @@
 {
-  "cycle_id": 53,
-  "ts_iso": "2026-03-11T20:04:07.340807+00:00",
+  "cycle_id": 59,
+  "ts_iso": "2026-03-11T20:43:02.750476+00:00",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1",
+      "strategy_spec_id": "QD-20260312-C059-ETH-4H-VALUE-RECOVERY-SCALEIN-v1",
       "decision": "abort",
-      "rationale": "I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.",
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "diagnosis_category": "too sparse",
       "queue_decisions": [
         {
-          "queue_id": "rq_0dcd0c5fea87",
+          "queue_id": "rq_ff78f0954d28",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_0dcd0c5fea87 because its evidence was integrity_skip:zero_trades_both_samples.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_ff78f0954d28: integrity_skip:zero_trades_both_samples."
         },
         {
-          "queue_id": "rq_935119bcda99",
+          "queue_id": "rq_f08ffb5b6c57",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_935119bcda99 because its evidence was integrity_skip:zero_trades_both_samples.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_f08ffb5b6c57: integrity_skip:zero_trades_both_samples."
         },
         {
-          "queue_id": "rq_65360bd09a8c",
+          "queue_id": "rq_feae0371ed1a",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_65360bd09a8c because its evidence was too sparse / zero-trade behavior.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_feae0371ed1a: row evidence reviewed."
         }
       ]
     },
     {
-      "strategy_spec_id": "QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1",
+      "strategy_spec_id": "QD-20260312-C059-TAO-4H-ASYMMETRIC-CONTINUATION-v1",
       "decision": "abort",
-      "rationale": "I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.",
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "diagnosis_category": "too sparse",
       "queue_decisions": [
         {
-          "queue_id": "rq_a5ea7255c4ac",
+          "queue_id": "rq_e71eb7614464",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_a5ea7255c4ac because its evidence was integrity_skip:zero_trades_both_samples.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_e71eb7614464: integrity_skip:zero_trades_both_samples."
         },
         {
-          "queue_id": "rq_e61cdb8bb63d",
+          "queue_id": "rq_40baa9731560",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_e61cdb8bb63d because its evidence was integrity_skip:zero_trades_both_samples.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_40baa9731560: integrity_skip:zero_trades_both_samples."
         },
         {
-          "queue_id": "rq_0d33ba91cf55",
+          "queue_id": "rq_7338bd30594b",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_0d33ba91cf55 because its evidence was too sparse / zero-trade behavior.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_7338bd30594b: row evidence reviewed."
         }
       ]
     },
     {
-      "strategy_spec_id": "QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1",
+      "strategy_spec_id": "QD-20260312-C059-BTC-4H-RETEST-HOLD-TIMEOUT-v1",
       "decision": "abort",
-      "rationale": "I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.",
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "diagnosis_category": "too sparse",
       "queue_decisions": [
         {
-          "queue_id": "rq_ad16c0bfb974",
+          "queue_id": "rq_928be11e8b8f",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_ad16c0bfb974 because its evidence was integrity_skip:zero_trades_both_samples.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_928be11e8b8f: integrity_skip:zero_trades_both_samples."
         },
         {
-          "queue_id": "rq_85d6f261ec9b",
+          "queue_id": "rq_4bac78340bd6",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_85d6f261ec9b because its evidence was integrity_skip:zero_trades_both_samples.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_4bac78340bd6: integrity_skip:zero_trades_both_samples."
         },
         {
-          "queue_id": "rq_cc974108812f",
+          "queue_id": "rq_9cb7de155eca",
           "decision": "abort",
-          "rationale": "I aborted queue row rq_cc974108812f because its evidence was too sparse / zero-trade behavior.",
-          "source_result_id": null
+          "rationale": "Legacy queue decision normalized for rq_9cb7de155eca: row evidence reviewed."
         }
       ]
     }
   ],
-  "jobs": []
+  "jobs": [
+    {
+      "queue_id": "rq_ff78f0954d28",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_f08ffb5b6c57",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_feae0371ed1a",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_e71eb7614464",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_40baa9731560",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_7338bd30594b",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_928be11e8b8f",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_4bac78340bd6",
+      "decision": "abort"
+    },
+    {
+      "queue_id": "rq_9cb7de155eca",
+      "decision": "abort"
+    }
+  ]
 }

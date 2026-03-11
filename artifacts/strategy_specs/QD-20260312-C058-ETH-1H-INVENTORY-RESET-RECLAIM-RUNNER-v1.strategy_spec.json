@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C058-ETH-1H-INVENTORY-RESET-RECLAIM-RUNNER-v1",
+  "cycle_id": 58,
+  "family_name": "eth_1h_inventory_reset_reclaim_runner_v058",
+  "name": "ETH 1h Inventory Reset Reclaim Runner v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "short-term inventory gets stretched away from value, price reclaims fast value, and the trade monetizes the rotation with an early partial plus a smaller structure-managed runner",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 1h is the best fit lane for a dense inventory-reset continuation concept because the regime snapshot is chop-dominant with transition contamination. The edge is not a static oversold bounce. It is trading the reclaim after inventory gets offside, then letting a smaller core ride only if the reset becomes a larger directional move.",
+  "invalidation_condition": "If reclaim events do not occur frequently enough, if the first partial hit rate is poor, or if reclaims repeatedly fail before price can rotate beyond costs, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from short-term value, reclaims it as offside inventory exits, and then rotates back toward medium balance with occasional extension beyond that first move.",
+    "why_edge_should_exist": "Choppy 1h structure tends to punish late extension entries and reward reclaim-to-balance moves. ETH is active enough to produce repeated resets while remaining cleaner than AXS.",
+    "asset_timeframe_fit": "ETH 1h is the natural home for this mechanism because it should be much denser than 4h while still maintaining enough structure for reclaims to matter.",
+    "indicator_role_map": {
+      "VWAP": "fast value / reclaim trigger",
+      "EMA_55": "medium balance target and runner management anchor",
+      "ATR_14": "stretch threshold and stop normalization",
+      "RSI_14": "inventory stretch qualifier",
+      "ADX_14": "regime veto against mature expansion"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The reclaim may happen inside a real breakout, turning the supposed reset into a bad fade against genuine directional movement.",
+    "first_refinement_path": "If density is good but runner expectancy is poor, cut runner share and keep more profit in the early scale-out instead of adding more filters.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Many first-target hits, a solid number of second-target hits, and only occasional runner contribution when the reset becomes a larger impulse.",
+    "what_would_count_as_success": "Screen shows credible density, strong first-target capture rate, and at least one cross-lane preserves the same reclaim structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated reclaim failures before first partial.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low because the trigger is stretch-plus-reclaim rather than a ceremonial chain",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for dense inventory-reset reclaim logic.",
+      "continue_if": "ETH 1h shows repeated reclaim rotations with positive post-cost first-target behavior.",
+      "rotate_away_if": "ETH 1h reclaims are too shallow or too noisy to monetize.",
+      "expected_if_right": "High enough participation to validate the mechanism, with most edge coming from early partials."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reclaim logic survives on another liquid major with different volatility amplitude.",
+      "continue_if": "BTC 1h preserves the same reclaim-to-balance sequence with cleaner execution.",
+      "rotate_away_if": "BTC 1h suppresses the setup into low density.",
+      "expected_if_right": "Lower count than ETH but cleaner reclaims."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism survives slower structure without collapsing into sparse behavior.",
+      "continue_if": "ETH 4h still trades enough to show the same reclaim thesis structurally.",
+      "rotate_away_if": "ETH 4h reintroduces sparse failure.",
+      "expected_if_right": "Reduced count, same reclaim profile."
+    }
+  ],
+  "indicators": [
+    "VWAP",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.35 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 44",
+      "RSI_14 <= 60",
+      "ADX_14 <= 24"
+    ],
+    "short": [
+      "High >= VWAP + 0.35 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 56",
+      "RSI_14 >= 40",
+      "ADX_14 <= 24"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.42 * ATR_14 on 50% size",
+      "Take profit: 0.78 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or loss of VWAP",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.42 * ATR_14 on 50% size",
+      "Take profit: 0.78 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or regain of VWAP",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

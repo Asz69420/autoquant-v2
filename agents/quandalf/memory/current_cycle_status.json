@@ -1,16 +1,20 @@
 {
-  "cycle_id": 55,
+  "cycle_id": 59,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [],
-  "specs_produced": 0,
+  "spec_paths": [
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C059-ETH-4H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C059-TAO-4H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C059-BTC-4H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json"
+  ],
+  "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "trend pullback continuation after deeper value reclaim into structural support",
-      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
-      "failed breakdown reclaim that must hold before continuation entry"
+      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -22,8 +26,8 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
+      "BTC",
       "ETH",
-      "SOL",
       "TAO"
     ],
     "timeframes": [
@@ -39,13 +43,12 @@
   "rationale": "pending",
   "family_kill_events": [
     {
-      "ts_iso": "2026-03-11T12:39:10.353179+00:00",
-      "family": "tao_reset_pullback_persistence_v051",
+      "ts_iso": "2026-03-11T20:44:44.662159+00:00",
+      "family": "tao_4h_deep_reset_persistence_v056",
       "reason": "screen-stage density below 30 trades"
     }
   ],
-  "target_asset": "SOL",
+  "target_asset": "BTC",
   "target_timeframe": "4h",
-  "specific_family_to_iterate": null,
-  "fallback_source": false
+  "specific_family_to_iterate": null
 }

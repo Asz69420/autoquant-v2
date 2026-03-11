@@ -875,46 +875,57 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
-    if passed > 0:
-        status_emoji = "✅"
-    elif integrity_zero_trades > 0 or executed_backtests > 0:
-        status_emoji = "⚠️"
+    decisions_complete = unresolved_queue == 0 and unresolved == 0 and (decided_total > 0 or executed_backtests == 0)
+    if decisions_complete:
+        if passed > 0:
+            status_emoji = "✅"
+        elif integrity_zero_trades > 0 or executed_backtests > 0:
+            status_emoji = "⚠️"
+        else:
+            status_emoji = "🔄"
     else:
-        status_emoji = "🔄"
+        status_emoji = "🔄" if executed_backtests == 0 else "⚠️"
 
     note_candidates = []
-    if passed > 0 and best_qs > 0:
-        note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
-    if unresolved_queue > 0:
-        note_candidates.append(f"This {mode} cycle is missing {unresolved_queue} explicit backtest decision{'s' if unresolved_queue != 1 else ''} from Quandalf. Every executed backtest row must resolve to pass, refine, or abort before the cycle can be considered complete.")
-    elif executed_backtests == 0 and unresolved > 0:
-        note_candidates.append(f"This {mode} cycle is missing {unresolved} explicit strategy decision{'s' if unresolved != 1 else ''} from Quandalf. Every strategy must resolve to pass, refine, or abort before the cycle can be considered complete.")
-    elif integrity_zero_trades > 0 and executed_backtests > 0:
-        note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} backtest row{'s' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to iterate.")
-    if executed_backtests == 0 and generated > 0 and integrity_zero_trades == 0:
-        note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still waiting for evidence before any strategy gets advanced or cut.")
-    if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
-        note_candidates.append(f"This {mode} cycle tested fresh ideas but none cleared the evidence gate, so the right move is to abandon these mechanisms and try a different concept or management style.")
-    if family_aborted > 0 and best_qs > 0:
-        note_candidates.append(f"This {mode} cycle cut {family_aborted} weak family{'ies' if family_aborted != 1 else ''} while preserving the better branch with best QS {best_qs:.2f} for the next decision pass.")
-    if metrics.get("external_results_present"):
-        note_candidates.append(f"This {mode} cycle is being judged only on its own batch, while {metrics['external_rows']} off-cycle result{'s' if metrics['external_rows'] != 1 else ''} were intentionally ignored to keep the card honest.")
-    if not note_candidates:
-        note_candidates.append(f"This {mode} cycle is still building evidence, with active families under test and no convincing result yet strong enough to change direction.")
+    if not decisions_complete:
+        if unresolved_queue > 0:
+            note_candidates.append(f"This {mode} cycle has {executed_backtests} executed backtest row{'s' if executed_backtests != 1 else ''}, with {unresolved_queue} still awaiting Quandalf's explicit pass / refine / abort judgment. This is in-flight evidence, not a final verdict.")
+        elif executed_backtests == 0 and generated > 0:
+            note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still gathering evidence before any strategy gets advanced or cut.")
+        else:
+            note_candidates.append(f"This {mode} cycle is still in progress. Evidence collection is ahead of decision closure, so final pass / refine / abort counts are intentionally withheld until Quandalf finishes judging the batch.")
+    else:
+        if passed > 0 and best_qs > 0:
+            note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
+        if integrity_zero_trades > 0 and executed_backtests > 0:
+            note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} backtest row{'s' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to refine.")
+        if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
+            note_candidates.append(f"This {mode} cycle tested fresh ideas but none cleared the evidence gate, so the right move is to abandon these mechanisms and try a different concept or management style.")
+        if family_aborted > 0 and best_qs > 0:
+            note_candidates.append(f"This {mode} cycle cut {family_aborted} weak family{'ies' if family_aborted != 1 else ''} while preserving the better branch with best QS {best_qs:.2f} for the next decision pass.")
+        if metrics.get("external_results_present"):
+            note_candidates.append(f"This {mode} cycle is being judged only on its own batch, while {metrics['external_rows']} off-cycle result{'s' if metrics['external_rows'] != 1 else ''} were intentionally ignored to keep the card honest.")
+        if not note_candidates:
+            note_candidates.append(f"This {mode} cycle completed its judgment pass, but no convincing result was strong enough to change direction.")
 
     note = next((candidate for candidate in note_candidates if len(candidate) <= 350), note_candidates[-1])
     if len(note) > 350:
         note = f"This {mode} cycle is still building evidence, with best QS {best_qs:.2f} and the next decision waiting on cleaner current-cycle results." if best_qs > 0 else f"This {mode} cycle is still building evidence, and the next decision is waiting on cleaner current-cycle backtest results."
 
     lines = []
-    lines.append("🍳 Cooking")
+    lines.append("🍳 Cooking" if not decisions_complete else "🔮 Reflection")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○────────────activity────────────")
     lines.append(f"Generated: {generated}")
     lines.append(f"Backtests: {backtests}")
-    lines.append(f"Passed: {passed}")
-    lines.append(f"Iterated: {iterated}")
-    lines.append(f"Aborted: {aborted}")
+    if decisions_complete:
+        lines.append(f"Passed: {passed}")
+        lines.append(f"Iterated: {iterated}")
+        lines.append(f"Aborted: {aborted}")
+    else:
+        lines.append(f"Awaiting judgment: {unresolved_queue if unresolved_queue > 0 else unresolved}")
+        lines.append(f"Decision phase: in progress")
+        lines.append(f"Final verdicts: pending")
     lines.append("○─────────────note─────────────")
     lines.append(note)
 

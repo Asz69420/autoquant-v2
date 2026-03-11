@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C057-TAO-4H-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 57,
+  "family_name": "tao_4h_delayed_retest_continuation_v057",
+  "name": "TAO 4h Delayed Retest Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a breakout is not chased immediately; price must retest the broken level and hold it before continuation is entered",
+  "expected_regime": "TRANSITION_TO_TREND",
+  "thesis": "The requested continuation axis makes more sense on TAO 4h than DOGE 4h because TAO carries some trend-up contamination and stronger amplitude. The edge is not the first break; it is the delayed entry after retest proves the new direction is being accepted.",
+  "invalidation_condition": "If TAO 4h retests are too sparse, or if retests frequently fail back into the old range before continuation develops, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks structure, retests the broken boundary, holds it, and then continues in the new direction.",
+    "why_edge_should_exist": "Delayed retests exploit trapped countertrend inventory while avoiding the poor location of first-break entries. TAO has enough amplitude that a successful retest can still leave meaningful continuation room.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it mixes enough trend potential with enough volatility to make retests meaningful instead of flat. DOGE 4h is currently too chop-heavy for this concept to be the primary lane.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "breakout boundary and retest zone",
+      "EMA_20": "short-term directional bias after retest",
+      "ATR_14": "retest tolerance and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation after the retest hold",
+      "ADX_14": "state-change qualifier from range toward expansion"
+    },
+    "expected_regime": "TRANSITION_TO_TREND",
+    "likely_failure_mode": "The market may still be chop-dominant, turning every retest into a range re-entry instead of a real continuation move.",
+    "first_refinement_path": "If it trades but false retests dominate, strengthen the retest hold requirement before widening the breakout zone.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower trade count than mean reversion, but better asymmetry when continuation survives the retest.",
+    "what_would_count_as_success": "TAO 4h produces enough accepted retest continuations to clear screen density, and ETH or DOGE shows a weaker but still visible version of the same grammar.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or repeated retests that collapse immediately back through the breakout line.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but acceptable because the delayed retest is simpler and denser than previous breakout-persistence theater",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best basket lane for a delayed-retest continuation concept.",
+      "continue_if": "TAO 4h shows enough accepted retests with positive post-cost asymmetry.",
+      "rotate_away_if": "TAO 4h retests mostly fail back into chop.",
+      "expected_if_right": "Moderate participation with several strong continuation runners."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Tests whether the same delayed-retest logic survives on a cleaner major.",
+      "continue_if": "ETH 4h preserves accepted retests with cleaner, smaller continuation legs.",
+      "rotate_away_if": "ETH 4h is too flat and range-bound for this mechanism.",
+      "expected_if_right": "Lower amplitude, cleaner retest continuation than TAO."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary_context_check",
+      "why_included": "Ensures the cycle's primary lane is still represented in the basket, even if it is not the best fit for this thesis.",
+      "continue_if": "DOGE 4h can still express delayed retests with acceptable structure.",
+      "rotate_away_if": "DOGE 4h remains too chop-dominant for continuation-after-retest.",
+      "expected_if_right": "Messier but occasionally explosive continuation after accepted retests."
+    }
+  ],
+  "indicators": [
+    "DONCHIAN_20",
+    "EMA_20",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Low <= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 16"
+    ],
+    "short": [
+      "Close <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "High >= DONCHIAN_LOW_20 - 0.18 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 16"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.90 * ATR_14 below entry",
+      "Take profit: 0.66 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.88 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.90 * ATR_14 above entry",
+      "Take profit: 0.66 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.88 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

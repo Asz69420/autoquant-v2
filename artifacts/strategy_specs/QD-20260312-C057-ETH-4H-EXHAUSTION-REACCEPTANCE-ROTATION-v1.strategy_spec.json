@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C057-ETH-4H-EXHAUSTION-REACCEPTANCE-ROTATION-v1",
+  "cycle_id": 57,
+  "family_name": "eth_4h_exhaustion_reacceptance_rotation_v057",
+  "name": "ETH 4h Exhaustion Reacceptance Rotation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "price exhausts away from short-term balance, reaccepts prior value, and rotates back toward medium balance in a chop-dominant environment",
+  "expected_regime": "CHOP",
+  "thesis": "The cycle order centers DOGE, but the best-fit lane for exhaustion reacceptance is ETH 4h because it is pure chop with cleaner structure. The edge is not raw oscillator reversal; it is the market losing acceptance away from value and then rotating back through balance once value is reclaimed.",
+  "invalidation_condition": "If ETH 4h reacceptance events do not occur often enough, or if reclaiming value still fails to produce enough rotation to clear costs, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A chop-dominant market stretches away from value, loses that excursion, reclaims fast value, and reverts toward medium balance.",
+    "why_edge_should_exist": "In pure chop, failed directional extensions should outnumber sustained breakouts. ETH 4h is clean enough that value reacceptance can be traded as a mechanism rather than disguised noise.",
+    "asset_timeframe_fit": "ETH 4h is a better fit than DOGE for this specific thesis because the regime is more clearly chop and the structure is less erratic, which improves the odds that reacceptance signals are real.",
+    "indicator_role_map": {
+      "VWAP": "prior value / reacceptance line",
+      "EMA_55": "medium balance target",
+      "ATR_14": "exhaustion distance and stop normalization",
+      "RSI_14": "stretch qualifier",
+      "ADX_14": "chop veto against mature expansion"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "Reclaims may happen too early inside real breakouts, causing repeated mean-reversion entries against genuine directional continuation.",
+    "first_refinement_path": "If it trades but first-target hit rate is weak, reduce target ambition before adding more filters.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Frequent modest reversions back toward balance, with expectancy carried by density and disciplined exits more than big runners.",
+    "what_would_count_as_success": "ETH 4h shows non-sparse reacceptance participation, first-target capture rate is healthy, and DOGE or TAO preserves the same structure in a noisier form.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or value reacceptance entries that repeatedly fail before first partial.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low relative to recent failed families because this is stretch-plus-reacceptance, not ceremonial persistence",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane in the basket for exhaustion reacceptance under clean chop conditions.",
+      "continue_if": "ETH 4h produces enough reacceptance rotations with positive post-cost first-target behavior.",
+      "rotate_away_if": "ETH 4h reacceptance is too shallow or too sparse.",
+      "expected_if_right": "Moderate-to-high participation with many first and second target captures."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Ensures the mechanism still exists on the instructed primary lane, even if ETH is the better fit.",
+      "continue_if": "DOGE 4h preserves the same reacceptance rotation with enough density.",
+      "rotate_away_if": "DOGE 4h is too erratic and destroys the structure.",
+      "expected_if_right": "Higher amplitude, noisier reacceptance than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same failed-extension logic survives a more trend-contaminated asset.",
+      "continue_if": "TAO 4h still shows failed excursions snapping back toward value.",
+      "rotate_away_if": "TAO 4h turns the setup into trend-fading nonsense.",
+      "expected_if_right": "Fewer but larger balance rotations than ETH."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.42 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 42",
+      "RSI_14 <= 58",
+      "ADX_14 <= 22"
+    ],
+    "short": [
+      "High >= VWAP + 0.42 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 58",
+      "RSI_14 >= 42",
+      "ADX_14 <= 22"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.84 * ATR_14 below entry",
+      "Take profit: 0.44 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.84 * ATR_14 above entry",
+      "Take profit: 0.44 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}
