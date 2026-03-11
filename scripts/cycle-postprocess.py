@@ -495,6 +495,7 @@ def fetch_cycle_queue_metrics(cycle_id):
         "queued": 0,
         "running": 0,
         "done": 0,
+        "skipped": 0,
         "terminal_failures": 0,
         "integrity_skips": 0,
         "retryable_failures": 0,
@@ -516,9 +517,11 @@ def fetch_cycle_queue_metrics(cycle_id):
                 out["done_terminal"] += 1
             elif '"status": "integrity_skip"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
                 out["integrity_skips"] += 1
-                out["done_ok"] += 1
             else:
                 out["done_ok"] += 1
+        elif status_key == "skipped":
+            if '"status": "integrity_skip"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
+                out["integrity_skips"] += 1
         elif status_key == "queued" and '"status": "retry"' in note_text:
             out["retryable_failures"] += 1
     return out
@@ -602,9 +605,11 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     queue_metrics = fetch_cycle_queue_metrics(cycle_id)
     queued_backtests = int(queue_metrics.get("total") or 0) or spec_variant_job_count(manifest_spec_paths or spec_paths)
     queue_done = int(queue_metrics.get("done") or 0)
+    queue_skipped = int(queue_metrics.get("skipped") or 0)
     queue_running = int(queue_metrics.get("running") or 0)
     queue_pending = int(queue_metrics.get("queued") or 0)
     queue_terminal_failures = int(queue_metrics.get("terminal_failures") or 0)
+    queue_integrity_skips = int(queue_metrics.get("integrity_skips") or 0)
     queue_done_ok = int(queue_metrics.get("done_ok") or max(0, queue_done - queue_terminal_failures))
     if queued_backtests < completed_backtests:
         queued_backtests = completed_backtests
@@ -660,7 +665,9 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "queue_pending": queue_pending,
         "queue_running": queue_running,
         "queue_done": queue_done,
+        "queue_skipped": queue_skipped,
         "queue_done_ok": queue_done_ok,
+        "queue_integrity_skips": queue_integrity_skips,
         "queue_terminal_failures": queue_terminal_failures,
         "queue_retryable_failures": int(queue_metrics.get("retryable_failures") or 0),
         "stage_kpis": {
@@ -669,6 +676,8 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
             "queue_pending": queue_pending,
             "queue_running": queue_running,
             "queue_done_ok": queue_done_ok,
+            "queue_skipped": queue_skipped,
+            "queue_integrity_skips": queue_integrity_skips,
             "queue_terminal_failures": queue_terminal_failures,
             "db_results": completed_backtests,
             "pass": pass_count,
@@ -1784,6 +1793,13 @@ def main():
             "observation",
             f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
         )
+    elif log_card_sent and int(metrics.get("queue_integrity_skips", 0) or 0) > 0:
+        post_agent_message(
+            "logron",
+            "oragorn",
+            "observation",
+            f"Cycle batch postprocess: {metrics['specs_produced']} specs, 0 DB backtests saved, {metrics['queue_integrity_skips']} integrity skips ({metrics['target_asset'] or '?'} {metrics['target_timeframe'] or '?'}) — zero-trade families were filtered before persistence.",
+        )
 
     conn_portability = sqlite3.connect(DB, timeout=30)
     portability_updates = update_portability_scores(conn_portability)
@@ -1804,7 +1820,7 @@ def main():
         step="postprocess",
     )
 
-    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
+    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("queue_integrity_skips", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
         record_pipeline_completion(
             record_prefix="CYCLE-{0}".format(cycle_id),
             actor="logron",

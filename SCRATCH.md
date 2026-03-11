@@ -1,1 +1,1 @@
-Check current AutoQuant pipeline state and resume getting it running.
+Root-cause debug: cron/Lobster pipeline runs, specs are written, queue marks backtests done, but DB gets 0 new backtest rows. Trace canonical path from research-cycle.lobster -> parallel_runner.py -> DB persistence and fix the actual break. Also keep control plane as OpenClaw cron + Lobster only.

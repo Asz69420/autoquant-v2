@@ -802,7 +802,7 @@ def mark_terminal_failure(conn, queue_id, notes=None):
 
 def mark_integrity_skip(conn, queue_id, notes=None):
     conn.execute(
-        "UPDATE research_funnel_queue SET status = 'done', completed_at = ?, started_at = NULL, notes = COALESCE(?, notes) WHERE id = ?",
+        "UPDATE research_funnel_queue SET status = 'skipped', completed_at = ?, started_at = NULL, notes = COALESCE(?, notes) WHERE id = ?",
         (now_iso(), notes, queue_id),
     )
 
