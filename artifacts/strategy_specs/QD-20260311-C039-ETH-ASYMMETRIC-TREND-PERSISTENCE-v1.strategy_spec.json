@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C039-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+  "cycle_id": 39,
+  "family_name": "eth_asymmetric_trend_persistence_v039",
+  "name": "ETH Asymmetric Trend Persistence v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+  "expected_regime": "TRANSITION_TO_TREND",
+  "thesis": "ETH 4h is the cleaner similar-asset lane for testing whether a continuation entry can survive a mixed backdrop when management is asymmetric: trigger on orderly continuation, control risk with volatility, and exit on structure decay rather than symmetrical fixed targets. The edge should come from role separation, not from stacked confirmation.",
+  "invalidation_condition": "Abort if continuation triggers remain too sparse, if asymmetry in exits does not improve expectancy, or if the regime is too choppy for continuation to survive after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price holds above structural baseline, resumes in the trend direction, and continues just enough that asymmetric exit logic can harvest winners differently from losers.",
+    "why_edge_should_exist": "Even in transition tapes, some continuation bursts persist briefly. Separating trigger, risk, and exit logic can outperform symmetric target/stop structures when follow-through is uneven.",
+    "asset_timeframe_fit": "ETH 4h is the cleanest lane in the basket for testing structured continuation with differentiated management roles.",
+    "indicator_role_map": {
+      "EMA_20": "trigger alignment",
+      "EMA_55": "structural baseline",
+      "ATR_14": "risk normalizer",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "exit exhaustion guardrail"
+    },
+    "expected_regime": "TRANSITION_TO_TREND",
+    "likely_failure_mode": "Continuation may trigger often enough, but if the market keeps reverting quickly the asymmetric exit structure will still not rescue the idea.",
+    "first_refinement_path": "If entries are reasonable but exits leak expectancy, change structure-decay exits before touching the trigger logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A modest number of continuation trades where losses are cut by volatility while winners are harvested by structural decay rather than pure fixed targets.",
+    "what_would_count_as_success": "ETH 4h and one cross-lane show credible density and better expectancy from asymmetric exits than sparse continuation families already killed.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or rapid reversion that invalidates the persistence premise.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; continuation and structural-decay exit roles are separated rather than overlapping",
+      "event_sparsity": "managed by simple continuation alignment instead of ceremonial trigger stacks",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Cleanest lane for testing asymmetric continuation management.","continue_if":"Entries are dense enough and asymmetric exits improve post-cost expectancy.","rotate_away_if":"Continuation fails to persist or remains too sparse.","expected_if_right":"Orderly continuation bursts with winners harvested differently from losers."},
+    {"asset":"DOGE","timeframe":"4h","role":"similar_behavior_crosscheck","why_included":"Checks whether the same role-separated continuation logic survives on a more expressive lane.","continue_if":"DOGE preserves the continuation shape with acceptable density.","rotate_away_if":"The mechanism is ETH-specific.","expected_if_right":"Noisier but still tradable continuation bursts."},
+    {"asset":"TAO","timeframe":"4h","role":"structurally_different_asset","why_included":"Tests whether the same management-led structure survives on the more volatile lane.","continue_if":"TAO still benefits from asymmetric exit logic without chaos dominating.","rotate_away_if":"TAO becomes too unstable for structured persistence.","expected_if_right":"Bigger but less stable continuation moves than ETH."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_55 + 0.18 * ATR_14",
+      "Low >= EMA_20 - 0.10 * ATR_14",
+      "ADX_14 >= 11"
+    ],
+    "short": [
+      "Close <= EMA_55 - 0.18 * ATR_14",
+      "High <= EMA_20 + 0.10 * ATR_14",
+      "ADX_14 >= 11"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.38 * ATR_14 on 35% size",
+      "Take profit: 0.72 * ATR_14 on 25% size",
+      "Exit remaining 40% on close below EMA_20 or RSI_14 < 49",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.38 * ATR_14 on 35% size",
+      "Take profit: 0.72 * ATR_14 on 25% size",
+      "Exit remaining 40% on close above EMA_20 or RSI_14 > 51",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

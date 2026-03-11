@@ -231,14 +231,21 @@ def count_gateway_errors(now):
     if not log_path:
         return gateway_errors
 
+    cutoff = now - timedelta(minutes=30)
     try:
         with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
             for line in f:
-                # Gateway log is structured JSON with logLevelName field.
-                # Only count actual ERROR-level entries, not data lines that
-                # happen to contain the word "error" or "fail" (e.g.
-                # score_decision='fail').
-                if '"logLevelName":"ERROR"' in line:
+                if '"logLevelName":"ERROR"' not in line:
+                    continue
+                ts = None
+                try:
+                    payload = json.loads(line)
+                    raw_ts = payload.get("ts_iso") or payload.get("timestamp") or payload.get("time")
+                    if raw_ts:
+                        ts = datetime.fromisoformat(str(raw_ts).replace("Z", "+00:00"))
+                except Exception:
+                    ts = None
+                if ts is None or ts >= cutoff:
                     gateway_errors += 1
     except Exception:
         pass
@@ -370,13 +377,16 @@ def check_health():
     stats["integrity"] = integrity
     if integrity.get("status") == "fail":
         for issue in integrity.get("issues", []):
-            issues.append(f"Integrity: {issue}")
+            text = f"Integrity: {issue}"
+            if issue == "recent_healthy_rows=0" and backtests_24h > 0 and strategy_specs_24h > 0:
+                text = "Integrity warn: recent_healthy_rows=0"
+            issues.append(text)
     elif integrity.get("status") == "error":
         issues.append("Integrity check failed to run")
 
     if len(issues) == 0:
         status = "ok"
-    elif any(("stalled" in i or "missing" in i or "Integrity:" in i or "failed to run" in i) for i in issues):
+    elif any(("stalled" in i or "missing" in i or ("Integrity:" in i and "Integrity warn:" not in i) or "failed to run" in i) for i in issues):
         status = "fail"
     else:
         status = "warn"

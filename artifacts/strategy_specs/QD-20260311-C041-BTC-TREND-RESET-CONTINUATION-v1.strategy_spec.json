@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C041-BTC-TREND-RESET-CONTINUATION-v1",
+  "cycle_id": 41,
+  "family_name": "btc_trend_reset_continuation_v041",
+  "name": "BTC Trend Reset Continuation v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+  "expected_regime": "TRANSITION_WITHIN_CHOP",
+  "thesis": "BTC 4h is the best similar-asset lane for testing whether a deeper pullback that resets positioning can still support a continuation leg once value is reclaimed. This is not shallow EMA-touch continuation; it is a broader reset-and-resume concept designed to survive mixed conditions.",
+  "invalidation_condition": "Abort if reset pullbacks stay too sparse, if reclaimed moves fail to continue after costs, or if the market is too range-bound for the reset-resume thesis to matter.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back materially enough to reset short-term positioning, reclaims fast value, and then resumes in the prior direction with enough follow-through for a tradable continuation leg.",
+    "why_edge_should_exist": "Even in chop-dominant conditions, some local trend bursts reset through deeper pullbacks. If the reset is broad enough, the reclaim can offer cleaner continuation than shallow touch logic.",
+    "asset_timeframe_fit": "BTC 4h is suitable because reset pullbacks are visible and structurally cleaner than on thinner assets, while still active enough to test.",
+    "indicator_role_map": {
+      "EMA_20": "fast value reclaim reference",
+      "EMA_55": "reset depth anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "RSI_14": "momentum reset qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional resumption confirmer"
+    },
+    "expected_regime": "TRANSITION_WITHIN_CHOP",
+    "likely_failure_mode": "Reset pullbacks may reclaim value but fail to resume strongly enough, leaving the continuation move too weak after fees.",
+    "first_refinement_path": "If entries occur with adequate density but continuation is weak, shorten exit ambition before tightening reset depth conditions.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A reasonable number of reset-and-resume trades with front-half exits carrying most expectancy and occasional runners.",
+    "what_would_count_as_success": "BTC 4h plus one cross-lane show credible density and positive post-cost continuation after reset reclaims.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or reclaimed resets that repeatedly fail to resume.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reset depth, reclaim, and directional handoff are complementary",
+      "event_sparsity": "managed by broader reset logic instead of ceremonial shallow-touch setups",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for reset-and-resume continuation in the live basket.",
+      "continue_if": "Reset reclaims trade often enough and continue after costs.",
+      "rotate_away_if": "Reset reclaims remain sparse or fail to resume.",
+      "expected_if_right": "Deeper pullbacks that reclaim and continue with modest second-leg travel."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reset-resume idea survives on ETH.",
+      "continue_if": "ETH preserves the reset continuation shape with acceptable density.",
+      "rotate_away_if": "The pattern disappears outside BTC.",
+      "expected_if_right": "Similar but slightly noisier reset continuations than BTC."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same broader reset grammar survives on a more volatile lane.",
+      "continue_if": "TAO still shows reset-and-resume behavior without degenerating into chaos.",
+      "rotate_away_if": "TAO becomes too unstable for this continuation concept.",
+      "expected_if_right": "Fewer but larger reset continuation bursts than BTC."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.3 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 47",
+      "PLUS_DI_14 >= 0.95 * MINUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.3 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 53",
+      "MINUS_DI_14 >= 0.95 * PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 40% size",
+      "Take profit: 0.86 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.62 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 40% size",
+      "Take profit: 0.86 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.62 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

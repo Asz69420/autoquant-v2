@@ -201,6 +201,7 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
         'learning_requirements': [
             'Every cycle must yield diagnosis, lesson extraction, and durable learning update.',
             'Zero-trade outcomes require explicit diagnosis and one rescue attempt at most.',
+            'Only three terminal decisions are legal: pass, refine, abort.',
             'PASS should flow into structured refinement variants, not cosmetic tweaks.',
         ],
         'rolling_recent_cycles': [],
@@ -267,10 +268,37 @@ def build_rolling_insights(recent_cycles):
     }
 
 
+def normalize_first_person_line(text):
+    text = str(text or '').strip()
+    if not text:
+        return 'none'
+    replacements = [
+        ('Quandalf must explicitly choose iterate or abort.', 'I must explicitly choose refine or abort.'),
+        ('Quandalf must explicitly choose refine or abort.', 'I must explicitly choose refine or abort.'),
+        ('allowed next actions -> refine, abort', 'I see that my legal next actions are refine or abort'),
+        ('allowed next actions -> pass, refine, abort', 'I see that my legal next actions are pass, refine, or abort'),
+        ('decision ', ''),
+        ('Both completed screen lanes ended with zero-trade integrity skips, so', 'I saw both completed screen lanes end with zero-trade integrity skips, so'),
+        ('Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so', 'I saw both completed screen lanes end in integrity_skip:zero_trades_both_samples, so'),
+        ('This strategy produced', 'I saw this strategy produce'),
+        ('The strategy produced', 'I saw the strategy produce'),
+        ('The strategy', 'I found that the strategy'),
+        ('0 trades on valid data', 'I got 0 trades on valid data'),
+        ('abort: fail with', 'I aborted it after a fail with'),
+    ]
+    for old, new in replacements:
+        text = text.replace(old, new)
+    if text.startswith('QD-') and ': ' in text:
+        spec_id, rest = text.split(': ', 1)
+        return f'On {spec_id}, {rest}'
+    return text
+
+
 def build_journal_text(payload):
     recent = payload.get('rolling_recent_cycles') or []
     rolling = payload.get('rolling_insights') or {}
     totals = rolling.get('totals') or {}
+    dims = payload.get('dimensions') or {}
     journal_lines = [
         f"# Quandalf Journal — Cycle {payload['cycle_context']['cycle_id']}",
         "",
@@ -279,10 +307,10 @@ def build_journal_text(payload):
         f"- lane: {payload['cycle_context'].get('asset')} / {payload['cycle_context'].get('timeframe')}",
         f"- research_direction: {payload['cycle_context'].get('research_direction')}",
         "",
-        "## Current Decision Summary",
+        "## My Current Decision Summary",
         json.dumps(payload.get('decision_summary') or {}, indent=2),
         "",
-        "## Current Diagnosis Breakdown",
+        "## My Current Diagnosis Breakdown",
         json.dumps(payload.get('diagnosis_breakdown') or {}, indent=2),
         "",
         "## Rolling Last 5 Cycles",
@@ -297,13 +325,13 @@ def build_journal_text(payload):
         "",
         "## What Worked",
     ]
-    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('what_worked', [])] or ["- none"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('what_worked', [])] or ["- none"])
     journal_lines.extend(["", "## What Failed"])
-    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('what_failed', [])] or ["- none"])
-    journal_lines.extend(["", "## Why It Failed"])
-    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('why_it_failed', [])] or ["- none"])
-    journal_lines.extend(["", "## Iterate Next"])
-    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('iterate_next', [])] or ["- none"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('what_failed', [])] or ["- none"])
+    journal_lines.extend(["", "## Why I Judged It That Way"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('why_it_failed', [])] or ["- none"])
+    journal_lines.extend(["", "## What I Would Improve Next"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('iterate_next', [])] or ["- none"])
     return "\n".join(journal_lines) + "\n"
 
 

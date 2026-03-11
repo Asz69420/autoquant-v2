@@ -1,6 +1,90 @@
 {
-  "ts_iso": "2026-03-11T10:03:06.297539+00:00",
-  "cycle_id": 29,
-  "count": 0,
-  "experiments": []
+  "ts_iso": "2026-03-11T12:14:08.557049+00:00",
+  "cycle_id": 49,
+  "count": 3,
+  "experiments": [
+    {
+      "strategy_spec_id": "QD-20260311-C049-SOL-VALUE-RECOVERY-SCALEIN-v1",
+      "hypothesis": "SOL 4h is the best primary lane for testing whether value recovery is better expressed as staged participation across improving confirmation bars rather than a one-shot all-in reclaim. The edge is the progressive confirmation of recovery, not a single heroic reversal candle.",
+      "chosen_lane": {
+        "asset": "SOL",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the staged value-recovery grammar failed density on valid data and is not worth another iteration."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C049-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "hypothesis": "ETH 4h is the best similar-asset lane for testing whether continuation survives better when trigger, risk, and exit are deliberately separated instead of all using the same value reference. The edge is not a rarer entry; it is cleaner role separation in management after continuation begins.",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the asymmetric continuation-exit grammar remains structurally too sparse."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C049-TAO-RETEST-HOLD-DERISK-v1",
+      "hypothesis": "TAO 4h is the best structurally different lane for testing whether continuation after retest can remain viable if risk is reduced quickly when expected expansion does not appear. The edge is not just the retest hold; it is the time-based de-risking that prevents dead holds from decaying into churn.",
+      "chosen_lane": {
+        "asset": "TAO",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the retest-hold with time-based de-risk grammar is still structurally too sparse and should be killed rather than cosmetically loosened."
+    }
+  ]
 }

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C037-ETH-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 37,
+  "family_name": "eth_value_reacceptance_exhaustion_v037",
+  "name": "ETH Value Reacceptance Exhaustion v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "mean reversion from exhaustion only when structure reaccepts prior value",
+  "expected_regime": "CHOP",
+  "thesis": "ETH 4h is the cleaner lane for testing a constrained exhaustion reversion idea inside a mostly choppy regime. The edge is not raw fade-everything behavior; it is a selective fade only after price overextends and then reaccepts prior value.",
+  "invalidation_condition": "Abort if value reacceptance after exhaustion remains too sparse, if reclaimed moves fail to mean-revert enough after costs, or if ongoing directional persistence overwhelms the fade thesis.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price overextends away from fast value, loses directional drive, reaccepts prior value, and then mean-reverts far enough for a controlled fade harvest.",
+    "why_edge_should_exist": "Choppy conditions still produce exhaustion overshoots. Waiting for value reacceptance should avoid fading strength or weakness too early.",
+    "asset_timeframe_fit": "ETH 4h is cleaner than SOL or TAO for a reacceptance fade and should reveal whether the mechanism is real rather than noise-driven.",
+    "indicator_role_map": {
+      "EMA_20": "fast value anchor",
+      "BOLLINGER_BANDS_20_2": "exhaustion distance detector",
+      "RSI_14": "overextension qualifier",
+      "ATR_14": "distance and risk normalizer",
+      "ADX_14": "avoid fading strong directional persistence"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "The market may keep drifting one-way after reacceptance attempts, making the fade thesis too weak after fees.",
+    "first_refinement_path": "If reacceptance entries are valid but moves are too small, reduce target ambition and tighten persistence-avoidance before changing the core idea.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Selective exhaustion fades with quicker time-to-target than the continuation specs and limited runner dependence.",
+    "what_would_count_as_success": "ETH 4h and at least one cross-lane show enough reacceptance-fade density with positive post-cost expectancy.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or repeated fades steamrolled by ongoing continuation.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "managed by allowing exhaustion plus reacceptance instead of demanding extreme trend and reversal simultaneously",
+      "event_sparsity": "broader than ceremonial failure sequences because it uses value reacceptance rather than exact breakdown choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Cleaner lane for testing selective exhaustion reacceptance against the mixed backdrop.","continue_if":"Reacceptance fades show usable density and controlled post-cost reversions.","rotate_away_if":"Setups remain sparse or ongoing persistence overwhelms the fades.","expected_if_right":"A modest number of overshoot-and-reaccept fades that revert back toward value."},
+    {"asset":"SOL","timeframe":"4h","role":"higher_beta_check","why_included":"Tests whether the same reacceptance grammar survives on a more expressive lane.","continue_if":"SOL preserves the setup without degenerating into chaos.","rotate_away_if":"SOL becomes too noisy for controlled fades.","expected_if_right":"Bigger but less orderly exhaustion fades than ETH."},
+    {"asset":"TAO","timeframe":"4h","role":"structurally_different_asset","why_included":"Checks whether the mechanism survives outside the major-asset lane.","continue_if":"TAO still produces recognizable reacceptance-fade behavior.","rotate_away_if":"The pattern becomes too sparse or too violent.","expected_if_right":"Fewer but sharp reversions after obvious overshoots."}
+  ],
+  "indicators": ["EMA_20","BOLLINGER_BANDS_20_2","RSI_14","ATR_14","ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.52 * ATR_14",
+      "RSI_14 <= 39",
+      "Close >= EMA_20 - 0.18 * ATR_14",
+      "ADX_14 <= 26"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.52 * ATR_14",
+      "RSI_14 >= 61",
+      "Close <= EMA_20 + 0.18 * ATR_14",
+      "ADX_14 <= 26"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.48 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_20 + 0.22 * ATR_14 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.48 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_20 - 0.22 * ATR_14 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  }
+}

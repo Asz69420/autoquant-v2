@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C032-AXS-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 32,
+  "family_name": "axs_delayed_retest_continuation_v032",
+  "name": "AXS Delayed Retest Continuation v1",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "breakout continuation with delayed entry after retest rather than immediate trigger",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "AXS 4h is the best structurally different lane for testing whether breakout continuation is more robust when entered on the delayed retest instead of the first impulse bar. In a mildly upward but mixed regime, delayed retests should filter a chunk of false breakouts while preserving enough expansion to matter.",
+  "invalidation_condition": "Abort if retest entries are too sparse, if retests fail and never continue, or if AXS noise overwhelms the delayed-entry advantage.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks from local balance, retests the breakout zone or fast value, holds, and then continues in the breakout direction on the delayed entry.",
+    "why_edge_should_exist": "Buying or selling the retest after a breakout should avoid some false first-bar entries while still participating in continuation when the move is real.",
+    "asset_timeframe_fit": "AXS 4h should express breakout/retest structure more visibly than ETH while remaining tradable at a swing timeframe.",
+    "indicator_role_map": {
+      "EMA_20": "retest zone reference",
+      "EMA_55": "background structure alignment",
+      "ATR_14": "breakout distance and risk normalizer",
+      "PLUS_DI_14/MINUS_DI_14": "directional continuation qualifier",
+      "ADX_14": "participation filter"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "Breakouts may retest correctly but still fail to continue enough after costs, especially if the regime remains too mixed.",
+    "first_refinement_path": "If retests occur with acceptable density but continuation is weak, tighten the continuation qualifier before narrowing the retest window.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A healthy number of retest entries with better quality than first-bar breakout chasing and a mix of first-target wins plus occasional runners.",
+    "what_would_count_as_success": "AXS 4h and at least one cleaner lane show delayed-retest continuation with credible density and positive post-cost movement.",
+    "what_would_count_as_failure": "0 trades, too-sparse retests, or repeated retest failures that reverse immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; breakout, retest, and directional handoff are complementary",
+      "event_sparsity": "broader than exact breakout-candle triggers because retest windows allow natural continuation structure",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"AXS","timeframe":"4h","role":"primary","why_included":"Best lane in the basket for visibly testing delayed retest continuation.","continue_if":"Retest entries are frequent enough and continue after costs.","rotate_away_if":"Retests are sparse or fail immediately.","expected_if_right":"Breakout, orderly retest, then a second-leg continuation push."},
+    {"asset":"TAO","timeframe":"4h","role":"higher-beta_crosscheck","why_included":"Checks whether the same delayed-retest idea survives on another expressive lane.","continue_if":"TAO preserves retest continuation behavior with acceptable density.","rotate_away_if":"TAO becomes too violent for controlled retest entries.","expected_if_right":"More explosive but less tidy retest continuations than AXS."},
+    {"asset":"ETH","timeframe":"4h","role":"clean_major_check","why_included":"Tests whether the mechanism transfers to a cleaner major lane.","continue_if":"ETH still shows the retest-and-go structure.","rotate_away_if":"The mechanism only works on high-beta lanes.","expected_if_right":"Fewer but cleaner delayed retest continuations than AXS."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","PLUS_DI_14","MINUS_DI_14","ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_55 + 0.22 * ATR_14",
+      "Low >= EMA_20 - 0.15 * ATR_14",
+      "PLUS_DI_14 >= 1.05 * MINUS_DI_14",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Close <= EMA_55 - 0.22 * ATR_14",
+      "High <= EMA_20 + 0.15 * ATR_14",
+      "MINUS_DI_14 >= 1.05 * PLUS_DI_14",
+      "ADX_14 >= 14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Scale out remaining 25% on ADX_14 rollover or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Scale out remaining 25% on ADX_14 rollover or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

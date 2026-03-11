@@ -254,6 +254,26 @@ def resolve_cycle_id(run_state=None):
         return 0
 
 
+def resolve_reporting_cycle_id(run_state=None):
+    run_state = run_state or load_run_state()
+    run_cycle_id = int(run_state.get("cycle_id", 0) or 0)
+    run_status = str(run_state.get("status") or "").strip().lower()
+    reflection = load_json_file(REFLECTION_PACKET_PATH)
+    decisions = load_json_file(REFINEMENT_DECISIONS_PATH)
+    reflection_cycle_id = int(reflection.get("cycle_id", 0) or 0)
+    decision_cycle_id = int(decisions.get("cycle_id", 0) or 0)
+
+    if reflection_cycle_id > 0 and reflection_cycle_id == decision_cycle_id:
+        if run_cycle_id <= 0:
+            return reflection_cycle_id
+        if reflection_cycle_id == run_cycle_id:
+            return reflection_cycle_id
+        if run_status in {"started", "busy", "pending"} and reflection_cycle_id < run_cycle_id:
+            return reflection_cycle_id
+
+    return resolve_cycle_id(run_state)
+
+
 def infer_cycle_lane_from_spec_paths(spec_paths):
     asset = None
     timeframe = None
@@ -714,12 +734,37 @@ def _decision_counts_for_cycle(cycle_id):
     if int(decisions_payload.get("cycle_id") or -1) == int(cycle_id):
         strategy_decisions = decisions_payload.get("strategy_decisions") or []
 
-    counts = {"iterated": 0, "passed": 0, "aborted": 0, "promoted": 0, "decision_count": 0, "queue_decision_count": 0, "expected_queue_count": 0}
+    counts = {
+        "iterated": 0,
+        "passed": 0,
+        "aborted": 0,
+        "promoted": 0,
+        "decision_count": 0,
+        "queue_decision_count": 0,
+        "expected_queue_count": 0,
+        "executed_queue_count": 0,
+        "executed_queue_decision_count": 0,
+        "queue_iterated": 0,
+        "queue_passed": 0,
+        "queue_aborted": 0,
+    }
+
+    executed_queue_ids = set()
     if int(reflection_payload.get("cycle_id") or -1) == int(cycle_id):
         for item in (reflection_payload.get("strategy_outcomes") or []):
             if not isinstance(item, dict):
                 continue
-            counts["expected_queue_count"] += len(item.get("queue") or [])
+            for q in (item.get("queue") or []):
+                if not isinstance(q, dict):
+                    continue
+                queue_id = str(q.get("queue_id") or "").strip()
+                if not queue_id:
+                    continue
+                counts["expected_queue_count"] += 1
+                status = str(q.get("status") or "").strip().lower()
+                if status in {"done", "skipped", "failed", "error", "complete", "completed"}:
+                    executed_queue_ids.add(queue_id)
+        counts["executed_queue_count"] = len(executed_queue_ids)
 
     if isinstance(strategy_decisions, list) and strategy_decisions:
         for item in strategy_decisions:
@@ -730,6 +775,19 @@ def _decision_counts_for_cycle(cycle_id):
             queue_decisions = item.get("queue_decisions") or []
             if isinstance(queue_decisions, list):
                 counts["queue_decision_count"] += len(queue_decisions)
+                for qd in queue_decisions:
+                    if not isinstance(qd, dict):
+                        continue
+                    queue_id = str(qd.get("queue_id") or "").strip()
+                    qdecision = str(qd.get("decision") or "").strip().lower()
+                    if queue_id in executed_queue_ids:
+                        counts["executed_queue_decision_count"] += 1
+                        if qdecision == "refine":
+                            counts["queue_iterated"] += 1
+                        elif qdecision == "pass":
+                            counts["queue_passed"] += 1
+                        elif qdecision == "abort":
+                            counts["queue_aborted"] += 1
             if decision == "refine":
                 counts["iterated"] += 1
             elif decision == "pass":
@@ -762,8 +820,8 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
 
     decision_counts = _decision_counts_for_cycle(cycle_id)
     generated = metrics.get("specs_produced", 0)
-    iterated = int(decision_counts.get("iterated") or len(metrics.get("iterated_families") or []))
-    passed = int(decision_counts.get("passed") or metrics.get("pass_count", 0))
+    strategy_iterated = int(decision_counts.get("iterated") or len(metrics.get("iterated_families") or []))
+    strategy_passed = int(decision_counts.get("passed") or metrics.get("pass_count", 0))
     new_families = len(metrics.get("new_families") or [])
     active_families = metrics.get("active_families", 0)
     family_aborted = len(metrics.get("abandoned_families") or [])
@@ -774,11 +832,23 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     decided_total = int(decision_counts.get("decision_count") or 0)
     queue_decided_total = int(decision_counts.get("queue_decision_count") or 0)
     expected_queue_total = int(decision_counts.get("expected_queue_count") or 0)
+    executed_queue_total = int(decision_counts.get("executed_queue_count") or 0)
+    executed_queue_decided_total = int(decision_counts.get("executed_queue_decision_count") or 0)
     backtests = executed_backtests
+    queue_passed = int(decision_counts.get("queue_passed") or 0)
+    queue_iterated = int(decision_counts.get("queue_iterated") or 0)
+    queue_aborted = int(decision_counts.get("queue_aborted") or 0)
+    if backtests > 0:
+        passed = queue_passed
+        iterated = queue_iterated
+        aborted = queue_aborted
+    else:
+        passed = strategy_passed
+        iterated = strategy_iterated
+        aborted = int(decision_counts.get("aborted") or family_aborted)
     decision_basis = max(generated, backtests, decided_total)
-    aborted = int(decision_counts.get("aborted") or family_aborted)
-    unresolved = max(0, decision_basis - (passed + iterated + aborted))
-    unresolved_queue = max(0, expected_queue_total - queue_decided_total)
+    unresolved = max(0, decision_basis - (strategy_passed + strategy_iterated + int(decision_counts.get("aborted") or family_aborted)))
+    unresolved_queue = max(0, executed_queue_total - executed_queue_decided_total)
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
@@ -793,11 +863,11 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     if passed > 0 and best_qs > 0:
         note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
     if unresolved_queue > 0:
-        note_candidates.append(f"This {mode} cycle is missing {unresolved_queue} explicit queue-row decision{'s' if unresolved_queue != 1 else ''} from Quandalf. Every tested backtest row must resolve to pass, refine, or abort before the cycle can be considered complete.")
-    elif unresolved > 0:
+        note_candidates.append(f"This {mode} cycle is missing {unresolved_queue} explicit backtest decision{'s' if unresolved_queue != 1 else ''} from Quandalf. Every executed backtest row must resolve to pass, refine, or abort before the cycle can be considered complete.")
+    elif executed_backtests == 0 and unresolved > 0:
         note_candidates.append(f"This {mode} cycle is missing {unresolved} explicit strategy decision{'s' if unresolved != 1 else ''} from Quandalf. Every strategy must resolve to pass, refine, or abort before the cycle can be considered complete.")
     elif integrity_zero_trades > 0 and executed_backtests > 0:
-        note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} strategy{'ies' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to iterate.")
+        note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} backtest row{'s' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to iterate.")
     if executed_backtests == 0 and generated > 0 and integrity_zero_trades == 0:
         note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still waiting for evidence before any strategy gets advanced or cut.")
     if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
@@ -1731,7 +1801,7 @@ def main():
         conn.close()
 
         run_state = observe_run_state()
-        cycle_id = resolve_cycle_id(run_state)
+        cycle_id = resolve_reporting_cycle_id(run_state)
         sync_cycle_status_to_active(cycle_id)
         run_state = observe_run_state(cycle_id)
         timing = compute_timing_metrics(run_state)
@@ -1768,7 +1838,7 @@ def main():
     total_rows = conn.execute("SELECT COUNT(*) FROM backtest_results").fetchone()[0]
     
     check_fallback_dominance(conn)
-    cycle_id_preview = resolve_cycle_id(load_run_state())
+    cycle_id_preview = resolve_reporting_cycle_id(load_run_state())
     validate_and_classify_specs(conn, cycle_id_preview)
     
     families_to_check = set()
@@ -1783,8 +1853,9 @@ def main():
     conn.close()
 
     if not rows:
-        run_state = finalize_run_state(resolve_cycle_id())
-        cycle_id = resolve_cycle_id(run_state)
+        cycle_id = resolve_reporting_cycle_id(load_run_state())
+        run_state = finalize_run_state(cycle_id)
+        cycle_id = resolve_reporting_cycle_id(run_state)
         sync_cycle_status_to_active(cycle_id)
         timing = compute_timing_metrics(run_state)
         elapsed_seconds = timing["run_elapsed_seconds"]
@@ -1878,8 +1949,9 @@ def main():
         step="notify",
     )
 
-    run_state = finalize_run_state(resolve_cycle_id())
-    cycle_id = resolve_cycle_id(run_state)
+    cycle_id = cycle_id_preview
+    run_state = finalize_run_state(cycle_id)
+    cycle_id = resolve_reporting_cycle_id(run_state)
     run_state = finalize_run_state(cycle_id)
     timing = compute_timing_metrics(run_state)
     elapsed = timing["run_elapsed_seconds"] or round(time.time() - start_time, 1)

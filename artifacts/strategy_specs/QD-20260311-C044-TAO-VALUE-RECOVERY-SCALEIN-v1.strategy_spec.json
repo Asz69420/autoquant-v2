@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C044-TAO-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 44,
+  "family_name": "tao_value_recovery_scalein_v044",
+  "name": "TAO Value Recovery Scale-In v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "TAO 4h is the best primary lane for testing whether value recovery after a shallow displacement can be traded more robustly by scaling in as confirmation improves across bars rather than committing everything on the first reclaim. The edge should come from denser participation around repaired value, not exact bottom-picking.",
+  "invalidation_condition": "Abort if value-recovery signals remain too sparse, if scale-in improves entry quality but still cannot overcome churn, or if the setup simply accumulates into dead bounces.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price displaces away from fast value, begins reclaiming it, confirms the reclaim over multiple bars, and then rotates far enough back through value for a tradable recovery leg.",
+    "why_edge_should_exist": "Trend-up conditions still produce shakeouts, but multi-bar improvement around value can capture denser recovery moves while reducing all-in timing risk.",
+    "asset_timeframe_fit": "TAO 4h is appropriate because repaired-value rotations are visible and expressive while still suited to swing-style management.",
+    "indicator_role_map": {
+      "EMA_20": "fast value anchor",
+      "EMA_55": "background balance reference",
+      "ATR_14": "displacement and risk normalizer",
+      "RSI_14": "recovery-state confirmer",
+      "PLUS_DI_14/MINUS_DI_14": "directional improvement qualifier"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "Price may reclaim value often but fail to extend beyond it, turning the scale-in structure into churn rather than edge.",
+    "first_refinement_path": "If entries are dense but expectancy is weak, shorten holding time and front-load profit extraction before changing the scale-in grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "More frequent trades than sparse breakout families, with modest first-target captures carrying most expectancy.",
+    "what_would_count_as_success": "TAO 4h and one cross-lane show real density and positive post-cost recovery after multi-bar value reclaim.",
+    "what_would_count_as_failure": "0 trades, low-trade mirage, or repeated value reclaims that cannot rotate far enough after entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; displacement, reclaim, and directional improvement are complementary",
+      "event_sparsity": "explicitly reduced by multi-bar confirmation and scale-in design",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best control lane for dense value-recovery scale-in testing in this basket.",
+      "continue_if": "Reclaim sequences trade often enough and recover far enough after costs.",
+      "rotate_away_if": "Reclaims are dense but fail to travel, or remain sparse anyway.",
+      "expected_if_right": "Frequent repaired-value rotations with modest but repeatable recovery travel."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same value-recovery mechanism survives on a cleaner similar lane.",
+      "continue_if": "ETH preserves the recovery-scale-in shape with acceptable density.",
+      "rotate_away_if": "The mechanism only works on TAO-specific structure.",
+      "expected_if_right": "Cleaner but less frequent recovery rotations than TAO."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same repaired-value idea survives on the other expressive lane.",
+      "continue_if": "AXS preserves the mechanism without degenerating into chaos.",
+      "rotate_away_if": "AXS becomes too noisy or anti-correlated.",
+      "expected_if_right": "Bigger but less orderly recovery continuations than TAO."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.28 * ATR_14",
+      "Close >= EMA_20 - 0.05 * ATR_14",
+      "RSI_14 >= 47",
+      "MINUS_DI_14 >= 0.75 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.28 * ATR_14",
+      "Close <= EMA_20 + 0.05 * ATR_14",
+      "RSI_14 <= 53",
+      "PLUS_DI_14 >= 0.75 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.44 * ATR_14 on 40% size",
+      "Take profit: 0.78 * ATR_14 on 35% size",
+      "Exit remaining 25% on close through EMA_55 or 3 bars",
+      "Final time stop: 3 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.44 * ATR_14 on 40% size",
+      "Take profit: 0.78 * ATR_14 on 35% size",
+      "Exit remaining 25% on close through EMA_55 or 3 bars",
+      "Final time stop: 3 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

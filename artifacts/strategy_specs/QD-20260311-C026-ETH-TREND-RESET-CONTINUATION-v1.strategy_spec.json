@@ -38,11 +38,75 @@
     }
   },
   "test_lanes": [
-    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Clean control lane for repaired-pullback continuation in the current basket.","continue_if":"Reset-reclaim trades show credible density and positive post-cost continuation.","rotate_away_if":"The lane stays too rotational and reclaimed pullbacks never extend.","expected_if_right":"A decent number of repaired pullbacks followed by modest second legs."},
-    {"asset":"TAO","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism transfers to the basket primary lane.","continue_if":"TAO shows comparable repaired continuation with acceptable density.","rotate_away_if":"The mechanism collapses outside ETH.","expected_if_right":"Noisier but still tradable repaired continuation moves."},
-    {"asset":"AXS","timeframe":"4h","role":"structurally_different_asset","why_included":"Tests whether the same grammar survives a more fragile high-beta lane.","continue_if":"AXS preserves the repaired continuation shape without becoming chaos.","rotate_away_if":"Noise overwhelms continuation structure.","expected_if_right":"Fewer entries but punchier post-reclaim legs than ETH."}
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Clean control lane for repaired-pullback continuation in the current basket.",
+      "continue_if": "Reset-reclaim trades show credible density and positive post-cost continuation.",
+      "rotate_away_if": "The lane stays too rotational and reclaimed pullbacks never extend.",
+      "expected_if_right": "A decent number of repaired pullbacks followed by modest second legs."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism transfers to the basket primary lane.",
+      "continue_if": "TAO shows comparable repaired continuation with acceptable density.",
+      "rotate_away_if": "The mechanism collapses outside ETH.",
+      "expected_if_right": "Noisier but still tradable repaired continuation moves."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same grammar survives a more fragile high-beta lane.",
+      "continue_if": "AXS preserves the repaired continuation shape without becoming chaos.",
+      "rotate_away_if": "Noise overwhelms continuation structure.",
+      "expected_if_right": "Fewer entries but punchier post-reclaim legs than ETH."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
-  "entry_rules": {"long": ["Low <= EMA_20 - 0.30 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.20 * ATR_14","ADX_14 >= 8","RSI_14 >= 48"],"short": ["High >= EMA_20 + 0.30 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.20 * ATR_14","ADX_14 >= 8","RSI_14 <= 52"]},
-  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.9 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 15%","Trail remaining 10% by 0.6 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.9 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 15%","Trail remaining 10% by 0.6 * ATR_14","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.30 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.20 * ATR_14",
+      "ADX_14 >= 8",
+      "RSI_14 >= 48"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.30 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.20 * ATR_14",
+      "ADX_14 >= 8",
+      "RSI_14 <= 52"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 15%",
+      "Trail remaining 10% by 0.6 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 15%",
+      "Trail remaining 10% by 0.6 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

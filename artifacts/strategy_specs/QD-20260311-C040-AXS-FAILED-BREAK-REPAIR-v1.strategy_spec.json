@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C040-AXS-FAILED-BREAK-REPAIR-v1",
+  "cycle_id": 40,
+  "family_name": "axs_failed_break_repair_v040",
+  "name": "AXS Failed Break Repair v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "failed breakdown reclaim that must hold before continuation entry",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "AXS 1h is the best structurally different lane for testing failed-break repair, but expressed as a broader reclaim-and-hold structure rather than the already-killed strict failed-breakdown-hold grammar. In a mixed intraday backdrop, downside excursions should fail often enough to produce tradable repairs back into value.",
+  "invalidation_condition": "Abort if failed-break repairs remain too sparse, if repaired moves do not travel enough after costs, or if AXS volatility only adds unusable noise.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks below short-term support, quickly reclaims value, proves the reclaim can hold, and then extends modestly as the failed break repairs back toward balance.",
+    "why_edge_should_exist": "A choppy intraday regime should create more failed breakdowns than clean downside trends. AXS exaggerates those failures enough to make the mechanism testable if the grammar is broad rather than ceremonial.",
+    "asset_timeframe_fit": "AXS 1h is suitable because failed breaks and sharp repairs are visible on a volatile lane without dropping into microstructure noise.",
+    "indicator_role_map": {
+      "EMA_20": "reclaim reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "breakdown depth and risk normalizer",
+      "RSI_14": "state recovery qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff after reclaim"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "Failed breaks may bounce weakly but never extend enough after entry, leaving the repair thesis too weak after costs.",
+    "first_refinement_path": "If entries trigger but travel is short, reduce target ambition before making the reclaim condition more selective.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A decent number of repair trades with front-loaded exits carrying most expectancy and little need for long runners.",
+    "what_would_count_as_success": "AXS 1h plus one cleaner cross-lane show real repair density and enough post-cost travel after reclaim.",
+    "what_would_count_as_failure": "0 trades, low-trade mirage, or repairs that die immediately after re-entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; breakdown, reclaim, hold, and directional handoff are complementary",
+      "event_sparsity": "managed by broad reclaim logic rather than exact hold choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best expressive lane for failed-break repair in the active basket.",
+      "continue_if": "Repair trades show enough density and post-cost travel to matter.",
+      "rotate_away_if": "AXS only adds noise or the pattern is still too sparse.",
+      "expected_if_right": "Sharp failed breaks, quick reclaim, then a modest repair leg back toward balance."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the mechanism survives on a cleaner major rather than only a volatile lane.",
+      "continue_if": "ETH shows the same repair shape with acceptable density.",
+      "rotate_away_if": "The idea only appears on AXS and disappears elsewhere.",
+      "expected_if_right": "Fewer but cleaner failed-break repairs than AXS."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same failed-break repair grammar survives on the slower adjacent timeframe.",
+      "continue_if": "ETH 4h preserves the repair shape without collapsing into no-trade behavior.",
+      "rotate_away_if": "The slower lane becomes too sparse.",
+      "expected_if_right": "Fewer but cleaner repair moves than 1h."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.32 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.24 * ATR_14",
+      "RSI_14 >= 46",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.32 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.24 * ATR_14",
+      "RSI_14 <= 54",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 40% size",
+      "Take profit: 0.85 * ATR_14 on 35% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.1 * ATR_14 by selling 15%",
+      "Trail remaining 10% by 0.6 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 40% size",
+      "Take profit: 0.85 * ATR_14 on 35% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.1 * ATR_14 by covering 15%",
+      "Trail remaining 10% by 0.6 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

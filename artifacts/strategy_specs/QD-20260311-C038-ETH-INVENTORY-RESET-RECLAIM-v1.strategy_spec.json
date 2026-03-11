@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C038-ETH-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 38,
+  "family_name": "eth_inventory_reset_reclaim_v038",
+  "name": "ETH Inventory Reset Reclaim v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "ETH 4h is the cleaner lane for testing whether a flush below fast value that quickly reclaims balance can produce continuation as trapped inventory gets repaired. The edge is the reclaim after the flush, not a naive oversold bounce.",
+  "invalidation_condition": "Abort if flush-and-reclaim events remain too sparse, if reclaimed moves cannot extend after costs, or if the mechanism just creates weak dead-cat bounces.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, reclaims balance quickly, confirms directional handoff, and then continues as the inventory reset resolves.",
+    "why_edge_should_exist": "Trend-up tapes still shake out late participants. When value is reclaimed after a flush, the repair move can continue as positioning resets.",
+    "asset_timeframe_fit": "ETH 4h is appropriate because flush-and-reclaim structure is readable and cleaner than on thinner assets while still active enough to test.",
+    "indicator_role_map": {
+      "EMA_20": "reclaim reference",
+      "EMA_55": "background support/resistance anchor",
+      "ATR_14": "flush depth and risk normalizer",
+      "RSI_14": "exhaustion and recovery qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff confirmer"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "Reclaims may occur but fail to travel far enough after entry, leaving the setup as a weak bounce instead of real continuation.",
+    "first_refinement_path": "If entries trigger with acceptable density but follow-through is weak, simplify exit ambition and front-load profit-taking before narrowing the reclaim conditions.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A decent number of repair-continuation trades with front-loaded exits carrying most expectancy and occasional secondary extension.",
+    "what_would_count_as_success": "ETH 4h plus one cross-lane show real density and positive post-cost continuation after flush-and-reclaim.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or repeated reclaims that stall immediately after entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; flush, reclaim, and directional handoff are sequential",
+      "event_sparsity": "managed by broad reclaim logic rather than ceremonial exact-bar failure patterns",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Cleanest lane for repair-continuation after a flush and reclaim.",
+      "continue_if": "Reclaim entries show usable density and positive follow-through after costs.",
+      "rotate_away_if": "Reclaims occur but do not extend enough or become too sparse.",
+      "expected_if_right": "A visible set of flush-reclaim-repair continuation trades."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "higher_beta_crosscheck",
+      "why_included": "Checks whether the same inventory-reset grammar survives on a noisier but expressive lane.",
+      "continue_if": "TAO preserves the reclaim shape with acceptable density.",
+      "rotate_away_if": "TAO becomes too chaotic or anti-correlated.",
+      "expected_if_right": "More frequent but noisier reclaim continuations than ETH."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same repair grammar survives on the other high-beta lane in the basket.",
+      "continue_if": "AXS still shows usable reclaim continuation after the flush.",
+      "rotate_away_if": "The pattern becomes too violent or too sparse.",
+      "expected_if_right": "Fewer but larger repair continuations than ETH."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.32 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 46",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.32 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 54",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -38,11 +38,73 @@
     }
   },
   "validation_basket": [
-    {"asset":"ETH","timeframe":"1h","role":"primary","why_included":"Best fit for session-led momentum with enough liquidity for realistic continuation testing.","continue_if":"Continuation appears with credible density and positive post-cost behavior.","rotate_away_if":"Only isolated one-bar spikes appear or density collapses.","expected_if_right":"A small but tradable set of dominant-session holds should extend into a second leg."},
-    {"asset":"BTC","timeframe":"1h","role":"similar_asset","why_included":"Checks whether the mechanism survives on a cleaner major lane rather than only on ETH-specific structure.","continue_if":"BTC shows comparable but cleaner hold-and-follow-through behavior.","rotate_away_if":"The mechanism disappears outside ETH.","expected_if_right":"Smaller but more orderly continuation than ETH."},
-    {"asset":"ETH","timeframe":"4h","role":"adjacent_timeframe","why_included":"Tests whether session-drive continuation survives a slower structure without collapsing into sparse logic.","continue_if":"4h yields fewer but cleaner continuation clusters.","rotate_away_if":"The mechanism only exists as intraday noise.","expected_if_right":"Lower frequency but clearer follow-through after dominant session control."}
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best fit for session-led momentum with enough liquidity for realistic continuation testing.",
+      "continue_if": "Continuation appears with credible density and positive post-cost behavior.",
+      "rotate_away_if": "Only isolated one-bar spikes appear or density collapses.",
+      "expected_if_right": "A small but tradable set of dominant-session holds should extend into a second leg."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism survives on a cleaner major lane rather than only on ETH-specific structure.",
+      "continue_if": "BTC shows comparable but cleaner hold-and-follow-through behavior.",
+      "rotate_away_if": "The mechanism disappears outside ETH.",
+      "expected_if_right": "Smaller but more orderly continuation than ETH."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether session-drive continuation survives a slower structure without collapsing into sparse logic.",
+      "continue_if": "4h yields fewer but cleaner continuation clusters.",
+      "rotate_away_if": "The mechanism only exists as intraday noise.",
+      "expected_if_right": "Lower frequency but clearer follow-through after dominant session control."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
-  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.20 * ATR_14","EMA_20 >= EMA_55 * 0.998","ADX_14 >= 9","RSI_14 >= 51"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.20 * ATR_14","EMA_20 <= EMA_55 * 1.002","ADX_14 >= 9","RSI_14 <= 49"]},
-  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Trail remaining 25% by 0.65 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Trail remaining 25% by 0.65 * ATR_14","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.20 * ATR_14",
+      "EMA_20 >= EMA_55 * 0.998",
+      "ADX_14 >= 9",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.20 * ATR_14",
+      "EMA_20 <= EMA_55 * 1.002",
+      "ADX_14 >= 9",
+      "RSI_14 <= 49"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

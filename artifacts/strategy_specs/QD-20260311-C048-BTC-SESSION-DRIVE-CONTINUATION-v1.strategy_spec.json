@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C048-BTC-SESSION-DRIVE-CONTINUATION-v1",
+  "cycle_id": 48,
+  "family_name": "btc_session_drive_continuation_v048",
+  "name": "BTC Session Drive Continuation v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+  "expected_regime": "TRANSITION_WITHIN_CHOP",
+  "thesis": "BTC 1h is the best lane for testing whether one session's directional drive creates a continuation edge into the next bar cluster once price holds above fast value. The edge is the persistent session drive after initial acceptance, not the first impulse itself.",
+  "invalidation_condition": "Abort if session-drive holds remain too sparse, or if held drives repeatedly mean-revert before exits can cover costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A session produces a directional drive, price holds that drive rather than fully mean-reverting, and continuation follows for a short second leg.",
+    "why_edge_should_exist": "When a particular session dominates order flow, subsequent bars often continue the move if the drive survives the first retrace.",
+    "asset_timeframe_fit": "BTC 1h is the cleanest allowed lane for session-structure logic because it expresses intraday persistence better than 4h while staying liquid.",
+    "indicator_role_map": {
+      "EMA_20": "fast hold reference after session drive",
+      "EMA_55": "broader session structure anchor",
+      "ATR_14": "drive magnitude and risk normalizer",
+      "PLUS_DI_14/MINUS_DI_14": "directional continuation qualifier",
+      "ADX_14": "participation filter"
+    },
+    "expected_regime": "TRANSITION_WITHIN_CHOP",
+    "likely_failure_mode": "Session drives may look real initially but fade back into chop too quickly, leaving insufficient continuation distance.",
+    "first_refinement_path": "If entries are dense enough but travel is weak, simplify exits before tightening the hold condition.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A workable set of continuation trades with the first profit layer carrying most expectancy and a smaller runner contribution.",
+    "what_would_count_as_success": "BTC 1h plus one cross-lane show credible density and positive post-cost continuation after drive holds.",
+    "what_would_count_as_failure": "0 trades, sparse mirage, or repeated fast fade after the session drive.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; drive, hold, and directional participation are complementary",
+      "event_sparsity": "improved by using broad hold-after-drive grammar rather than exact session timestamp triggers",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best lane for intraday session-drive continuation inside the allowed basket.",
+      "continue_if": "Held session drives trade often enough and continue after costs.",
+      "rotate_away_if": "Drive holds are sparse or fade immediately.",
+      "expected_if_right": "Persistent session moves that survive first retrace and continue for a second leg."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same hold-after-drive logic generalizes to a slower major lane.",
+      "continue_if": "ETH preserves continuation behavior with acceptable density.",
+      "rotate_away_if": "The pattern only exists on BTC intraday structure.",
+      "expected_if_right": "Fewer but cleaner drive continuations than BTC 1h."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same continuation grammar survives on the adjacent slower BTC lane.",
+      "continue_if": "4h still shows hold-and-go behavior without collapsing trade count.",
+      "rotate_away_if": "4h becomes too sparse.",
+      "expected_if_right": "Less frequent but larger continuation legs."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55",
+      "Low >= EMA_20 - 0.2 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55",
+      "High <= EMA_20 + 0.2 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.84 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 40% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.64 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.84 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 40% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.64 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

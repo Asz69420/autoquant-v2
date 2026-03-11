@@ -38,11 +38,74 @@
     }
   },
   "validation_basket": [
-    {"asset":"TAO","timeframe":"4h","role":"primary","why_included":"Best lane for a repaired deeper-pullback continuation mechanism in the current basket.","continue_if":"Credible density and positive continuation after reclaim.","rotate_away_if":"Pullbacks reclaim but fail to extend, or the setup is too sparse.","expected_if_right":"Sharp resets followed by a visible second-leg continuation after fast value reclaim."},
-    {"asset":"ETH","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism is structural on a cleaner large-cap lane.","continue_if":"ETH shows similar repaired-pullback continuation with acceptable density.","rotate_away_if":"The mechanism only survives on TAO volatility and disappears on ETH.","expected_if_right":"Fewer but cleaner repaired-pullback continuations than TAO."},
-    {"asset":"AXS","timeframe":"4h","role":"structural_stress_test","why_included":"Tests whether the same continuation grammar survives on a more fragile high-beta lane.","continue_if":"AXS preserves the repaired continuation shape without collapsing into noise.","rotate_away_if":"AXS becomes structurally noisy or too sparse.","expected_if_right":"Less frequent but punchier repaired-continuation moves than ETH."}
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for a repaired deeper-pullback continuation mechanism in the current basket.",
+      "continue_if": "Credible density and positive continuation after reclaim.",
+      "rotate_away_if": "Pullbacks reclaim but fail to extend, or the setup is too sparse.",
+      "expected_if_right": "Sharp resets followed by a visible second-leg continuation after fast value reclaim."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism is structural on a cleaner large-cap lane.",
+      "continue_if": "ETH shows similar repaired-pullback continuation with acceptable density.",
+      "rotate_away_if": "The mechanism only survives on TAO volatility and disappears on ETH.",
+      "expected_if_right": "Fewer but cleaner repaired-pullback continuations than TAO."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the same continuation grammar survives on a more fragile high-beta lane.",
+      "continue_if": "AXS preserves the repaired continuation shape without collapsing into noise.",
+      "rotate_away_if": "AXS becomes structurally noisy or too sparse.",
+      "expected_if_right": "Less frequent but punchier repaired-continuation moves than ETH."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
-  "entry_rules": {"long": ["Low <= EMA_20 - 0.34 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.18 * ATR_14","ADX_14 >= 12","PLUS_DI_14 >= MINUS_DI_14"],"short": ["High >= EMA_20 + 0.34 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.18 * ATR_14","ADX_14 >= 12","MINUS_DI_14 >= PLUS_DI_14"]},
-  "exit_rules": {"long": ["Stop loss: 0.85 * ATR_14 below entry","Take profit: 0.6 * ATR_14 on 40% size","Take profit: 1.0 * ATR_14 on 35% size","Trail remaining 25% by 0.7 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.85 * ATR_14 above entry","Take profit: 0.6 * ATR_14 on 40% size","Take profit: 1.0 * ATR_14 on 35% size","Trail remaining 25% by 0.7 * ATR_14","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.34 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.18 * ATR_14",
+      "ADX_14 >= 12",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.34 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.18 * ATR_14",
+      "ADX_14 >= 12",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

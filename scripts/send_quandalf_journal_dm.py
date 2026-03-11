@@ -54,6 +54,38 @@ def compact(text, limit=220):
     return text if len(text) <= limit else text[:limit - 1].rstrip() + '…'
 
 
+def to_first_person(text):
+    text = compact(text, limit=320)
+    if text == '—':
+        return text
+    replacements = [
+        ('Quandalf must explicitly choose iterate or abort.', 'I must explicitly choose refine or abort.'),
+        ('Quandalf must explicitly choose refine or abort.', 'I must explicitly choose refine or abort.'),
+        ('allowed next actions -> refine, abort', 'my legal next actions are refine or abort'),
+        ('allowed next actions -> pass, refine, abort', 'my legal next actions are pass, refine, or abort'),
+        ('This does not justify iteration.', 'I do not think this justifies refinement.'),
+        ('This strategy produced', 'I saw this strategy produce'),
+        ('This strategy', 'I designed this strategy and'),
+        ('The strategy produced', 'I saw the strategy produce'),
+        ('The strategy', 'I found that the strategy'),
+        ('Both completed screen lanes ended with zero-trade integrity skips, so', 'I saw both completed screen lanes end with zero-trade integrity skips, so'),
+        ('Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so', 'I saw both completed screen lanes end in integrity_skip:zero_trades_both_samples, so'),
+        ('0 trades on valid data', 'I got 0 trades on valid data'),
+        ('abort: fail with', 'I aborted it after a fail with'),
+        ('decision ', ''),
+    ]
+    for old, new in replacements:
+        text = text.replace(old, new)
+    if ': my legal next actions are ' in text:
+        text = text.replace(': my legal next actions are ', ': I see that my legal next actions are ')
+    if text.startswith('QD-') and ': ' in text:
+        spec_id, rest = text.split(': ', 1)
+        if rest.startswith('I got ') or rest.startswith('I aborted ') or rest.startswith('I saw ') or rest.startswith('I found ') or rest.startswith('I designed ') or rest.startswith('I see '):
+            return f'On {spec_id}, {rest[0].lower() + rest[1:]}'
+        return f'On {spec_id}, {rest}'
+    return text
+
+
 def summarize_list(items, limit=4):
     clean = []
     seen = set()
@@ -151,35 +183,38 @@ def build_from_learning(data, reflection, decisions):
             f"Trades {best_result.get('total_trades') or 0}"
         )
 
+    failed_items = dims.get('what_failed') or []
+    why_items = dims.get('why_it_failed') or []
+    next_items = dims.get('iterate_next') or []
+    abandon_items = dims.get('abandon') or []
     lines = [
         f"🧠 {bold('Quandalf Journal — Cycle')} {cycle_id}",
-        f"Mode: {mode} | Direction: {direction}",
-        f"Assets touched: {summarize_list(summary.get('assets'))}",
-        f"Timeframes touched: {summarize_list(summary.get('timeframes'))}",
-        f"Strategies: {summary.get('strategy_count', 0)} | Queue rows: {summary.get('queue_total', 0)} | Saved results: {summary.get('result_total', 0)}",
+        f"I ran in {mode} mode with direction {direction}.",
+        f"I touched assets: {summarize_list(summary.get('assets'))}",
+        f"I touched timeframes: {summarize_list(summary.get('timeframes'))}",
+        f"I tested {summary.get('strategy_count', 0)} strategies across {summary.get('queue_total', 0)} queue rows and saved {summary.get('result_total', 0)} result rows.",
         '',
-        f"{bold('Decision summary')}",
-        f"• Pass: {decision_summary.get('pass', 0) or summary['decision_counts'].get('pass', 0)} | Refine: {decision_summary.get('refine', 0)} | Abort: {decision_summary.get('abort', 0) or summary['decision_counts'].get('abort', 0)} | Zero-trade flags: {decision_summary.get('zero_trade', 0)}",
-        f"• Diagnoses: {summarize_list([f'{k}={v}' for k, v in diagnosis.items()], limit=6)}",
+        f"{bold('My decision summary')}",
+        f"• I ended with Pass {decision_summary.get('pass', 0) or summary['decision_counts'].get('pass', 0)} | Refine {decision_summary.get('refine', 0)} | Abort {decision_summary.get('abort', 0) or summary['decision_counts'].get('abort', 0)} | Zero-trade flags {decision_summary.get('zero_trade', 0)}",
+        f"• My diagnoses were: {summarize_list([f'{k}={v}' for k, v in diagnosis.items()], limit=6)}",
         '',
-        f"{bold('Best evidence seen')}",
-        f"• {best_line}",
+        f"{bold('Best evidence I saw')}",
+        f"• {to_first_person(best_line)}",
         '',
         f"{bold('What failed')}",
-        f"• {compact(first(dims.get('what_failed')))}",
-        f"• {compact(first((dims.get('what_failed') or [])[1:] if isinstance(dims.get('what_failed'), list) else []))}",
+        f"• {to_first_person(first(failed_items))}",
+        f"• {to_first_person(first(failed_items[1:] if isinstance(failed_items, list) else []))}",
         '',
-        f"{bold('Why he judged it that way')}",
-        f"• {compact(first(dims.get('why_it_failed')))}",
-        f"• {compact(first((dims.get('iterate_next') or [])[4:] if isinstance(dims.get('iterate_next'), list) else []), limit=260)}",
+        f"{bold('Why I judged it that way')}",
+        f"• {to_first_person(first(why_items))}",
+        f"• {to_first_person(first(why_items[1:] if isinstance(why_items, list) else []))}",
         '',
-        f"{bold('What he would improve next')}",
-        f"• {compact(first(dims.get('iterate_next')), limit=220)}",
-        f"• {compact(first((dims.get('iterate_next') or [])[1:] if isinstance(dims.get('iterate_next'), list) else []), limit=220)}",
+        f"{bold('What I would improve next')}",
+        f"• {to_first_person(first(next_items),)}",
+        f"• {to_first_person(first(next_items[1:] if isinstance(next_items, list) else []))}",
         '',
-        f"{bold('Branches worth killing / parking')}",
-        f"• Abandon: {compact(first(dims.get('abandon')), limit=220)}",
-        f"• Bench: {compact(first(dims.get('bench_for_later')), limit=220)}",
+        f"{bold('What I am aborting')}",
+        f"• {to_first_person(first(abandon_items),)}",
     ]
     return '\n'.join(lines).strip()
 
@@ -196,6 +231,7 @@ def main():
     reflection = load_json(REFLECTION, {})
     decisions = load_json(DECISIONS, {})
     message = build_from_learning(learning, reflection, decisions) if learning else build_fallback()
+    message = message.replace('Why he judged it that way', 'Why I judged it that way').replace('What he would improve next', 'What I would improve next')
     subprocess.run(['python', str(TG_NOTIFY), '--bot', 'quandalf', '--channel', 'dm', '--message', message], check=False)
     try:
         print(message.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore'))

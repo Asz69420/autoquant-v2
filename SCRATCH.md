@@ -1,1 +1,1 @@
-Implement clean staged backtest pipeline: simple engine for live screening, walk-forward engine for stage-2 validation only, promotion requires walk-forward pass, invalidate tainted recent backtests, and audit backtest path for silent bugs.
+Tidy foundational orchestration/runtime issues: enforce single autopilot runner, kill full process tree on timeout, stabilize cycle postprocess/card ordering, refresh learning memory after closure, and verify cooking loop progresses cleanly.

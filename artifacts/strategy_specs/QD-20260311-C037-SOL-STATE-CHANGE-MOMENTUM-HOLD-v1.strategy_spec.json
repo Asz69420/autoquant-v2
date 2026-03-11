@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C037-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 37,
+  "family_name": "sol_state_change_momentum_hold_v037",
+  "name": "SOL State Change Momentum Hold v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "state-change momentum after regime improvement and post-break hold",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "SOL 4h is the best primary lane for testing whether a mixed chop/transition tape can produce a tradable second-leg continuation once price shifts state, reclaims fast value, and then proves it can hold above that reclaim. The edge comes from entering after the break shows durability, not from chasing the first impulse bar.",
+  "invalidation_condition": "Abort if post-break holds remain too sparse, if hold entries fail to extend after costs, or if SOL only produces noisy false state changes.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A prior mixed structure improves, price breaks into a stronger state, holds above reclaimed value, and then produces a continuation leg as participation broadens.",
+    "why_edge_should_exist": "In transition-heavy chop, some breaks fail immediately while others establish a new state. Requiring the post-break hold should keep the idea mechanism-first rather than breakout-chasing.",
+    "asset_timeframe_fit": "SOL 4h is expressive enough for regime improvement and hold behavior while still cleaner than thinner high-beta lanes.",
+    "indicator_role_map": {
+      "EMA_20": "fast value hold reference",
+      "EMA_55": "state-change baseline",
+      "ADX_14": "regime improvement qualifier",
+      "RSI_14": "momentum persistence confirmer",
+      "ATR_14": "risk and break-size normalizer"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "Momentum improves briefly but fades immediately, so the post-break hold never produces enough continuation after fees.",
+    "first_refinement_path": "If entries are valid but follow-through is shallow, shorten time in trade and front-load profit harvesting before changing the state-change grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A reasonable number of post-break hold entries with first-target harvesting carrying most expectancy and occasional runner contribution.",
+    "what_would_count_as_success": "SOL 4h plus one cross-lane show credible density and positive continuation after state-change holds.",
+    "what_would_count_as_failure": "0 trades, low-trade mirage, or repeated holds that fail within 1-2 bars.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; state change, hold, and persistence are sequential",
+      "event_sparsity": "managed by broad hold-after-break logic instead of exact breakout-bar choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"SOL","timeframe":"4h","role":"primary","why_included":"Best expressive lane for state-change continuation in the live basket.","continue_if":"Hold-after-break entries show enough density and post-cost continuation.","rotate_away_if":"The hold confirms too rarely or fades immediately.","expected_if_right":"Repeated state changes followed by clean continuation bursts."},
+    {"asset":"ETH","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the same state-change mechanism survives on a cleaner major.","continue_if":"ETH preserves the post-break hold shape with usable density.","rotate_away_if":"The mechanism only works on SOL-style behavior.","expected_if_right":"Fewer but cleaner continuation holds than SOL."},
+    {"asset":"SOL","timeframe":"1h","role":"adjacent_timeframe","why_included":"Tests whether the same mechanism survives on a faster adjacent lane.","continue_if":"1h preserves the pattern without collapsing into noise.","rotate_away_if":"1h becomes too noisy or overtrades without edge.","expected_if_right":"More frequent but smaller state-change holds than 4h."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ADX_14","RSI_14","ATR_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_55 + 0.18 * ATR_14",
+      "Low >= EMA_20 - 0.12 * ATR_14",
+      "ADX_14 >= 14",
+      "RSI_14 >= 53"
+    ],
+    "short": [
+      "Close <= EMA_55 - 0.18 * ATR_14",
+      "High <= EMA_20 + 0.12 * ATR_14",
+      "ADX_14 >= 14",
+      "RSI_14 <= 47"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 45% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.68 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 45% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.68 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

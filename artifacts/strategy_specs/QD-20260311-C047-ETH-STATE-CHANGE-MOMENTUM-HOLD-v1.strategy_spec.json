@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C047-ETH-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 47,
+  "family_name": "eth_state_change_momentum_hold_v047",
+  "name": "ETH State Change Momentum Hold v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "state-change momentum after regime improvement and post-break hold",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 4h is the best primary lane for testing whether a local state change can be identified not by first breakout excitement but by break-hold behavior after regime conditions improve from dead chop. The edge is the post-break hold, not the breakout bar itself.",
+  "invalidation_condition": "Abort if hold-confirmed state changes remain too sparse, or if post-break holds repeatedly fail back into the prior range before exits can pay costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A previously choppy market starts improving, breaks value, then holds above reclaimed structure long enough for a short continuation leg.",
+    "why_edge_should_exist": "A break that survives one bar of hold is more informative than the initial breakout print in chop-heavy conditions.",
+    "asset_timeframe_fit": "ETH 4h is the cleanest lane for state-change tests because structural holds are visible without lower-timeframe noise.",
+    "indicator_role_map": {
+      "ADX_14": "regime-improvement filter",
+      "EMA_20": "fast value hold reference",
+      "EMA_55": "state-change structure anchor",
+      "ATR_14": "distance and risk normalizer",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The market may look improved briefly but still mean-revert back into range, making the hold too weak after fees.",
+    "first_refinement_path": "If entries are dense enough but follow-through is weak, reduce runner ambition before tightening the hold filter.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Modest number of state-change continuations with first target doing most of the work and only occasional runner persistence.",
+    "what_would_count_as_success": "ETH 4h plus one cross-lane show credible density and positive post-cost continuation after confirmed holds.",
+    "what_would_count_as_failure": "0 trades, sparse mirage, or repeated hold failures back into range.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; regime improvement and hold logic are sequential",
+      "event_sparsity": "managed by broad hold-confirmation grammar rather than exact breakout candle dependence",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for structural hold after state change.",
+      "continue_if": "Hold-confirmed breaks occur often enough and continue after costs.",
+      "rotate_away_if": "Holds fail back into range or density collapses.",
+      "expected_if_right": "Break-hold patterns that produce short continuation legs after value shifts."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same state-change mechanism survives on the other major.",
+      "continue_if": "BTC shows similar break-hold continuation structure.",
+      "rotate_away_if": "Pattern is ETH-specific.",
+      "expected_if_right": "Slightly cleaner but fewer state-change holds than ETH."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same hold grammar survives on the faster adjacent lane.",
+      "continue_if": "1h preserves density without degenerating into noise.",
+      "rotate_away_if": "1h becomes churny or false-break prone.",
+      "expected_if_right": "More frequent but smaller state-change continuations."
+    }
+  ],
+  "indicators": [
+    "ADX_14",
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "ADX_14 >= 11",
+      "Close >= EMA_20",
+      "Close >= EMA_55",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "Low >= EMA_20 - 0.18 * ATR_14"
+    ],
+    "short": [
+      "ADX_14 >= 11",
+      "Close <= EMA_20",
+      "Close <= EMA_55",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "High <= EMA_20 + 0.18 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}
