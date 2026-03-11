@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C322-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "ts_iso": "2026-03-11T00:31:00Z",
+  "thesis_id": "cycle_322_sol_state_change_momentum_hold_v1",
+  "name": "SOL State-Change Momentum Hold v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "family_name": "sol_state_change_momentum_hold",
+  "thesis": "SOL 4h in transition can produce durable moves when regime improves and price breaks into a stronger state, then holds above fast trend value. The edge should come from waiting for post-break acceptance instead of chasing the first expansion bar.",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [{"asset": "SOL", "timeframe": "4h", "purpose": "walk_forward_screen"}],
+  "edge_mechanism": "state-change momentum after break-and-hold confirmation",
+  "expected_regime": "transitional improvement",
+  "invalidation_condition": "If post-break hold logic still cannot clear the trade floor or post-cost PF > 1.0, then SOL 4h state-change continuation is too noisy or too sparse.",
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": ["Close > EMA_20", "EMA_20 > EMA_50", "Low <= EMA_20 + 0.15 * ATR_14", "RSI_14 >= 53", "ADX_14 >= 17"],
+    "short": ["Close < EMA_20", "EMA_20 < EMA_50", "High >= EMA_20 - 0.15 * ATR_14", "RSI_14 <= 47", "ADX_14 >= 17"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry", "Take profit: 2.5 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 7 bars"],
+    "short": ["Stop loss: 1.0 * ATR_14 above entry", "Take profit: 2.5 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 7 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional", "trending"], "detection_method": "Require post-break close acceptance and fast-over-medium alignment rather than immediate breakout entry."},
+  "variants": [{"name": "sol_state_change_momentum_hold_v1", "template_name": "state_change_momentum_hold", "parameters": [{"name": "ema_fast", "value": 20}, {"name": "ema_medium", "value": 50}, {"name": "hold_buffer_atr", "value": 0.15}, {"name": "adx_floor", "value": 17}], "risk_policy": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "atr", "tp_atr_mult": 2.5, "risk_per_trade_pct": 0.004, "max_concurrent_positions": 1, "max_holding_bars": 7}, "execution_policy": {"entry_fill": "bar_close", "tie_break": "worst_case", "allow_reverse": true, "slippage_bps": 10, "fee_bps": 6}, "risk_rules": ["cooldown_bars=0"]}],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

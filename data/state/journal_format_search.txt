@@ -1,0 +1,19 @@
+2: import html
+11: TG_NOTIFY = ROOT / "scripts" / "tg_notify.py"
+12: DAILY_JOURNAL = ROOT / "agents" / "quandalf" / "memory" / "daily_journal.md"
+13: LATEST_JOURNAL = ROOT / "agents" / "quandalf" / "memory" / "latest_journal.md"
+15: TITLE = "?? <b>Quandalf Daily Journal</b>\n\n"
+18: def pick_journal_path() -> Path:
+19:     if DAILY_JOURNAL.exists() and DAILY_JOURNAL.stat().st_size > 0:
+20:         return DAILY_JOURNAL
+21:     return DAILY_JOURNAL
+27:         str(TG_NOTIFY),
+42:     path = pick_journal_path()
+46:             "Daily journal not found.\n"
+47:             "Policy: DM only sends the dedicated daily journal entry (single message, max 4000 chars).\n"
+48:             "Raw latest_journal dumps are blocked."
+51:         print(json.dumps({"status": "sent" if ok else "failed", "journal": str(path), "detail": detail}))
+55:     safe = html.escape(raw)
+61:             "Daily journal exceeded the one-message limit and was not sent.\n"
+67:             "journal": str(path),
+74:     print(json.dumps({"status": "sent" if ok else "failed", "chars": len(message), "journal": str(path), "detail": detail}))

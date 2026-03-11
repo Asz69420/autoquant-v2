@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C317-TAO-EXHAUSTION-VALUE-REACCEPTANCE-v1",
+  "ts_iso": "2026-03-10T23:35:20Z",
+  "thesis_id": "cycle_317_tao_exhaustion_value_reacceptance_v1",
+  "name": "TAO Exhaustion Value Reacceptance v1",
+  "version": "1.0",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "family_name": "tao_exhaustion_value_reacceptance",
+  "thesis": "In a fully choppy TAO 4h regime, the cleaner edge may be mean reversion after exhaustion only once price reaccepts prior value. The edge should come from fading overextension after structure repair, not blindly catching every stretched move.",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "TAO", "timeframe": "4h", "purpose": "walk_forward_screen"}
+  ],
+  "edge_mechanism": "exhaustion reversal after value reacceptance",
+  "expected_regime": "choppy and mean-reverting",
+  "invalidation_condition": "If exhaustion plus value reacceptance still fails to produce enough trades or post-cost PF above 1.0, then TAO 4h mean reversion needs broader structure logic or should be deprioritized.",
+  "indicators": ["EMA_20", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14", "STOCH_K_14_3_3"],
+  "entry_rules": {
+    "long": [
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close > EMA_20",
+      "RSI_14 >= 49",
+      "STOCH_K_14_3_3 >= 35"
+    ],
+    "short": [
+      "High > BOLLINGER_UPPER_20_2",
+      "Close < EMA_20",
+      "RSI_14 <= 51",
+      "STOCH_K_14_3_3 <= 65"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 1.2 * ATR_14 above entry for 50% size",
+      "Trail remaining 50% with EMA_20",
+      "Time-based de-risk: reduce remaining size by half after 3 bars if gain < 0.5 * ATR_14",
+      "Final exit at 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 1.2 * ATR_14 below entry for 50% size",
+      "Trail remaining 50% with EMA_20",
+      "Time-based de-risk: reduce remaining size by half after 3 bars if gain < 0.5 * ATR_14",
+      "Final exit at 6 bars"
+    ]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {
+    "allowed_regimes": ["choppy"],
+    "detection_method": "Require band stretch plus close-based value reclaim through EMA_20 before entering reversal."
+  },
+  "variants": [
+    {
+      "name": "tao_exhaustion_value_reacceptance_v1",
+      "template_name": "exhaustion_value_reacceptance",
+      "parameters": [
+        {"name": "ema_fast", "value": 20},
+        {"name": "bb_length", "value": 20},
+        {"name": "bb_std", "value": 2},
+        {"name": "stoch_reclaim", "value": 35}
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 0.95,
+        "tp_type": "partial_and_trail",
+        "tp_atr_mult": 1.2,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 6
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 10,
+        "fee_bps": 6
+      },
+      "risk_rules": ["partial_take_profit=50pct", "runner_trail=ema20", "time_derisk_after=3bars"]
+    }
+  ],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

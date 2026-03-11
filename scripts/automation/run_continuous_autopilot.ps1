@@ -24,7 +24,7 @@ if (Test-Path $LOCK) {
 try {
   while ($true) {
     Write-Host "[autopilot] starting research cycle $(Get-Date -Format o)"
-    openclaw lobster run --pipeline pipelines/research-cycle.lobster --cwd .
+    lobster run --mode tool pipelines/research-cycle.lobster
     $researchExit = $LASTEXITCODE
     if ($researchExit -ne 0) {
       Write-Host "[autopilot] research cycle failed with exit $researchExit"
@@ -33,7 +33,7 @@ try {
     }
 
     Write-Host "[autopilot] starting daily maintenance $(Get-Date -Format o)"
-    openclaw lobster run --pipeline pipelines/daily-maintenance.lobster --cwd .
+    lobster run --mode tool pipelines/daily-maintenance.lobster
     $maintExit = $LASTEXITCODE
     if ($maintExit -ne 0) {
       Write-Host "[autopilot] maintenance failed with exit $maintExit"

@@ -1,0 +1,8 @@
+frodex-forward-health-4h | enabled=False | schedule={'kind': 'daily', 'times': ['00:25', '04:25', '08:25', '12:25', '16:25', '20:25']} | target=main
+logron-reporter-drain-1m | enabled=False | schedule={'kind': 'interval', 'minutes': 1} | target=main
+git-auto-sync | enabled=True | schedule={'kind': 'cron', 'expr': '*/30 * * * *'} | target=main
+frodex-ops-loop-15m | enabled=True | schedule={'kind': 'cron', 'expr': '*/15 * * * *'} | target=main
+frodex-youtube-watch-2h | enabled=True | schedule={'kind': 'cron', 'expr': '10 */2 * * *'} | target=main
+frodex-tv-catalog-daily | enabled=True | schedule={'kind': 'cron', 'expr': '0 9 * * *'} | target=main
+frodex-daily-intel-0530 | enabled=True | schedule={'kind': 'cron', 'expr': '30 5 * * *'} | target=main
+quandalf-journal-1730 | enabled=True | schedule={'kind': 'cron', 'expr': '30 17 * * *'} | target=main

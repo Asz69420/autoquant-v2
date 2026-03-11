@@ -1,79 +1,77 @@
 #!/usr/bin/env python3
-import html
 import json
 import subprocess
-import sys
 from pathlib import Path
 
-from text_io import read_text_best_effort
+ROOT = Path(__file__).resolve().parent.parent
+LEARNING = ROOT / 'data' / 'state' / 'quandalf_learning_loop.json'
+FALLBACK = ROOT / 'agents' / 'quandalf' / 'memory' / 'latest_journal.md'
+TG_NOTIFY = ROOT / 'scripts' / 'tg_notify.py'
 
-ROOT = Path(__file__).resolve().parents[1]
-TG_NOTIFY = ROOT / "scripts" / "tg_notify.py"
-DAILY_JOURNAL = ROOT / "agents" / "quandalf" / "memory" / "daily_journal.md"
-LATEST_JOURNAL = ROOT / "agents" / "quandalf" / "memory" / "latest_journal.md"
-MAX_MESSAGE_CHARS = 4000
-TITLE = "🧠 <b>Quandalf Daily Journal</b>\n\n"
-
-
-def pick_journal_path() -> Path:
-    if DAILY_JOURNAL.exists() and DAILY_JOURNAL.stat().st_size > 0:
-        return DAILY_JOURNAL
-    return DAILY_JOURNAL
+BOLD = {
+    'A':'𝐀','B':'𝐁','C':'𝐂','D':'𝐃','E':'𝐄','F':'𝐅','G':'𝐆','H':'𝐇','I':'𝐈','J':'𝐉','K':'𝐊','L':'𝐋','M':'𝐌','N':'𝐍','O':'𝐎','P':'𝐏','Q':'𝐐','R':'𝐑','S':'𝐒','T':'𝐓','U':'𝐔','V':'𝐕','W':'𝐖','X':'𝐗','Y':'𝐘','Z':'𝐙',
+    'a':'𝐚','b':'𝐛','c':'𝐜','d':'𝐝','e':'𝐞','f':'𝐟','g':'𝐠','h':'𝐡','i':'𝐢','j':'𝐣','k':'𝐤','l':'𝐥','m':'𝐦','n':'𝐧','o':'𝐨','p':'𝐩','q':'𝐪','r':'𝐫','s':'𝐬','t':'𝐭','u':'𝐮','v':'𝐯','w':'𝐰','x':'𝐱','y':'𝐲','z':'𝐳',
+    '0':'𝟎','1':'𝟏','2':'𝟐','3':'𝟑','4':'𝟒','5':'𝟓','6':'𝟔','7':'𝟕','8':'𝟖','9':'𝟗'
+}
 
 
-def send_message(message: str) -> tuple[bool, str]:
-    cmd = [
-        sys.executable,
-        str(TG_NOTIFY),
-        "--message",
-        message,
-        "--bot",
-        "quandalf",
-        "--channel",
-        "dm",
+def bold(text: str) -> str:
+    return ''.join(BOLD.get(ch, ch) for ch in text)
+
+
+def load_learning():
+    if LEARNING.exists():
+        return json.loads(LEARNING.read_text(encoding='utf-8'))
+    return None
+
+
+def first(items, default='—'):
+    if not items:
+        return default
+    if isinstance(items, list):
+        return str(items[0]).strip() or default
+    return str(items).strip() or default
+
+
+def build_from_learning(data):
+    ctx = data.get('cycle_context') or {}
+    dims = data.get('dimensions') or {}
+    thesis = first(data.get('thesis'))
+    lines = [
+        f"🧠 {bold('Quandalf Daily Journal')}",
+        f"Cycle: {ctx.get('cycle_ref') or '—'} | Asset: {ctx.get('asset') or '—'} | TF: {ctx.get('timeframe') or '—'}",
+        '',
+        f"{bold('Thesis')}\n{thesis}",
+        '',
+        f"{bold('What worked')}\n• {first(dims.get('what_worked'))}",
+        '',
+        f"{bold('What failed')}\n• {first(dims.get('what_failed'))}",
+        '',
+        f"{bold('Why')}\n• {first(dims.get('why_it_failed'))}",
+        '',
+        f"{bold('Next iterate')}\n• {first(dims.get('iterate_next'))}",
+        '',
+        f"{bold('Bench / abandon')}\n• Bench: {first(dims.get('bench_for_later'))}\n• Abandon: {first(dims.get('abandon'))}",
+        '',
+        f"{bold('Regime / family notes')}\n• Regime: {first(dims.get('regime_notes'))}\n• Family: {first(dims.get('strategy_family_notes'))}",
+        '',
+        f"{bold('Management / indicator notes')}\n• Management: {first(dims.get('management_notes'))}\n• Indicator roles: {first(dims.get('indicator_role_notes'))}",
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    ok = proc.returncode == 0 and '"status": "sent"' in (proc.stdout or "")
-    detail = (proc.stdout or proc.stderr or "").strip()
-    return ok, detail
+    return '\n'.join(lines).strip()
 
 
-def main() -> int:
-    path = pick_journal_path()
-    if not path.exists() or path.stat().st_size == 0:
-        fallback_note = (
-            f"{TITLE}"
-            "Daily journal not found.\n"
-            "Policy: DM only sends the dedicated daily journal entry (single message, max 4000 chars).\n"
-            "Raw latest_journal dumps are blocked."
-        )
-        ok, detail = send_message(fallback_note)
-        print(json.dumps({"status": "sent" if ok else "failed", "journal": str(path), "detail": detail}))
-        return 0 if ok else 1
-
-    raw = read_text_best_effort(path).strip()
-    safe = html.escape(raw)
-    message = TITLE + safe
-
-    if len(message) > MAX_MESSAGE_CHARS:
-        detail_message = (
-            f"{TITLE}"
-            "Daily journal exceeded the one-message limit and was not sent.\n"
-            "Please rewrite it to 4000 characters or less."
-        )
-        ok, detail = send_message(detail_message)
-        print(json.dumps({
-            "status": "oversize_blocked" if ok else "failed",
-            "journal": str(path),
-            "chars": len(message),
-            "detail": detail,
-        }))
-        return 0 if ok else 1
-
-    ok, detail = send_message(message)
-    print(json.dumps({"status": "sent" if ok else "failed", "chars": len(message), "journal": str(path), "detail": detail}))
-    return 0 if ok else 1
+def build_fallback():
+    text = FALLBACK.read_text(encoding='utf-8') if FALLBACK.exists() else 'No journal available.'
+    text = text.strip().splitlines()
+    preview = '\n'.join(text[:20]).strip()
+    return f"🧠 {bold('Quandalf Daily Journal')}\n\n{preview}"
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+def main():
+    message = build_from_learning(load_learning()) if load_learning() else build_fallback()
+    subprocess.run(['python', str(TG_NOTIFY), '--bot', 'oragorn', '--channel', 'asz', '--message', message], check=False)
+    print(message)
+
+
+if __name__ == '__main__':
+    main()

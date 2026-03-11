@@ -1,9 +1,9 @@
 {
-  "cycle_id": 316,
-  "cycle_key": "316",
-  "manifest_cycle_id": 316,
-  "status_cycle_id": 316,
-  "orders_cycle_id": 316,
+  "cycle_id": 322,
+  "cycle_key": "322",
+  "manifest_cycle_id": 322,
+  "status_cycle_id": 322,
+  "orders_cycle_id": 322,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "state_warning": null,
@@ -11,7 +11,7 @@
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "BTC",
+  "target_asset": "SOL",
   "target_timeframe": "4h",
   "iterate_target": null,
   "exploration_targets": {
@@ -30,28 +30,32 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "BTC"
+      "SOL"
     ],
     "timeframes": [
       "4h"
     ]
   },
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C316-BTC-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C316-BTC-DEEP-TREND-RESET-CONTINUATION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260310-C316-BTC-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C322-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C322-SOL-EXHAUSTION-VALUE-REACCEPTANCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C322-SOL-DELAYED-RETEST-CONTINUATION-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260310-C316-BTC-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-    "QD-20260310-C316-BTC-DEEP-TREND-RESET-CONTINUATION-v1",
-    "QD-20260310-C316-BTC-RANGE-FAILURE-REACCEPTANCE-v1"
+    "QD-20260311-C322-SOL-DELAYED-RETEST-CONTINUATION-v1",
+    "QD-20260311-C322-SOL-EXHAUSTION-VALUE-REACCEPTANCE-v1",
+    "QD-20260311-C322-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1"
   ],
   "specs_produced": 3,
   "specs_written": 3,
-  "new_families": [],
+  "new_families": [
+    "sol_state_change_momentum_hold",
+    "sol_exhaustion_value_reacceptance",
+    "sol_delayed_retest_continuation"
+  ],
   "iterated_families": [],
   "abandoned_families": [],
-  "active_families": 0,
+  "active_families": 3,
   "all_recent_rows": 0,
   "cycle_rows": 0,
   "external_rows": 0,
@@ -84,13 +88,13 @@
   "promotions": 0,
   "best_result": null,
   "best_qscore": 0,
-  "next_cycle_focus": "pending",
-  "rationale": "pending",
+  "next_cycle_focus": "Run the SOL 4h transition batch and only refine branches that prove real blind-window density and post-cost edge; kill decorative low-trade variants quickly.",
+  "rationale": "Cycle 322 orders SOL/4h explore work in a transition regime, so I wrote three materially distinct SOL 4h families spanning state-change momentum, exhaustion mean reversion, and delayed-retest continuation, with explicit variation in trade-management style rather than only entry triggers.",
   "has_reflection_note": true,
-  "elapsed_seconds": 170.7,
-  "run_elapsed_seconds": 170.7,
-  "report_delay_seconds": 37569.5,
+  "elapsed_seconds": 159.1,
+  "run_elapsed_seconds": 159.1,
+  "report_delay_seconds": 0.0,
   "is_completed": true,
-  "started_at_epoch": 1773144947.0858948,
-  "ended_at_epoch": 1773145117.8297026
+  "started_at_epoch": 1773189011.7366836,
+  "ended_at_epoch": 1773189170.8052282
 }

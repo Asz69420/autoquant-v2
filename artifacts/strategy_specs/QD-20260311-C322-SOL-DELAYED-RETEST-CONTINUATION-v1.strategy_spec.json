@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C322-SOL-DELAYED-RETEST-CONTINUATION-v1",
+  "ts_iso": "2026-03-11T00:31:20Z",
+  "thesis_id": "cycle_322_sol_delayed_retest_continuation_v1",
+  "name": "SOL Delayed Retest Continuation v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "family_name": "sol_delayed_retest_continuation",
+  "thesis": "When SOL 4h breaks into a stronger state, the better continuation trade may be the delayed retest rather than the immediate trigger. The edge should come from entering only after breakout structure survives retest and resumes, reducing false-break exposure.",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [{"asset": "SOL", "timeframe": "4h", "purpose": "walk_forward_screen"}],
+  "edge_mechanism": "breakout continuation after delayed retest confirmation",
+  "expected_regime": "transitional expansion",
+  "invalidation_condition": "If delayed retest continuation remains too sparse or unprofitable after costs, then SOL 4h breakout follow-through is not worth prioritizing in this regime.",
+  "indicators": ["EMA_20", "EMA_50", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": ["Close > BOLLINGER_UPPER_20_2", "Low <= EMA_20 + 0.2 * ATR_14", "Close > EMA_20", "RSI_14 >= 54"],
+    "short": ["Close < BOLLINGER_LOWER_20_2", "High >= EMA_20 - 0.2 * ATR_14", "Close < EMA_20", "RSI_14 <= 46"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.05 * ATR_14 below entry", "Scaled-out exits: 35% at 1.0 * ATR_14, 35% at 1.8 * ATR_14", "Scale in additional 25% if Close closes 0.8 * ATR_14 beyond entry in favor", "Trail remaining position with 1.2 * ATR_14 chandelier stop", "Final time stop: 8 bars"],
+    "short": ["Stop loss: 1.05 * ATR_14 above entry", "Scaled-out exits: 35% at 1.0 * ATR_14, 35% at 1.8 * ATR_14", "Scale in additional 25% if Close closes 0.8 * ATR_14 beyond entry in favor", "Trail remaining position with 1.2 * ATR_14 chandelier stop", "Final time stop: 8 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.0035},
+  "regime_filter": {"allowed_regimes": ["transitional", "trending"], "detection_method": "Require breakout close, then a retest toward EMA_20 and renewed close in direction of the break."},
+  "variants": [{"name": "sol_delayed_retest_continuation_v1", "template_name": "delayed_retest_continuation", "parameters": [{"name": "ema_fast", "value": 20}, {"name": "bb_length", "value": 20}, {"name": "bb_std", "value": 2}, {"name": "retest_buffer_atr", "value": 0.2}], "risk_policy": {"stop_type": "atr", "stop_atr_mult": 1.05, "tp_type": "scale_in_scale_out_trail", "tp_atr_mult": 1.8, "risk_per_trade_pct": 0.0035, "max_concurrent_positions": 1, "max_holding_bars": 8}, "execution_policy": {"entry_fill": "bar_close", "tie_break": "worst_case", "allow_reverse": true, "slippage_bps": 10, "fee_bps": 6}, "risk_rules": ["scale_out=35_35_runner", "scale_in_on_confirmation=25pct", "trail_stop=chandelier_1.2atr"]}],
+  "complexity_score": 2.0,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -12,6 +12,9 @@ steps:
  - id: archive-old-specs
    command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\archive_old_specs.py
 
+ - id: build-quandalf-learning-loop
+   command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\build_quandalf_learning_memory.py
+
  - id: promote-quandalf-memory
    command: python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\backfill_quandalf_lessons.py
 

@@ -1,0 +1,29 @@
+{
+  "version": "quandalf-learning-loop-v1",
+  "description": "Structured internal learning artifact for Quandalf. Machine-usable first, human summary second.",
+  "source_journal": "agents/quandalf/memory/latest_journal.md",
+  "outputs": {
+    "state_json": "data/state/quandalf_learning_loop.json",
+    "memory_json": "agents/quandalf/memory/latest_learning_loop.json"
+  },
+  "required_dimensions": [
+    "cycle_context",
+    "thesis",
+    "what_worked",
+    "what_failed",
+    "why_it_failed",
+    "iterate_next",
+    "abandon",
+    "bench_for_later",
+    "regime_notes",
+    "strategy_family_notes",
+    "indicator_role_notes",
+    "management_notes"
+  ],
+  "promotion_policy": {
+    "promote_shared_lessons": true,
+    "promote_family_memory": true,
+    "max_candidates_per_build": 5
+  },
+  "telegram_dm_role": "secondary_render_only"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C322-SOL-EXHAUSTION-VALUE-REACCEPTANCE-v1",
+  "ts_iso": "2026-03-11T00:31:10Z",
+  "thesis_id": "cycle_322_sol_exhaustion_value_reacceptance_v1",
+  "name": "SOL Exhaustion Value Reacceptance v1",
+  "version": "1.0",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "family_name": "sol_exhaustion_value_reacceptance",
+  "thesis": "In mixed transition/chop conditions, SOL 4h may offer better mean-reversion opportunities after exhaustion only once price reaccepts prior value. The edge should come from fading stretch after structure repair rather than blindly catching oversold or overbought readings.",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [{"asset": "SOL", "timeframe": "4h", "purpose": "walk_forward_screen"}],
+  "edge_mechanism": "exhaustion reversal after value reacceptance",
+  "expected_regime": "choppy and transitional mean reversion",
+  "invalidation_condition": "If exhaustion-plus-reacceptance still fails to generate enough trades or post-cost PF above 1.0, then SOL 4h reversal logic needs broader context or should be deprioritized.",
+  "indicators": ["EMA_20", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14", "STOCH_K_14_3_3"],
+  "entry_rules": {
+    "long": ["Low < BOLLINGER_LOWER_20_2", "Close > EMA_20", "RSI_14 >= 49", "STOCH_K_14_3_3 >= 35"],
+    "short": ["High > BOLLINGER_UPPER_20_2", "Close < EMA_20", "RSI_14 <= 51", "STOCH_K_14_3_3 <= 65"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 0.95 * ATR_14 below entry", "Take profit: 1.2 * ATR_14 above entry for 50% size", "Trail remaining 50% with EMA_20", "Time-based de-risk: reduce remaining size by half after 3 bars if gain < 0.5 * ATR_14", "Final exit at 6 bars"],
+    "short": ["Stop loss: 0.95 * ATR_14 above entry", "Take profit: 1.2 * ATR_14 below entry for 50% size", "Trail remaining 50% with EMA_20", "Time-based de-risk: reduce remaining size by half after 3 bars if gain < 0.5 * ATR_14", "Final exit at 6 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["choppy", "transitional"], "detection_method": "Require band stretch plus close-based value reclaim through EMA_20 before entering reversal."},
+  "variants": [{"name": "sol_exhaustion_value_reacceptance_v1", "template_name": "exhaustion_value_reacceptance", "parameters": [{"name": "ema_fast", "value": 20}, {"name": "bb_length", "value": 20}, {"name": "bb_std", "value": 2}, {"name": "stoch_reclaim", "value": 35}], "risk_policy": {"stop_type": "atr", "stop_atr_mult": 0.95, "tp_type": "partial_and_trail", "tp_atr_mult": 1.2, "risk_per_trade_pct": 0.004, "max_concurrent_positions": 1, "max_holding_bars": 6}, "execution_policy": {"entry_fill": "bar_close", "tie_break": "worst_case", "allow_reverse": true, "slippage_bps": 10, "fee_bps": 6}, "risk_rules": ["partial_take_profit=50pct", "runner_trail=ema20", "time_derisk_after=3bars"]}],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
