@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v3",
-  "ts_iso": "2026-03-11T22:45:48.665552+00:00",
+  "ts_iso": "2026-03-11T23:32:09.802601+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -17,7 +17,7 @@
   "decision_summary": {
     "pass": 0,
     "refine": 0,
-    "abort": 0,
+    "abort": 3,
     "zero_trade": 3
   },
   "diagnosis_breakdown": {
@@ -37,8 +37,11 @@
     ],
     "iterate_next": [
       "QD-20260312-C064-ETH-1H-VALUE-RECOVERY-SCALEIN-v1: allowed next actions -> refine, abort",
+      "decision QD-20260312-C064-ETH-1H-VALUE-RECOVERY-SCALEIN-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "QD-20260312-C064-BTC-1H-ASYMMETRIC-CONTINUATION-v1: allowed next actions -> refine, abort",
-      "QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1: allowed next actions -> refine, abort"
+      "decision QD-20260312-C064-BTC-1H-ASYMMETRIC-CONTINUATION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1: allowed next actions -> refine, abort",
+      "decision QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     ],
     "abandon": [],
     "bench_for_later": [],
@@ -56,11 +59,15 @@
         "edge_mechanism": "price dislocates away from fast value, reclaims it, and the position scales in only when the reclaim improves on the next bar",
         "hypothesis": "ETH 1h is the primary lane and sits in a chop-to-transition mix. That should produce repeated failed extensions and value recoveries, but the all-in first reclaim is fragile. A scale-in only after the reclaim proves itself gives denser participation without the ceremonial sparsity that killed earlier cycles.",
         "diagnosis_category": "too sparse",
-        "decision": "red_flag",
+        "decision": "abort",
         "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
         "why_asset": "asset=ETH from chosen lane / result context",
         "why_timeframe": "timeframe=1h from chosen lane / result context",
-        "queue_evidence": [],
+        "queue_evidence": [
+          "rq_fc9cadb729cc=abort (abort based on screen evidence: integrity_skip:zero_trades_both_samples.)",
+          "rq_a69a7fff0ac1=abort (abort based on screen evidence: integrity_skip:zero_trades_both_samples.)",
+          "rq_6b5bb47ebaca=abort (abort based on screen evidence: queue evidence reviewed.)"
+        ],
         "train_result": {},
         "test_results": [],
         "stage_metrics": {
@@ -83,7 +90,51 @@
             "best_return_pct": 0.0
           }
         },
-        "latest_result": {}
+        "latest_result": {
+          "stage": "screen",
+          "score_total": 0.0,
+          "profit_factor": 0.0,
+          "max_drawdown_pct": 0.0,
+          "total_trades": 0,
+          "win_rate_pct": 0.0,
+          "total_return_pct": 0.0,
+          "sharpe_ratio": 0.0,
+          "walk_forward_config": {
+            "stage": "screen",
+            "synthetic_backfill": true
+          },
+          "fold_results": [],
+          "metrics": {
+            "stage": "screen",
+            "insample": {
+              "total_trades": 0,
+              "profit_factor": 0.0,
+              "max_drawdown_pct": 0.0,
+              "total_return_pct": 0.0,
+              "win_rate_pct": 0.0,
+              "sharpe_ratio": 0.0,
+              "qscore": 0.0
+            },
+            "outofsample": {
+              "total_trades": 0,
+              "profit_factor": 0.0,
+              "max_drawdown_pct": 0.0,
+              "total_return_pct": 0.0,
+              "win_rate_pct": 0.0,
+              "sharpe_ratio": 0.0,
+              "qscore": 0.0
+            },
+            "degradation_pct": 100.0,
+            "walk_forward_config": {
+              "stage": "screen",
+              "synthetic_backfill": true
+            },
+            "fold_results": [],
+            "regime_scores": {},
+            "regime_concentration": 0.0,
+            "primary_regime": "UNKNOWN"
+          }
+        }
       },
       {
         "strategy_spec_id": "QD-20260312-C064-BTC-1H-ASYMMETRIC-CONTINUATION-v1",
@@ -92,11 +143,15 @@
         "edge_mechanism": "a continuation trigger is taken only after directional pressure reasserts above fast structure, while stop logic and exit logic are intentionally separated to create asymmetry",
         "hypothesis": "The cycle explicitly asks for continuation with asymmetric exit logic where trigger, risk, and exit components play different roles. BTC 1h is the best-fit lane because it carries more directional transition quality than ETH 1h while staying liquid enough to test whether separated exit logic improves payoff asymmetry.",
         "diagnosis_category": "too sparse",
-        "decision": "red_flag",
+        "decision": "abort",
         "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
         "why_asset": "asset=BTC from chosen lane / result context",
         "why_timeframe": "timeframe=1h from chosen lane / result context",
-        "queue_evidence": [],
+        "queue_evidence": [
+          "rq_2e8ba53f3184=abort (abort based on screen evidence: integrity_skip:zero_trades_both_samples.)",
+          "rq_86fd92b14b9b=abort (abort based on screen evidence: integrity_skip:zero_trades_both_samples.)",
+          "rq_9a35024674fc=abort (abort based on screen evidence: queue evidence reviewed.)"
+        ],
         "train_result": {},
         "test_results": [],
         "stage_metrics": {
@@ -119,7 +174,51 @@
             "best_return_pct": 0.0
           }
         },
-        "latest_result": {}
+        "latest_result": {
+          "stage": "screen",
+          "score_total": 0.0,
+          "profit_factor": 0.0,
+          "max_drawdown_pct": 0.0,
+          "total_trades": 0,
+          "win_rate_pct": 0.0,
+          "total_return_pct": 0.0,
+          "sharpe_ratio": 0.0,
+          "walk_forward_config": {
+            "stage": "screen",
+            "synthetic_backfill": true
+          },
+          "fold_results": [],
+          "metrics": {
+            "stage": "screen",
+            "insample": {
+              "total_trades": 0,
+              "profit_factor": 0.0,
+              "max_drawdown_pct": 0.0,
+              "total_return_pct": 0.0,
+              "win_rate_pct": 0.0,
+              "sharpe_ratio": 0.0,
+              "qscore": 0.0
+            },
+            "outofsample": {
+              "total_trades": 0,
+              "profit_factor": 0.0,
+              "max_drawdown_pct": 0.0,
+              "total_return_pct": 0.0,
+              "win_rate_pct": 0.0,
+              "sharpe_ratio": 0.0,
+              "qscore": 0.0
+            },
+            "degradation_pct": 100.0,
+            "walk_forward_config": {
+              "stage": "screen",
+              "synthetic_backfill": true
+            },
+            "fold_results": [],
+            "regime_scores": {},
+            "regime_concentration": 0.0,
+            "primary_regime": "UNKNOWN"
+          }
+        }
       },
       {
         "strategy_spec_id": "QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1",
@@ -128,11 +227,15 @@
         "edge_mechanism": "a break from local structure is not chased; price must retest and hold the broken level, then the trade is de-risked by time if expansion does not appear fast enough",
         "hypothesis": "The cycle explicitly asks for retest-and-hold continuation with time-based failure control. AXS 1h is the best structurally different lane for this because it is expressive enough for visible transitions and should produce denser retest events than the 4h lanes that kept failing. The edge is the accepted retest, not the first break.",
         "diagnosis_category": "too sparse",
-        "decision": "red_flag",
+        "decision": "abort",
         "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
         "why_asset": "asset=AXS from chosen lane / result context",
         "why_timeframe": "timeframe=1h from chosen lane / result context",
-        "queue_evidence": [],
+        "queue_evidence": [
+          "rq_53ecf5f5d0d0=abort (abort based on screen evidence: integrity_skip:zero_trades_both_samples.)",
+          "rq_1588b6ac052e=abort (abort based on screen evidence: integrity_skip:zero_trades_both_samples.)",
+          "rq_db2956070d48=abort (abort based on screen evidence: queue evidence reviewed.)"
+        ],
         "train_result": {},
         "test_results": [],
         "stage_metrics": {
@@ -155,21 +258,65 @@
             "best_return_pct": 0.0
           }
         },
-        "latest_result": {}
+        "latest_result": {
+          "stage": "screen",
+          "score_total": 0.0,
+          "profit_factor": 0.0,
+          "max_drawdown_pct": 0.0,
+          "total_trades": 0,
+          "win_rate_pct": 0.0,
+          "total_return_pct": 0.0,
+          "sharpe_ratio": 0.0,
+          "walk_forward_config": {
+            "stage": "screen",
+            "synthetic_backfill": true
+          },
+          "fold_results": [],
+          "metrics": {
+            "stage": "screen",
+            "insample": {
+              "total_trades": 0,
+              "profit_factor": 0.0,
+              "max_drawdown_pct": 0.0,
+              "total_return_pct": 0.0,
+              "win_rate_pct": 0.0,
+              "sharpe_ratio": 0.0,
+              "qscore": 0.0
+            },
+            "outofsample": {
+              "total_trades": 0,
+              "profit_factor": 0.0,
+              "max_drawdown_pct": 0.0,
+              "total_return_pct": 0.0,
+              "win_rate_pct": 0.0,
+              "sharpe_ratio": 0.0,
+              "qscore": 0.0
+            },
+            "degradation_pct": 100.0,
+            "walk_forward_config": {
+              "stage": "screen",
+              "synthetic_backfill": true
+            },
+            "fold_results": [],
+            "regime_scores": {},
+            "regime_concentration": 0.0,
+            "primary_regime": "UNKNOWN"
+          }
+        }
       }
     ]
   },
   "journal_excerpt": [
-    "# Quandalf Journal \u2014 Cycle 63",
-    "- ts_iso: 2026-03-11T21:24:03.081976+00:00",
+    "# Quandalf Journal \u2014 Cycle 64",
+    "- ts_iso: 2026-03-11T22:45:48.665552+00:00",
     "- mode: explore",
-    "- lane: TAO / 4h",
+    "- lane: BTC / 1h",
     "- research_direction: explore_new",
     "## My Current Decision Summary",
     "{",
     "\"pass\": 0,",
     "\"refine\": 0,",
-    "\"abort\": 3,"
+    "\"abort\": 0,"
   ],
   "learning_requirements": [
     "Every cycle must yield diagnosis, lesson extraction, and durable learning update.",
@@ -289,7 +436,7 @@
     },
     {
       "cycle_id": 64,
-      "ts_iso": "2026-03-11T22:45:48.665530+00:00",
+      "ts_iso": "2026-03-11T23:32:09.802555+00:00",
       "mode": "explore",
       "research_direction": "explore_new",
       "assets_touched": [
@@ -302,12 +449,12 @@
       ],
       "strategy_count": 3,
       "queue_total": 9,
-      "queue_decided_total": 0,
+      "queue_decided_total": 9,
       "result_total": 0,
       "decision_summary": {
         "pass": 0,
         "refine": 0,
-        "abort": 0,
+        "abort": 3,
         "zero_trade": 3
       },
       "diagnosis_breakdown": {
@@ -321,11 +468,11 @@
       "cycles_considered": 5,
       "pass": 0,
       "refine": 0,
-      "abort": 12,
+      "abort": 15,
       "zero_trade": 15,
       "strategies": 15,
       "queue_rows": 45,
-      "queue_rows_decided": 36,
+      "queue_rows_decided": 45,
       "saved_results": 0
     },
     "diagnosis_breakdown": {

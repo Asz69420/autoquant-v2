@@ -583,7 +583,53 @@ def phase_state(done=False, active=False, blocked=False):
     return "○"
 
 
+def derive_reflection_rationale(cycle_status, metrics):
+    decisions = load_json_file(REFINEMENT_DECISIONS_PATH)
+    if int(decisions.get("cycle_id") or 0) == int(metrics.get("cycle_id") or 0):
+        parts = []
+        for item in (decisions.get("strategy_decisions") or [])[:3]:
+            if not isinstance(item, dict):
+                continue
+            spec_id = str(item.get("strategy_spec_id") or "").strip()
+            decision = str(item.get("decision") or "").strip().lower()
+            rationale = str(item.get("rationale") or "").strip()
+            if spec_id and (decision or rationale):
+                parts.append(f"{spec_id}: {decision or 'decision'} — {rationale or 'no rationale provided'}")
+        if parts:
+            return " | ".join(parts)
+    rationale = str(cycle_status.get("rationale") or "").strip()
+    return rationale or "Await next cycle orders."
+
+
 def derive_next_cycle_focus(cycle_orders, cycle_status, metrics):
+    decisions = load_json_file(REFINEMENT_DECISIONS_PATH)
+    reflection = load_json_file(REFLECTION_PACKET_PATH)
+    if int(decisions.get("cycle_id") or 0) == int(metrics.get("cycle_id") or 0):
+        strategy_decisions = decisions.get("strategy_decisions") or []
+        if isinstance(strategy_decisions, list) and strategy_decisions:
+            counts = {"pass": 0, "refine": 0, "abort": 0}
+            diagnoses = []
+            for item in strategy_decisions:
+                if not isinstance(item, dict):
+                    continue
+                decision = str(item.get("decision") or "").strip().lower()
+                if decision in counts:
+                    counts[decision] += 1
+                diag = str(item.get("diagnosis_category") or "").strip()
+                if diag:
+                    diagnoses.append(diag)
+            if counts["refine"] > 0:
+                return f"Refine {counts['refine']} strategy{'ies' if counts['refine'] != 1 else ''}; dominant diagnosis: {', '.join(sorted(set(diagnoses))[:2]) or 'review evidence'}."
+            if counts["pass"] > 0:
+                return f"Promote {counts['pass']} strategy{'ies' if counts['pass'] != 1 else ''} to the candidate library and continue validation."
+            if counts["abort"] > 0:
+                return f"Abort {counts['abort']} sparse strategy{'ies' if counts['abort'] != 1 else ''} and rotate to a new lane."
+
+    if int(reflection.get("cycle_id") or 0) == int(metrics.get("cycle_id") or 0):
+        summary = reflection.get("decision_summary") or {}
+        if int(summary.get("zero_trade") or 0) > 0:
+            return f"Current batch is too sparse ({int(summary.get('zero_trade') or 0)} zero-trade outcome{'s' if int(summary.get('zero_trade') or 0) != 1 else ''}); rotate thesis or loosen entry grammar."
+
     focus = cycle_status.get("next_cycle_focus") or cycle_status.get("next_focus")
     if focus:
         return str(focus).strip()
@@ -666,7 +712,13 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     best_result = summarize_best_result(cycle_rows)
     best_qs = best_result.get("qscore", 0) if best_result else 0
 
-    has_reflection_note = bool(str(cycle_status.get("rationale") or "").strip() or str(cycle_status.get("next_cycle_focus") or "").strip()) if status_matches_cycle else False
+    decisions_payload = load_json_file(REFINEMENT_DECISIONS_PATH)
+    reflection_payload = load_json_file(REFLECTION_PACKET_PATH)
+    has_reflection_note = (
+        (status_matches_cycle and bool(str(cycle_status.get("rationale") or "").strip() or str(cycle_status.get("next_cycle_focus") or "").strip()))
+        or int(decisions_payload.get("cycle_id") or 0) == int(cycle_id)
+        or int(reflection_payload.get("cycle_id") or 0) == int(cycle_id)
+    )
 
     state_warning = None
     if manifest_matches_cycle and not status_matches_cycle:
@@ -738,7 +790,7 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "best_result": best_result,
         "best_qscore": best_qs,
         "next_cycle_focus": "",
-        "rationale": cycle_status.get("rationale"),
+        "rationale": "",
         "has_reflection_note": has_reflection_note,
         "elapsed_seconds": elapsed_seconds,
         "run_elapsed_seconds": timing["run_elapsed_seconds"],
@@ -748,6 +800,7 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "ended_at_epoch": timing["ended_at_epoch"],
     }
     metrics["next_cycle_focus"] = derive_next_cycle_focus(cycle_orders, cycle_status, metrics)
+    metrics["rationale"] = derive_reflection_rationale(cycle_status, metrics)
     return metrics
 
 

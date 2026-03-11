@@ -1378,6 +1378,17 @@ def save_result(
             "variant_id": variant_id,
             "asset": asset,
             "timeframe": timeframe,
+            "synthetic_result": {
+                "stage": stage,
+                "insample": ins,
+                "outofsample": oos,
+                "degradation_pct": wf_result.get("degradation_pct", 0.0),
+                "walk_forward_config": wf_result.get("walk_forward_config") or {},
+                "fold_results": wf_result.get("fold_results") or [],
+                "regime_scores": wf_result.get("regime_scores") or {},
+                "regime_concentration": wf_result.get("regime_concentration", 0.0),
+                "primary_regime": wf_result.get("primary_regime") or "UNKNOWN"
+            }
         }
     if oos_trades == 0:
         return {
@@ -1388,6 +1399,17 @@ def save_result(
             "asset": asset,
             "timeframe": timeframe,
             "insample_trades": ins_trades,
+            "synthetic_result": {
+                "stage": stage,
+                "insample": ins,
+                "outofsample": oos,
+                "degradation_pct": wf_result.get("degradation_pct", 0.0),
+                "walk_forward_config": wf_result.get("walk_forward_config") or {},
+                "fold_results": wf_result.get("fold_results") or [],
+                "regime_scores": wf_result.get("regime_scores") or {},
+                "regime_concentration": wf_result.get("regime_concentration", 0.0),
+                "primary_regime": wf_result.get("primary_regime") or "UNKNOWN"
+            }
         }
 
     result_id = f"wf_{uuid.uuid4().hex[:12]}"
@@ -1568,9 +1590,10 @@ def main():
             conn.close()
             if isinstance(save_outcome, dict) and save_outcome.get("status") == "skipped":
                 result["status"] = "skipped"
-                result["result_id"] = None
+                result["result_id"] = f"synthetic_{spec_id}_{args.variant}_{args.stage}"
                 result["db_saved"] = False
                 result["integrity_issue"] = save_outcome
+                result["synthetic_result"] = save_outcome.get("synthetic_result")
             else:
                 result["result_id"] = save_outcome
                 result["db_saved"] = True

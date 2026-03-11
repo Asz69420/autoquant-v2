@@ -154,17 +154,39 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
     if latest_result:
         action, rationale = classify_result_action(latest_result)
     else:
+        synthetic_latest = None
+        for row in queue_rows:
+            notes = safe_json_load(row.get("notes"), default={})
+            synthetic = notes.get("synthetic_result") if isinstance(notes, dict) else None
+            if isinstance(synthetic, dict):
+                synthetic_latest = {
+                    "stage": synthetic.get("stage") or row.get("stage"),
+                    "score_total": ((synthetic.get("outofsample") or {}).get("qscore")),
+                    "profit_factor": ((synthetic.get("outofsample") or {}).get("profit_factor")),
+                    "max_drawdown_pct": ((synthetic.get("outofsample") or {}).get("max_drawdown_pct")),
+                    "total_trades": ((synthetic.get("outofsample") or {}).get("total_trades")),
+                    "win_rate_pct": ((synthetic.get("outofsample") or {}).get("win_rate_pct")),
+                    "total_return_pct": ((synthetic.get("outofsample") or {}).get("total_return_pct")),
+                    "sharpe_ratio": ((synthetic.get("outofsample") or {}).get("sharpe_ratio")),
+                    "walk_forward_config": synthetic.get("walk_forward_config") or {},
+                    "fold_results": synthetic.get("fold_results") or [],
+                    "metrics": synthetic,
+                }
+                break
+        latest_result = synthetic_latest
         action, rationale = classify_queue_only_action(queue_rows)
 
     queue_summary = []
     for row in queue_rows:
+        notes = safe_json_load(row.get("notes"), default={})
         queue_summary.append(
             {
                 "queue_id": row.get("id"),
                 "stage": row.get("stage"),
                 "status": row.get("status"),
                 "result_id": row.get("result_id"),
-                "notes": safe_json_load(row.get("notes"), default={}),
+                "notes": notes,
+                "synthetic_result": notes.get("synthetic_result") if isinstance(notes, dict) else None,
                 "queued_at": row.get("queued_at"),
                 "completed_at": row.get("completed_at"),
             }
@@ -226,7 +248,7 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
         "variants": variants,
         "queue": queue_summary,
         "result_count": len(results),
-        "latest_result": results[0] if results else None,
+        "latest_result": results[0] if results else latest_result,
         "results": results,
         "stage_metrics": stage_metrics,
         "train_result": next((r for r in results if str(r.get("stage") or "").lower() == "screen"), None),

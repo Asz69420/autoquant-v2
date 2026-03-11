@@ -46,6 +46,13 @@ When Asz invokes the council (says "invoke the council", "fellowship debate", "c
 - Never assume delegated/background work succeeded — verify outputs, files, or status after it runs
 - Do simple reads, writes, checks, and deterministic fixes yourself
 
+## Continuous Execution
+
+- When Asz says keep going, continue, or fix it, stay in active execution mode until the task is resolved or a real external blocker exists.
+- Do not pause after partial progress when the next concrete step is obvious.
+- Use brief progress updates during longer work, but keep working while updating.
+- Repeated prompts from Asz to continue mean follow-through failed; correct immediately.
+
 ## Pipeline
 
 - Research pipeline: cron every 5 min, isolated

@@ -1472,7 +1472,16 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
             else:
                 fail_count += 1
                 if result.get("classification") == "integrity_skip":
-                    failure_notes = json.dumps({"status": "integrity_skip", "error": result.get("error"), "stderr": result.get("stderr")})
+                    payload = result.get("payload") or {}
+                    failure_notes = json.dumps({
+                        "status": "integrity_skip",
+                        "error": result.get("error"),
+                        "stderr": result.get("stderr"),
+                        "synthetic_result": payload.get("synthetic_result"),
+                        "stage": payload.get("stage") or queue_item.get("stage"),
+                        "asset": payload.get("asset") or queue_item.get("asset"),
+                        "timeframe": payload.get("timeframe") or queue_item.get("timeframe")
+                    })
                     mark_integrity_skip(conn, queue_item["id"], notes=failure_notes)
                     log_event(conn, "parallel_backtest_integrity_skip", "frodex", f"{queue_item['stage']} {queue_item['strategy_spec_id']}:{queue_item['variant_id']} skipped by integrity guard", severity="warn", step="worker", artifact_id=queue_item["id"], metadata={"error": result.get("error"), "stderr": result.get("stderr"), "stdout": result.get("stdout")})
                 else:

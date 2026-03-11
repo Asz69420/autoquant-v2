@@ -152,9 +152,10 @@ def main():
             conn.close()
             if isinstance(save_outcome, dict) and save_outcome.get("status") == "skipped":
                 result["status"] = "skipped"
-                result["result_id"] = None
+                result["result_id"] = f"synthetic_{spec_id}_{args.variant}_{args.stage}"
                 result["db_saved"] = False
                 result["integrity_issue"] = save_outcome
+                result["synthetic_result"] = save_outcome.get("synthetic_result")
             else:
                 result["result_id"] = save_outcome
                 result["db_saved"] = True
