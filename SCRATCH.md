@@ -1,1 +1,1 @@
-Tidy foundational orchestration/runtime issues: enforce single autopilot runner, kill full process tree on timeout, stabilize cycle postprocess/card ordering, refresh learning memory after closure, and verify cooking loop progresses cleanly.
+Fix AutoQuant pipeline health: diagnose and repair sparse-strategy / zero-trade / integrity-skip bottleneck, verify queue progression, then summarize remaining risk.

@@ -1136,6 +1136,43 @@ def ensure_decision_closure(cycle_id, timeout_seconds=180):
     return ok, payload
 
 
+def apply_queue_decisions(conn, cycle_id):
+    decisions_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
+    if int(decisions_payload.get("cycle_id") or -1) != int(cycle_id):
+        return {"resolved": 0, "queue_ids": []}
+
+    resolved = []
+    for item in (decisions_payload.get("strategy_decisions") or []):
+        if not isinstance(item, dict):
+            continue
+        for qd in (item.get("queue_decisions") or []):
+            if not isinstance(qd, dict):
+                continue
+            queue_id = str(qd.get("queue_id") or "").strip()
+            decision = str(qd.get("decision") or "").strip().lower()
+            rationale = str(qd.get("rationale") or "").strip()
+            if not queue_id or decision not in {"pass", "abort"}:
+                continue
+            row = conn.execute("SELECT status FROM research_funnel_queue WHERE id=?", (queue_id,)).fetchone()
+            if not row:
+                continue
+            status = str(row[0] or "").strip().lower()
+            if status not in {"queued", "running"}:
+                continue
+            notes = json.dumps({
+                "status": "decision_resolved",
+                "decision": decision,
+                "rationale": rationale,
+                "resolved_at": datetime.now(timezone.utc).isoformat(),
+            })
+            conn.execute(
+                "UPDATE research_funnel_queue SET status='done', completed_at=?, started_at=NULL, notes=? WHERE id=?",
+                (datetime.now(timezone.utc).isoformat(), notes, queue_id),
+            )
+            resolved.append(queue_id)
+    return {"resolved": len(resolved), "queue_ids": resolved}
+
+
 def normalize_rule_block(block):
     if isinstance(block, dict):
         long_rules = block.get("long") or []
@@ -1989,6 +2026,14 @@ def main():
             )
             print(json.dumps({"status": "awaiting_complete_decisions", "cycle_id": cycle_id, "decision_payload": decisions_payload}, indent=2))
             raise SystemExit(1)
+        try:
+            conn_decisions = sqlite3.connect(DB, timeout=30)
+            conn_decisions.execute("PRAGMA busy_timeout = 30000")
+            apply_queue_decisions(conn_decisions, cycle_id)
+            conn_decisions.commit()
+            conn_decisions.close()
+        except Exception:
+            pass
         try:
             subprocess.run(
                 [sys.executable, os.path.join(ROOT, "scripts", "build_quandalf_experiment_memory.py")],

@@ -22,6 +22,117 @@ def load_json(path: Path, default=None):
         return default
 
 
+def normalize_legacy_decisions(reflection, decisions):
+    if not isinstance(decisions, dict):
+        decisions = {}
+    outcomes = {}
+    queue_meta = {}
+    for item in (reflection.get("strategy_outcomes") or []):
+        if not isinstance(item, dict):
+            continue
+        spec_id = str(item.get("strategy_spec_id") or "").strip()
+        if not spec_id:
+            continue
+        outcomes[spec_id] = item
+        for q in (item.get("queue") or []):
+            if not isinstance(q, dict):
+                continue
+            queue_id = str(q.get("queue_id") or "").strip()
+            if queue_id:
+                queue_meta[queue_id] = q
+
+    changed = False
+    strategy_decisions = decisions.get("strategy_decisions") or []
+    if not isinstance(strategy_decisions, list):
+        strategy_decisions = []
+        changed = True
+
+    normalized_strategy = []
+    for item in strategy_decisions:
+        if not isinstance(item, dict):
+            changed = True
+            continue
+        cloned = dict(item)
+        decision = str(cloned.get("decision") or cloned.get("strategy_decision") or "").strip().lower()
+        if decision != str(cloned.get("decision") or "").strip().lower():
+            changed = True
+        if decision:
+            cloned["decision"] = decision
+        cloned.pop("strategy_decision", None)
+        spec_id = str(cloned.get("strategy_spec_id") or "").strip()
+        outcome = outcomes.get(spec_id, {}) if spec_id else {}
+        if not str(cloned.get("rationale") or "").strip():
+            rationale = str(outcome.get("rationale") or outcome.get("diagnosis_category") or f"Inherited {decision or 'pending'} decision from legacy refinement format.").strip()
+            cloned["rationale"] = rationale
+            changed = True
+        if not str(cloned.get("diagnosis_category") or "").strip() and outcome.get("diagnosis_category"):
+            cloned["diagnosis_category"] = outcome.get("diagnosis_category")
+            changed = True
+        queue_decisions = cloned.get("queue_decisions")
+        if not isinstance(queue_decisions, list):
+            queue_decisions = []
+            changed = True
+        cloned["queue_decisions"] = queue_decisions
+        normalized_strategy.append(cloned)
+
+    jobs = decisions.get("jobs") or []
+    if not isinstance(jobs, list):
+        jobs = []
+        changed = True
+    normalized_jobs = []
+    legacy_queue_map = {}
+    for item in jobs:
+        if not isinstance(item, dict):
+            changed = True
+            continue
+        cloned = dict(item)
+        legacy_decision = str(cloned.get("decision") or cloned.get("job_decision") or "").strip().lower()
+        if legacy_decision and legacy_decision != str(cloned.get("decision") or "").strip().lower():
+            cloned["decision"] = legacy_decision
+            changed = True
+        if "job_decision" in cloned:
+            cloned.pop("job_decision", None)
+            changed = True
+        queue_id = str(cloned.get("queue_id") or "").strip()
+        if queue_id and legacy_decision in {"pass", "refine", "abort"}:
+            legacy_queue_map[queue_id] = cloned
+        normalized_jobs.append(cloned)
+
+    for item in normalized_strategy:
+        spec_id = str(item.get("strategy_spec_id") or "").strip()
+        existing = {str(q.get("queue_id") or "").strip() for q in (item.get("queue_decisions") or []) if isinstance(q, dict)}
+        outcome = outcomes.get(spec_id, {}) if spec_id else {}
+        for q in (outcome.get("queue") or []):
+            if not isinstance(q, dict):
+                continue
+            queue_id = str(q.get("queue_id") or "").strip()
+            if not queue_id or queue_id in existing:
+                continue
+            legacy = legacy_queue_map.get(queue_id, {})
+            qdecision = str(legacy.get("decision") or item.get("decision") or "").strip().lower()
+            if qdecision not in {"pass", "refine", "abort"}:
+                continue
+            notes = q.get("notes") or {}
+            if isinstance(notes, dict):
+                note_text = notes.get("error") or notes.get("reason") or notes.get("status") or "row evidence reviewed"
+            else:
+                note_text = str(notes).strip() or "row evidence reviewed"
+            qentry = {
+                "queue_id": queue_id,
+                "decision": qdecision,
+                "rationale": str(legacy.get("rationale") or f"Legacy queue decision normalized for {queue_id}: {note_text}.").strip(),
+            }
+            result_id = q.get("result_id")
+            if result_id:
+                qentry["source_result_id"] = result_id
+            item.setdefault("queue_decisions", []).append(qentry)
+            changed = True
+
+    decisions["strategy_decisions"] = normalized_strategy
+    decisions["jobs"] = normalized_jobs
+    return decisions, changed
+
+
 def run_validator():
     proc = subprocess.run(
         [sys.executable, str(VALIDATOR)],
@@ -186,6 +297,11 @@ def main():
         print(json.dumps({"status": "error", "reason": "reflection_packet_missing_cycle_id"}, indent=2))
         return 1
 
+    decisions = load_json(DECISIONS, {})
+    decisions, normalized = normalize_legacy_decisions(reflection, decisions)
+    if normalized:
+        DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
+
     final_validator = None
     agent_runs = []
     for attempt in range(1, MAX_ATTEMPTS + 1):
@@ -221,6 +337,9 @@ def main():
             return 1
 
     decisions = load_json(DECISIONS, {})
+    decisions, normalized = normalize_legacy_decisions(reflection, decisions)
+    if normalized:
+        DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
     autofilled = autofill_queue_decisions_from_strategy(reflection, decisions)
     code, payload, stdout, stderr = run_validator()
     final_validator = payload
