@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C064-ETH-1H-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 64,
+  "family_name": "eth_1h_value_recovery_scalein_v064",
+  "name": "ETH 1h Value Recovery Scale-In v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "price dislocates away from fast value, reclaims it, and the position scales in only when the reclaim improves on the next bar",
+  "expected_regime": "TRANSITION",
+  "thesis": "ETH 1h is the primary lane and sits in a chop-to-transition mix. That should produce repeated failed extensions and value recoveries, but the all-in first reclaim is fragile. A scale-in only after the reclaim proves itself gives denser participation without the ceremonial sparsity that killed earlier cycles.",
+  "invalidation_condition": "If reclaim events remain too sparse, or if the second-step confirmation almost never arrives often enough to improve expectancy, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from value, reclaims it as inventory resets, stabilizes for one more bar, and then rotates toward deeper balance.",
+    "why_edge_should_exist": "In transitionary 1h structure, offside inventory should frequently unwind through value. The add-on only after improved confirmation should remove some bad first-reclaim noise without eliminating too many trades.",
+    "asset_timeframe_fit": "ETH 1h is the best fit because it is the cycle primary lane, active enough to create repeated reset events, and clean enough that a reclaim-plus-improvement sequence can be observed.",
+    "indicator_role_map": {
+      "VWAP": "value reclaim trigger",
+      "EMA_20": "improved-confirmation add signal",
+      "EMA_55": "deeper balance target and remaining-position anchor",
+      "ATR_14": "stretch threshold and stop sizing",
+      "RSI_14": "stretch qualifier",
+      "ADX_14": "regime veto against mature expansion"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "The reclaim may occur inside a genuine breakout, causing the add-on to increase size just as mean-reversion logic fails.",
+    "first_refinement_path": "If the base setup works but the add-on hurts expectancy, keep the reclaim trigger and tighten or remove only the scale-in condition.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Many first-target captures, a smaller set of second-target completions, and limited dependence on long runners.",
+    "what_would_count_as_success": "ETH 1h shows non-sparse reclaim participation, first partials clear costs regularly, and the add-on improves average trade quality.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or add-on confirmation that rarely appears or consistently worsens outcomes.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low because the core trigger is stretch plus reclaim, not a ritual chain",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for scale-in around value recovery.",
+      "continue_if": "ETH 1h shows enough reclaim-and-improve sequences with positive post-cost first-target behavior.",
+      "rotate_away_if": "ETH 1h remains too noisy or too sparse for the add-on logic to matter.",
+      "expected_if_right": "High enough count to validate the reclaim thesis, with most edge coming from first and second partials."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks portability on a similar liquid major with different volatility amplitude.",
+      "continue_if": "BTC 1h preserves reclaim-and-improve structure with cleaner execution.",
+      "rotate_away_if": "BTC 1h suppresses the mechanism into low-density irrelevance.",
+      "expected_if_right": "Lower count but cleaner recoveries than ETH."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same logic survives structurally on a slower lane without collapsing back into sparse behavior.",
+      "continue_if": "ETH 4h still trades enough to preserve the reclaim-and-improve thesis.",
+      "rotate_away_if": "ETH 4h confirms the mechanism only works at denser 1h resolution.",
+      "expected_if_right": "Lower count, same role separation, smaller impact from the scale-in tranche."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.34 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 43",
+      "RSI_14 <= 59",
+      "ADX_14 <= 24"
+    ],
+    "short": [
+      "High >= VWAP + 0.34 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 57",
+      "RSI_14 >= 41",
+      "ADX_14 <= 24"
+    ]
+  },
+  "scale_in_rules": {
+    "long": [
+      "Add 40% when next bar closes >= EMA_20 and remains above VWAP"
+    ],
+    "short": [
+      "Add 40% when next bar closes <= EMA_20 and remains below VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below initial entry",
+      "Take profit: 0.42 * ATR_14 on 40% size",
+      "Take profit: 0.78 * ATR_14 on 35% size",
+      "Exit remaining 25% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above initial entry",
+      "Take profit: 0.42 * ATR_14 on 40% size",
+      "Take profit: 0.78 * ATR_14 on 35% size",
+      "Exit remaining 25% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

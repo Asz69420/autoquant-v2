@@ -96,7 +96,10 @@ def normalize_legacy_decisions(reflection, decisions):
         queue_id = str(cloned.get("queue_id") or "").strip()
         if queue_id and legacy_decision in {"pass", "refine", "abort"}:
             legacy_queue_map[queue_id] = cloned
-        normalized_jobs.append(cloned)
+        if legacy_decision == "refine":
+            normalized_jobs.append(cloned)
+        else:
+            changed = True
 
     for item in normalized_strategy:
         spec_id = str(item.get("strategy_spec_id") or "").strip()
@@ -298,6 +301,10 @@ def main():
         return 1
 
     decisions = load_json(DECISIONS, {})
+    cycle_reset = int(decisions.get("cycle_id") or 0) != cycle_id
+    if cycle_reset:
+        decisions = {"cycle_id": cycle_id, "ts_iso": reflection.get("ts_iso"), "strategy_decisions": [], "jobs": []}
+        DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
     decisions, normalized = normalize_legacy_decisions(reflection, decisions)
     if normalized:
         DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
@@ -337,6 +344,10 @@ def main():
             return 1
 
     decisions = load_json(DECISIONS, {})
+    cycle_reset = int(decisions.get("cycle_id") or 0) != cycle_id
+    if cycle_reset:
+        decisions = {"cycle_id": cycle_id, "ts_iso": reflection.get("ts_iso"), "strategy_decisions": [], "jobs": []}
+        DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
     decisions, normalized = normalize_legacy_decisions(reflection, decisions)
     if normalized:
         DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")

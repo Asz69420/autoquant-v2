@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
+  "cycle_id": 63,
+  "family_name": "doge_4h_session_impulse_hold_expansion_v063",
+  "name": "DOGE 4h Session Impulse Hold Expansion v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a session-aligned directional impulse reclaims fast structure, holds that improvement into the next bar, and only then is continuation entered",
+  "expected_regime": "TRANSITION_FROM_CHOP",
+  "thesis": "DOGE 4h is the cycle primary lane and the active hypotheses explicitly call for testing session-window continuation. In a 90% chop / 10% transition tape, the right expression is not first-break chasing; it is session-led impulse plus post-impulse hold confirmation so the strategy only participates when the move shows evidence of escaping chop.",
+  "invalidation_condition": "If session-led impulses do not occur often enough, or if post-impulse holds repeatedly fail before any modest continuation, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A session creates a directional impulse, price reclaims fast structure and keeps it on the following bar, then extends modestly as participation improves.",
+    "why_edge_should_exist": "Even in chop-heavy markets, certain sessions can dominate follow-through. Requiring a hold after the session impulse should remove many false starts while leaving enough room for continuation when the regime briefly improves.",
+    "asset_timeframe_fit": "DOGE 4h is the best fit because it is the primary lane, expressive enough for session-led moves, and exactly the kind of chop-heavy transition market where post-impulse hold matters more than first-break bravado.",
+    "indicator_role_map": {
+      "SESSION_OPEN": "session anchor / directional context",
+      "EMA_20": "fast structure reclaim and hold line",
+      "ATR_14": "impulse threshold and stop normalization",
+      "PLUS_DI_14/MINUS_DI_14": "directional improvement confirmation",
+      "ADX_14": "minimum participation gate"
+    },
+    "expected_regime": "TRANSITION_FROM_CHOP",
+    "likely_failure_mode": "The market may remain rotational despite the session impulse, causing continuation entries to come after a move that was always going to fade.",
+    "first_refinement_path": "If it trades but follow-through is weak, tighten the hold requirement around EMA_20 before changing the impulse threshold.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A moderate number of entries, several small first-target captures, and only occasional larger continuation legs when state improvement is real.",
+    "what_would_count_as_success": "DOGE 4h shows enough session-impulse hold sequences to clear screen density, and one cross-lane preserves the same grammar with cleaner structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or repeated hold confirmations that fail before the first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but materially denser than prior breakout rituals because the logic is impulse plus single-bar hold",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit primary lane for session-window continuation after hold confirmation.",
+      "continue_if": "DOGE 4h produces enough impulse-hold-expansion sequences with positive post-cost first-target behavior.",
+      "rotate_away_if": "DOGE 4h remains too chop-bound and session-led holds collapse immediately.",
+      "expected_if_right": "Moderate participation with several first-target captures and a smaller number of clean continuation legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same session-impulse grammar survives on a cleaner major.",
+      "continue_if": "ETH 4h preserves the same hold-and-expand sequence with cleaner but smaller moves.",
+      "rotate_away_if": "ETH 4h is too flat for the mechanism.",
+      "expected_if_right": "Lower amplitude, cleaner state-change continuation than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same idea survives a more expressive lane with stronger move amplitude.",
+      "continue_if": "TAO 4h keeps the impulse-hold-expansion sequence with enough structure.",
+      "rotate_away_if": "TAO 4h turns the setup into late-entry noise.",
+      "expected_if_right": "Lower count than DOGE, larger continuation legs."
+    }
+  ],
+  "indicators": ["SESSION_OPEN", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= SESSION_OPEN + 0.30 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Close <= SESSION_OPEN - 0.30 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 14"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar low stays >= EMA_20 - 0.10 * ATR_14 and close remains above EMA_20"
+    ],
+    "short": [
+      "Enter only if next bar high stays <= EMA_20 + 0.10 * ATR_14 and close remains below EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 35% size",
+      "Take profit: 0.96 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 35% size",
+      "Take profit: 0.96 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

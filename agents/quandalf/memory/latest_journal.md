@@ -1,8 +1,8 @@
-# Quandalf Journal — Cycle 53
+# Quandalf Journal — Cycle 63
 
-- ts_iso: 2026-03-11T20:04:16.532350+00:00
+- ts_iso: 2026-03-11T21:24:03.081976+00:00
 - mode: explore
-- lane: BTC / 4h
+- lane: TAO / 4h
 - research_direction: explore_new
 
 ## My Current Decision Summary
@@ -26,15 +26,14 @@
     "pass": 0,
     "refine": 0,
     "abort": 15,
-    "zero_trade": 14,
+    "zero_trade": 15,
     "strategies": 15,
     "queue_rows": 45,
     "queue_rows_decided": 45,
-    "saved_results": 2
+    "saved_results": 0
   },
   "diagnosis_breakdown": {
-    "too sparse": 14,
-    "bad idea": 1
+    "too sparse": 15
   },
   "assets_touched": [
     "AXS",
@@ -49,11 +48,11 @@
     "4h"
   ],
   "cycle_ids": [
-    45,
-    47,
     49,
     50,
-    53
+    53,
+    62,
+    63
   ]
 }
 
@@ -61,42 +60,42 @@
 - none
 
 ## What Failed
-- On QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1, I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.
-- On QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1, I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.
-- On QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1, I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.
+- On QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+- On QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+- On QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
 
 ## Why I Judged It That Way
-- On QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1, too sparse
-- On QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1, too sparse
-- On QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1, too sparse
+- On QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, too sparse
+- On QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1, too sparse
+- On QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, too sparse
 
 ## What I Would Improve Next
-- On QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1, I see that my legal next actions are refine or abort
-- On QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1, I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.
-- On QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1, I see that my legal next actions are refine or abort
-- On QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1, I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.
-- On QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1, I see that my legal next actions are refine or abort
-- On QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1, I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.
+- On QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, I see that my legal next actions are refine or abort
+- On QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+- On QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1, I see that my legal next actions are refine or abort
+- On QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+- On QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, I see that my legal next actions are refine or abort
+- On QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
 
 ## Strategy-by-Strategy Reasons
-- QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1: asset=ETH | timeframe=1h | decision=abort | diagnosis=too sparse
-  mechanism: intraday inventory gets stretched away from value, price reclaims session value, and rotates back toward medium balance in a choppy tape
-  thesis: ETH 1h is the best lane in the allowed basket for dense value-reclaim logic. In a low-confidence chop regime, the edge should come from fading failed short-term displacement after value is reclaimed, not from demanding multi-bar trend confirmation.
-  why: I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.
-  evidence: rq_0dcd0c5fea87=abort (I aborted queue row rq_0dcd0c5fea87 because its evidence was integrity_skip:zero_trades_both_samples.)
-  evidence: rq_935119bcda99=abort (I aborted queue row rq_935119bcda99 because its evidence was integrity_skip:zero_trades_both_samples.)
-  evidence: rq_65360bd09a8c=abort (I aborted queue row rq_65360bd09a8c because its evidence was too sparse / zero-trade behavior.)
-- QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1: asset=BTC | timeframe=4h | decision=abort | diagnosis=too sparse
-  mechanism: range-edge overshoot gets absorbed back into balance and mean-reverts toward the center of the range
-  thesis: BTC 4h currently reads as low-confidence chop with transition history. That makes range-edge absorption more plausible than continuation. The edge is not buying oversold or selling overbought mechanically; it is trading reacceptance after failed edge auctions.
-  why: I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.
-  evidence: rq_a5ea7255c4ac=abort (I aborted queue row rq_a5ea7255c4ac because its evidence was integrity_skip:zero_trades_both_samples.)
-  evidence: rq_e61cdb8bb63d=abort (I aborted queue row rq_e61cdb8bb63d because its evidence was integrity_skip:zero_trades_both_samples.)
-  evidence: rq_0d33ba91cf55=abort (I aborted queue row rq_0d33ba91cf55 because its evidence was too sparse / zero-trade behavior.)
-- QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1: asset=TAO | timeframe=4h | decision=abort | diagnosis=too sparse
-  mechanism: impulsive flush resets positioning, price reclaims structure, then partial profits are taken while a core runner stays for persistence if the move becomes real
-  thesis: TAO 4h is the best lane in the basket for testing a management-first idea: flush and reclaim can create a tradable reversal, but the right expression is not all-or-nothing. The setup should monetize the first relief move while keeping a smaller core for persistence if TAO turns the reclaim into a bigger directional leg.
-  why: I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.
-  evidence: rq_ad16c0bfb974=abort (I aborted queue row rq_ad16c0bfb974 because its evidence was integrity_skip:zero_trades_both_samples.)
-  evidence: rq_85d6f261ec9b=abort (I aborted queue row rq_85d6f261ec9b because its evidence was integrity_skip:zero_trades_both_samples.)
-  evidence: rq_cc974108812f=abort (I aborted queue row rq_cc974108812f because its evidence was too sparse / zero-trade behavior.)
+- QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1: asset=DOGE | timeframe=4h | decision=abort | diagnosis=too sparse
+  mechanism: a session-aligned directional impulse reclaims fast structure, holds that improvement into the next bar, and only then is continuation entered
+  thesis: DOGE 4h is the cycle primary lane and the active hypotheses explicitly call for testing session-window continuation. In a 90% chop / 10% transition tape, the right expression is not first-break chasing; it is session-led impulse plus post-impulse hold confirmation so the strategy only participates when the move shows evidence of escaping chop.
+  why: I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+  evidence: rq_3ebe638371e9=abort (Legacy queue decision normalized for rq_3ebe638371e9: integrity_skip:zero_trades_both_samples.)
+  evidence: rq_82eee25c1a74=abort (Legacy queue decision normalized for rq_82eee25c1a74: integrity_skip:zero_trades_both_samples.)
+  evidence: rq_5ece562d275c=abort (Legacy queue decision normalized for rq_5ece562d275c: row evidence reviewed.)
+- QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1: asset=ETH | timeframe=4h | decision=abort | diagnosis=too sparse
+  mechanism: inventory gets stretched away from value, price reclaims fast value, and the trade monetizes the reset with partials rather than requiring a full trend reversal
+  thesis: The cycle wants an inventory-reset continuation idea, but the best-fit lane is ETH 4h because it is the cleanest chop environment in the basket. The edge is not a static oversold bounce; it is the market resetting offside inventory and rotating back once value is reclaimed.
+  why: I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+  evidence: rq_5c4859c426ba=abort (Legacy queue decision normalized for rq_5c4859c426ba: integrity_skip:zero_trades_both_samples.)
+  evidence: rq_67d58b0b3e8b=abort (Legacy queue decision normalized for rq_67d58b0b3e8b: integrity_skip:zero_trades_both_samples.)
+  evidence: rq_4ba31fad3739=abort (Legacy queue decision normalized for rq_4ba31fad3739: row evidence reviewed.)
+- QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1: asset=TAO | timeframe=4h | decision=abort | diagnosis=too sparse
+  mechanism: a fresh directional expansion is entered only after immediate follow-through is visible, with most profit taken early and only a reduced core left for persistence
+  thesis: The cycle explicitly asks for a post-expansion partial-profit runner structure. TAO 4h is the best-fit lane because it has enough amplitude for a small retained core to matter, while still being transition-heavy enough that immediate follow-through must be proven rather than assumed.
+  why: I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+  evidence: rq_62737b8a8306=abort (Legacy queue decision normalized for rq_62737b8a8306: integrity_skip:zero_trades_both_samples.)
+  evidence: rq_a418173e48a2=abort (Legacy queue decision normalized for rq_a418173e48a2: integrity_skip:zero_trades_both_samples.)
+  evidence: rq_13815aa005b6=abort (Legacy queue decision normalized for rq_13815aa005b6: row evidence reviewed.)

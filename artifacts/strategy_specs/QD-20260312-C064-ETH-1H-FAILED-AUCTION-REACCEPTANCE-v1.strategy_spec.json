@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C064-ETH-1H-FAILED-AUCTION-REACCEPTANCE-v1",
+  "cycle_id": 64,
+  "family_name": "eth_1h_failed_auction_reacceptance_v064",
+  "name": "ETH 1h Failed Auction Reacceptance v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "a short-term auction away from value fails, price reaccepts prior value, and rotates back toward deeper balance",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 1h remains the cleanest dense lane in the allowed basket. Instead of demanding continuation after weak 1h transitions, this idea trades failed directional auctions once value is reclaimed. The edge should come from offside positioning unwinding in a tape that is still mostly chop with some transition.",
+  "invalidation_condition": "If reacceptance events remain too sparse, or if reclaiming value still fails to produce enough move back toward balance after costs, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price extends away from value, loses that extension, reclaims value, and rotates back into balance before the next impulse.",
+    "why_edge_should_exist": "In chop-heavy 1h structure, failed excursions should outnumber clean directional continuation. Reacceptance after failed extension is denser than breakout-persistence logic and better aligned with the current tape.",
+    "asset_timeframe_fit": "ETH 1h is the best fit because it combines sufficient event frequency with cleaner structure than AXS and less directional inertia than BTC.",
+    "indicator_role_map": {
+      "VWAP": "value / reacceptance line",
+      "EMA_55": "deeper balance target",
+      "ATR_14": "stretch threshold and stop sizing",
+      "RSI_14": "exhaustion qualifier",
+      "ADX_14": "trend veto against mature expansion"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The reclaim may happen inside a genuine directional move, turning the mean-reversion thesis into a repeated fade of real continuation.",
+    "first_refinement_path": "If participation is healthy but expectancy is weak, reduce target ambition and shorten holding time before touching the trigger.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Frequent first-target captures, fewer second-target completions, limited dependence on runners.",
+    "what_would_count_as_success": "ETH 1h produces non-sparse reacceptance trades with positive first-target behavior and at least one cross-lane preserves the same structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or repeated reacceptance failures before the first partial.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low; stretch plus reclaim is materially denser than continuation confirmation chains",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for failed-auction reacceptance in the current cycle.",
+      "continue_if": "ETH 1h shows enough reacceptance participation and first-target behavior clears costs.",
+      "rotate_away_if": "ETH 1h remains too sparse or too shallow to monetize.",
+      "expected_if_right": "Moderate-to-high count with many modest balance recoveries."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same failed-auction logic survives on another liquid major.",
+      "continue_if": "BTC 1h preserves reclaim-to-balance structure with cleaner but slightly lower count.",
+      "rotate_away_if": "BTC 1h suppresses the mechanism into low-density irrelevance.",
+      "expected_if_right": "Lower count, cleaner reacceptance than ETH."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism survives structurally on a slower lane.",
+      "continue_if": "ETH 4h still produces enough failed-auction reacceptance trades to validate portability.",
+      "rotate_away_if": "ETH 4h confirms the idea is only viable at 1h density.",
+      "expected_if_right": "Lower count, broader balance rotations than 1h."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.36 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 42",
+      "RSI_14 <= 58",
+      "ADX_14 <= 23"
+    ],
+    "short": [
+      "High >= VWAP + 0.36 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 58",
+      "RSI_14 >= 42",
+      "ADX_14 <= 23"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.42 * ATR_14 on 50% size",
+      "Take profit: 0.76 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.42 * ATR_14 on 50% size",
+      "Take profit: 0.76 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C064-BTC-1H-RESET-THEN-GO-v1",
+  "cycle_id": 64,
+  "family_name": "btc_1h_reset_then_go_v064",
+  "name": "BTC 1h Reset Then Go v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "a short-term directional move resets into fast structure, directional pressure reasserts, and continuation is entered with asymmetry coming from partial-first, runner-second exits",
+  "expected_regime": "TRANSITION",
+  "thesis": "BTC 1h remains the better-fit continuation lane in the basket, but the prior continuation family was too sparse. This version drops ceremonial confirmation and uses a simpler reset-then-go sequence: pullback into structure, directional pressure recovery, then continuation with asymmetric exit logic.",
+  "invalidation_condition": "If reset-then-go setups remain too sparse, or if continuation legs are too weak after the reset for the runner logic to matter, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A move pulls back into structure, pressure resets, then continuation resumes once directional participation improves again.",
+    "why_edge_should_exist": "Transitionary BTC 1h should still reward some continuation, but only after a reset that improves location. A simpler reset-and-go trigger should be denser than the prior continuation thesis while preserving some asymmetry.",
+    "asset_timeframe_fit": "BTC 1h is the best fit because it has more continuation potential than ETH 1h while remaining cleaner than AXS for a reset continuation idea.",
+    "indicator_role_map": {
+      "EMA_20": "fast structure reclaim trigger",
+      "EMA_55": "risk reference / structure hold",
+      "ATR_14": "reset depth and stop normalization",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure recovery",
+      "ADX_14": "minimum participation gate"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "What looks like a reset may just be unresolved chop, producing many small starts with not enough true continuation legs.",
+    "first_refinement_path": "If first targets work but runners do not, keep the trigger and shift more size into earlier profits before touching entry logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Several modest first-target wins, some scratches, and a smaller set of runner outcomes that matter only when continuation is real.",
+    "what_would_count_as_success": "BTC 1h produces enough reset-then-go sequences to clear screen density and the exit structure shows better asymmetry than fixed targets alone.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or a runner component that never contributes meaningful incremental value.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but denser than prior continuation families because the sequence is simplified to reset plus pressure recovery",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for simplified reset continuation with asymmetric exits.",
+      "continue_if": "BTC 1h shows enough reset-then-go trades and the runner logic adds post-cost value.",
+      "rotate_away_if": "BTC 1h still behaves like unresolved chop and kills continuation too early.",
+      "expected_if_right": "Moderate participation with a mix of first-target wins and a few useful runners."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same reset continuation logic survives on the cycle primary lane.",
+      "continue_if": "ETH 1h preserves the same structure with smaller but cleaner moves.",
+      "rotate_away_if": "ETH 1h confirms continuation is the wrong mechanism for the tape.",
+      "expected_if_right": "Lower amplitude, cleaner reset continuations than BTC."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same continuation grammar survives on a noisier lane.",
+      "continue_if": "AXS 1h preserves reset continuation with enough structure.",
+      "rotate_away_if": "AXS 1h turns the setup into noise.",
+      "expected_if_right": "Messier but sharper runner outcomes than BTC."
+    }
+  ],
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.22 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 15"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.22 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 15"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry or below EMA_55, whichever is tighter",
+      "Take profit: 0.52 * ATR_14 on 30% size",
+      "Take profit: 0.92 * ATR_14 on 20% size",
+      "Trail remaining 50% by 0.86 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry or above EMA_55, whichever is tighter",
+      "Take profit: 0.52 * ATR_14 on 30% size",
+      "Take profit: 0.92 * ATR_14 on 20% size",
+      "Trail remaining 50% by 0.86 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

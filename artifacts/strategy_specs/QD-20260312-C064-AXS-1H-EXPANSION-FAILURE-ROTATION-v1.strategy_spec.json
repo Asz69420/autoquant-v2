@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C064-AXS-1H-EXPANSION-FAILURE-ROTATION-v1",
+  "cycle_id": 64,
+  "family_name": "axs_1h_expansion_failure_rotation_v064",
+  "name": "AXS 1h Expansion Failure Rotation v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "a fresh short-term expansion fails to sustain, reclaims value, and is traded back toward balance with heavy early profit-taking and a strict time stop",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "AXS 1h is the best structurally different lane for a denser mean-reversion expression. Instead of trying to continue noisy AXS expansions, this idea trades expansion failures once value is reclaimed. The management is intentionally front-loaded because the asset is noisy and the edge should come from early capture, not long runners.",
+  "invalidation_condition": "If failed expansions are still too sparse, or if first-target capture is too weak to survive costs, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A fresh local expansion loses acceptance, reclaims value, and rotates back through balance before the next impulse.",
+    "why_edge_should_exist": "Noisy 1h assets often generate false short-term expansions. Capturing the return to balance with front-loaded exits should be more robust than insisting on sustained continuation.",
+    "asset_timeframe_fit": "AXS 1h is the best fit because it is the noisiest lane in the basket and should produce enough failed expansions to test this management-first reversal idea.",
+    "indicator_role_map": {
+      "EMA_20": "value reclaim line",
+      "VWAP": "secondary balance anchor",
+      "ATR_14": "expansion threshold and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "fresh expansion participation that later fails",
+      "ADX_14": "avoid dead-flat no-move periods"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "AXS may be so noisy that failed expansion and genuine continuation are indistinguishable, degrading first-target hit rate.",
+    "first_refinement_path": "If first targets almost work but not enough, tighten holding time before changing the expansion-failure trigger.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "A larger number of small wins and some quick stop-outs, with expectancy driven by density and aggressive early monetization.",
+    "what_would_count_as_success": "AXS 1h produces enough failed-expansion rotations to clear screen density and first-target hit rate is strong enough to survive costs.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or repeated entries that cannot reach the first partial before noise takes them out.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low relative to the rest of the batch because failed expansions on AXS 1h should recur",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for expansion-failure rotation with front-loaded profit-taking.",
+      "continue_if": "AXS 1h shows enough failed expansions and first-target behavior clears costs.",
+      "rotate_away_if": "AXS 1h remains too noisy for even aggressive early exits to survive.",
+      "expected_if_right": "High enough participation with many first-target captures and limited need for runners."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the same failed-expansion logic survives on a cleaner primary lane.",
+      "continue_if": "ETH 1h preserves the same return-to-balance structure with cleaner execution.",
+      "rotate_away_if": "ETH 1h confirms the idea is too dependent on AXS noise.",
+      "expected_if_right": "Lower count, cleaner failed-expansion rotations than AXS."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "liquid_crosscheck",
+      "why_included": "Tests whether the same management expression ports to a more liquid major.",
+      "continue_if": "BTC 1h preserves failed-expansion rotation with acceptable density.",
+      "rotate_away_if": "BTC 1h is too structurally different and suppresses the setup.",
+      "expected_if_right": "Lower count, cleaner first-target behavior than AXS."
+    }
+  ],
+  "indicators": ["EMA_20", "VWAP", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.28 * ATR_14",
+      "Close >= VWAP",
+      "PLUS_DI_14 <= MINUS_DI_14 * 1.05",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.28 * ATR_14",
+      "Close <= VWAP",
+      "MINUS_DI_14 <= PLUS_DI_14 * 1.05",
+      "ADX_14 >= 14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.78 * ATR_14 below entry",
+      "Take profit: 0.40 * ATR_14 on 55% size",
+      "Take profit: 0.72 * ATR_14 on 25% size",
+      "Exit remaining 20% on 4 bars or touch of EMA_20 + 0.25 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.78 * ATR_14 above entry",
+      "Take profit: 0.40 * ATR_14 on 55% size",
+      "Take profit: 0.72 * ATR_14 on 25% size",
+      "Exit remaining 20% on 4 bars or touch of EMA_20 - 0.25 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

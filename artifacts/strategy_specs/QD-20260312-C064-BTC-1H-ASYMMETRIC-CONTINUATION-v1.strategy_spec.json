@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C064-BTC-1H-ASYMMETRIC-CONTINUATION-v1",
+  "cycle_id": 64,
+  "family_name": "btc_1h_asymmetric_continuation_v064",
+  "name": "BTC 1h Asymmetric Continuation v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "a continuation trigger is taken only after directional pressure reasserts above fast structure, while stop logic and exit logic are intentionally separated to create asymmetry",
+  "expected_regime": "TRANSITION",
+  "thesis": "The cycle explicitly asks for continuation with asymmetric exit logic where trigger, risk, and exit components play different roles. BTC 1h is the best-fit lane because it carries more directional transition quality than ETH 1h while staying liquid enough to test whether separated exit logic improves payoff asymmetry.",
+  "invalidation_condition": "If BTC 1h continuation remains too sparse, or if the asymmetric exit logic never adds value over early partials alone, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A short-term reset ends, directional pressure returns, fast structure holds, and continuation develops into a move where early de-risking plus a trailing core can outperform fixed exits.",
+    "why_edge_should_exist": "Transitionary 1h structure can still reward continuation, but only if the trigger is separated from the risk and exit logic. That lets the system scratch mediocre trades while preserving upside when the move extends.",
+    "asset_timeframe_fit": "BTC 1h is the best fit because it has more transition quality than pure-chop ETH 1h and less erratic noise than AXS for a continuation management experiment.",
+    "indicator_role_map": {
+      "EMA_20": "trigger and short-term directional hold",
+      "EMA_55": "structural risk reference",
+      "ATR_14": "stop and trail normalization",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure confirmation",
+      "ADX_14": "transition participation gate"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "What looks like continuation may still just be chop rebound, producing many scratches without enough true runners to pay for them.",
+    "first_refinement_path": "If triggers are present but trailing logic adds little, shift more size to first profit rather than loosening the continuation trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Several small scratches or modest wins, with a smaller set of larger runners that should carry total expectancy if the thesis is right.",
+    "what_would_count_as_success": "BTC 1h produces enough continuation-after-reset signals to clear screen density, and the separated exit design improves asymmetry over one-shot exits.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or an exit structure where the runner never contributes incremental value.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but acceptable because the trigger is simplified to hold-plus-pressure rather than layered ritual",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for continuation with asymmetrically separated trigger, risk, and exit logic.",
+      "continue_if": "BTC 1h shows enough continuation-after-reset trades and the exit design improves post-cost asymmetry.",
+      "rotate_away_if": "BTC 1h still behaves like unresolved chop and kills continuation before runners can matter.",
+      "expected_if_right": "Moderate participation with a mix of scratches, modest wins, and a few useful runners."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same continuation grammar survives on the cycle primary lane.",
+      "continue_if": "ETH 1h preserves the same trigger-risk-exit separation with smaller but cleaner moves.",
+      "rotate_away_if": "ETH 1h confirms the continuation thesis is too optimistic for this regime.",
+      "expected_if_right": "Lower amplitude, cleaner continuation after resets than BTC."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same continuation logic survives on a noisier, higher-amplitude lane.",
+      "continue_if": "AXS 1h preserves continuation-after-reset with enough structure.",
+      "rotate_away_if": "AXS 1h turns the continuation thesis into pure noise.",
+      "expected_if_right": "Messier but potentially sharper payoff asymmetry than BTC."
+    }
+  ],
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 16"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 16"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry or below EMA_55, whichever is tighter",
+      "Take profit: 0.58 * ATR_14 on 20% size",
+      "Trail remaining 80% by 0.86 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry or above EMA_55, whichever is tighter",
+      "Take profit: 0.58 * ATR_14 on 20% size",
+      "Trail remaining 80% by 0.86 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

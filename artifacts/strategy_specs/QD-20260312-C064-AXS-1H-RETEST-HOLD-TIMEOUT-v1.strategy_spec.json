@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1",
+  "cycle_id": 64,
+  "family_name": "axs_1h_retest_hold_timeout_v064",
+  "name": "AXS 1h Retest Hold Timeout v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "a break from local structure is not chased; price must retest and hold the broken level, then the trade is de-risked by time if expansion does not appear fast enough",
+  "expected_regime": "TRANSITION",
+  "thesis": "The cycle explicitly asks for retest-and-hold continuation with time-based failure control. AXS 1h is the best structurally different lane for this because it is expressive enough for visible transitions and should produce denser retest events than the 4h lanes that kept failing. The edge is the accepted retest, not the first break.",
+  "invalidation_condition": "If retests remain too sparse on AXS 1h, or if the timeout neutralizes almost every trade before edge can appear, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price leaves a local range, retests the broken boundary, holds it, and either transitions into continuation or is cut to low risk when expansion fails to arrive quickly.",
+    "why_edge_should_exist": "Transitionary 1h structure can still reward delayed acceptance entries while the timeout protects against pseudo-breaks that revert back into range.",
+    "asset_timeframe_fit": "AXS 1h is the best fit because it is the most structurally different lane in the basket and the 1h resolution should provide enough retest events to make the thesis testable.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "breakout boundary and retest zone",
+      "EMA_20": "post-retest directional hold",
+      "ATR_14": "retest tolerance and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation",
+      "ADX_14": "transition participation gate",
+      "TIME_STOP": "failure control if expansion does not appear"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "AXS may still be too noisy, turning retest entries into pseudo-transitions with no genuine follow-through.",
+    "first_refinement_path": "If entries exist but too many become scratches, strengthen the retest hold condition before widening the breakout zone.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A moderate number of trades with several scratches or reduced-risk exits, and a smaller set of clean transitions that produce most of the payoff.",
+    "what_would_count_as_success": "AXS 1h produces enough accepted retests to clear screen density, and the timeout clearly improves downside control on failed transitions.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or a timeout that prevents any real edge from expressing.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but denser than the killed 4h retest families because the lane is 1h and the sequence is simpler",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit structurally different lane for retest-and-hold continuation with timeout control.",
+      "continue_if": "AXS 1h shows enough accepted retests and the timeout improves failed-transition behavior.",
+      "rotate_away_if": "AXS 1h retests mostly fail back into chop with no transition follow-through.",
+      "expected_if_right": "Moderate count with many scratches contained and a smaller set of clean transition winners."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same retest-hold-timeout logic survives on a cleaner major lane.",
+      "continue_if": "BTC 1h preserves accepted retests with cleaner but smaller transitions.",
+      "rotate_away_if": "BTC 1h confirms the thesis is too transition-dependent for current structure.",
+      "expected_if_right": "Lower count, cleaner retests than AXS."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary_context_check",
+      "why_included": "Ensures the cycle primary lane is still represented even if it is not the best fit for this thesis.",
+      "continue_if": "ETH 1h shows enough accepted retests to validate portability.",
+      "rotate_away_if": "ETH 1h proves the mechanism is still too sparse there.",
+      "expected_if_right": "Lower amplitude, cleaner timeout behavior than AXS."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14", "TIME_STOP"],
+  "entry_rules": {
+    "long": [
+      "Close >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Low <= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 16"
+    ],
+    "short": [
+      "Close <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "High >= DONCHIAN_LOW_20 - 0.18 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 16"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "De-risk to break-even if no 0.28 * ATR_14 favorable move within 2 bars",
+      "Take profit: 0.64 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.86 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "De-risk to break-even if no 0.28 * ATR_14 favorable move within 2 bars",
+      "Take profit: 0.64 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.86 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

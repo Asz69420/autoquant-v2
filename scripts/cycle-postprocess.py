@@ -728,6 +728,8 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
             "db_results": completed_backtests,
             "pass": pass_count,
             "promote": promote_count,
+            "train_runs": int(queue_metrics.get("done") or 0) + int(queue_metrics.get("skipped") or 0),
+            "test_runs": 0
         },
         "pass_count": pass_count,
         "fail_count": fail_count,
@@ -851,6 +853,8 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     integrity_zero_trades = int(metrics.get("queue_integrity_skips") or 0)
     queue_done = int(metrics.get("queue_done") or 0)
     queue_skipped = int(metrics.get("queue_skipped") or 0)
+    train_runs = int(metrics.get("stage_kpis", {}).get("train_runs") or 0)
+    test_runs = int(metrics.get("stage_kpis", {}).get("test_runs") or 0)
     executed_backtests = queue_done + queue_skipped
     decided_total = int(decision_counts.get("decision_count") or 0)
     queue_decided_total = int(decision_counts.get("queue_decision_count") or 0)
@@ -889,16 +893,16 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     note_candidates = []
     if not decisions_complete:
         if unresolved_queue > 0:
-            note_candidates.append(f"This {mode} cycle has {executed_backtests} executed backtest row{'s' if executed_backtests != 1 else ''}, with {unresolved_queue} still awaiting Quandalf's explicit pass / refine / abort judgment. This is in-flight evidence, not a final verdict.")
+            note_candidates.append(f"This {mode} cycle has {train_runs} completed train run{'s' if train_runs != 1 else ''} and {test_runs} completed test run{'s' if test_runs != 1 else ''}, with {unresolved_queue} rows still awaiting Quandalf's explicit pass / refine / abort judgment. This is in-flight evidence, not a final verdict.")
         elif executed_backtests == 0 and generated > 0:
-            note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still gathering evidence before any strategy gets advanced or cut.")
+            note_candidates.append(f"This {mode} cycle generated fresh work but no train/test executions have completed yet, so the batch is still gathering evidence before any strategy gets advanced or cut.")
         else:
             note_candidates.append(f"This {mode} cycle is still in progress. Evidence collection is ahead of decision closure, so final pass / refine / abort counts are intentionally withheld until Quandalf finishes judging the batch.")
     else:
         if passed > 0 and best_qs > 0:
             note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
         if integrity_zero_trades > 0 and executed_backtests > 0:
-            note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} backtest row{'s' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to refine.")
+            note_candidates.append(f"This {mode} cycle completed {train_runs} train run{'s' if train_runs != 1 else ''} and {test_runs} test run{'s' if test_runs != 1 else ''}. {aborted} row{'s' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to refine.")
         if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
             note_candidates.append(f"This {mode} cycle tested fresh ideas but none cleared the evidence gate, so the right move is to abandon these mechanisms and try a different concept or management style.")
         if family_aborted > 0 and best_qs > 0:
@@ -917,7 +921,9 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○────────────activity────────────")
     lines.append(f"Generated: {generated}")
-    lines.append(f"Backtests: {backtests}")
+    lines.append(f"Train: {train_runs}")
+    if test_runs > 0:
+        lines.append(f"Test: {test_runs}")
     if decisions_complete:
         lines.append(f"Passed: {passed}")
         lines.append(f"Iterated: {iterated}")
@@ -2083,7 +2089,7 @@ def main():
         or int(metrics.get("pass_count", 0) or 0) > 0
         or int(metrics.get("promote_count", 0) or 0) > 0
         or int(metrics.get("queue_terminal_failures", 0) or 0) > 0
-        or unresolved > 0
+        or int(metrics.get("queue_pending", 0) or 0) > 0
     )
     should_post_oragorn_integrity = (
         int(metrics.get("queue_integrity_skips", 0) or 0) > 0
@@ -2125,7 +2131,7 @@ def main():
         step="postprocess",
     )
 
-    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("queue_integrity_skips", 0) or 0) > 0 or unresolved > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
+    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("queue_integrity_skips", 0) or 0) > 0 or int(metrics.get("queue_pending", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
         record_pipeline_completion(
             record_prefix="CYCLE-{0}".format(cycle_id),
             actor="logron",

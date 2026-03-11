@@ -10,6 +10,7 @@ DB = os.path.join(ROOT, "db", "autoquant.db")
 CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
 CURRENT_CYCLE_STATUS = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
 REFLECTION_PACKET = os.path.join(ROOT, "agents", "quandalf", "memory", "reflection_packet.json")
+RUN_STATE = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
 
 
 def load_json(path):
@@ -224,6 +225,8 @@ def main():
     cutoff = (datetime.now(timezone.utc) - timedelta(minutes=120)).isoformat()
     manifest = load_json(CURRENT_CYCLE_SPECS)
     cycle_status = load_json(CURRENT_CYCLE_STATUS)
+    run_state = load_json(RUN_STATE)
+    active_cycle_id = int(run_state.get("cycle_id") or manifest.get("cycle_id") or cycle_status.get("cycle_id") or 0)
 
     raw_spec_paths = list(manifest.get("spec_paths") or cycle_status.get("spec_paths") or [])
     current_cycle_specs = []
@@ -233,8 +236,12 @@ def main():
         spec_id = normalize_spec_id(raw_path)
         if not spec_id or spec_id in seen:
             continue
+        spec = load_spec(spec_path)
+        spec_cycle_id = int(spec.get("cycle_id") or 0)
+        if active_cycle_id > 0 and spec_cycle_id not in {0, active_cycle_id}:
+            continue
         seen.add(spec_id)
-        current_cycle_specs.append((spec_id, spec_path, load_spec(spec_path)))
+        current_cycle_specs.append((spec_id, spec_path, spec))
 
     spec_ids = [item[0] for item in current_cycle_specs]
     results_by_spec = {spec_id: [] for spec_id in spec_ids}
@@ -323,7 +330,7 @@ def main():
     packet = {
         "ts_iso": datetime.now(timezone.utc).isoformat(),
         "type": "reflection",
-        "cycle_id": manifest.get("cycle_id") or cycle_status.get("cycle_id"),
+        "cycle_id": active_cycle_id or manifest.get("cycle_id") or cycle_status.get("cycle_id"),
         "mode": cycle_status.get("mode"),
         "research_direction": cycle_status.get("research_direction"),
         "target_asset": cycle_status.get("target_asset"),

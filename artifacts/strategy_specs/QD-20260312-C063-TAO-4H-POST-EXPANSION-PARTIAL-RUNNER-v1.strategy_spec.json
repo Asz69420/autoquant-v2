@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1",
+  "cycle_id": 63,
+  "family_name": "tao_4h_post_expansion_partial_runner_v063",
+  "name": "TAO 4h Post-Expansion Partial Runner v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a fresh directional expansion is entered only after immediate follow-through is visible, with most profit taken early and only a reduced core left for persistence",
+  "expected_regime": "TRANSITION",
+  "thesis": "The cycle explicitly asks for a post-expansion partial-profit runner structure. TAO 4h is the best-fit lane because it has enough amplitude for a small retained core to matter, while still being transition-heavy enough that immediate follow-through must be proven rather than assumed.",
+  "invalidation_condition": "If TAO 4h expansions do not follow through often enough, or if early partials cannot clear costs before reversals arrive, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A fresh local expansion begins, the move confirms immediate follow-through, early profit is secured, and a small core is retained for persistence only if the transition keeps building.",
+    "why_edge_should_exist": "On noisy transition markets, full-size continuation is fragile. A management-first expression can still exploit real expansions by monetizing early and treating persistence as upside optionality rather than the whole thesis.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because its volatility gives room for both early partial capture and occasional meaningful runner contribution, unlike flatter lanes where the retained core adds little.",
+    "indicator_role_map": {
+      "EMA_20": "local trend bias / post-expansion hold",
+      "ATR_14": "expansion threshold and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional participation",
+      "ADX_14": "expansion gate",
+      "TIME_STOP": "runner failure control"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "TAO may fake expansion too often, causing the strategy to bank too few early wins before reversals erase runner value.",
+    "first_refinement_path": "If first targets hit but the runner consistently gives back gains, shrink runner size before changing the expansion trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A moderate number of trades, with edge dominated by first-target capture and a smaller contribution from occasional runners.",
+    "what_would_count_as_success": "TAO 4h produces enough fresh expansions to clear screen density, first-target hit rate is respectable, and the retained core adds incremental value instead of erasing gains.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or a first-partial structure that still cannot survive noise after costs.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because the thesis is management-first, not rare-entry-first",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for a management-first post-expansion runner structure.",
+      "continue_if": "TAO 4h shows enough fresh expansions and first-target behavior clears costs regularly.",
+      "rotate_away_if": "TAO 4h noise overwhelms both early profit capture and runner expectancy.",
+      "expected_if_right": "Moderate participation with frequent first-target hits and some meaningful runner payoffs."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary_context_check",
+      "why_included": "Checks whether the same management expression works on the cycle primary lane.",
+      "continue_if": "DOGE 4h preserves early-profit plus retained-core logic with enough structure.",
+      "rotate_away_if": "DOGE 4h is too chop-bound for post-expansion persistence.",
+      "expected_if_right": "Messier but still tradable continuation after confirmed expansion."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Tests whether the same management expression survives on a cleaner major lane.",
+      "continue_if": "ETH 4h preserves the early partial plus runner logic with cleaner structure.",
+      "rotate_away_if": "ETH 4h proves the idea needs TAO amplitude to matter.",
+      "expected_if_right": "Lower count, cleaner runner behavior than TAO."
+    }
+  ],
+  "indicators": ["EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14", "TIME_STOP"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20 + 0.18 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 18"
+    ],
+    "short": [
+      "Close <= EMA_20 - 0.18 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 18"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar high exceeds signal bar high"
+    ],
+    "short": [
+      "Enter only if next bar low breaks signal bar low"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry",
+      "Take profit: 0.48 * ATR_14 on 55% size",
+      "Take profit: 0.92 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry",
+      "Take profit: 0.48 * ATR_14 on 55% size",
+      "Take profit: 0.92 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

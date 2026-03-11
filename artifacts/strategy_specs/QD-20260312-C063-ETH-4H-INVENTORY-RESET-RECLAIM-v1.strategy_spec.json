@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 63,
+  "family_name": "eth_4h_inventory_reset_reclaim_v063",
+  "name": "ETH 4h Inventory Reset Reclaim v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "inventory gets stretched away from value, price reclaims fast value, and the trade monetizes the reset with partials rather than requiring a full trend reversal",
+  "expected_regime": "CHOP",
+  "thesis": "The cycle wants an inventory-reset continuation idea, but the best-fit lane is ETH 4h because it is the cleanest chop environment in the basket. The edge is not a static oversold bounce; it is the market resetting offside inventory and rotating back once value is reclaimed.",
+  "invalidation_condition": "If ETH 4h reclaim events remain too sparse, or if first-target hit rate is too weak to clear costs, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from value, reclaims it as offside inventory exits, and rotates toward deeper balance before the next impulse.",
+    "why_edge_should_exist": "Pure chop tends to punish directional late entries and reward reclaim-to-balance moves. ETH is the cleanest lane in the basket for separating real value reacceptance from random noise.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because its regime is pure chop and the 4h frame still offers enough move size for reset trades to clear costs.",
+    "indicator_role_map": {
+      "VWAP": "fast value / reclaim line",
+      "EMA_55": "deeper balance target",
+      "ATR_14": "stretch threshold and stop sizing",
+      "RSI_14": "inventory stretch qualifier",
+      "ADX_14": "trend-strength veto"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "The reclaim may happen inside a genuine directional move, causing entries to fade continuation instead of reset offside inventory.",
+    "first_refinement_path": "If density is fine but second-target conversion is poor, keep the same trigger and lower target ambition before adding more filters.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Many first-target hits, fewer second-target completions, and limited dependence on runners.",
+    "what_would_count_as_success": "ETH 4h shows non-sparse reclaim participation, first-target hit rate is healthy, and at least one cross-lane preserves the same mechanism.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated reclaim failures before first partial.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low relative to prior failed families because the mechanism is stretch plus reclaim, not layered ceremony",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit pure-chop lane for inventory-reset reclaim logic.",
+      "continue_if": "ETH 4h shows enough reclaim rotations and first-target behavior clears costs.",
+      "rotate_away_if": "ETH 4h remains too sparse or too shallow to monetize.",
+      "expected_if_right": "Moderate-to-high participation with many modest balance recoveries."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Ensures the cycle's primary lane is still represented, even if ETH is the better fit for the thesis.",
+      "continue_if": "DOGE 4h preserves the same inventory-reset reclaim structure with enough density.",
+      "rotate_away_if": "DOGE 4h is too erratic and destroys the mechanism.",
+      "expected_if_right": "Higher amplitude, noisier reclaims than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same failed-extension logic survives on a more expressive lane.",
+      "continue_if": "TAO 4h still shows reclaimable inventory resets with enough structure.",
+      "rotate_away_if": "TAO 4h confirms the mechanism is too anti-trend there.",
+      "expected_if_right": "Lower count, larger balance recoveries than ETH."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.38 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 42",
+      "RSI_14 <= 58",
+      "ADX_14 <= 22"
+    ],
+    "short": [
+      "High >= VWAP + 0.38 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 58",
+      "RSI_14 >= 42",
+      "ADX_14 <= 22"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.44 * ATR_14 on 50% size",
+      "Take profit: 0.80 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.44 * ATR_14 on 50% size",
+      "Take profit: 0.80 * ATR_14 on 30% size",
+      "Exit remaining 20% on touch of EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

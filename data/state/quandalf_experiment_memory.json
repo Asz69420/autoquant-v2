@@ -1,44 +1,17 @@
 {
-  "ts_iso": "2026-03-11T12:17:49.818792+00:00",
-  "cycle_id": 50,
+  "ts_iso": "2026-03-11T21:24:03.013373+00:00",
+  "cycle_id": 63,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260311-C050-TAO-BALANCE-RECLAIM-CONTINUATION-v1",
-      "hypothesis": "TAO 4h is the best primary lane for testing whether a deeper pullback that reclaims balance can restart the trend once support stabilizes. The edge is the reclaim-and-hold after a meaningful reset, not shallow EMA touch continuation.",
+      "strategy_spec_id": "QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
+      "hypothesis": "DOGE 4h is the cycle primary lane and the active hypotheses explicitly call for testing session-window continuation. In a 90% chop / 10% transition tape, the right expression is not first-break chasing; it is session-led impulse plus post-impulse hold confirmation so the strategy only participates when the move shows evidence of escaping chop.",
       "chosen_lane": {
-        "asset": "TAO",
+        "asset": "DOGE",
         "timeframe": "4h"
       },
       "component_roles": [
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14"
-      ],
-      "mutation_surface": "initial",
-      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
-        "decision": "abort"
-      },
-      "regime_context": {},
-      "diagnosis": "too sparse",
-      "lesson_extracted": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the balance-reclaim continuation grammar failed density on valid data and is not worth another iteration."
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C050-ETH-SQUEEZE-HOLD-RELEASE-v1",
-      "hypothesis": "ETH 4h is the best similar-asset lane for testing whether squeeze release should only be entered after price proves persistence beyond the initial expansion bar. The edge is the hold after release, not the first breakout candle.",
-      "chosen_lane": {
-        "asset": "ETH",
-        "timeframe": "4h"
-      },
-      "component_roles": [
-        "BOLLINGER_BANDS_20_2",
+        "SESSION_OPEN",
         "EMA_20",
         "ATR_14",
         "PLUS_DI_14",
@@ -56,17 +29,17 @@
       },
       "regime_context": {},
       "diagnosis": "too sparse",
-      "lesson_extracted": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the squeeze-hold release grammar remains structurally too sparse."
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     },
     {
-      "strategy_spec_id": "QD-20260311-C050-AXS-FAILED-BREAK-REPAIR-v1",
-      "hypothesis": "AXS 4h is the best structurally different lane for testing whether failed breakdowns become tradable only after reclaim holds, not on the first reclaim print. The edge is the repair-and-hold sequence after failed downside acceptance.",
+      "strategy_spec_id": "QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
+      "hypothesis": "The cycle wants an inventory-reset continuation idea, but the best-fit lane is ETH 4h because it is the cleanest chop environment in the basket. The edge is not a static oversold bounce; it is the market resetting offside inventory and rotating back once value is reclaimed.",
       "chosen_lane": {
-        "asset": "AXS",
+        "asset": "ETH",
         "timeframe": "4h"
       },
       "component_roles": [
-        "EMA_20",
+        "VWAP",
         "EMA_55",
         "ATR_14",
         "RSI_14",
@@ -83,7 +56,35 @@
       },
       "regime_context": {},
       "diagnosis": "too sparse",
-      "lesson_extracted": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the failed-break repair grammar is still structurally too sparse and should be killed rather than cosmetically loosened."
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+    },
+    {
+      "strategy_spec_id": "QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1",
+      "hypothesis": "The cycle explicitly asks for a post-expansion partial-profit runner structure. TAO 4h is the best-fit lane because it has enough amplitude for a small retained core to matter, while still being transition-heavy enough that immediate follow-through must be proven rather than assumed.",
+      "chosen_lane": {
+        "asset": "TAO",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "ATR_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14",
+        "ADX_14",
+        "TIME_STOP"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     }
   ]
 }
