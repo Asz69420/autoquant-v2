@@ -713,14 +713,19 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     passed = metrics.get("pass_count", 0)
     new_families = len(metrics.get("new_families") or [])
     active_families = metrics.get("active_families", 0)
-    aborted = len(metrics.get("abandoned_families") or [])
-    backtests = metrics.get("backtests_completed", 0)
+    family_aborted = len(metrics.get("abandoned_families") or [])
+    integrity_zero_trades = int(metrics.get("queue_integrity_skips") or 0)
+    queue_done = int(metrics.get("queue_done") or 0)
+    queue_skipped = int(metrics.get("queue_skipped") or 0)
+    executed_backtests = queue_done + queue_skipped
+    aborted = family_aborted
+    backtests = executed_backtests
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
     if passed > 0:
         status_emoji = "✅"
-    elif backtests > 0:
+    elif integrity_zero_trades > 0 or executed_backtests > 0:
         status_emoji = "⚠️"
     else:
         status_emoji = "🔄"
@@ -728,12 +733,14 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     note_candidates = []
     if passed > 0 and best_qs > 0:
         note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
-    if backtests == 0 and generated > 0:
-        note_candidates.append(f"This {mode} cycle generated fresh work but still has no completed backtests, so the batch is waiting for scored evidence before any family gets advanced or cut.")
-    if backtests > 0 and passed == 0 and generated > 0:
+    if integrity_zero_trades > 0 and executed_backtests > 0:
+        note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}, but {integrity_zero_trades} produced 0 trades on valid data. That is a red flag, and Quandalf must explicitly choose iterate or abort for each one.")
+    if executed_backtests == 0 and generated > 0 and integrity_zero_trades == 0:
+        note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still waiting for evidence before any strategy gets advanced or cut.")
+    if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
         note_candidates.append(f"This {mode} cycle tested fresh ideas but none cleared the evidence gate, so the right move is to abandon these mechanisms and try a different concept or management style.")
-    if aborted > 0 and best_qs > 0:
-        note_candidates.append(f"This {mode} cycle cut {aborted} weak family{'ies' if aborted != 1 else ''} while preserving the better branch with best QS {best_qs:.2f} for the next decision pass.")
+    if family_aborted > 0 and best_qs > 0:
+        note_candidates.append(f"This {mode} cycle cut {family_aborted} weak family{'ies' if family_aborted != 1 else ''} while preserving the better branch with best QS {best_qs:.2f} for the next decision pass.")
     if metrics.get("external_results_present"):
         note_candidates.append(f"This {mode} cycle is being judged only on its own batch, while {metrics['external_rows']} off-cycle result{'s' if metrics['external_rows'] != 1 else ''} were intentionally ignored to keep the card honest.")
     if not note_candidates:

@@ -2,7 +2,8 @@ param()
 $ErrorActionPreference = 'Stop'
 $ROOT = 'C:\Users\Clamps\.openclaw\workspace-oragorn'
 $LOCK = Join-Path $ROOT 'data\state\autopilot_continuous.lock'
-$SLEEP_SECONDS = 30
+$PAUSE = Join-Path $ROOT 'data\state\autopilot_continuous.pause'
+$FAIL_SLEEP_SECONDS = 30
 Set-Location $ROOT
 
 try {
@@ -23,12 +24,17 @@ if (Test-Path $LOCK) {
 
 try {
   while ($true) {
+    if (Test-Path $PAUSE) {
+      Write-Host "[autopilot] pause flag detected at $(Get-Date -Format o); stopping continuous cooking loop"
+      break
+    }
+
     Write-Host "[autopilot] starting research cycle $(Get-Date -Format o)"
     lobster run --mode tool pipelines/research-cycle.lobster
     $researchExit = $LASTEXITCODE
     if ($researchExit -ne 0) {
       Write-Host "[autopilot] research cycle failed with exit $researchExit"
-      Start-Sleep -Seconds $SLEEP_SECONDS
+      Start-Sleep -Seconds $FAIL_SLEEP_SECONDS
       continue
     }
 
@@ -39,7 +45,7 @@ try {
       Write-Host "[autopilot] maintenance failed with exit $maintExit"
     }
 
-    Start-Sleep -Seconds $SLEEP_SECONDS
+    Write-Host "[autopilot] cycle finished; chaining immediately into the next research cycle"
   }
 }
 finally {

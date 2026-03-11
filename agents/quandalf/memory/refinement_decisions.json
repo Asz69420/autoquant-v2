@@ -1,0 +1,25 @@
+{
+  "cycle_id": 336,
+  "ts_iso": "2026-03-11T02:04:30Z",
+  "strategy_decisions": [
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "decision": "abort",
+      "source_strategy_spec_id": "QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "rationale": "The reflection packet contains no completed backtest outcome for this strategy (result_count=0, latest_result=null, outcome=pending) and it is stale versus the active BTC 4h lane. There is no honest evidence to promote or refine, and no real system/data fault to justify fix_only, so the explicit decision is abort."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-DEEP-RESET-CONTINUATION-v1",
+      "decision": "abort",
+      "source_strategy_spec_id": "QD-20260311-C336-ETH-DEEP-RESET-CONTINUATION-v1",
+      "rationale": "The packet provides no concrete backtest result for this strategy and it no longer matches the active current-cycle lane. Without participation or edge evidence, the honest non-fabricated decision is abort rather than speculative refinement."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "decision": "abort",
+      "source_strategy_spec_id": "QD-20260311-C336-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "rationale": "This reflection entry is still pending with no recorded result and belongs to the stale ETH 4h packet rather than the active BTC 4h batch. There is no real backtest evidence or system fault to support refine, promote, or fix_only, so it is aborted explicitly."
+    }
+  ],
+  "jobs": []
+}

@@ -1,16 +1,20 @@
 {
-  "cycle_id": 324,
+  "cycle_id": 336,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [],
-  "specs_produced": 0,
+  "spec_paths": [
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-BTC-STATE-CHANGE-MOMENTUM-HOLD-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-BTC-VALUE-REACCEPTANCE-EXHAUSTION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-BTC-RETEST-CONTINUATION-RUNNER-v1.strategy_spec.json"
+  ],
+  "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+      "compression fakeout into re-expansion with directional confirmation"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -22,248 +26,23 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "DOGE"
+      "SOL"
     ],
     "timeframes": [
       "4h"
     ]
   },
   "iterate_target": null,
-  "new_families": [],
+  "new_families": [
+    "btc_state_change_momentum_hold",
+    "btc_value_reacceptance_exhaustion",
+    "btc_retest_continuation_runner"
+  ],
   "iterated_families": [],
   "abandoned_families": [],
-  "next_cycle_focus": "pending",
-  "rationale": "pending",
-  "target_asset": "DOGE",
+  "next_cycle_focus": "Run the BTC 4h batch and only refine branches that show real blind-window participation and post-cost edge. Any zero-trade branch should be aborted immediately rather than cosmetically tuned.",
+  "rationale": "The active live cycle remains the BTC 4h explore batch. The reflection packet on disk is a stale ETH 4h packet with pending/no-result entries, so I recorded explicit abort decisions there while preserving the final current-cycle batch fields for the active BTC lane.",
+  "target_asset": "BTC",
   "target_timeframe": "4h",
-  "specific_family_to_iterate": null,
-  "latest_refinement_summary": {
-    "cycle_id": 150,
-    "started_at": "2026-03-11T00:43:04.548687+00:00",
-    "finished_at": "2026-03-11T00:43:04.808263+00:00",
-    "run_elapsed_seconds": 0.3,
-    "jobs_requested": 5,
-    "backtests_completed": 0,
-    "runner_ok": 0,
-    "runner_fail": 0,
-    "runner": {
-      "pipeline_id": "pr_7d048b45d901",
-      "total_jobs": 0,
-      "ok": 0,
-      "fail": 0,
-      "results": [],
-      "bucket_quota": {
-        "explore": 7,
-        "refine": 7,
-        "validate": 4
-      },
-      "bucket_used": {
-        "explore": 0,
-        "refine": 0,
-        "validate": 0
-      },
-      "stage_used": {
-        "screen": 0,
-        "full": 0,
-        "validation": 0
-      },
-      "effects": {
-        "screen_to_full": 0,
-        "full_pass": 0,
-        "promote": 0,
-        "branch_specs": 0,
-        "validation_queued": 0,
-        "reduced_queued": 0
-      },
-      "mode": "normal",
-      "max_parallel": 5,
-      "seeded": 5,
-      "queue_after": [
-        {
-          "stage": "screen",
-          "bucket": "explore",
-          "priority": 3,
-          "status": "done",
-          "count": 3
-        },
-        {
-          "stage": "full",
-          "bucket": "refine",
-          "priority": 1,
-          "status": "done",
-          "count": 5
-        }
-      ]
-    },
-    "had_error": false
-  },
-  "refinement_history": [
-    {
-      "cycle_id": 148,
-      "started_at": "2026-03-11T00:32:53.031226+00:00",
-      "finished_at": "2026-03-11T00:32:53.294148+00:00",
-      "run_elapsed_seconds": 0.3,
-      "jobs_requested": 5,
-      "backtests_completed": 0,
-      "runner_ok": 0,
-      "runner_fail": 0,
-      "runner": {
-        "pipeline_id": "pr_c7c64d6a59b0",
-        "total_jobs": 0,
-        "ok": 0,
-        "fail": 0,
-        "results": [],
-        "bucket_quota": {
-          "explore": 7,
-          "refine": 7,
-          "validate": 4
-        },
-        "bucket_used": {
-          "explore": 0,
-          "refine": 0,
-          "validate": 0
-        },
-        "stage_used": {
-          "screen": 0,
-          "full": 0,
-          "validation": 0
-        },
-        "effects": {
-          "screen_to_full": 0,
-          "full_pass": 0,
-          "promote": 0,
-          "branch_specs": 0,
-          "validation_queued": 0,
-          "reduced_queued": 0
-        },
-        "mode": "normal",
-        "max_parallel": 5,
-        "seeded": 5,
-        "queue_after": [
-          {
-            "stage": "full",
-            "bucket": "refine",
-            "priority": 1,
-            "status": "done",
-            "count": 5
-          }
-        ]
-      },
-      "had_error": false
-    },
-    {
-      "cycle_id": 149,
-      "started_at": "2026-03-11T00:38:02.629334+00:00",
-      "finished_at": "2026-03-11T00:38:02.897502+00:00",
-      "run_elapsed_seconds": 0.3,
-      "jobs_requested": 5,
-      "backtests_completed": 0,
-      "runner_ok": 0,
-      "runner_fail": 0,
-      "runner": {
-        "pipeline_id": "pr_4e7013b97699",
-        "total_jobs": 0,
-        "ok": 0,
-        "fail": 0,
-        "results": [],
-        "bucket_quota": {
-          "explore": 7,
-          "refine": 7,
-          "validate": 4
-        },
-        "bucket_used": {
-          "explore": 0,
-          "refine": 0,
-          "validate": 0
-        },
-        "stage_used": {
-          "screen": 0,
-          "full": 0,
-          "validation": 0
-        },
-        "effects": {
-          "screen_to_full": 0,
-          "full_pass": 0,
-          "promote": 0,
-          "branch_specs": 0,
-          "validation_queued": 0,
-          "reduced_queued": 0
-        },
-        "mode": "normal",
-        "max_parallel": 5,
-        "seeded": 5,
-        "queue_after": [
-          {
-            "stage": "full",
-            "bucket": "refine",
-            "priority": 1,
-            "status": "done",
-            "count": 5
-          }
-        ]
-      },
-      "had_error": false
-    },
-    {
-      "cycle_id": 150,
-      "started_at": "2026-03-11T00:43:04.548687+00:00",
-      "finished_at": "2026-03-11T00:43:04.808263+00:00",
-      "run_elapsed_seconds": 0.3,
-      "jobs_requested": 5,
-      "backtests_completed": 0,
-      "runner_ok": 0,
-      "runner_fail": 0,
-      "runner": {
-        "pipeline_id": "pr_7d048b45d901",
-        "total_jobs": 0,
-        "ok": 0,
-        "fail": 0,
-        "results": [],
-        "bucket_quota": {
-          "explore": 7,
-          "refine": 7,
-          "validate": 4
-        },
-        "bucket_used": {
-          "explore": 0,
-          "refine": 0,
-          "validate": 0
-        },
-        "stage_used": {
-          "screen": 0,
-          "full": 0,
-          "validation": 0
-        },
-        "effects": {
-          "screen_to_full": 0,
-          "full_pass": 0,
-          "promote": 0,
-          "branch_specs": 0,
-          "validation_queued": 0,
-          "reduced_queued": 0
-        },
-        "mode": "normal",
-        "max_parallel": 5,
-        "seeded": 5,
-        "queue_after": [
-          {
-            "stage": "screen",
-            "bucket": "explore",
-            "priority": 3,
-            "status": "done",
-            "count": 3
-          },
-          {
-            "stage": "full",
-            "bucket": "refine",
-            "priority": 1,
-            "status": "done",
-            "count": 5
-          }
-        ]
-      },
-      "had_error": false
-    }
-  ],
-  "fallback_source": false
+  "specific_family_to_iterate": null
 }

@@ -20,6 +20,7 @@ STRATEGY_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "strat
 REFINEMENT_STATE_PATH = os.path.join(ROOT, "data", "state", "refinement_cycle_state.json")
 REFINEMENT_JOBS_PATH = os.path.join(ROOT, "data", "state", "refinement_jobs.json")
 REFINEMENT_RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "refinement_cycle_run_state.json")
+QUANDALF_REFINEMENT_DECISIONS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "refinement_decisions.json")
 
 STATUS_ORDER = {
     None: 0,
@@ -165,6 +166,15 @@ def elapsed_text(run_state):
         seconds = 0
     seconds = max(0, int(seconds))
     return f"{seconds // 60}m {seconds % 60}s"
+
+
+def normalize_path(path):
+    text = str(path or "").strip()
+    if not text:
+        return ""
+    if os.path.isabs(text):
+        return text
+    return os.path.join(ROOT, text)
 
 
 def find_spec_path(strategy_spec_id):
@@ -507,51 +517,77 @@ def candidate_rows(conn):
 
 
 def build_jobs(conn, cycle_id, max_jobs):
+    decisions = load_json(QUANDALF_REFINEMENT_DECISIONS_PATH, default={})
+    requested = decisions.get("jobs") or []
+    strategy_decisions = decisions.get("strategy_decisions") or []
+    source_cycle_id = int(decisions.get("cycle_id") or 0)
+    current_status = load_json(CURRENT_STATUS_PATH, default={})
+    active_cycle_id = int(current_status.get("cycle_id") or 0)
+    spec_paths = current_status.get("spec_paths") or []
+    expected_specs = {os.path.splitext(os.path.splitext(os.path.basename(str(p)))[0])[0] for p in spec_paths if str(p).strip()}
+    if source_cycle_id and active_cycle_id and source_cycle_id != active_cycle_id:
+        write_json(REFINEMENT_JOBS_PATH, {"cycle_id": cycle_id, "source_cycle_id": source_cycle_id, "active_cycle_id": active_cycle_id, "jobs": [], "strategy_decisions": strategy_decisions, "created_at": now_iso(), "selected_by": "quandalf", "status": "stale_decisions_ignored"})
+        return [], []
+    if expected_specs and len(strategy_decisions) < len(expected_specs):
+        write_json(REFINEMENT_JOBS_PATH, {"cycle_id": cycle_id, "source_cycle_id": source_cycle_id, "jobs": [], "strategy_decisions": strategy_decisions, "created_at": now_iso(), "selected_by": "quandalf", "status": "incomplete_strategy_decisions"})
+        return [], []
+    if not isinstance(requested, list):
+        write_json(REFINEMENT_JOBS_PATH, {"cycle_id": cycle_id, "source_cycle_id": source_cycle_id, "jobs": [], "strategy_decisions": strategy_decisions, "created_at": now_iso(), "selected_by": "quandalf", "status": "invalid_jobs_payload"})
+        return [], []
+
+    source_rows = {}
+    for row in candidate_rows(conn):
+        row_dict = dict(row)
+        source_rows[str(row_dict.get("id") or "")] = row_dict
+        source_rows[str(row_dict.get("strategy_spec_id") or "")] = row_dict
+
     jobs = []
     touched_rows = []
-    round_counts = {1: 0, 2: 0, 3: 0}
-    for row in candidate_rows(conn):
-        spec_path = find_spec_path(row["strategy_spec_id"])
-        if not spec_path:
+    touched_ids = set()
+    for item in requested:
+        if len(jobs) >= max_jobs or not isinstance(item, dict):
+            break
+        if str(item.get("decision") or "").lower() != "refine":
+            continue
+        source_key = str(item.get("source_result_id") or item.get("source_strategy_spec_id") or item.get("strategy_spec_id") or "").strip()
+        row = source_rows.get(source_key)
+        spec_path = normalize_path(item.get("spec_path"))
+        if not row or not spec_path or not os.path.exists(spec_path):
             continue
         spec = load_spec(spec_path)
-        next_round = int(row["refinement_round"] or 0) + 1
+        variants = spec.get("variants") or []
+        if not variants:
+            continue
+        next_round = int(row.get("refinement_round") or 0) + 1
         if next_round > 3:
             continue
-        weaknesses, pack = generate_pack(conn, row, spec, next_round)
-        if not pack:
-            continue
-        conn.execute("update backtest_results set weakness_profile=?, refinement_status=coalesce(refinement_status, 'PASS.REFINING') where id=?", (json.dumps(weaknesses), row["id"]))
+        conn.execute("update backtest_results set refinement_status='PASS.REFINING', refinement_round=? where id=?", (next_round, row["id"]))
         conn.commit()
-        for spec_obj, kind in pack:
-            if len(jobs) >= max_jobs:
-                break
-            path = save_spec(spec_obj)
-            jobs.append(
-                {
-                    "cycle_id": cycle_id,
-                    "spec_path": path,
-                    "strategy_spec_id": spec_obj["id"],
-                    "variant_id": str(spec_obj["variants"][0].get("name") or "default"),
-                    "asset": spec_obj["asset"],
-                    "timeframe": spec_obj["timeframe"],
-                    "stage": "full",
-                    "bucket": "refine",
-                    "priority": 1,
-                    "mutation_type": kind,
-                    "family_generation": int(spec_obj.get("family_generation") or 1),
-                    "parent_result_id": row["id"],
-                    "strategy_family": str(row["strategy_family"] or spec_obj.get("family_name") or derive_family_name(spec_obj)),
-                    "validation_target": json.dumps({"asset": spec_obj["asset"], "timeframe": spec_obj["timeframe"], "kind": kind}),
-                    "notes": json.dumps({"source": "refinement_cycle", "refinement_round": next_round, "weakness_profile": weaknesses}),
-                    "refinement_round": next_round,
-                }
-            )
-        touched_rows.append(dict(row))
-        round_counts[next_round] += min(len(pack), max(0, max_jobs - len(jobs) + min(len(pack), max_jobs)))
-        if len(jobs) >= max_jobs:
-            break
-    write_json(REFINEMENT_JOBS_PATH, {"cycle_id": cycle_id, "jobs": jobs, "created_at": now_iso()})
+        jobs.append(
+            {
+                "cycle_id": cycle_id,
+                "source_cycle_id": source_cycle_id,
+                "spec_path": spec_path,
+                "strategy_spec_id": str(spec.get("id") or item.get("strategy_spec_id") or source_key),
+                "variant_id": str(variants[0].get("name") or variants[0].get("variant_id") or "default"),
+                "asset": str(spec.get("asset") or row.get("asset") or ""),
+                "timeframe": str(spec.get("timeframe") or row.get("timeframe") or ""),
+                "stage": "full",
+                "bucket": "refine",
+                "priority": int(item.get("priority") or 1),
+                "mutation_type": str(item.get("mutation_type") or spec.get("mutation_type") or "quandalf_refine"),
+                "family_generation": int(spec.get("family_generation") or row.get("family_generation") or 1),
+                "parent_result_id": row["id"],
+                "strategy_family": str(spec.get("family_name") or row.get("strategy_family") or derive_family_name(spec)),
+                "validation_target": json.dumps({"asset": str(spec.get("asset") or row.get("asset") or ""), "timeframe": str(spec.get("timeframe") or row.get("timeframe") or ""), "kind": str(item.get("mutation_type") or spec.get("mutation_type") or "quandalf_refine")}),
+                "notes": json.dumps({"source": "quandalf_refinement_decision", "decision": "refine", "refinement_round": next_round, "source_result_id": row["id"]}),
+                "refinement_round": next_round,
+            }
+        )
+        if row["id"] not in touched_ids:
+            touched_rows.append(dict(row))
+            touched_ids.add(row["id"])
+    write_json(REFINEMENT_JOBS_PATH, {"cycle_id": cycle_id, "source_cycle_id": source_cycle_id, "jobs": jobs, "strategy_decisions": strategy_decisions, "created_at": now_iso(), "selected_by": "quandalf", "status": "ok"})
     return jobs, touched_rows
 
 
@@ -775,10 +811,7 @@ def build_card(cycle_id, run_state, activity, upgrades, rejected, promoted, roun
         f"First: {int(round_counts.get(1, 0))}",
         f"Second: {int(round_counts.get(2, 0))}",
         f"Third: {int(round_counts.get(3, 0))}",
-        f"Requested: {int(activity.get('requested', 0))}",
-        f"Ran: {int(activity.get('ran', activity.get('completed', 0)))}",
-        f"OK: {int(activity.get('ok', 0))}",
-        f"Fail: {int(activity.get('fail', 0))}",
+        f"Backtests: {int(activity.get('completed', activity.get('ran', 0)))}",
         f"Upgraded: {int(upgrades)}",
         f"Rejected: {int(rejected)}",
         f"Promoted: {int(promoted)}",

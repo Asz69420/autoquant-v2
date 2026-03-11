@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C327-BTC-RANGE-RECLAIM-v1",
+  "ts_iso": "2026-03-11T01:02:33Z",
+  "thesis_id": "qd-20260311-c327-btc-range-reclaim-v1_thesis",
+  "name": "BTC Range Reclaim v1",
+  "version": "1.0",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "family_name": "btc_range_reclaim",
+  "thesis": "range reclaim continuation after false breakdown and value recovery",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "range reclaim continuation after false breakdown and value recovery",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If btc_range_reclaim cannot clear the trade floor or PF > 1 after costs on BTC 4h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "RSI_14 >= 46",
+      "ADX_14 <= 28"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "RSI_14 <= 54",
+      "ADX_14 <= 28"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 2.0 * ATR_14 above entry",
+      "Exit if Close crosses_below EMA_20"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 2.0 * ATR_14 below entry",
+      "Exit if Close crosses_above EMA_20"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "trade_management": {
+    "entry_style": "one_shot",
+    "exit_style": "partial_runner",
+    "position_stages": [
+      {
+        "action": "entry",
+        "trigger": "signal",
+        "size_pct": 100
+      },
+      {
+        "action": "take_profit",
+        "trigger": "1.2 ATR",
+        "size_pct": 50
+      },
+      {
+        "action": "runner_exit",
+        "trigger": "trailing_stop_or_exit_rules",
+        "size_pct": 50
+      }
+    ],
+    "risk_management": {
+      "initial_stop": "1.1 ATR",
+      "trailing_stop": "0.9 ATR after first partial",
+      "time_stop_bars": 10,
+      "breakeven_trigger": null,
+      "partial_tp_levels": [
+        {
+          "trigger": "1.2 ATR",
+          "size_pct": 50
+        },
+        {
+          "trigger": "2.4 ATR",
+          "size_pct": 50
+        }
+      ]
+    }
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple BTC 4h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "btc_range_reclaim_v1",
+      "template_name": "range_reclaim",
+      "parameters": [
+        {
+          "name": "ema_anchor",
+          "value": 20
+        },
+        {
+          "name": "adx_cap",
+          "value": 28
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "fallback_cooker",
+  "fallback_source": true,
+  "research_mode": "fallback"
+}

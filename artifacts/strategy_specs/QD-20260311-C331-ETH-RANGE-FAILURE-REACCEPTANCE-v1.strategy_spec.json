@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C331-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+  "ts_iso": "2026-03-11T01:28:20Z",
+  "thesis_id": "cycle_331_eth_range_failure_reacceptance_v1",
+  "name": "ETH Range Failure Reacceptance v1",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "family_name": "eth_range_failure_reacceptance",
+  "thesis": "In ETH 1h transition, directional pushes often fail before true trend continuation emerges. The edge should come from fading failed acceptance outside balance only after price re-enters value and holds, not from blindly countertrending every spike.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [{"asset": "ETH", "timeframe": "1h", "purpose": "walk_forward_screen"}],
+  "edge_mechanism": "failed breakout reacceptance reversal",
+  "expected_regime": "transition and range-failure reversal",
+  "invalidation_condition": "If failed acceptance and re-entry cannot sustain enough blind trades or post-cost PF above 1.0, then ETH 1h transition reversals need broader state logic.",
+  "indicators": ["EMA_20", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": ["High > BOLLINGER_UPPER_20_2", "Close < BOLLINGER_UPPER_20_2", "Close > EMA_20", "RSI_14 >= 50"],
+    "short": ["Low < BOLLINGER_LOWER_20_2", "Close > BOLLINGER_LOWER_20_2", "Close < EMA_20", "RSI_14 <= 50"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.1 * ATR_14 below entry", "Take profit: 2.6 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 7 bars"],
+    "short": ["Stop loss: 1.1 * ATR_14 above entry", "Take profit: 2.6 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 7 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional", "choppy"], "detection_method": "Require band expansion failure and immediate close-based reacceptance around EMA_20."},
+  "variants": [{"name": "eth_range_failure_reacceptance_v1", "template_name": "range_failure_reacceptance", "parameters": [{"name": "ema_fast", "value": 20}, {"name": "bb_length", "value": 20}, {"name": "bb_std", "value": 2}], "risk_policy": {"stop_type": "atr", "stop_atr_mult": 1.1, "tp_type": "atr", "tp_atr_mult": 2.6, "risk_per_trade_pct": 0.004, "max_concurrent_positions": 1, "max_holding_bars": 7}, "execution_policy": {"entry_fill": "bar_close", "tie_break": "worst_case", "allow_reverse": true, "slippage_bps": 10, "fee_bps": 6}, "risk_rules": ["cooldown_bars=1"]}],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

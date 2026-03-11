@@ -271,6 +271,8 @@ def exit_logic_signature(spec):
                 signatures.add("cross_exit")
     variant = (spec.get("variants") or [{}])[0]
     risk_policy = variant.get("risk_policy") if isinstance(variant, dict) else {}
+    if not isinstance(risk_policy, dict):
+        risk_policy = {}
     for key in ("stop_type", "tp_type"):
         if risk_policy.get(key):
             signatures.add(f"{key}:{risk_policy.get(key)}")

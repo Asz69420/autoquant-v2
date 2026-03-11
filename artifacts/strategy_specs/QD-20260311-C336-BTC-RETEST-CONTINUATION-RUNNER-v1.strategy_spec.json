@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C336-BTC-RETEST-CONTINUATION-RUNNER-v1",
+  "cycle_id": 336,
+  "family_name": "btc_retest_continuation_runner",
+  "name": "BTC Retest Continuation Runner v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "BTC", "timeframe": "4h" }
+  ],
+  "thesis": "BTC 4h breakouts in transition often work better after a delayed retest than on the initial break. The edge should come from breakout continuation only once the retest holds, with partial profit and a runner for persistence.",
+  "edge_mechanism": "delayed breakout continuation after successful retest",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if retest logic still collapses into sparse no-trade grammar or fails to produce durable post-cost edge.",
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 > EMA_55",
+      "Close > EMA_20",
+      "Low <= EMA_20 + 0.3 * ATR_14",
+      "RSI_14 >= 51",
+      "ADX_14 >= 16"
+    ],
+    "short": [
+      "EMA_20 < EMA_55",
+      "Close < EMA_20",
+      "High >= EMA_20 - 0.3 * ATR_14",
+      "RSI_14 <= 49",
+      "ADX_14 >= 16"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.9 * ATR_14",
+      "Final time stop: 9 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.9 * ATR_14",
+      "Final time stop: 9 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 9,
+    "max_concurrent_positions": 1
+  }
+}

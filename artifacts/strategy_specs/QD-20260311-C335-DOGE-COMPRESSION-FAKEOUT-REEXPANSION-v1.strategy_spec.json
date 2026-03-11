@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C335-DOGE-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 335,
+  "family_name": "doge_compression_fakeout_reexpansion",
+  "name": "DOGE Compression Fakeout Reexpansion v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "DOGE chop often compresses, fakes one side of balance, then re-expands the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+  "edge_mechanism": "compression fakeout followed by directional re-expansion",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if the setup remains too sparse or cannot maintain post-cost edge in blind windows.",
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "ATR_14",
+    "RSI_14",
+    "EMA_20",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close > EMA_20",
+      "RSI_14 >= 48",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+      "High > BOLLINGER_UPPER_20_2",
+      "Close < EMA_20",
+      "RSI_14 <= 52",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Take profit: 1.8 * ATR_14 on 40% size",
+      "Trail final 20% by 0.8 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Take profit: 1.8 * ATR_14 on 40% size",
+      "Trail final 20% by 0.8 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  }
+}

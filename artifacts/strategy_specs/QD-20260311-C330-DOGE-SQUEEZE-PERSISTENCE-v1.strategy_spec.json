@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C330-DOGE-SQUEEZE-PERSISTENCE-v1",
+  "ts_iso": "2026-03-11T01:22:55Z",
+  "thesis_id": "cycle_330_doge_squeeze_persistence_v1",
+  "name": "DOGE Squeeze Persistence v1",
+  "version": "1.0",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "family_name": "doge_squeeze_persistence",
+  "thesis": "DOGE 4h chop can compress long enough that the real edge is not the first breakout bar but whether expansion persists into the next holding phase. The edge should come from persistence-confirmed expansion with active de-risking if follow-through stalls.",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [{"asset": "DOGE", "timeframe": "4h", "purpose": "walk_forward_screen"}],
+  "edge_mechanism": "compression release with persistence confirmation",
+  "expected_regime": "choppy to transitional expansion",
+  "invalidation_condition": "If persistence-confirmed squeeze release is still too sparse or weak after costs, then breakout continuation should be deprioritized in DOGE 4h chop.",
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": ["BOLLINGER_WIDTH_20 <= 0.95 * ATR_14", "Close > BOLLINGER_UPPER_20_2", "Close > EMA_20", "RSI_14 >= 52", "ADX_14 >= 12"],
+    "short": ["BOLLINGER_WIDTH_20 <= 0.95 * ATR_14", "Close < BOLLINGER_LOWER_20_2", "Close < EMA_20", "RSI_14 <= 48", "ADX_14 >= 12"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry", "Take profit: 1.2 * ATR_14 above entry for 40% size", "Trail remaining 60% with 0.9 * ATR_14", "Time-based de-risk: cut 30% after 3 bars if unrealized gain < 0.6 * ATR_14", "Final exit at 8 bars"],
+    "short": ["Stop loss: 1.0 * ATR_14 above entry", "Take profit: 1.2 * ATR_14 below entry for 40% size", "Trail remaining 60% with 0.9 * ATR_14", "Time-based de-risk: cut 30% after 3 bars if unrealized gain < 0.6 * ATR_14", "Final exit at 8 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["choppy", "transitional"], "detection_method": "Require narrow bandwidth first, then breakout and persistence above fast value rather than raw first-bar chasing."},
+  "variants": [{"name": "doge_squeeze_persistence_v1", "template_name": "squeeze_persistence", "parameters": [{"name": "bb_length", "value": 20}, {"name": "bb_std", "value": 2}, {"name": "compression_width_atr", "value": 0.95}, {"name": "adx_floor", "value": 12}], "risk_policy": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "partial_and_trail", "tp_atr_mult": 1.2, "risk_per_trade_pct": 0.004, "max_concurrent_positions": 1, "max_holding_bars": 8}, "execution_policy": {"entry_fill": "bar_close", "tie_break": "worst_case", "allow_reverse": true, "slippage_bps": 8, "fee_bps": 6}, "risk_rules": ["partial_take_profit=40pct", "trail_stop=0.9atr", "time_derisk_after=3bars"]}],
+  "complexity_score": 1.8,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}

@@ -1,14 +1,382 @@
 {
-  "ts_iso": "2026-03-11T00:42:34.760824+00:00",
+  "ts_iso": "2026-03-11T02:03:53.191143+00:00",
   "type": "reflection",
-  "recent_results": [],
+  "cycle_id": 336,
+  "mode": "explore",
+  "research_direction": "explore_new",
+  "target_asset": "ETH",
+  "target_timeframe": "4h",
+  "strategy_outcomes": [
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+      "name": "ETH Range Failure Reacceptance v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_range_failure_reacceptance",
+      "edge_mechanism": "range failure mean reversion after value reacceptance",
+      "hypothesis": "In choppy ETH 4h conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "indicators": [
+        "EMA_20",
+        "EMA_50",
+        "ATR_14",
+        "RSI_14",
+        "BOLLINGER_BANDS_20_2"
+      ],
+      "entry_rules": {
+        "long": [
+          "Low < BOLLINGER_LOWER_20_2",
+          "Close > BOLLINGER_LOWER_20_2",
+          "Close >= EMA_20 * 0.996",
+          "RSI_14 >= 43"
+        ],
+        "short": [
+          "High > BOLLINGER_UPPER_20_2",
+          "Close < BOLLINGER_UPPER_20_2",
+          "Close <= EMA_20 * 1.004",
+          "RSI_14 <= 57"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.1 * ATR_14 below entry",
+          "Take profit: EMA_50 or 1.6 * ATR_14, whichever comes first",
+          "Time stop: 6 bars"
+        ],
+        "short": [
+          "Stop loss: 1.1 * ATR_14 above entry",
+          "Take profit: EMA_50 or 1.6 * ATR_14, whichever comes first",
+          "Time stop: 6 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-DEEP-RESET-CONTINUATION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-ETH-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
+      "name": "ETH Deep Reset Continuation v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_deep_reset_continuation",
+      "edge_mechanism": "pullback continuation after deeper reset",
+      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
+      "indicators": [
+        "EMA_20",
+        "EMA_50",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "EMA_20 > EMA_50",
+          "Low <= EMA_20 - 0.8 * ATR_14",
+          "Close > EMA_20",
+          "RSI_14 >= 50",
+          "ADX_14 >= 14"
+        ],
+        "short": [
+          "EMA_20 < EMA_50",
+          "High >= EMA_20 + 0.8 * ATR_14",
+          "Close < EMA_20",
+          "RSI_14 <= 50",
+          "ADX_14 >= 14"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.0 * ATR_14 below entry",
+          "Take profit: 1.2 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.9 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.4 * ATR_14"
+        ],
+        "short": [
+          "Stop loss: 1.0 * ATR_14 above entry",
+          "Take profit: 1.2 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.9 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.4 * ATR_14"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
+      "name": "ETH Compression Fakeout Reexpansion v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_compression_fakeout_reexpansion",
+      "edge_mechanism": "compression fakeout followed by directional re-expansion",
+      "hypothesis": "ETH chop often compresses, fakes one side of balance, then re-expands the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "indicators": [
+        "BOLLINGER_BANDS_20_2",
+        "ATR_14",
+        "RSI_14",
+        "EMA_20",
+        "ADX_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+          "Low < BOLLINGER_LOWER_20_2",
+          "Close > EMA_20",
+          "RSI_14 >= 48",
+          "ADX_14 >= 10"
+        ],
+        "short": [
+          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+          "High > BOLLINGER_UPPER_20_2",
+          "Close < EMA_20",
+          "RSI_14 <= 52",
+          "ADX_14 >= 10"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.0 * ATR_14 below entry",
+          "Take profit: 1.0 * ATR_14 on 40% size",
+          "Take profit: 1.8 * ATR_14 on 40% size",
+          "Trail final 20% by 0.8 * ATR_14",
+          "Final time stop: 7 bars"
+        ],
+        "short": [
+          "Stop loss: 1.0 * ATR_14 above entry",
+          "Take profit: 1.0 * ATR_14 on 40% size",
+          "Take profit: 1.8 * ATR_14 on 40% size",
+          "Trail final 20% by 0.8 * ATR_14",
+          "Final time stop: 7 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    }
+  ],
+  "recent_results": [
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+      "name": "ETH Range Failure Reacceptance v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_range_failure_reacceptance",
+      "edge_mechanism": "range failure mean reversion after value reacceptance",
+      "hypothesis": "In choppy ETH 4h conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "indicators": [
+        "EMA_20",
+        "EMA_50",
+        "ATR_14",
+        "RSI_14",
+        "BOLLINGER_BANDS_20_2"
+      ],
+      "entry_rules": {
+        "long": [
+          "Low < BOLLINGER_LOWER_20_2",
+          "Close > BOLLINGER_LOWER_20_2",
+          "Close >= EMA_20 * 0.996",
+          "RSI_14 >= 43"
+        ],
+        "short": [
+          "High > BOLLINGER_UPPER_20_2",
+          "Close < BOLLINGER_UPPER_20_2",
+          "Close <= EMA_20 * 1.004",
+          "RSI_14 <= 57"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.1 * ATR_14 below entry",
+          "Take profit: EMA_50 or 1.6 * ATR_14, whichever comes first",
+          "Time stop: 6 bars"
+        ],
+        "short": [
+          "Stop loss: 1.1 * ATR_14 above entry",
+          "Take profit: EMA_50 or 1.6 * ATR_14, whichever comes first",
+          "Time stop: 6 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-DEEP-RESET-CONTINUATION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-ETH-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
+      "name": "ETH Deep Reset Continuation v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_deep_reset_continuation",
+      "edge_mechanism": "pullback continuation after deeper reset",
+      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
+      "indicators": [
+        "EMA_20",
+        "EMA_50",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "EMA_20 > EMA_50",
+          "Low <= EMA_20 - 0.8 * ATR_14",
+          "Close > EMA_20",
+          "RSI_14 >= 50",
+          "ADX_14 >= 14"
+        ],
+        "short": [
+          "EMA_20 < EMA_50",
+          "High >= EMA_20 + 0.8 * ATR_14",
+          "Close < EMA_20",
+          "RSI_14 <= 50",
+          "ADX_14 >= 14"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.0 * ATR_14 below entry",
+          "Take profit: 1.2 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.9 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.4 * ATR_14"
+        ],
+        "short": [
+          "Stop loss: 1.0 * ATR_14 above entry",
+          "Take profit: 1.2 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.9 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.4 * ATR_14"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C336-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
+      "name": "ETH Compression Fakeout Reexpansion v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_compression_fakeout_reexpansion",
+      "edge_mechanism": "compression fakeout followed by directional re-expansion",
+      "hypothesis": "ETH chop often compresses, fakes one side of balance, then re-expands the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "indicators": [
+        "BOLLINGER_BANDS_20_2",
+        "ATR_14",
+        "RSI_14",
+        "EMA_20",
+        "ADX_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+          "Low < BOLLINGER_LOWER_20_2",
+          "Close > EMA_20",
+          "RSI_14 >= 48",
+          "ADX_14 >= 10"
+        ],
+        "short": [
+          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+          "High > BOLLINGER_UPPER_20_2",
+          "Close < EMA_20",
+          "RSI_14 <= 52",
+          "ADX_14 >= 10"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.0 * ATR_14 below entry",
+          "Take profit: 1.0 * ATR_14 on 40% size",
+          "Take profit: 1.8 * ATR_14 on 40% size",
+          "Trail final 20% by 0.8 * ATR_14",
+          "Final time stop: 7 bars"
+        ],
+        "short": [
+          "Stop loss: 1.0 * ATR_14 above entry",
+          "Take profit: 1.0 * ATR_14 on 40% size",
+          "Take profit: 1.8 * ATR_14 on 40% size",
+          "Trail final 20% by 0.8 * ATR_14",
+          "Final time stop: 7 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    }
+  ],
   "external_context_results": [],
   "recent_lessons": [],
   "result_count": 0,
   "current_cycle_result_count": 0,
+  "current_cycle_strategy_count": 3,
   "external_result_count": 0,
-  "management_summary": {},
   "any_promising": false,
   "best_pf": 0,
-  "best_qscore": 0
+  "best_qscore": 0,
+  "decision_summary": {
+    "promote": 0,
+    "refine": 0,
+    "abort": 0,
+    "zero_trade": 0
+  },
+  "guidance": {
+    "focus_level": "strategy",
+    "instruction": "Work strategy-by-strategy. For each spec, decide promote, refine, or abort using the full strategy context plus the concrete backtest outcome. If a strategy produced 0 trades on valid data, treat that as a red flag that must be resolved explicitly as either refine or abort. Do not leave it undecided and do not collapse it into a fake completed outcome."
+  }
 }

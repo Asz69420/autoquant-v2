@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260311-C332-ETH-DEEP-VALUE-RECLAIM-v1",
+  "ts_iso": "2026-03-11T01:32:30Z",
+  "thesis_id": "cycle_332_eth_deep_value_reclaim_v1",
+  "name": "ETH Deep Value Reclaim v1",
+  "version": "1.0",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "family_name": "eth_deep_value_reclaim",
+  "thesis": "On ETH 4h, transition often creates deep pullbacks that repair rather than reverse the broader state. The edge should come from entering after value is reclaimed with a broad structural buffer, not from sparse breakout or exact-touch timing.",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [{"asset": "ETH", "timeframe": "4h", "purpose": "walk_forward_screen"}],
+  "edge_mechanism": "deep pullback reclaim inside transitional structure",
+  "expected_regime": "transitional and mixed continuation",
+  "invalidation_condition": "If deep value reclaim cannot produce enough trades or post-cost PF above 1.0, then ETH 4h needs even broader state definitions rather than more confirmation layers.",
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": ["Close > EMA_55", "Low >= EMA_20 - 1.0 * ATR_14", "RSI_14 >= 47", "PLUS_DI_14 >= MINUS_DI_14"],
+    "short": ["Close < EMA_55", "High <= EMA_20 + 1.0 * ATR_14", "RSI_14 <= 53", "MINUS_DI_14 >= PLUS_DI_14"]
+  },
+  "exit_rules": {
+    "long": ["Stop loss: 1.0 * ATR_14 below entry", "Take profit: 2.0 * ATR_14 above entry", "Early exit if Close crosses_below EMA_20", "Time stop: 10 bars"],
+    "short": ["Stop loss: 1.0 * ATR_14 above entry", "Take profit: 2.0 * ATR_14 below entry", "Early exit if Close crosses_above EMA_20", "Time stop: 10 bars"]
+  },
+  "position_sizing": {"risk_per_trade_pct": 0.004},
+  "regime_filter": {"allowed_regimes": ["transitional", "trending"], "detection_method": "Use a slower anchor plus broad ATR reclaim buffer to avoid sparse ceremonial pullback logic."},
+  "variants": [{"name": "eth_deep_value_reclaim_v1", "template_name": "deep_value_reclaim", "parameters": [{"name": "ema_fast", "value": 20}, {"name": "ema_anchor", "value": 55}, {"name": "pullback_buffer_atr", "value": 1.0}, {"name": "rsi_mid", "value": 50}], "risk_policy": {"stop_type": "atr", "stop_atr_mult": 1.0, "tp_type": "atr", "tp_atr_mult": 2.0, "risk_per_trade_pct": 0.004, "max_concurrent_positions": 1, "max_holding_bars": 10}, "execution_policy": {"entry_fill": "bar_close", "tie_break": "worst_case", "allow_reverse": true, "slippage_bps": 10, "fee_bps": 6}, "risk_rules": ["cooldown_bars=0"]}],
+  "complexity_score": 1.5,
+  "status": "ready_to_test",
+  "source": "quandalf"
+}
