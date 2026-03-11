@@ -14,6 +14,7 @@ EXTERNAL_INTEL_INDEX = ROOT / "data" / "external_intel" / "index.json"
 
 DEFAULT_ASSET_ORDER = ["ETH", "BTC", "SOL", "TAO", "AVAX", "LINK", "DOGE", "ARB", "OP", "INJ"]
 DEFAULT_TF_ORDER = ["4h", "1h", "1d", "15m"]
+HIGH_BETA_ASSETS = ["TAO", "AXS", "DOGE", "ARB", "OP", "INJ"]
 ROTATION_LOOKBACK = 5  # avoid repeating asset/tf pair from last N cycles
 CONCEPT_PACKS = [
     [
@@ -178,6 +179,53 @@ def pick_asset_timeframe(universe: dict, prior_status: dict) -> tuple[str, str]:
     return candidate_pairs[0] if candidate_pairs else ("ETH", "4h")
 
 
+def pick_adjacent_timeframe(timeframe: str, available: list[str]) -> str | None:
+    ordering = ["15m", "1h", "4h", "1d"]
+    if timeframe not in ordering:
+        return None
+    idx = ordering.index(timeframe)
+    candidates = []
+    if idx > 0:
+        candidates.append(ordering[idx - 1])
+    if idx + 1 < len(ordering):
+        candidates.append(ordering[idx + 1])
+    for tf in candidates:
+        if tf in available:
+            return tf
+    return None
+
+
+def build_validation_basket(asset: str, timeframe: str, universe: dict) -> list[dict]:
+    assets_by_tf = universe.get("assets_by_timeframe") or {}
+    timeframes_by_asset = universe.get("timeframes_by_asset") or {}
+    basket = []
+    seen = set()
+
+    def add_lane(a: str, tf: str, role: str):
+        key = (a, tf)
+        if not a or not tf or key in seen:
+            return
+        seen.add(key)
+        basket.append({"asset": a, "timeframe": tf, "role": role})
+
+    add_lane(asset, timeframe, "primary")
+    adjacent = pick_adjacent_timeframe(timeframe, timeframes_by_asset.get(asset, []))
+    if adjacent:
+        add_lane(asset, adjacent, "adjacent_timeframe")
+
+    same_tf_assets = [a for a in (assets_by_tf.get(timeframe) or []) if a != asset]
+    for candidate in DEFAULT_ASSET_ORDER:
+        if candidate in same_tf_assets:
+            add_lane(candidate, timeframe, "similar_asset")
+            break
+    for candidate in HIGH_BETA_ASSETS:
+        if candidate != asset and candidate in same_tf_assets:
+            add_lane(candidate, timeframe, "structurally_different_asset")
+            break
+
+    return basket
+
+
 def pick_concept_pack(cycle_id: int, prior_status: dict) -> list[str]:
     prior_concepts = ((prior_status.get("exploration_targets") or {}).get("concepts") or []) if isinstance(prior_status, dict) else []
     start_idx = int(cycle_id or 0) % len(CONCEPT_PACKS)
@@ -285,6 +333,7 @@ def main():
 
     external_intel = select_external_intel(asset, timeframe)
 
+    validation_basket = build_validation_basket(asset, timeframe, universe)
     orders = {
         "cycle_id": cycle_id,
         "ts_iso": datetime.now(timezone.utc).isoformat(),
@@ -309,12 +358,19 @@ def main():
         "exploration_targets": {
             "concepts": concept_pack,
             "management_styles": MANAGEMENT_STYLES,
-            "assets": [asset],
-            "timeframes": [timeframe],
+            "assets": sorted({lane['asset'] for lane in validation_basket}),
+            "timeframes": sorted({lane['timeframe'] for lane in validation_basket}),
         },
-        "thesis_hint": f"Explore fresh {asset} {timeframe} structures. Current regime: {current_regime} ({regime_confidence}% confidence). {regime_hint} Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles and management logic, not just entry triggers.",
-        "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression, and at least one should vary indicator-role assignment rather than only entry conditions.",
-        "rotation_reason": f"Deterministic explore rotation away from prior lane ({prior_status.get('target_asset', 'none')} / {prior_status.get('target_timeframe', 'none')}).",
+        "validation_basket": validation_basket,
+        "allowed_lanes": validation_basket,
+        "lane_authority": {
+            "quandalf_controls_lane_selection": True,
+            "auto_fetch_missing_data": True,
+            "instruction": "Choose the best-fit asset/timeframe based on thesis. Use the validation basket deliberately. If you need a lane inside the supported universe that is not already cached, request it through the spec and the system will prepare the candles before backtest."
+        },
+        "thesis_hint": f"Explore fresh {asset} {timeframe} structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: {current_regime} ({regime_confidence}% confidence). {regime_hint} Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
+        "stop_condition": "Write 3-4 materially different specs using the best-fit lanes from the allowed basket. At least one spec should test a meaningfully different trade-management expression, at least one should vary indicator-role assignment rather than only entry conditions, and chosen lanes must be justified by thesis.",
+        "rotation_reason": f"Deterministic explore rotation away from prior lane ({prior_status.get('target_asset', 'none')} / {prior_status.get('target_timeframe', 'none')}) while preserving freedom to choose the best-fit lane from the basket.",
     }
     ORDERS.parent.mkdir(parents=True, exist_ok=True)
     ORDERS.write_text(json.dumps(orders, indent=2), encoding="utf-8")

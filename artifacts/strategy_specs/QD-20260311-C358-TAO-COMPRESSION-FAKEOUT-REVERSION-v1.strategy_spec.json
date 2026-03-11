@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C358-TAO-COMPRESSION-FAKEOUT-REVERSION-v1",
+  "cycle_id": 358,
+  "family_name": "tao_compression_fakeout_reversion",
+  "name": "TAO Compression Fakeout Reversion v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "TAO", "timeframe": "4h" },
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "TAO 4h is the best structurally different lane for testing a compression fakeout that resolves back into balance rather than into continuation. The edge should come from role reassignment: compression is only a setup, while reacceptance provides direction.",
+  "edge_mechanism": "compression fakeout mean reversion",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if compression setups are too rare, if the fakeout and reacceptance logic conflict, or if reversions do not travel far enough toward balance before time decay.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A compressed market probes one side of balance, fails to continue, and rotates back after value is reaccepted.",
+    "why_edge_should_exist": "In choppy conditions, compression often leads to failed directional probes rather than trend continuation; TAO gives a distinct volatility personality to test that structural idea.",
+    "asset_timeframe_fit": "TAO 4h is appropriate because it is the authorized structurally different lane and should stress-test whether the role reassignment works beyond ETH/BTC behavior.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression setup detector",
+      "EMA_20": "value reacceptance reference",
+      "ATR_14": "fakeout distance and stop normalizer",
+      "RSI_14": "state qualifier",
+      "ADX_14": "anti-trend gate"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If TAO resolves compression by genuine expansion instead of failed probes, the reversion logic will be on the wrong side of the move.",
+    "first_refinement_path": "If setups appear but reversions are too shallow, reduce target ambition before narrowing the compression threshold.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "roles are deliberately separated; compression is setup only and EMA close provides direction",
+      "event_sparsity": "kept manageable by using moderate compression thresholds instead of extreme squeeze-only conditions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close >= EMA_20",
+      "RSI_14 >= 46",
+      "ADX_14 <= 18"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "High > BOLLINGER_UPPER_20_2",
+      "Close <= EMA_20",
+      "RSI_14 <= 54",
+      "ADX_14 <= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 0.95 * ATR_14 toward balance",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 0.95 * ATR_14 toward balance",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

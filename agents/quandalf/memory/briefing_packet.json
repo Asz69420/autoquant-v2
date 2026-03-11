@@ -1,35 +1,1943 @@
 {
-  "ts_iso": "2026-03-11T03:12:34.998784+00:00",
-  "cycle_id": 353,
+  "ts_iso": "2026-03-11T04:14:08.137227+00:00",
+  "cycle_id": 358,
   "leaderboard": {
-    "status": "error",
-    "returncode": 2,
-    "stderr": "C:\\Users\\Clamps\\AppData\\Local\\Programs\\Python\\Python314\\python.exe: can't open file 'C:\\\\Users\\\\aszho\\\\.openclaw\\\\skills\\\\autoquant-leaderboard\\\\query.py': [Errno 2] No such file or directory"
+    "status": "ok",
+    "count": 5,
+    "strategies": [
+      {
+        "id": "wf_2fffbba9c28c",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v2",
+        "variant": "eth_channel_shortbias_failed_continuation_v2",
+        "asset": "ETH",
+        "tf": "1h",
+        "pf": 4.261,
+        "dd": 1.2,
+        "trades": 8,
+        "wr": 62.5,
+        "qscore": 3.75,
+        "decision": "promote",
+        "status": "complete"
+      },
+      {
+        "id": "wf_781d38f68757",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v6",
+        "variant": "eth_channel_shortbias_density_lift_v6",
+        "asset": "ETH",
+        "tf": "1h",
+        "pf": 3.695,
+        "dd": 3.4,
+        "trades": 24,
+        "wr": 54.2,
+        "qscore": 3.46,
+        "decision": "promote",
+        "status": "complete"
+      },
+      {
+        "id": "wf_db6e5c577cda",
+        "spec_id": "QD-20260308-AXS-CHANNEL-SHORTBIAS-v1",
+        "variant": "axs_channel_shortbias_balanced",
+        "asset": "AXS",
+        "tf": "4h",
+        "pf": 3.936,
+        "dd": 13.9,
+        "trades": 11,
+        "wr": 54.5,
+        "qscore": 3.3,
+        "decision": "pass",
+        "status": "complete"
+      },
+      {
+        "id": "wf_61c1fdc0bbe9",
+        "spec_id": "QD-20260308-AXS-CHANNEL-SHORTBIAS-v2",
+        "variant": "axs_channel_shortbias_range_only",
+        "asset": "AXS",
+        "tf": "4h",
+        "pf": 3.936,
+        "dd": 13.9,
+        "trades": 11,
+        "wr": 54.5,
+        "qscore": 3.3,
+        "decision": "pass",
+        "status": "complete"
+      },
+      {
+        "id": "wf_6d29297dc340",
+        "spec_id": "QD-20260308-AXS-CHANNEL-SHORTBIAS-v3",
+        "variant": "axs_channel_shortbias_range_density_v3",
+        "asset": "AXS",
+        "tf": "4h",
+        "pf": 2.234,
+        "dd": 7.2,
+        "trades": 6,
+        "wr": 50.0,
+        "qscore": 1.66,
+        "decision": "fail",
+        "status": "complete"
+      }
+    ]
   },
   "kpi": {
-    "status": "error",
-    "returncode": 2,
-    "stderr": "C:\\Users\\Clamps\\AppData\\Local\\Programs\\Python\\Python314\\python.exe: can't open file 'C:\\\\Users\\\\aszho\\\\.openclaw\\\\skills\\\\autoquant-kpi\\\\query.py': [Errno 2] No such file or directory"
+    "status": "ok",
+    "period_days": 30,
+    "total": 1669,
+    "passed": 464,
+    "promoted": 4,
+    "failed": 1205,
+    "suspect": 172,
+    "hit_rate_pct": 27.8,
+    "promote_rate_pct": 0.2,
+    "best": {
+      "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v2",
+      "qscore": 3.75
+    }
   },
   "recent_lessons": {
-    "status": "error",
-    "returncode": 2,
-    "stderr": "C:\\Users\\Clamps\\AppData\\Local\\Programs\\Python\\Python314\\python.exe: can't open file 'C:\\\\Users\\\\aszho\\\\.openclaw\\\\skills\\\\autoquant-lessons\\\\query.py': [Errno 2] No such file or directory"
+    "status": "ok",
+    "count": 5,
+    "lessons": [
+      {
+        "id": "lesson_wf_1d1bd17770fb",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor4-bedee1-neighbor1-5e4c35",
+        "type": "backtest_analysis",
+        "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor4-bedee1-neighbor1-5e4c35 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+        "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "actionable": true,
+        "action": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "confidence": "medium",
+        "date": "2026-03-10T07:28:22.829491+00:00"
+      },
+      {
+        "id": "lesson_wf_e7f7268e163d",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor4-bedee1-neighbor2-e563a6",
+        "type": "backtest_analysis",
+        "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor4-bedee1-neighbor2-e563a6 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+        "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "actionable": true,
+        "action": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "confidence": "medium",
+        "date": "2026-03-10T07:28:22.829296+00:00"
+      },
+      {
+        "id": "lesson_wf_0465fed49564",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor4-bedee1-neighbor3-fcbdb4",
+        "type": "backtest_analysis",
+        "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor4-bedee1-neighbor3-fcbdb4 on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+        "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "actionable": true,
+        "action": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "confidence": "medium",
+        "date": "2026-03-10T07:28:22.829070+00:00"
+      },
+      {
+        "id": "lesson_wf_c44cec6988c5",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor5-6c157a-neighbor1-d1878c",
+        "type": "backtest_analysis",
+        "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor5-6c157a-neighbor1-d1878c on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+        "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "actionable": true,
+        "action": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "confidence": "medium",
+        "date": "2026-03-10T07:28:22.828843+00:00"
+      },
+      {
+        "id": "lesson_wf_eebad52720f7",
+        "spec_id": "QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor5-6c157a-neighbor2-f9d1ab",
+        "type": "backtest_analysis",
+        "observation": "Strategy QD-20260309-ETH-CHANNEL-SHORTBIAS-v3-neighbor2-10d436-neighbor2-87f9ca-neighbor5-6c157a-neighbor2-f9d1ab on ETH/1h shows thin edge (PF 1.066) but too few trades (31). Mechanism is too sparse.",
+        "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "actionable": true,
+        "action": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead.",
+        "confidence": "medium",
+        "date": "2026-03-10T07:28:22.828458+00:00"
+      }
+    ]
   },
   "research_digest": {
-    "status": "error",
-    "returncode": 2,
-    "stderr": "C:\\Users\\Clamps\\AppData\\Local\\Programs\\Python\\Python314\\python.exe: can't open file 'C:\\\\Users\\\\aszho\\\\.openclaw\\\\skills\\\\autoquant-research-fetch\\\\query.py': [Errno 2] No such file or directory"
+    "status": "ok",
+    "count": 5,
+    "entries": [
+      {
+        "id": "research-20260311-938fa3a36b1f",
+        "source": "transcript",
+        "ref": "https://www.youtube.com/watch?v=uhVEIJXXvU4",
+        "title": "Openclaw Blender part 2",
+        "concept": "This right here is my OpenClaw AI agent running on this Mac Mini and it can literally control Blender.",
+        "indicators": "[]",
+        "summary": "This right here is my OpenClaw AI agent running on this Mac Mini and it can literally control Blender.\nPlease make this guy make it amazing and red.\nSo, let's change this to material preview.\nIt's red, but it's not red enough.\nCan you please make it more red?\nCan you make his eyes slightly further apart?\nAnd can you also make his arms a little bit bigger?\nSo, now we're going to wait.\nHow would I animate this little thing?\nI want it to like wave and Okay.",
+        "status": "new",
+        "date": "2026-03-10T20:41:26.571904Z"
+      },
+      {
+        "id": "research-20260311-b1bd70bca8b1",
+        "source": "transcript",
+        "ref": "https://www.youtube.com/watch?v=Yt6imPC1FhA",
+        "title": "OpenClaw Just Replaced 1,000 Hours of Video Editing Tutorials",
+        "concept": "Today we're giving Open Claw, the most powerful and popular general agent in the entire world, the ability to create motion graphic videos, to have the ability to create highquality launch videos.",
+        "indicators": "[\"the internet and scrape for styling and assets\"]",
+        "summary": "Today we're giving Open Claw, the most powerful and popular general agent in the entire world, the ability to create motion graphic videos, to have the ability to create highquality launch videos.\nThis is all possible because I spent 10 hours yesterday building out the perfect motion graphics skill.\nAnd so this skill for OpenClaw, which will also work for Clawed Code, is going to allow us to give OpenClaw an idea for a video.\nThen OpenClaw will search the internet and scrape for styling and assets.\nIt will create different motion graphics scenes using Remotion.\nAnd it will even generate music.\nAnd the output is going to be a video.\nI'm going to show you how easy it is to create a highquality motion graphics video with OpenClaw.\nAnd I'm going to show you exactly where you can download and get this skill 100% free and use it in OpenClaw and evenclude code.\nLet's not waste any more time.",
+        "status": "new",
+        "date": "2026-03-10T20:39:27.546721Z"
+      },
+      {
+        "id": "research-20260310-a7ccd2673c72",
+        "source": "transcript",
+        "ref": "https://www.youtube.com/watch?v=KAX0cWk1fJE",
+        "title": "Claude Code can Design Now (Figma is officially in trouble)",
+        "concept": "Today, we're going to use Claude Code to design our personal site on Figma.",
+        "indicators": "[\"the internet and figure out how to set up paper\"]",
+        "summary": "Today, we're going to use Claude Code to design our personal site on Figma.\nWe're actually going to be using a different tool, one that is built specifically for AI agents, and it's called Paper.\nAnd many designers are telling me that they're switching from Figma to Paper because it's easier to use with AI agents like Claude Code and OpenClaw.\nSo, in this video, we're going to download Paper.\nThen, we're going to connect Paper to Claude Code.\nThen we're going to use Claude Code to design our site.\nThen we're going to turn that site into an actual web page that I will use and put on the internet.\nAnd so this channel is all about using AI agents to run your business effectively.\nAnd if you like these types of videos, I make them multiple times per week.\nOkay, so in order to do this workflow, we're going to need two tools.",
+        "status": "new",
+        "date": "2026-03-10T02:18:20.980799Z"
+      },
+      {
+        "id": "research-20260310-c28109b94cc8",
+        "source": "transcript",
+        "ref": "https://www.youtube.com/watch?v=ISb0nrlNoKQ",
+        "title": "Why Specialized Agents are Superior (How I Built an OpenClaw Superteam)",
+        "concept": "So, I spent the last two weeks building hundreds of different AI agent workflows, mostly using OpenClaw, but I also use Manisclaw Code and even Perplexity Computer, which just came out.",
+        "indicators": "[]",
+        "summary": "So, I spent the last two weeks building hundreds of different AI agent workflows, mostly using OpenClaw, but I also use Manisclaw Code and even Perplexity Computer, which just came out.\nAnd my biggest realization through this process, companies are going to have very narrow AI agents that operate in a team.\nAnd my current plan is to build 15 highquality AI agents that run our entire growth division here at vibco.dev.\nAnd so I want to take some time in this video to explain why I believe that narrow agents are the future and we'll also kind of talk about why I'll be using OpenClaw for this project.\nAnd so let's just dive into the video.\nOver the past two weeks, we tested many different agents and the main four that we tested were OpenClaw, we tested Manis, we tested Clawed Code, and we tested Perplexity Computer.\nAnd so perplexity computer is actually really interesting.\nYou see here you can actually switch from search to computer.\nAnd the way perplexity computer works I can say please make an app.\nThis right here is a single task.",
+        "status": "new",
+        "date": "2026-03-10T02:16:51.798294Z"
+      },
+      {
+        "id": "research-20260310-8cf8fe9361ff",
+        "source": "asr_transcript",
+        "ref": "https://www.youtube.com/watch?v=Z6eNc_8OnMM",
+        "title": "\u0412\u043e\u0439\u043d\u0430... \u043d\u043e \u0411\u0438\u0442\u043a\u043e\u0439\u043d \u041d\u0415 \u043a\u0440\u0430\u0448\u0432\u0430 ?",
+        "concept": "The market at the moment is in absolute chaos.",
+        "indicators": "[]",
+        "summary": "The market at the moment is in absolute chaos.\nAfter the big movements of the first few weeks, the market just spread.\nIn the last two weeks, we saw a clean consolidation of Tesla and Range in a wide range.\nAnd this is coincidentally, historically, exactly after such a period of chaos and a lot of movement, the biggest movements are usually taking place.\nBecause in these zones, big participants accumulate positions.\nIn today's video, we will look at the structure of Bitcoin, the key levels, the dominations, and we will see what are the real scenarios for this segment.\nAnd so friends, before we start, I want to show you what happened with Bitcoin.\nAfter me, we started with the Daily Time Frame.\nI saw a lot of people from the 7th century being quite euphoric and expecting the market to not spread.\nWe went back to Range again.",
+        "status": "new",
+        "date": "2026-03-09T21:32:11.711172Z"
+      }
+    ]
   },
   "market_scan": {
-    "status": "error",
-    "returncode": 2,
-    "stderr": "C:\\Users\\Clamps\\AppData\\Local\\Programs\\Python\\Python314\\python.exe: can't open file 'C:\\\\Users\\\\aszho\\\\.openclaw\\\\skills\\\\autoquant-market-data\\\\market.py': [Errno 2] No such file or directory"
+    "ok": true,
+    "count": 229,
+    "top_opportunities": [
+      {
+        "asset": "BTC",
+        "asset_type": "perp",
+        "price": 69584.0,
+        "volume_24h": 2912660682.5433908,
+        "open_interest": 25404.95492,
+        "funding_rate": -1.15717e-05,
+        "price_change_24h": 0.0,
+        "max_leverage": 40.0,
+        "opportunity_score": 0.504436
+      },
+      {
+        "asset": "XAI",
+        "asset_type": "perp",
+        "price": 0.01097,
+        "volume_24h": 932662.5100359999,
+        "open_interest": 83817863.00000001,
+        "funding_rate": -0.0007826296,
+        "price_change_24h": 0.0,
+        "max_leverage": 3.0,
+        "opportunity_score": 0.30016
+      },
+      {
+        "asset": "MAVIA",
+        "asset_type": "perp",
+        "price": 0.03393,
+        "volume_24h": 2773.019692,
+        "open_interest": 53831771.2,
+        "funding_rate": 0.0004860804,
+        "price_change_24h": 0.0,
+        "max_leverage": 3.0,
+        "opportunity_score": 0.186326
+      },
+      {
+        "asset": "BLAST",
+        "asset_type": "perp",
+        "price": 0.000489,
+        "volume_24h": 86053.227638,
+        "open_interest": 1756736616.0,
+        "funding_rate": -0.0004321071,
+        "price_change_24h": 0.0,
+        "max_leverage": 3.0,
+        "opportunity_score": 0.165651
+      },
+      {
+        "asset": "ETH",
+        "asset_type": "perp",
+        "price": 2021.7,
+        "volume_24h": 850396228.9442705,
+        "open_interest": 564512.6409999992,
+        "funding_rate": 5.4168e-06,
+        "price_change_24h": 0.0,
+        "max_leverage": 25.0,
+        "opportunity_score": 0.148059
+      },
+      {
+        "asset": "ARK",
+        "asset_type": "perp",
+        "price": 0.17792,
+        "volume_24h": 105204.22124,
+        "open_interest": 1002414.0,
+        "funding_rate": -0.0002681722,
+        "price_change_24h": 0.0,
+        "max_leverage": 3.0,
+        "opportunity_score": 0.102815
+      },
+      {
+        "asset": "WIF",
+        "asset_type": "perp",
+        "price": 0.16254,
+        "volume_24h": 3123684.522029999,
+        "open_interest": 29622926.0,
+        "funding_rate": -0.0002197362,
+        "price_change_24h": 0.0,
+        "max_leverage": 5.0,
+        "opportunity_score": 0.084766
+      },
+      {
+        "asset": "SOL",
+        "asset_type": "perp",
+        "price": 85.599,
+        "volume_24h": 290128954.6912402,
+        "open_interest": 3104311.9399999976,
+        "funding_rate": -2.61197e-05,
+        "price_change_24h": 0.0,
+        "max_leverage": 20.0,
+        "opportunity_score": 0.059817
+      },
+      {
+        "asset": "AVNT",
+        "asset_type": "perp",
+        "price": 0.14454,
+        "volume_24h": 585301.9508100002,
+        "open_interest": 6527596.0,
+        "funding_rate": -0.000147224,
+        "price_change_24h": 0.0,
+        "max_leverage": 5.0,
+        "opportunity_score": 0.056535
+      },
+      {
+        "asset": "HYPE",
+        "asset_type": "perp",
+        "price": 34.482,
+        "volume_24h": 229631654.56235045,
+        "open_interest": 18065410.920000028,
+        "funding_rate": 1.14773e-05,
+        "price_change_24h": 0.0,
+        "max_leverage": 10.0,
+        "opportunity_score": 0.043819
+      }
+    ]
   },
   "funding_rates": {
-    "status": "error",
-    "returncode": 2,
-    "stderr": "C:\\Users\\Clamps\\AppData\\Local\\Programs\\Python\\Python314\\python.exe: can't open file 'C:\\\\Users\\\\aszho\\\\.openclaw\\\\skills\\\\autoquant-market-data\\\\market.py': [Errno 2] No such file or directory"
+    "ok": true,
+    "count": 229,
+    "funding": [
+      {
+        "asset": "XAI",
+        "funding_rate": -0.0007826296,
+        "price": 0.01097,
+        "volume_24h": 932662.5100359999,
+        "open_interest": 83817863.00000001
+      },
+      {
+        "asset": "MAVIA",
+        "funding_rate": 0.0004860804,
+        "price": 0.03393,
+        "volume_24h": 2773.019692,
+        "open_interest": 53831771.2
+      },
+      {
+        "asset": "BLAST",
+        "funding_rate": -0.0004321071,
+        "price": 0.000489,
+        "volume_24h": 86053.227638,
+        "open_interest": 1756736616.0
+      },
+      {
+        "asset": "ARK",
+        "funding_rate": -0.0002681722,
+        "price": 0.17792,
+        "volume_24h": 105204.22124,
+        "open_interest": 1002414.0
+      },
+      {
+        "asset": "WIF",
+        "funding_rate": -0.0002197362,
+        "price": 0.16254,
+        "volume_24h": 3127082.302469999,
+        "open_interest": 29606926.0
+      },
+      {
+        "asset": "AVNT",
+        "funding_rate": -0.000147224,
+        "price": 0.14454,
+        "volume_24h": 585301.9508100002,
+        "open_interest": 6527596.0
+      },
+      {
+        "asset": "BIGTIME",
+        "funding_rate": -9.90703e-05,
+        "price": 0.013213,
+        "volume_24h": 209733.462801,
+        "open_interest": 23542612.0
+      },
+      {
+        "asset": "SOPH",
+        "funding_rate": -9.14527e-05,
+        "price": 0.008425,
+        "volume_24h": 112085.377173,
+        "open_interest": 54711844.0
+      },
+      {
+        "asset": "ZETA",
+        "funding_rate": -8.96577e-05,
+        "price": 0.05055,
+        "volume_24h": 94984.083166,
+        "open_interest": 10100825.6
+      },
+      {
+        "asset": "FIL",
+        "funding_rate": -8.74998e-05,
+        "price": 0.84847,
+        "volume_24h": 1145059.0952600003,
+        "open_interest": 2655904.0
+      },
+      {
+        "asset": "FTT",
+        "funding_rate": -8.14682e-05,
+        "price": 0.27432,
+        "volume_24h": 15395.739875,
+        "open_interest": 286940.6
+      },
+      {
+        "asset": "UMA",
+        "funding_rate": -7.76815e-05,
+        "price": 0.4069,
+        "volume_24h": 74885.412174,
+        "open_interest": 574358.2000000001
+      },
+      {
+        "asset": "ACE",
+        "funding_rate": -7.65788e-05,
+        "price": 0.1473,
+        "volume_24h": 288119.464164,
+        "open_interest": 2703145.02
+      },
+      {
+        "asset": "STBL",
+        "funding_rate": 6.8248e-05,
+        "price": 0.035778,
+        "volume_24h": 255533.7561980001,
+        "open_interest": 89112570.0
+      },
+      {
+        "asset": "ZORA",
+        "funding_rate": -6.81287e-05,
+        "price": 0.017139,
+        "volume_24h": 361175.2684269999,
+        "open_interest": 74656110.0
+      },
+      {
+        "asset": "NEO",
+        "funding_rate": -5.90309e-05,
+        "price": 2.5033,
+        "volume_24h": 52134.289402,
+        "open_interest": 146069.44
+      },
+      {
+        "asset": "CRV",
+        "funding_rate": -5.61209e-05,
+        "price": 0.23675,
+        "volume_24h": 5351197.356799999,
+        "open_interest": 23411595.0
+      },
+      {
+        "asset": "0G",
+        "funding_rate": -5.53511e-05,
+        "price": 0.55982,
+        "volume_24h": 122412.30357,
+        "open_interest": 899394.0
+      },
+      {
+        "asset": "LAYER",
+        "funding_rate": -5.18963e-05,
+        "price": 0.08196,
+        "volume_24h": 67352.753261,
+        "open_interest": 5345986.0
+      },
+      {
+        "asset": "SNX",
+        "funding_rate": -4.89746e-05,
+        "price": 0.30698,
+        "volume_24h": 135057.289202,
+        "open_interest": 1390760.9999999998
+      },
+      {
+        "asset": "AXS",
+        "funding_rate": -4.84303e-05,
+        "price": 1.1065,
+        "volume_24h": 301915.6093399999,
+        "open_interest": 2027687.0
+      },
+      {
+        "asset": "BLUR",
+        "funding_rate": -4.39692e-05,
+        "price": 0.019078,
+        "volume_24h": 91445.972193,
+        "open_interest": 30876818.0
+      },
+      {
+        "asset": "SEI",
+        "funding_rate": -4.32333e-05,
+        "price": 0.06262,
+        "volume_24h": 2014267.9561880003,
+        "open_interest": 39178500.0
+      },
+      {
+        "asset": "VINE",
+        "funding_rate": 4.06146e-05,
+        "price": 0.016983,
+        "volume_24h": 121055.285445,
+        "open_interest": 24859380.0
+      },
+      {
+        "asset": "MOODENG",
+        "funding_rate": -3.85821e-05,
+        "price": 0.048135,
+        "volume_24h": 206465.326699,
+        "open_interest": 17489194.0
+      },
+      {
+        "asset": "SUI",
+        "funding_rate": -3.60752e-05,
+        "price": 0.9512,
+        "volume_24h": 29039824.886508007,
+        "open_interest": 22432667.599999998
+      },
+      {
+        "asset": "TRUMP",
+        "funding_rate": -3.53674e-05,
+        "price": 2.9252,
+        "volume_24h": 2235246.4175400003,
+        "open_interest": 2127131.4
+      },
+      {
+        "asset": "PROVE",
+        "funding_rate": -3.45701e-05,
+        "price": 0.25611,
+        "volume_24h": 112264.9531499999,
+        "open_interest": 1544116.0
+      },
+      {
+        "asset": "BCH",
+        "funding_rate": -3.44004e-05,
+        "price": 446.62,
+        "volume_24h": 5508395.689530003,
+        "open_interest": 51913.266
+      },
+      {
+        "asset": "DOT",
+        "funding_rate": -3.43805e-05,
+        "price": 1.4807,
+        "volume_24h": 4099175.80057,
+        "open_interest": 6246316.800000001
+      },
+      {
+        "asset": "ENA",
+        "funding_rate": -3.4338e-05,
+        "price": 0.10241,
+        "volume_24h": 3224087.707160001,
+        "open_interest": 129342218.0
+      },
+      {
+        "asset": "MORPHO",
+        "funding_rate": -3.29959e-05,
+        "price": 1.9533,
+        "volume_24h": 2010209.92932,
+        "open_interest": 2823439.8000000003
+      },
+      {
+        "asset": "GAS",
+        "funding_rate": -3.25071e-05,
+        "price": 1.5462,
+        "volume_24h": 81086.39034,
+        "open_interest": 75968.8
+      },
+      {
+        "asset": "kSHIB",
+        "funding_rate": -3.17467e-05,
+        "price": 0.005613,
+        "volume_24h": 2341873.1982299997,
+        "open_interest": 367056254.0
+      },
+      {
+        "asset": "2Z",
+        "funding_rate": -2.97732e-05,
+        "price": 0.075813,
+        "volume_24h": 128045.28046,
+        "open_interest": 21157634.0
+      },
+      {
+        "asset": "kFLOKI",
+        "funding_rate": -2.88506e-05,
+        "price": 0.028811,
+        "volume_24h": 255572.392652,
+        "open_interest": 14052418.0
+      },
+      {
+        "asset": "LTC",
+        "funding_rate": -2.65405e-05,
+        "price": 53.725,
+        "volume_24h": 2368243.109700001,
+        "open_interest": 286966.16
+      },
+      {
+        "asset": "SOL",
+        "funding_rate": -2.61197e-05,
+        "price": 85.599,
+        "volume_24h": 290128954.6912402,
+        "open_interest": 3104311.9399999976
+      },
+      {
+        "asset": "WCT",
+        "funding_rate": -2.55829e-05,
+        "price": 0.056087,
+        "volume_24h": 46993.357952,
+        "open_interest": 5830468.0
+      },
+      {
+        "asset": "NXPC",
+        "funding_rate": -2.18217e-05,
+        "price": 0.27798,
+        "volume_24h": 125975.34672,
+        "open_interest": 4434936.0
+      },
+      {
+        "asset": "HBAR",
+        "funding_rate": -2.15134e-05,
+        "price": 0.094267,
+        "volume_24h": 453954.16533,
+        "open_interest": 44754464.0
+      },
+      {
+        "asset": "HEMI",
+        "funding_rate": 2.06023e-05,
+        "price": 0.007464,
+        "volume_24h": 134490.292851,
+        "open_interest": 211099114.0
+      },
+      {
+        "asset": "ATOM",
+        "funding_rate": -2.05759e-05,
+        "price": 1.8082,
+        "volume_24h": 362509.397509,
+        "open_interest": 1565375.3199999998
+      },
+      {
+        "asset": "XRP",
+        "funding_rate": -1.96384e-05,
+        "price": 1.3782,
+        "volume_24h": 57779430.98239992,
+        "open_interest": 57942430.0
+      },
+      {
+        "asset": "ARB",
+        "funding_rate": -1.81008e-05,
+        "price": 0.09762,
+        "volume_24h": 2065028.1493689988,
+        "open_interest": 33296022.000000004
+      },
+      {
+        "asset": "kBONK",
+        "funding_rate": -1.73212e-05,
+        "price": 0.005906,
+        "volume_24h": 1906222.3384069987,
+        "open_interest": 664401332.0
+      },
+      {
+        "asset": "MERL",
+        "funding_rate": -1.7252e-05,
+        "price": 0.036437,
+        "volume_24h": 198192.432037,
+        "open_interest": 16091868.0
+      },
+      {
+        "asset": "NEAR",
+        "funding_rate": -1.7174e-05,
+        "price": 1.2774,
+        "volume_24h": 9890662.326859998,
+        "open_interest": 10735928.999999998
+      },
+      {
+        "asset": "SUPER",
+        "funding_rate": -1.55868e-05,
+        "price": 0.1136,
+        "volume_24h": 74551.31191,
+        "open_interest": 2478154.0
+      },
+      {
+        "asset": "ZRO",
+        "funding_rate": -1.32484e-05,
+        "price": 2.0468,
+        "volume_24h": 4901886.140530004,
+        "open_interest": 20432987.800000004
+      },
+      {
+        "asset": "AVAX",
+        "funding_rate": 1.25e-05,
+        "price": 9.5519,
+        "volume_24h": 6048910.478945999,
+        "open_interest": 3885217.3599999994
+      },
+      {
+        "asset": "INJ",
+        "funding_rate": 1.25e-05,
+        "price": 2.9195,
+        "volume_24h": 797878.2056100001,
+        "open_interest": 627275.6000000001
+      },
+      {
+        "asset": "LDO",
+        "funding_rate": 1.25e-05,
+        "price": 0.2908,
+        "volume_24h": 2793802.8220789996,
+        "open_interest": 19318846.0
+      },
+      {
+        "asset": "LINK",
+        "funding_rate": 1.25e-05,
+        "price": 8.948,
+        "volume_24h": 6195355.38017,
+        "open_interest": 2435013.800000001
+      },
+      {
+        "asset": "STX",
+        "funding_rate": 1.25e-05,
+        "price": 0.25714,
+        "volume_24h": 353623.0160640003,
+        "open_interest": 3539289.6
+      },
+      {
+        "asset": "CFX",
+        "funding_rate": 1.25e-05,
+        "price": 0.049933,
+        "volume_24h": 435340.8122320001,
+        "open_interest": 20800150.0
+      },
+      {
+        "asset": "GMX",
+        "funding_rate": 1.25e-05,
+        "price": 6.4515,
+        "volume_24h": 270959.4493460001,
+        "open_interest": 80918.36
+      },
+      {
+        "asset": "AAVE",
+        "funding_rate": 1.25e-05,
+        "price": 109.8,
+        "volume_24h": 6940834.4388000015,
+        "open_interest": 198196.58
+      },
+      {
+        "asset": "WLD",
+        "funding_rate": 1.25e-05,
+        "price": 0.35445,
+        "volume_24h": 2881071.065885999,
+        "open_interest": 38516585.599999994
+      },
+      {
+        "asset": "UNI",
+        "funding_rate": 1.25e-05,
+        "price": 3.83,
+        "volume_24h": 2634253.180599998,
+        "open_interest": 2956158.400000001
+      },
+      {
+        "asset": "RUNE",
+        "funding_rate": 1.25e-05,
+        "price": 0.42426,
+        "volume_24h": 116486.011208,
+        "open_interest": 2688617.8
+      },
+      {
+        "asset": "BANANA",
+        "funding_rate": 1.25e-05,
+        "price": 4.3518,
+        "volume_24h": 94267.47486,
+        "open_interest": 58960.0
+      },
+      {
+        "asset": "TRB",
+        "funding_rate": 1.25e-05,
+        "price": 15.325,
+        "volume_24h": 76316.42067,
+        "open_interest": 29141.34
+      },
+      {
+        "asset": "TIA",
+        "funding_rate": 1.25e-05,
+        "price": 0.32555,
+        "volume_24h": 610239.4729390002,
+        "open_interest": 6141838.6
+      },
+      {
+        "asset": "MINA",
+        "funding_rate": 1.25e-05,
+        "price": 0.054365,
+        "volume_24h": 74523.208917,
+        "open_interest": 5120598.0
+      },
+      {
+        "asset": "POLYX",
+        "funding_rate": 1.25e-05,
+        "price": 0.040571,
+        "volume_24h": 44550.661906,
+        "open_interest": 6322268.0
+      },
+      {
+        "asset": "PENDLE",
+        "funding_rate": 1.25e-05,
+        "price": 1.2566,
+        "volume_24h": 623805.1848000002,
+        "open_interest": 3286940.0
+      },
+      {
+        "asset": "FET",
+        "funding_rate": 1.25e-05,
+        "price": 0.15324,
+        "volume_24h": 755693.2088699999,
+        "open_interest": 9864826.0
+      },
+      {
+        "asset": "ORDI",
+        "funding_rate": 1.25e-05,
+        "price": 2.388,
+        "volume_24h": 65031.063357,
+        "open_interest": 82633.78
+      },
+      {
+        "asset": "ZEN",
+        "funding_rate": 1.25e-05,
+        "price": 5.3875,
+        "volume_24h": 136782.8576,
+        "open_interest": 172788.44
+      },
+      {
+        "asset": "SUSHI",
+        "funding_rate": 1.25e-05,
+        "price": 0.19644,
+        "volume_24h": 89999.831438,
+        "open_interest": 2154923.0
+      },
+      {
+        "asset": "IMX",
+        "funding_rate": 1.25e-05,
+        "price": 0.15691,
+        "volume_24h": 90320.912061,
+        "open_interest": 5802895.8
+      },
+      {
+        "asset": "GMT",
+        "funding_rate": 1.25e-05,
+        "price": 0.010902,
+        "volume_24h": 44462.300872,
+        "open_interest": 29938086.0
+      },
+      {
+        "asset": "USTC",
+        "funding_rate": 1.25e-05,
+        "price": 0.00496,
+        "volume_24h": 48463.76726,
+        "open_interest": 34458644.0
+      },
+      {
+        "asset": "JUP",
+        "funding_rate": 1.25e-05,
+        "price": 0.16453,
+        "volume_24h": 2887221.21943,
+        "open_interest": 27390424.0
+      },
+      {
+        "asset": "RSR",
+        "funding_rate": 1.25e-05,
+        "price": 0.001597,
+        "volume_24h": 8408.837126,
+        "open_interest": 99101820.0
+      },
+      {
+        "asset": "GALA",
+        "funding_rate": 1.25e-05,
+        "price": 0.003314,
+        "volume_24h": 83377.712318,
+        "open_interest": 98820908.0
+      },
+      {
+        "asset": "MAV",
+        "funding_rate": 1.25e-05,
+        "price": 0.013931,
+        "volume_24h": 32809.297364,
+        "open_interest": 11529202.0
+      },
+      {
+        "asset": "CAKE",
+        "funding_rate": 1.25e-05,
+        "price": 1.3656,
+        "volume_24h": 198007.10856,
+        "open_interest": 727468.7999999999
+      },
+      {
+        "asset": "PEOPLE",
+        "funding_rate": 1.25e-05,
+        "price": 0.007602,
+        "volume_24h": 356329.004484,
+        "open_interest": 28364746.0
+      },
+      {
+        "asset": "ENS",
+        "funding_rate": 1.25e-05,
+        "price": 5.9173,
+        "volume_24h": 134837.891381,
+        "open_interest": 315762.62
+      },
+      {
+        "asset": "ETC",
+        "funding_rate": 1.25e-05,
+        "price": 8.1915,
+        "volume_24h": 847152.3418369998,
+        "open_interest": 221588.94
+      },
+      {
+        "asset": "MANTA",
+        "funding_rate": 1.25e-05,
+        "price": 0.06865,
+        "volume_24h": 111825.860248,
+        "open_interest": 3445079.8
+      },
+      {
+        "asset": "ONDO",
+        "funding_rate": 1.25e-05,
+        "price": 0.25328,
+        "volume_24h": 1366966.7065400002,
+        "open_interest": 11510150.0
+      },
+      {
+        "asset": "ALT",
+        "funding_rate": 1.25e-05,
+        "price": 0.00737,
+        "volume_24h": 184387.9647899999,
+        "open_interest": 63328350.0
+      },
+      {
+        "asset": "DYM",
+        "funding_rate": 1.25e-05,
+        "price": 0.03541,
+        "volume_24h": 182657.975383,
+        "open_interest": 12139007.2
+      },
+      {
+        "asset": "W",
+        "funding_rate": 1.25e-05,
+        "price": 0.0181,
+        "volume_24h": 75903.243911,
+        "open_interest": 48549223.0
+      },
+      {
+        "asset": "STRK",
+        "funding_rate": 1.25e-05,
+        "price": 0.03971,
+        "volume_24h": 430775.1498909998,
+        "open_interest": 62430994.800000004
+      },
+      {
+        "asset": "AR",
+        "funding_rate": 1.25e-05,
+        "price": 1.6272,
+        "volume_24h": 547176.0822780002,
+        "open_interest": 336567.48
+      },
+      {
+        "asset": "BOME",
+        "funding_rate": 1.25e-05,
+        "price": 0.000419,
+        "volume_24h": 28190.287118,
+        "open_interest": 266936944.0
+      },
+      {
+        "asset": "ETHFI",
+        "funding_rate": 1.25e-05,
+        "price": 0.58262,
+        "volume_24h": 2231415.4075569995,
+        "open_interest": 8666236.999999998
+      },
+      {
+        "asset": "MNT",
+        "funding_rate": 1.25e-05,
+        "price": 0.69593,
+        "volume_24h": 467319.2274149999,
+        "open_interest": 5826588.800000002
+      },
+      {
+        "asset": "TNSR",
+        "funding_rate": 1.25e-05,
+        "price": 0.04703,
+        "volume_24h": 181565.200593,
+        "open_interest": 3582987.0
+      },
+      {
+        "asset": "SAGA",
+        "funding_rate": 1.25e-05,
+        "price": 0.03367,
+        "volume_24h": 154245.5453949999,
+        "open_interest": 38214126.6
+      },
+      {
+        "asset": "POPCAT",
+        "funding_rate": 1.25e-05,
+        "price": 0.050775,
+        "volume_24h": 353089.3977289999,
+        "open_interest": 33470604.0
+      },
+      {
+        "asset": "REZ",
+        "funding_rate": 1.25e-05,
+        "price": 0.003165,
+        "volume_24h": 49624.051592,
+        "open_interest": 61603072.0
+      },
+      {
+        "asset": "NOT",
+        "funding_rate": 1.25e-05,
+        "price": 0.000375,
+        "volume_24h": 31605.203365,
+        "open_interest": 342629694.0
+      },
+      {
+        "asset": "TURBO",
+        "funding_rate": 1.25e-05,
+        "price": 0.000897,
+        "volume_24h": 45959.151818,
+        "open_interest": 341132192.0
+      },
+      {
+        "asset": "BRETT",
+        "funding_rate": 1.25e-05,
+        "price": 0.007035,
+        "volume_24h": 167079.654967,
+        "open_interest": 97266536.0
+      },
+      {
+        "asset": "IO",
+        "funding_rate": 1.25e-05,
+        "price": 0.10846,
+        "volume_24h": 180707.887493,
+        "open_interest": 3357746.1999999997
+      },
+      {
+        "asset": "ZK",
+        "funding_rate": 1.25e-05,
+        "price": 0.018922,
+        "volume_24h": 421804.420117,
+        "open_interest": 184346970.0
+      },
+      {
+        "asset": "MEW",
+        "funding_rate": 1.25e-05,
+        "price": 0.000587,
+        "volume_24h": 41577.892104,
+        "open_interest": 101098812.0
+      },
+      {
+        "asset": "RENDER",
+        "funding_rate": 1.25e-05,
+        "price": 1.465,
+        "volume_24h": 813244.2951200005,
+        "open_interest": 1023431.2000000001
+      },
+      {
+        "asset": "HMSTR",
+        "funding_rate": 1.25e-05,
+        "price": 0.000159,
+        "volume_24h": 33390.498964,
+        "open_interest": 7361272790.0
+      },
+      {
+        "asset": "SCR",
+        "funding_rate": 1.25e-05,
+        "price": 0.04013,
+        "volume_24h": 30759.870944,
+        "open_interest": 6373064.8
+      },
+      {
+        "asset": "kNEIRO",
+        "funding_rate": 1.25e-05,
+        "price": 0.0648,
+        "volume_24h": 131475.409321,
+        "open_interest": 3428602.4
+      },
+      {
+        "asset": "GOAT",
+        "funding_rate": 1.25e-05,
+        "price": 0.018389,
+        "volume_24h": 74171.54261,
+        "open_interest": 13188066.0
+      },
+      {
+        "asset": "PURR",
+        "funding_rate": 1.25e-05,
+        "price": 0.080325,
+        "volume_24h": 1117418.8362679998,
+        "open_interest": 42213720.0
+      },
+      {
+        "asset": "PNUT",
+        "funding_rate": 1.25e-05,
+        "price": 0.04412,
+        "volume_24h": 252928.399574,
+        "open_interest": 10108643.6
+      },
+      {
+        "asset": "XLM",
+        "funding_rate": 1.25e-05,
+        "price": 0.15676,
+        "volume_24h": 1274250.5401699985,
+        "open_interest": 34143534.0
+      },
+      {
+        "asset": "CHILLGUY",
+        "funding_rate": 1.25e-05,
+        "price": 0.00956,
+        "volume_24h": 42801.288418,
+        "open_interest": 37508904.0
+      },
+      {
+        "asset": "SAND",
+        "funding_rate": 1.25e-05,
+        "price": 0.080595,
+        "volume_24h": 94748.244211,
+        "open_interest": 5764720.0
+      },
+      {
+        "asset": "IOTA",
+        "funding_rate": 1.25e-05,
+        "price": 0.063908,
+        "volume_24h": 34866.751054,
+        "open_interest": 4396830.0
+      },
+      {
+        "asset": "ALGO",
+        "funding_rate": 1.25e-05,
+        "price": 0.084968,
+        "volume_24h": 342501.9356330001,
+        "open_interest": 11620658.0
+      },
+      {
+        "asset": "ME",
+        "funding_rate": 1.25e-05,
+        "price": 0.11154,
+        "volume_24h": 69532.423966,
+        "open_interest": 1863874.0
+      },
+      {
+        "asset": "PENGU",
+        "funding_rate": 1.25e-05,
+        "price": 0.006941,
+        "volume_24h": 1103409.3600199996,
+        "open_interest": 365971690.0
+      },
+      {
+        "asset": "USUAL",
+        "funding_rate": 1.25e-05,
+        "price": 0.01502,
+        "volume_24h": 69768.412282,
+        "open_interest": 22235079.0
+      },
+      {
+        "asset": "FARTCOIN",
+        "funding_rate": 1.25e-05,
+        "price": 0.15459,
+        "volume_24h": 16261585.307236992,
+        "open_interest": 173063046.80000004
+      },
+      {
+        "asset": "AIXBT",
+        "funding_rate": 1.25e-05,
+        "price": 0.024156,
+        "volume_24h": 817785.6407,
+        "open_interest": 45529304.0
+      },
+      {
+        "asset": "ZEREBRO",
+        "funding_rate": 1.25e-05,
+        "price": 0.006614,
+        "volume_24h": 44158.481058,
+        "open_interest": 80242938.0
+      },
+      {
+        "asset": "BIO",
+        "funding_rate": 1.25e-05,
+        "price": 0.020761,
+        "volume_24h": 304622.7194460001,
+        "open_interest": 13155310.0
+      },
+      {
+        "asset": "GRIFFAIN",
+        "funding_rate": 1.25e-05,
+        "price": 0.008757,
+        "volume_24h": 257820.4672839999,
+        "open_interest": 141262344.0
+      },
+      {
+        "asset": "SPX",
+        "funding_rate": 1.25e-05,
+        "price": 0.29843,
+        "volume_24h": 835736.2177350002,
+        "open_interest": 6428057.8
+      },
+      {
+        "asset": "MELANIA",
+        "funding_rate": 1.25e-05,
+        "price": 0.1059,
+        "volume_24h": 107421.164959,
+        "open_interest": 12123992.8
+      },
+      {
+        "asset": "VVV",
+        "funding_rate": 1.25e-05,
+        "price": 5.3002,
+        "volume_24h": 8009022.614336002,
+        "open_interest": 1540400.1000000006
+      },
+      {
+        "asset": "TST",
+        "funding_rate": 1.25e-05,
+        "price": 0.009547,
+        "volume_24h": 51588.503043,
+        "open_interest": 16564424.0
+      },
+      {
+        "asset": "IP",
+        "funding_rate": 1.25e-05,
+        "price": 0.78439,
+        "volume_24h": 413310.9079940001,
+        "open_interest": 5591419.4
+      },
+      {
+        "asset": "KAITO",
+        "funding_rate": 1.25e-05,
+        "price": 0.34756,
+        "volume_24h": 297696.3132099999,
+        "open_interest": 5309290.0
+      },
+      {
+        "asset": "NIL",
+        "funding_rate": 1.25e-05,
+        "price": 0.047312,
+        "volume_24h": 84875.979359,
+        "open_interest": 5665382.0
+      },
+      {
+        "asset": "PAXG",
+        "funding_rate": 1.25e-05,
+        "price": 5204.8,
+        "volume_24h": 18869625.59269999,
+        "open_interest": 13586.19
+      },
+      {
+        "asset": "PROMPT",
+        "funding_rate": 1.25e-05,
+        "price": 0.041405,
+        "volume_24h": 95349.90877,
+        "open_interest": 28454118.0
+      },
+      {
+        "asset": "BABY",
+        "funding_rate": 1.25e-05,
+        "price": 0.015665,
+        "volume_24h": 939103.5565330004,
+        "open_interest": 56450032.0
+      },
+      {
+        "asset": "INIT",
+        "funding_rate": 1.25e-05,
+        "price": 0.08672,
+        "volume_24h": 281174.80339,
+        "open_interest": 5806804.0
+      },
+      {
+        "asset": "DOOD",
+        "funding_rate": 1.25e-05,
+        "price": 0.002857,
+        "volume_24h": 46215.108595,
+        "open_interest": 199910564.0
+      },
+      {
+        "asset": "RESOLV",
+        "funding_rate": 1.25e-05,
+        "price": 0.10372,
+        "volume_24h": 2106168.6119999993,
+        "open_interest": 64219678.0
+      },
+      {
+        "asset": "SYRUP",
+        "funding_rate": 1.25e-05,
+        "price": 0.22388,
+        "volume_24h": 169983.12227,
+        "open_interest": 4917260.0
+      },
+      {
+        "asset": "PUMP",
+        "funding_rate": 1.25e-05,
+        "price": 0.001995,
+        "volume_24h": 9648562.96442799,
+        "open_interest": 20840751814.0
+      },
+      {
+        "asset": "YZY",
+        "funding_rate": 1.25e-05,
+        "price": 0.32311,
+        "volume_24h": 52099.02436,
+        "open_interest": 1737182.0
+      },
+      {
+        "asset": "XPL",
+        "funding_rate": 1.25e-05,
+        "price": 0.09788,
+        "volume_24h": 12355455.561292002,
+        "open_interest": 357246006.0
+      },
+      {
+        "asset": "WLFI",
+        "funding_rate": 1.25e-05,
+        "price": 0.10054,
+        "volume_24h": 1848240.3717299995,
+        "open_interest": 213420238.0
+      },
+      {
+        "asset": "LINEA",
+        "funding_rate": 1.25e-05,
+        "price": 0.003191,
+        "volume_24h": 141635.39323,
+        "open_interest": 540512236.0
+      },
+      {
+        "asset": "SKY",
+        "funding_rate": 1.25e-05,
+        "price": 0.077243,
+        "volume_24h": 2565914.6208170005,
+        "open_interest": 34189236.0
+      },
+      {
+        "asset": "APEX",
+        "funding_rate": 1.25e-05,
+        "price": 0.28087,
+        "volume_24h": 453651.6093399999,
+        "open_interest": 6565150.0
+      },
+      {
+        "asset": "MET",
+        "funding_rate": 1.25e-05,
+        "price": 0.1559,
+        "volume_24h": 174319.5411499999,
+        "open_interest": 10352982.0
+      },
+      {
+        "asset": "MEGA",
+        "funding_rate": 1.25e-05,
+        "price": 0.1428,
+        "volume_24h": 126158.8474,
+        "open_interest": 29398812.0
+      },
+      {
+        "asset": "CC",
+        "funding_rate": 1.25e-05,
+        "price": 0.14827,
+        "volume_24h": 753131.1559700004,
+        "open_interest": 37354250.0
+      },
+      {
+        "asset": "AERO",
+        "funding_rate": 1.25e-05,
+        "price": 0.33141,
+        "volume_24h": 763752.3870099998,
+        "open_interest": 7023326.0
+      },
+      {
+        "asset": "STABLE",
+        "funding_rate": 1.25e-05,
+        "price": 0.027851,
+        "volume_24h": 1077392.4010130004,
+        "open_interest": 151771662.0
+      },
+      {
+        "asset": "FOGO",
+        "funding_rate": 1.25e-05,
+        "price": 0.023438,
+        "volume_24h": 456099.7782039999,
+        "open_interest": 35164602.0
+      },
+      {
+        "asset": "LIT",
+        "funding_rate": 1.25e-05,
+        "price": 1.0175,
+        "volume_24h": 10241381.106499989,
+        "open_interest": 29401988.0
+      },
+      {
+        "asset": "XMR",
+        "funding_rate": 1.25e-05,
+        "price": 354.35,
+        "volume_24h": 4801047.466930003,
+        "open_interest": 82908.718
+      },
+      {
+        "asset": "DASH",
+        "funding_rate": 1.25e-05,
+        "price": 31.909,
+        "volume_24h": 336732.89427,
+        "open_interest": 62343.28
+      },
+      {
+        "asset": "SKR",
+        "funding_rate": 1.25e-05,
+        "price": 0.023738,
+        "volume_24h": 458820.3856090002,
+        "open_interest": 25738686.0
+      },
+      {
+        "asset": "AZTEC",
+        "funding_rate": 1.25e-05,
+        "price": 0.021356,
+        "volume_24h": 174726.0273470001,
+        "open_interest": 53160392.0
+      },
+      {
+        "asset": "DOGE",
+        "funding_rate": -1.18054e-05,
+        "price": 0.092415,
+        "volume_24h": 15478780.008786995,
+        "open_interest": 236336242.0
+      },
+      {
+        "asset": "BTC",
+        "funding_rate": -1.15717e-05,
+        "price": 69584.0,
+        "volume_24h": 2912698294.250381,
+        "open_interest": 25404.96698
+      },
+      {
+        "asset": "HYPE",
+        "funding_rate": 1.14773e-05,
+        "price": 34.482,
+        "volume_24h": 229633488.21873045,
+        "open_interest": 18065484.300000027
+      },
+      {
+        "asset": "ADA",
+        "funding_rate": 1.12431e-05,
+        "price": 0.2597,
+        "volume_24h": 4786895.805780002,
+        "open_interest": 81012046.0
+      },
+      {
+        "asset": "DYDX",
+        "funding_rate": 1.10016e-05,
+        "price": 0.08511,
+        "volume_24h": 156747.648813,
+        "open_interest": 22808491.0
+      },
+      {
+        "asset": "PYTH",
+        "funding_rate": 1.08879e-05,
+        "price": 0.045896,
+        "volume_24h": 204691.8598870001,
+        "open_interest": 20426936.0
+      },
+      {
+        "asset": "BERA",
+        "funding_rate": 1.05837e-05,
+        "price": 0.54155,
+        "volume_24h": 612517.1476219998,
+        "open_interest": 5376888.2
+      },
+      {
+        "asset": "S",
+        "funding_rate": 1.03193e-05,
+        "price": 0.041245,
+        "volume_24h": 290822.013389,
+        "open_interest": 31015014.0
+      },
+      {
+        "asset": "COMP",
+        "funding_rate": 1.014e-05,
+        "price": 16.859,
+        "volume_24h": 231520.71906,
+        "open_interest": 38190.68
+      },
+      {
+        "asset": "YGG",
+        "funding_rate": -9.6495e-06,
+        "price": 0.038941,
+        "volume_24h": 159818.734613,
+        "open_interest": 8009394.0
+      },
+      {
+        "asset": "TON",
+        "funding_rate": 9.6477e-06,
+        "price": 1.2931,
+        "volume_24h": 1879384.4720999992,
+        "open_interest": 6096316.800000001
+      },
+      {
+        "asset": "TRX",
+        "funding_rate": 8.9343e-06,
+        "price": 0.28652,
+        "volume_24h": 1703446.5779400002,
+        "open_interest": 26445468.0
+      },
+      {
+        "asset": "HYPER",
+        "funding_rate": -8.0158e-06,
+        "price": 0.086661,
+        "volume_24h": 62175.50797,
+        "open_interest": 4928058.0
+      },
+      {
+        "asset": "kPEPE",
+        "funding_rate": -7.9886e-06,
+        "price": 0.003284,
+        "volume_24h": 9163402.739192005,
+        "open_interest": 2955671730.0
+      },
+      {
+        "asset": "POL",
+        "funding_rate": -7.4477e-06,
+        "price": 0.096378,
+        "volume_24h": 531695.1230729999,
+        "open_interest": 24424132.0
+      },
+      {
+        "asset": "BSV",
+        "funding_rate": -6.9484e-06,
+        "price": 15.652,
+        "volume_24h": 1673323.55925,
+        "open_interest": 73872.38
+      },
+      {
+        "asset": "BNB",
+        "funding_rate": 6.7742e-06,
+        "price": 639.92,
+        "volume_24h": 5979016.490469998,
+        "open_interest": 43733.896
+      },
+      {
+        "asset": "OP",
+        "funding_rate": 6.759e-06,
+        "price": 0.11822,
+        "volume_24h": 1541282.7555230008,
+        "open_interest": 28204728.2
+      },
+      {
+        "asset": "MOVE",
+        "funding_rate": 6.2103e-06,
+        "price": 0.020541,
+        "volume_24h": 129342.511411,
+        "open_interest": 26487642.0
+      },
+      {
+        "asset": "APT",
+        "funding_rate": 5.7673e-06,
+        "price": 0.9428,
+        "volume_24h": 3467241.170265999,
+        "open_interest": 7106757.34
+      },
+      {
+        "asset": "ETH",
+        "funding_rate": 5.4168e-06,
+        "price": 2021.7,
+        "volume_24h": 850396317.0162705,
+        "open_interest": 564512.7281999992
+      },
+      {
+        "asset": "KAS",
+        "funding_rate": 5.3999e-06,
+        "price": 0.030117,
+        "volume_24h": 142049.873744,
+        "open_interest": 25239918.0
+      },
+      {
+        "asset": "APE",
+        "funding_rate": 5.1973e-06,
+        "price": 0.09414,
+        "volume_24h": 132402.215903,
+        "open_interest": 8309549.399999999
+      },
+      {
+        "asset": "ANIME",
+        "funding_rate": 4.1703e-06,
+        "price": 0.004507,
+        "volume_24h": 54304.632539,
+        "open_interest": 78663924.0
+      },
+      {
+        "asset": "MEME",
+        "funding_rate": -4.0051e-06,
+        "price": 0.000572,
+        "volume_24h": 214563.5824880001,
+        "open_interest": 1067671082.0
+      },
+      {
+        "asset": "ICP",
+        "funding_rate": -2.2101e-06,
+        "price": 2.3861,
+        "volume_24h": 550927.5243800001,
+        "open_interest": 408389.2
+      },
+      {
+        "asset": "ZEC",
+        "funding_rate": -1.7377e-06,
+        "price": 215.24,
+        "volume_24h": 30376351.969700005,
+        "open_interest": 240922.8
+      },
+      {
+        "asset": "TAO",
+        "funding_rate": 1.6816e-06,
+        "price": 197.52,
+        "volume_24h": 15167954.90529,
+        "open_interest": 105459.81
+      },
+      {
+        "asset": "GRASS",
+        "funding_rate": -1.6471e-06,
+        "price": 0.35926,
+        "volume_24h": 2023260.1589880001,
+        "open_interest": 7729120.0
+      },
+      {
+        "asset": "JTO",
+        "funding_rate": 1.5439e-06,
+        "price": 0.25722,
+        "volume_24h": 182350.01895,
+        "open_interest": 3220510.0
+      },
+      {
+        "asset": "ASTER",
+        "funding_rate": 1.4785e-06,
+        "price": 0.69566,
+        "volume_24h": 4752277.177249999,
+        "open_interest": 81522550.0
+      },
+      {
+        "asset": "CELO",
+        "funding_rate": -1.3123e-06,
+        "price": 0.074057,
+        "volume_24h": 177718.8476559999,
+        "open_interest": 10844072.0
+      },
+      {
+        "asset": "EIGEN",
+        "funding_rate": -1.274e-06,
+        "price": 0.1854,
+        "volume_24h": 338422.767763,
+        "open_interest": 12103852.620000001
+      },
+      {
+        "asset": "VIRTUAL",
+        "funding_rate": -1.0082e-06,
+        "price": 0.69867,
+        "volume_24h": 7603570.233431995,
+        "open_interest": 17201359.8
+      },
+      {
+        "asset": "MON",
+        "funding_rate": 7.04e-07,
+        "price": 0.02113,
+        "volume_24h": 1110800.712491,
+        "open_interest": 1226323252.0
+      },
+      {
+        "asset": "kLUNC",
+        "funding_rate": -4.744e-07,
+        "price": 0.042468,
+        "volume_24h": 94591.412224,
+        "open_interest": 7748004.0
+      },
+      {
+        "asset": "MATIC",
+        "funding_rate": 0.0,
+        "price": 0.37621,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "RNDR",
+        "funding_rate": 0.0,
+        "price": 6.8952,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "FTM",
+        "funding_rate": 0.0,
+        "price": 0.71688,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "MKR",
+        "funding_rate": 0.0,
+        "price": 1831.5,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "FXS",
+        "funding_rate": 0.0,
+        "price": 0.65538,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "HPOS",
+        "funding_rate": 0.0,
+        "price": 0.041873,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "RLB",
+        "funding_rate": 0.0,
+        "price": 0.071,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "UNIBOT",
+        "funding_rate": 0.0,
+        "price": 7.636,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "OX",
+        "funding_rate": 0.0,
+        "price": 0.007459,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "FRIEND",
+        "funding_rate": 0.0,
+        "price": 4.72,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "SHIA",
+        "funding_rate": 0.0,
+        "price": 0.000621,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "CYBER",
+        "funding_rate": 0.0,
+        "price": 1.0415,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "BLZ",
+        "funding_rate": 0.0,
+        "price": 0.070043,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "LOOM",
+        "funding_rate": 0.0,
+        "price": 0.071161,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "OGN",
+        "funding_rate": 0.0,
+        "price": 0.055683,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "RDNT",
+        "funding_rate": 0.0,
+        "price": 0.018328,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "BNT",
+        "funding_rate": 0.0,
+        "price": 0.38287,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "CANTO",
+        "funding_rate": 0.0,
+        "price": 0.066,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "REQ",
+        "funding_rate": 0.0,
+        "price": 0.15473,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "ORBS",
+        "funding_rate": 0.0,
+        "price": 0.01939,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "STG",
+        "funding_rate": 0.0,
+        "price": 0.15387,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "STRAX",
+        "funding_rate": 0.0,
+        "price": 1.5829,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "BADGER",
+        "funding_rate": 0.0,
+        "price": 0.88823,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "ILV",
+        "funding_rate": 0.0,
+        "price": 12.118,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "NFTI",
+        "funding_rate": 0.0,
+        "price": 6.5609,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "NTRN",
+        "funding_rate": 0.0,
+        "price": 0.1238,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "PANDORA",
+        "funding_rate": 0.0,
+        "price": 3026.3,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "PIXEL",
+        "funding_rate": 0.0,
+        "price": 0.024027,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "AI",
+        "funding_rate": 0.0,
+        "price": 0.12555,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "MYRO",
+        "funding_rate": 0.0,
+        "price": 0.015813,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "OMNI",
+        "funding_rate": 0.0,
+        "price": 4.1915,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "LISTA",
+        "funding_rate": 0.0,
+        "price": 0.12466,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "kDOGS",
+        "funding_rate": 0.0,
+        "price": 0.13659,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "CATI",
+        "funding_rate": 0.0,
+        "price": 0.082821,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "NEIROETH",
+        "funding_rate": 0.0,
+        "price": 0.01808,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "AI16Z",
+        "funding_rate": 0.0,
+        "price": 0.06157,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "JELLY",
+        "funding_rate": 0.0,
+        "price": 0.037555,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "OM",
+        "funding_rate": 0.0,
+        "price": 0.06527,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      },
+      {
+        "asset": "LAUNCHCOIN",
+        "funding_rate": 0.0,
+        "price": 0.060367,
+        "volume_24h": 0.0,
+        "open_interest": 0.0
+      }
+    ]
   },
   "recent_backtest_details": [
     {
@@ -530,7 +2438,7 @@
       }
     }
   },
-  "regime_generated_at": "2026-03-11T03:12:34.520830+00:00",
+  "regime_generated_at": "2026-03-11T04:14:05.956371+00:00",
   "external_intel_sources": [
     {
       "id": "youtube-research-watch",

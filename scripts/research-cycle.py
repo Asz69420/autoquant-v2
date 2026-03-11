@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 PY = sys.executable
-SKILLS_DIR = Path.home() / ".openclaw" / "skills"
+SKILLS_DIR = ROOT.parent / "skills"
 BRIEFING_PATH = ROOT / "agents" / "quandalf" / "memory" / "briefing_packet.json"
 DB_PATH = ROOT / "db" / "autoquant.db"
 CANDLES_DIR = ROOT / "data" / "candles"

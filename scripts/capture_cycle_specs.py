@@ -42,7 +42,7 @@ def spec_matches_cycle(path: Path, cycle_id: int) -> bool:
     return cycle_token in spec_id
 
 
-def spec_matches_orders(path: Path, target_asset: str, target_timeframe: str) -> bool:
+def spec_matches_orders(path: Path, target_asset: str, target_timeframe: str, allowed_lanes: set[tuple[str, str]] | None = None) -> bool:
     if not path.exists():
         return False
     try:
@@ -51,6 +51,8 @@ def spec_matches_orders(path: Path, target_asset: str, target_timeframe: str) ->
         return False
     asset = str(payload.get("asset") or payload.get("primary_asset") or "").strip().upper()
     timeframe = str(payload.get("timeframe") or payload.get("primary_timeframe") or "").strip()
+    if allowed_lanes:
+        return (asset, timeframe) in allowed_lanes
     if target_asset and asset != target_asset:
         return False
     if target_timeframe and timeframe != target_timeframe:
@@ -84,6 +86,16 @@ def main() -> int:
     orders_cycle_id = int(orders_payload.get("cycle_id", 0) or 0)
     target_asset = str(orders_payload.get("target_asset") or status_payload.get("target_asset") or "").strip().upper()
     target_timeframe = str(orders_payload.get("target_timeframe") or status_payload.get("target_timeframe") or "").strip()
+    allowed_lanes = set()
+    for lane in (orders_payload.get("allowed_lanes") or []):
+        if not isinstance(lane, dict):
+            continue
+        asset = str(lane.get("asset") or "").strip().upper()
+        timeframe = str(lane.get("timeframe") or "").strip()
+        if asset and timeframe:
+            allowed_lanes.add((asset, timeframe))
+    if target_asset and target_timeframe:
+        allowed_lanes.add((target_asset, target_timeframe))
 
     preferred_paths = []
     if status_cycle_id == cycle_id:
@@ -115,7 +127,7 @@ def main() -> int:
         )
 
     for path in preferred_paths:
-        if spec_matches_cycle(path, cycle_id) and spec_matches_orders(path, target_asset, target_timeframe):
+        if spec_matches_cycle(path, cycle_id) and spec_matches_orders(path, target_asset, target_timeframe, allowed_lanes=allowed_lanes):
             add_path(path)
 
     if not discovered:
@@ -125,7 +137,7 @@ def main() -> int:
             except OSError:
                 continue
             if spec_matches_cycle(path, cycle_id):
-                if spec_matches_orders(path, target_asset, target_timeframe):
+                if spec_matches_orders(path, target_asset, target_timeframe, allowed_lanes=allowed_lanes):
                     add_path(path)
                 continue
             if stat.st_mtime + 1 < started_at_epoch:

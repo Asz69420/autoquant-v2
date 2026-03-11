@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C354-DOGE-RETEST-HOLD-DERISK-v1",
+  "cycle_id": 354,
+  "family_name": "doge_retest_hold_derisk",
+  "name": "DOGE Retest Hold De-Risk v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "DOGE", "timeframe": "4h" }
+  ],
+  "thesis": "DOGE 4h break impulses can work better after a retest-and-hold than on the initial expansion bar. The edge should come from delayed continuation entries with quick time-based de-risk if expansion fails to appear promptly.",
+  "edge_mechanism": "retest hold continuation with time-based de-risking",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if retest logic still collapses into sparse no-trade grammar, contradictory confirmation overlap, or fails to produce post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Breakout continuation only after the broken level is revisited and holds instead of failing immediately.",
+    "why_edge_should_exist": "Delayed entry after retest can filter false first-break moves while still allowing participation in genuine follow-through bursts.",
+    "asset_timeframe_fit": "DOGE 4h often moves in impulse-reset cycles where retest logic is more realistic than perfect first-break timing.",
+    "indicator_role_map": {
+      "EMA_20": "retest/hold reference",
+      "ATR_14": "retest distance and risk normalizer",
+      "RSI_14": "state qualifier",
+      "ADX_14": "minimum persistence filter",
+      "BOLLINGER_BANDS_20_2": "contextual expansion check"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If breakouts either fail immediately or run away without retesting, entries may still be underrepresented.",
+    "first_refinement_path": "If participation exists but density is weak, widen retest proximity before changing time-based de-risk rules.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "none obvious; retest and persistence filters align with expansion context",
+      "event_sparsity": "managed by broad retest proximity and modest ADX floor",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "ATR_14", "RSI_14", "ADX_14", "BOLLINGER_BANDS_20_2"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low <= EMA_20 + 0.15 * ATR_14",
+      "RSI_14 >= 49",
+      "ADX_14 >= 9",
+      "BOLLINGER_WIDTH_20 >= 0.6 * ATR_14"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High >= EMA_20 - 0.15 * ATR_14",
+      "RSI_14 <= 51",
+      "ADX_14 >= 9",
+      "BOLLINGER_WIDTH_20 >= 0.6 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.8 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.7 * ATR_14",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.25 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.8 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.7 * ATR_14",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.25 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  }
+}

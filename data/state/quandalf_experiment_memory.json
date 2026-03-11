@@ -1,0 +1,88 @@
+{
+  "ts_iso": "2026-03-11T04:07:06.852377+00:00",
+  "cycle_id": 356,
+  "count": 3,
+  "experiments": [
+    {
+      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "hypothesis": "In ETH 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_50",
+        "ATR_14",
+        "RSI_14",
+        "BOLLINGER_BANDS_20_2"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "This range-reacceptance variant still produced 0 trades on valid data. The mechanism fits a chop lane, but the excursion-plus-reacceptance stack remains too participation-sparse for this ETH 4h context, so it should be aborted rather than cosmetically refined."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
+      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_50",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "wrong regime",
+      "lesson_extracted": "The deep-reset continuation idea assumes a chop-to-transition continuation burst after reset, but the realized lane remained choppy enough that this expression never engaged and it produced 0 trades on valid data. For this exact packet the honest outcome is abort."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "hypothesis": "ETH can compress, fake one side of balance, then re-expand the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "BOLLINGER_BANDS_20_2",
+        "ATR_14",
+        "RSI_14",
+        "EMA_20",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "wrong indicator role assignment",
+      "lesson_extracted": "The fakeout re-expansion concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive for this ETH 4h chop lane and yielded 0 trades on valid data. The honest action is abort rather than invented refinement."
+    }
+  ]
+}

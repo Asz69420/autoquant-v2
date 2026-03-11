@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v2",
-  "ts_iso": "2026-03-11T03:12:30.012090+00:00",
+  "ts_iso": "2026-03-11T03:28:30.238798+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -8,8 +8,8 @@
     "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
   },
   "cycle_context": {
-    "cycle_id": 352,
-    "asset": "SOL",
+    "cycle_id": 356,
+    "asset": "ETH",
     "timeframe": "4h",
     "mode": "explore",
     "research_direction": "explore_new"
@@ -26,31 +26,31 @@
   "dimensions": {
     "what_worked": [],
     "what_failed": [
-      "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+      "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     ],
     "why_it_failed": [
-      "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1: too sparse",
-      "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1: too sparse",
-      "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1: too sparse",
-      "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1: too sparse",
-      "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1: wrong regime",
-      "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1: wrong indicator role assignment"
+      "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1: too sparse",
+      "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1: too sparse",
+      "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1: too sparse",
+      "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1: too sparse",
+      "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1: wrong regime",
+      "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1: wrong indicator role assignment"
     ],
     "iterate_next": [
-      "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1: allowed next actions -> refine, abort",
-      "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1: allowed next actions -> refine, abort",
-      "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1: allowed next actions -> refine, abort",
-      "decision QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1: This state-change continuation variant still produced 0 trades on valid data. The mechanism is plausible, but the combined hold and confirmation stack remains too participation-sparse for this SOL 4h transition lane, so it should be aborted rather than cosmetically refined.",
-      "decision QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1: The exhaustion mean-reversion idea is coherent, but this SOL 4h lane did not express enough balance-reversion behavior for the chosen setup and it produced 0 trades on valid data. For this exact packet the honest outcome is abort.",
-      "decision QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1: The retest-continuation concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive and yielded 0 trades on valid data. For this packet the honest action is abort rather than invented refinement."
+      "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1: allowed next actions -> refine, abort",
+      "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1: allowed next actions -> refine, abort",
+      "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1: allowed next actions -> refine, abort",
+      "decision QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1: This range-reacceptance variant still produced 0 trades on valid data. The mechanism fits a chop lane, but the excursion-plus-reacceptance stack remains too participation-sparse for this ETH 4h context, so it should be aborted rather than cosmetically refined.",
+      "decision QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1: The deep-reset continuation idea assumes a chop-to-transition continuation burst after reset, but the realized lane remained choppy enough that this expression never engaged and it produced 0 trades on valid data. For this exact packet the honest outcome is abort.",
+      "decision QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1: The fakeout re-expansion concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive for this ETH 4h chop lane and yielded 0 trades on valid data. The honest action is abort rather than invented refinement."
     ],
     "abandon": [],
     "bench_for_later": [],
     "regime_notes": [],
     "strategy_family_notes": [
-      "[\"sol_state_change_momentum_hold\", \"sol_value_reacceptance_exhaustion\", \"sol_retest_continuation_runner\"]",
+      "[\"eth_range_failure_reacceptance\", \"eth_deep_reset_continuation\", \"eth_compression_fakeout_reexpansion\"]",
       "[]"
     ],
     "indicator_role_notes": [],

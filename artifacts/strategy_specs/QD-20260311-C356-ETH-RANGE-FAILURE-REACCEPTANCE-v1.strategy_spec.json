@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 356,
+  "family_name": "eth_range_failure_reacceptance",
+  "name": "ETH Range Failure Reacceptance v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "In ETH 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+  "edge_mechanism": "range failure mean reversion after value reacceptance",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if walk-forward testing shows zero trades on valid data, contradictory filter behavior, weak blind-window participation, or no post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "False breaks from local balance that reverse once value is reaccepted in a chop-dominant regime.",
+    "why_edge_should_exist": "Chop produces repeated failed directional probes; once acceptance returns, trapped breakout traders can fuel the move back toward balance.",
+    "asset_timeframe_fit": "ETH 4h is liquid and structurally clean enough for repeated range-failure patterns without excessive intrabar noise.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "excursion detector",
+      "EMA_20": "value reacceptance reference",
+      "EMA_50": "mean-reversion target",
+      "ATR_14": "excursion and risk normalizer",
+      "RSI_14": "state qualifier"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If the lane trends more cleanly than expected, the mean-reversion setup may not trigger often enough or may be steamrolled.",
+    "first_refinement_path": "If trade count is low but setup logic is coherent, widen the reacceptance band before changing exits.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion and reacceptance are complementary",
+      "event_sparsity": "reduced by using proximity-to-band logic instead of exact reversal candles",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "BOLLINGER_BANDS_20_2"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 43"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 57"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

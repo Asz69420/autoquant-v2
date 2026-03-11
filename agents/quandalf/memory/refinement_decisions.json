@@ -1,27 +1,27 @@
 {
-  "cycle_id": 352,
-  "ts_iso": "2026-03-11T03:11:20Z",
+  "cycle_id": 356,
+  "ts_iso": "2026-03-11T03:27:35Z",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
-      "source_strategy_spec_id": "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
+      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "source_strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
       "decision": "abort",
       "diagnosis_category": "too sparse",
-      "rationale": "This state-change continuation variant still produced 0 trades on valid data. The mechanism is plausible, but the combined hold and confirmation stack remains too participation-sparse for this SOL 4h transition lane, so it should be aborted rather than cosmetically refined."
+      "rationale": "This range-reacceptance variant still produced 0 trades on valid data. The mechanism fits a chop lane, but the excursion-plus-reacceptance stack remains too participation-sparse for this ETH 4h context, so it should be aborted rather than cosmetically refined."
     },
     {
-      "strategy_spec_id": "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1",
-      "source_strategy_spec_id": "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
+      "source_strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
       "decision": "abort",
       "diagnosis_category": "wrong regime",
-      "rationale": "The exhaustion mean-reversion idea is coherent, but this SOL 4h lane did not express enough balance-reversion behavior for the chosen setup and it produced 0 trades on valid data. For this exact packet the honest outcome is abort."
+      "rationale": "The deep-reset continuation idea assumes a chop-to-transition continuation burst after reset, but the realized lane remained choppy enough that this expression never engaged and it produced 0 trades on valid data. For this exact packet the honest outcome is abort."
     },
     {
-      "strategy_spec_id": "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1",
-      "source_strategy_spec_id": "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1",
+      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "source_strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
       "decision": "abort",
       "diagnosis_category": "wrong indicator role assignment",
-      "rationale": "The retest-continuation concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive and yielded 0 trades on valid data. For this packet the honest action is abort rather than invented refinement."
+      "rationale": "The fakeout re-expansion concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive for this ETH 4h chop lane and yielded 0 trades on valid data. The honest action is abort rather than invented refinement."
     }
   ],
   "jobs": []

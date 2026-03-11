@@ -1,13 +1,13 @@
 {
-  "cycle_id": 353,
+  "cycle_id": 358,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-POST-EXPANSION-RUNNER-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C358-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C358-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C358-AXS-RETEST-HOLD-DERISK-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
@@ -25,20 +25,28 @@
       "scale-in on improved confirmation, then scale-out into expansion",
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": ["TAO"],
-    "timeframes": ["4h"]
+    "assets": [
+      "BTC",
+      "ETH",
+      "TAO"
+    ],
+    "timeframes": [
+      "1h",
+      "4h"
+    ]
   },
   "iterate_target": null,
   "new_families": [
-    "tao_range_failure_reacceptance",
-    "tao_inventory_reset_reclaim",
-    "tao_post_expansion_runner"
+    "eth_value_recovery_scalein",
+    "btc_asymmetric_trend_persistence",
+    "axs_retest_hold_derisk"
   ],
   "iterated_families": [],
   "abandoned_families": [],
-  "next_cycle_focus": "Run the TAO 4h batch and only refine branches that prove real blind-window participation and post-cost edge. Abort any zero-trade branch immediately rather than decorating the grammar.",
-  "rationale": "Cycle 353 is currently aligned to a TAO 4h explore lane in CHOP. I wrote three materially distinct, mechanism-first structures with explicit component roles, failure modes, and density sanity checks to avoid repeating decorative sparse zero-trade grammar.",
-  "target_asset": "TAO",
+  "next_cycle_focus": "Run the ETH/BTC/AXS intraday basket and only refine branches that show real blind-window participation and post-cost edge. Abort branches that remain structurally sparse instead of hiding them behind extra confirmation layers.",
+  "rationale": "Cycle 358 and research_program.json now align on an ETH 1h primary lane with ETH 4h, BTC 1h, and AXS 1h in the validation basket under a transition-oriented brief. I aligned the batch directly to the live hypotheses: ETH 1h value-recovery scale-in for staged confirmation, BTC 1h asymmetric trend persistence to separate trigger/risk/exit roles on a denser similar-asset lane, and AXS 1h retest-hold de-risk for delayed continuation with explicit time-based exposure reduction.",
+  "target_asset": "ETH",
   "target_timeframe": "4h",
-  "specific_family_to_iterate": null
+  "specific_family_to_iterate": null,
+  "fallback_source": false
 }

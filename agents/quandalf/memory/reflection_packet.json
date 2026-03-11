@@ -1,21 +1,21 @@
 {
-  "ts_iso": "2026-03-11T03:14:40.351138+00:00",
+  "ts_iso": "2026-03-11T03:26:30.911863+00:00",
   "type": "reflection",
-  "cycle_id": 353,
+  "cycle_id": 356,
   "mode": "explore",
   "research_direction": "explore_new",
-  "target_asset": "TAO",
+  "target_asset": "ETH",
   "target_timeframe": "4h",
   "strategy_outcomes": [
     {
-      "strategy_spec_id": "QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-      "name": "TAO Range Failure Reacceptance v1",
-      "asset": "TAO",
+      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+      "name": "ETH Range Failure Reacceptance v1",
+      "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "tao_range_failure_reacceptance",
+      "strategy_family": "eth_range_failure_reacceptance",
       "edge_mechanism": "range failure mean reversion after value reacceptance",
-      "hypothesis": "In TAO 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "hypothesis": "In ETH 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
       "indicators": [
         "EMA_20",
         "EMA_50",
@@ -25,14 +25,14 @@
       ],
       "entry_rules": {
         "long": [
-          "Low <= BOLLINGER_LOWER_20_2 + 0.25 * ATR_14",
+          "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 42"
+          "RSI_14 >= 43"
         ],
         "short": [
-          "High >= BOLLINGER_UPPER_20_2 - 0.25 * ATR_14",
+          "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 58"
+          "RSI_14 <= 57"
         ]
       },
       "exit_rules": {
@@ -51,7 +51,7 @@
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_308cf2cb2aa3",
+          "queue_id": "rq_e7ab5bd02a5c",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -60,8 +60,8 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:14:39.276830+00:00",
-          "completed_at": "2026-03-11T03:14:39.721752+00:00"
+          "queued_at": "2026-03-11T03:26:29.839363+00:00",
+          "completed_at": "2026-03-11T03:26:30.271906+00:00"
         }
       ],
       "result_count": 0,
@@ -90,146 +90,56 @@
       "has_zero_trade_signal": true
     },
     {
-      "strategy_spec_id": "QD-20260311-C353-TAO-INVENTORY-RESET-RECLAIM-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json",
-      "name": "TAO Inventory Reset Reclaim v1",
-      "asset": "TAO",
+      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
+      "name": "ETH Deep Reset Continuation v1",
+      "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "tao_inventory_reset_reclaim",
-      "edge_mechanism": "inventory reset reclaim continuation",
-      "hypothesis": "TAO 4h flushes can create tradable continuation only after inventory resets and price reclaims structure, rather than on raw oversold bounce logic. The edge should come from reclaim-after-flush behavior with broader participation thresholds.",
+      "strategy_family": "eth_deep_reset_continuation",
+      "edge_mechanism": "pullback continuation after deeper reset",
+      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
       "indicators": [
         "EMA_20",
-        "ATR_14",
-        "RSI_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= EMA_20 - 0.7 * ATR_14",
-          "Close >= EMA_20",
-          "RSI_14 >= 44",
-          "PLUS_DI_14 >= MINUS_DI_14"
-        ],
-        "short": [
-          "High >= EMA_20 + 0.7 * ATR_14",
-          "Close <= EMA_20",
-          "RSI_14 <= 56",
-          "MINUS_DI_14 >= PLUS_DI_14"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.9 * ATR_14 on 50% size",
-          "Take profit: 1.6 * ATR_14 on 25% size",
-          "Trail remaining 25% by 0.7 * ATR_14 after first partial",
-          "Final time stop: 8 bars"
-        ],
-        "short": [
-          "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.9 * ATR_14 on 50% size",
-          "Take profit: 1.6 * ATR_14 on 25% size",
-          "Trail remaining 25% by 0.7 * ATR_14 after first partial",
-          "Final time stop: 8 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
-      "queue": [
-        {
-          "queue_id": "rq_7e02ae029217",
-          "stage": "screen",
-          "status": "skipped",
-          "result_id": null,
-          "notes": {
-            "status": "integrity_skip",
-            "error": "integrity_skip:zero_trades_both_samples",
-            "stderr": ""
-          },
-          "queued_at": "2026-03-11T03:14:39.286028+00:00",
-          "completed_at": "2026-03-11T03:14:39.720462+00:00"
-        }
-      ],
-      "result_count": 0,
-      "latest_result": null,
-      "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
-      "allowed_next_actions": [
-        "refine",
-        "abort"
-      ],
-      "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "has_zero_trade_signal": true
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C353-TAO-POST-EXPANSION-RUNNER-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-POST-EXPANSION-RUNNER-v1.strategy_spec.json",
-      "name": "TAO Post Expansion Runner v1",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "strategy_family": "tao_post_expansion_runner",
-      "edge_mechanism": "post-expansion continuation with runner management",
-      "hypothesis": "TAO expansion bars can keep trending if the first profit is harvested while a core runner is left for persistence. The edge should come from post-expansion continuation with active de-risking rather than all-or-nothing exits.",
-      "indicators": [
-        "BOLLINGER_BANDS_20_2",
-        "EMA_20",
+        "EMA_50",
         "ATR_14",
         "RSI_14",
         "ADX_14"
       ],
       "entry_rules": {
         "long": [
-          "BOLLINGER_WIDTH_20 >= 0.7 * ATR_14",
+          "EMA_20 >= EMA_50 * 0.999",
+          "Low <= EMA_20 - 0.5 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 51",
-          "ADX_14 >= 9",
-          "Low >= EMA_20 - 0.15 * ATR_14"
+          "RSI_14 >= 48",
+          "ADX_14 >= 10"
         ],
         "short": [
-          "BOLLINGER_WIDTH_20 >= 0.7 * ATR_14",
+          "EMA_20 <= EMA_50 * 1.001",
+          "High >= EMA_20 + 0.5 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 49",
-          "ADX_14 >= 9",
-          "High <= EMA_20 + 0.15 * ATR_14"
+          "RSI_14 <= 52",
+          "ADX_14 >= 10"
         ]
       },
       "exit_rules": {
         "long": [
           "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.8 * ATR_14 on 40% size",
-          "Take profit: 1.4 * ATR_14 on 30% size",
-          "Trail remaining 30% by 0.7 * ATR_14",
-          "Final time stop: 7 bars"
+          "Take profit: 1.0 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.8 * ATR_14",
+          "Final time stop: 8 bars"
         ],
         "short": [
           "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.8 * ATR_14 on 40% size",
-          "Take profit: 1.4 * ATR_14 on 30% size",
-          "Trail remaining 30% by 0.7 * ATR_14",
-          "Final time stop: 7 bars"
+          "Take profit: 1.0 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.8 * ATR_14",
+          "Final time stop: 8 bars"
         ]
       },
       "trade_management": null,
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_c22be472d531",
+          "queue_id": "rq_94c7e042ef37",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -238,8 +148,98 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:14:39.292078+00:00",
-          "completed_at": "2026-03-11T03:14:39.718133+00:00"
+          "queued_at": "2026-03-11T03:26:29.850343+00:00",
+          "completed_at": "2026-03-11T03:26:30.268966+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "red_flag",
+      "recommended_action": "red_flag",
+      "decision_required": true,
+      "allowed_next_actions": [
+        "refine",
+        "abort"
+      ],
+      "diagnosis_category": "too sparse",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "has_zero_trade_signal": true
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
+      "name": "ETH Compression Fakeout Reexpansion v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_compression_fakeout_reexpansion",
+      "edge_mechanism": "compression fakeout followed by directional re-expansion",
+      "hypothesis": "ETH can compress, fake one side of balance, then re-expand the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "indicators": [
+        "BOLLINGER_BANDS_20_2",
+        "ATR_14",
+        "RSI_14",
+        "EMA_20",
+        "ADX_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+          "Low < BOLLINGER_LOWER_20_2",
+          "Close >= EMA_20",
+          "RSI_14 >= 47",
+          "ADX_14 >= 9"
+        ],
+        "short": [
+          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+          "High > BOLLINGER_UPPER_20_2",
+          "Close <= EMA_20",
+          "RSI_14 <= 53",
+          "ADX_14 >= 9"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.0 * ATR_14 below entry",
+          "Take profit: 0.9 * ATR_14 on 40% size",
+          "Take profit: 1.6 * ATR_14 on 40% size",
+          "Trail final 20% by 0.7 * ATR_14",
+          "Final time stop: 7 bars"
+        ],
+        "short": [
+          "Stop loss: 1.0 * ATR_14 above entry",
+          "Take profit: 0.9 * ATR_14 on 40% size",
+          "Take profit: 1.6 * ATR_14 on 40% size",
+          "Trail final 20% by 0.7 * ATR_14",
+          "Final time stop: 7 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_007002198024",
+          "stage": "screen",
+          "status": "skipped",
+          "result_id": null,
+          "notes": {
+            "status": "integrity_skip",
+            "error": "integrity_skip:zero_trades_both_samples",
+            "stderr": ""
+          },
+          "queued_at": "2026-03-11T03:26:29.856063+00:00",
+          "completed_at": "2026-03-11T03:26:30.270896+00:00"
         }
       ],
       "result_count": 0,
@@ -270,14 +270,14 @@
   ],
   "recent_results": [
     {
-      "strategy_spec_id": "QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-      "name": "TAO Range Failure Reacceptance v1",
-      "asset": "TAO",
+      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+      "name": "ETH Range Failure Reacceptance v1",
+      "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "tao_range_failure_reacceptance",
+      "strategy_family": "eth_range_failure_reacceptance",
       "edge_mechanism": "range failure mean reversion after value reacceptance",
-      "hypothesis": "In TAO 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "hypothesis": "In ETH 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
       "indicators": [
         "EMA_20",
         "EMA_50",
@@ -287,14 +287,14 @@
       ],
       "entry_rules": {
         "long": [
-          "Low <= BOLLINGER_LOWER_20_2 + 0.25 * ATR_14",
+          "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 42"
+          "RSI_14 >= 43"
         ],
         "short": [
-          "High >= BOLLINGER_UPPER_20_2 - 0.25 * ATR_14",
+          "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 58"
+          "RSI_14 <= 57"
         ]
       },
       "exit_rules": {
@@ -313,7 +313,7 @@
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_308cf2cb2aa3",
+          "queue_id": "rq_e7ab5bd02a5c",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -322,8 +322,8 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:14:39.276830+00:00",
-          "completed_at": "2026-03-11T03:14:39.721752+00:00"
+          "queued_at": "2026-03-11T03:26:29.839363+00:00",
+          "completed_at": "2026-03-11T03:26:30.271906+00:00"
         }
       ],
       "result_count": 0,
@@ -352,146 +352,56 @@
       "has_zero_trade_signal": true
     },
     {
-      "strategy_spec_id": "QD-20260311-C353-TAO-INVENTORY-RESET-RECLAIM-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json",
-      "name": "TAO Inventory Reset Reclaim v1",
-      "asset": "TAO",
+      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
+      "name": "ETH Deep Reset Continuation v1",
+      "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "tao_inventory_reset_reclaim",
-      "edge_mechanism": "inventory reset reclaim continuation",
-      "hypothesis": "TAO 4h flushes can create tradable continuation only after inventory resets and price reclaims structure, rather than on raw oversold bounce logic. The edge should come from reclaim-after-flush behavior with broader participation thresholds.",
+      "strategy_family": "eth_deep_reset_continuation",
+      "edge_mechanism": "pullback continuation after deeper reset",
+      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
       "indicators": [
         "EMA_20",
-        "ATR_14",
-        "RSI_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= EMA_20 - 0.7 * ATR_14",
-          "Close >= EMA_20",
-          "RSI_14 >= 44",
-          "PLUS_DI_14 >= MINUS_DI_14"
-        ],
-        "short": [
-          "High >= EMA_20 + 0.7 * ATR_14",
-          "Close <= EMA_20",
-          "RSI_14 <= 56",
-          "MINUS_DI_14 >= PLUS_DI_14"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.9 * ATR_14 on 50% size",
-          "Take profit: 1.6 * ATR_14 on 25% size",
-          "Trail remaining 25% by 0.7 * ATR_14 after first partial",
-          "Final time stop: 8 bars"
-        ],
-        "short": [
-          "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.9 * ATR_14 on 50% size",
-          "Take profit: 1.6 * ATR_14 on 25% size",
-          "Trail remaining 25% by 0.7 * ATR_14 after first partial",
-          "Final time stop: 8 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
-      "queue": [
-        {
-          "queue_id": "rq_7e02ae029217",
-          "stage": "screen",
-          "status": "skipped",
-          "result_id": null,
-          "notes": {
-            "status": "integrity_skip",
-            "error": "integrity_skip:zero_trades_both_samples",
-            "stderr": ""
-          },
-          "queued_at": "2026-03-11T03:14:39.286028+00:00",
-          "completed_at": "2026-03-11T03:14:39.720462+00:00"
-        }
-      ],
-      "result_count": 0,
-      "latest_result": null,
-      "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
-      "allowed_next_actions": [
-        "refine",
-        "abort"
-      ],
-      "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "has_zero_trade_signal": true
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C353-TAO-POST-EXPANSION-RUNNER-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-POST-EXPANSION-RUNNER-v1.strategy_spec.json",
-      "name": "TAO Post Expansion Runner v1",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "strategy_family": "tao_post_expansion_runner",
-      "edge_mechanism": "post-expansion continuation with runner management",
-      "hypothesis": "TAO expansion bars can keep trending if the first profit is harvested while a core runner is left for persistence. The edge should come from post-expansion continuation with active de-risking rather than all-or-nothing exits.",
-      "indicators": [
-        "BOLLINGER_BANDS_20_2",
-        "EMA_20",
+        "EMA_50",
         "ATR_14",
         "RSI_14",
         "ADX_14"
       ],
       "entry_rules": {
         "long": [
-          "BOLLINGER_WIDTH_20 >= 0.7 * ATR_14",
+          "EMA_20 >= EMA_50 * 0.999",
+          "Low <= EMA_20 - 0.5 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 51",
-          "ADX_14 >= 9",
-          "Low >= EMA_20 - 0.15 * ATR_14"
+          "RSI_14 >= 48",
+          "ADX_14 >= 10"
         ],
         "short": [
-          "BOLLINGER_WIDTH_20 >= 0.7 * ATR_14",
+          "EMA_20 <= EMA_50 * 1.001",
+          "High >= EMA_20 + 0.5 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 49",
-          "ADX_14 >= 9",
-          "High <= EMA_20 + 0.15 * ATR_14"
+          "RSI_14 <= 52",
+          "ADX_14 >= 10"
         ]
       },
       "exit_rules": {
         "long": [
           "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.8 * ATR_14 on 40% size",
-          "Take profit: 1.4 * ATR_14 on 30% size",
-          "Trail remaining 30% by 0.7 * ATR_14",
-          "Final time stop: 7 bars"
+          "Take profit: 1.0 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.8 * ATR_14",
+          "Final time stop: 8 bars"
         ],
         "short": [
           "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.8 * ATR_14 on 40% size",
-          "Take profit: 1.4 * ATR_14 on 30% size",
-          "Trail remaining 30% by 0.7 * ATR_14",
-          "Final time stop: 7 bars"
+          "Take profit: 1.0 * ATR_14 on 50% size",
+          "Trail remaining 50% by 0.8 * ATR_14",
+          "Final time stop: 8 bars"
         ]
       },
       "trade_management": null,
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_c22be472d531",
+          "queue_id": "rq_94c7e042ef37",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -500,8 +410,98 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:14:39.292078+00:00",
-          "completed_at": "2026-03-11T03:14:39.718133+00:00"
+          "queued_at": "2026-03-11T03:26:29.850343+00:00",
+          "completed_at": "2026-03-11T03:26:30.268966+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "red_flag",
+      "recommended_action": "red_flag",
+      "decision_required": true,
+      "allowed_next_actions": [
+        "refine",
+        "abort"
+      ],
+      "diagnosis_category": "too sparse",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "has_zero_trade_signal": true
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
+      "name": "ETH Compression Fakeout Reexpansion v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_compression_fakeout_reexpansion",
+      "edge_mechanism": "compression fakeout followed by directional re-expansion",
+      "hypothesis": "ETH can compress, fake one side of balance, then re-expand the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "indicators": [
+        "BOLLINGER_BANDS_20_2",
+        "ATR_14",
+        "RSI_14",
+        "EMA_20",
+        "ADX_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+          "Low < BOLLINGER_LOWER_20_2",
+          "Close >= EMA_20",
+          "RSI_14 >= 47",
+          "ADX_14 >= 9"
+        ],
+        "short": [
+          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+          "High > BOLLINGER_UPPER_20_2",
+          "Close <= EMA_20",
+          "RSI_14 <= 53",
+          "ADX_14 >= 9"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 1.0 * ATR_14 below entry",
+          "Take profit: 0.9 * ATR_14 on 40% size",
+          "Take profit: 1.6 * ATR_14 on 40% size",
+          "Trail final 20% by 0.7 * ATR_14",
+          "Final time stop: 7 bars"
+        ],
+        "short": [
+          "Stop loss: 1.0 * ATR_14 above entry",
+          "Take profit: 0.9 * ATR_14 on 40% size",
+          "Take profit: 1.6 * ATR_14 on 40% size",
+          "Trail final 20% by 0.7 * ATR_14",
+          "Final time stop: 7 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_007002198024",
+          "stage": "screen",
+          "status": "skipped",
+          "result_id": null,
+          "notes": {
+            "status": "integrity_skip",
+            "error": "integrity_skip:zero_trades_both_samples",
+            "stderr": ""
+          },
+          "queued_at": "2026-03-11T03:26:29.856063+00:00",
+          "completed_at": "2026-03-11T03:26:30.270896+00:00"
         }
       ],
       "result_count": 0,

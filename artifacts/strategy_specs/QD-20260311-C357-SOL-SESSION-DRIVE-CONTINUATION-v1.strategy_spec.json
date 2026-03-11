@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C357-SOL-SESSION-DRIVE-CONTINUATION-v1",
+  "cycle_id": 357,
+  "family_name": "sol_session_drive_continuation",
+  "name": "SOL Session Drive Continuation v1",
+  "asset": "SOL",
+  "timeframe": "1h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    { "asset": "SOL", "timeframe": "1h" },
+    { "asset": "SOL", "timeframe": "4h" }
+  ],
+  "thesis": "SOL 1h is the best-fit basket lane for testing whether an impulse hour that establishes structure can generate follow-through on the next bar when the move holds instead of fully mean reverting. The edge should come from session-drive continuation with broad structural hold, not fragile single-bar breakout grammar.",
+  "edge_mechanism": "session drive continuation after hold",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if walk-forward testing shows zero trades on valid data, contradictory role behavior, weak blind-window participation, or no post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "An impulse hour establishes a directional drive and the next bar holds enough structure to allow continuation.",
+    "why_edge_should_exist": "In transition regimes, early impulse bars can create inventory imbalance that persists briefly if price does not fully mean revert on the next bar.",
+    "asset_timeframe_fit": "SOL 1h is better than SOL 4h for this mechanism because session-drive behavior is inherently faster and should generate materially denser participation.",
+    "indicator_role_map": {
+      "EMA_20": "hold reference after the impulse",
+      "EMA_55": "structural anchor",
+      "ATR_14": "risk and hold-distance normalizer",
+      "RSI_14": "state qualifier",
+      "ADX_14": "minimum persistence filter"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the impulse bars mostly fully mean revert within one bar, the hold filter may still be too restrictive.",
+    "first_refinement_path": "If participation exists but density is low, relax the hold-distance threshold before changing exits.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "none obvious; structure, hold, and persistence roles align",
+      "event_sparsity": "reduced by moving this thesis to 1h instead of forcing it on 4h",
+      "asset_timeframe_mismatch": "none; 1h is the intended fit"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_55 * 0.999",
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.2 * ATR_14",
+      "RSI_14 >= 50",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "EMA_20 <= EMA_55 * 1.001",
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.2 * ATR_14",
+      "RSI_14 <= 50",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.9 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.7 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.3 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.9 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.7 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.3 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  }
+}

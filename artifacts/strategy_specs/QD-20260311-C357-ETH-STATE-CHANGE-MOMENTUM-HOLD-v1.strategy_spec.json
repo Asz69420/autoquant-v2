@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C357-ETH-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 357,
+  "family_name": "eth_state_change_momentum_hold",
+  "name": "ETH State Change Momentum Hold v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "1h" },
+    { "asset": "BTC", "timeframe": "1h" }
+  ],
+  "thesis": "ETH 1h is the best-fit primary lane for a state-change momentum test because the live basket moved to a faster lane and the regime context shows recent trend-down pressure with transitional instability. The edge should come from post-break hold after momentum improves, not from raw breakout touching alone.",
+  "edge_mechanism": "state-change momentum continuation after hold",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if the hold logic still cannot generate enough blind-window participation, if momentum and hold filters conflict, or if continuation collapses after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Short-term regime improvement after directional pressure, where price breaks back through structure and then holds instead of instantly mean reverting.",
+    "why_edge_should_exist": "When ETH 1h transitions out of a local down-pressure state, the first accepted reclaim can produce several bars of continuation before balance fully reasserts.",
+    "asset_timeframe_fit": "ETH 1h is the cleanest lane for this mechanism because state changes and post-break hold are inherently faster than 4h and should produce better density.",
+    "indicator_role_map": {
+      "EMA_20": "immediate structure reference",
+      "EMA_55": "state-change anchor",
+      "ATR_14": "risk and hold-distance normalizer",
+      "RSI_14": "momentum improvement qualifier",
+      "ADX_14": "minimum persistence filter"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the market remains one-way trend-down without real regime improvement, reclaim holds will fail quickly.",
+    "first_refinement_path": "If entries appear but continuation is too brief, shorten the holding logic before tightening the trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "none obvious; momentum improvement and structural hold are aligned",
+      "event_sparsity": "reduced by using broad hold logic instead of exact breakout candle requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "EMA_20 >= EMA_55 * 0.998",
+      "Low >= EMA_20 - 0.25 * ATR_14",
+      "RSI_14 >= 51",
+      "ADX_14 >= 11"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "EMA_20 <= EMA_55 * 1.002",
+      "High <= EMA_20 + 0.25 * ATR_14",
+      "RSI_14 <= 49",
+      "ADX_14 >= 11"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 0.8 * ATR_14 on 45% size",
+      "Trail remaining 55% by 0.65 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 0.8 * ATR_14 on 45% size",
+      "Trail remaining 55% by 0.65 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  }
+}

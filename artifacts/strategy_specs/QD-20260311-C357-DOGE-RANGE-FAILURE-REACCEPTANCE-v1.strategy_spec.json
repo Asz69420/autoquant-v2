@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C357-DOGE-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 357,
+  "family_name": "doge_range_failure_reacceptance",
+  "name": "DOGE Range Failure Reacceptance v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "DOGE", "timeframe": "4h" },
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "DOGE 4h is the best-fit primary lane for a chop-first range-failure reacceptance test. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+  "edge_mechanism": "range failure mean reversion after value reacceptance",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if testing shows weak blind-window participation, contradictory behavior between excursion and reacceptance, or no post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "False breaks from local balance that reverse once price reaccepts value in a predominantly choppy regime.",
+    "why_edge_should_exist": "In choppy DOGE 4h conditions, directional probes often fail. Once price reclaims the value area, trapped extension traders can fuel a move back toward balance.",
+    "asset_timeframe_fit": "DOGE 4h is the correct primary lane because the live regime is 90% CHOP and DOGE tends to overshoot local balance before snapping back.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "excursion detector",
+      "EMA_20": "value reacceptance reference",
+      "EMA_50": "balance target",
+      "ATR_14": "risk and excursion normalizer",
+      "RSI_14": "state qualifier"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If the move keeps trending after the excursion instead of reaccepting value, mean-reversion entries will be too early.",
+    "first_refinement_path": "If participation exists but conversions are weak, tighten the take-profit target before making the trigger more selective.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion and reacceptance roles complement each other",
+      "event_sparsity": "managed by proximity-to-band logic instead of exact reversal-candle requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "EMA_50", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.25 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 43"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.25 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 57"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: EMA_50 or 1.2 * ATR_14, whichever comes first",
+      "Time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: EMA_50 or 1.2 * ATR_14, whichever comes first",
+      "Time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  }
+}

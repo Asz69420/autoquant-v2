@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C358-ETH-POST-EXPANSION-RUNNER-v1",
+  "cycle_id": 358,
+  "family_name": "eth_post_expansion_runner",
+  "name": "ETH Post Expansion Runner v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "4h" },
+    { "asset": "TAO", "timeframe": "4h" }
+  ],
+  "thesis": "ETH 4h is the best-fit similar-asset lane for testing post-expansion partial-profit runner structure because ETH tends to sustain cleaner 4h expansion follow-through than TAO while still living inside the allowed basket. The edge should come from active de-risking rather than all-or-nothing exits.",
+  "edge_mechanism": "post-expansion continuation with runner management",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if expansions fade too quickly, if persistence and hold filters conflict, or if the runner cannot add enough value after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "An impulse expansion continues for a few bars when the first burst is not fully faded, allowing partial profit plus a retained runner.",
+    "why_edge_should_exist": "After a transition breakout, partial profit plus retained runner can monetize both immediate impulse and occasional continuation without requiring perfect exits.",
+    "asset_timeframe_fit": "ETH 4h is a better runner lane than TAO 4h for this concept because expansion persistence is structurally cleaner and less noisy.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "expansion detector",
+      "EMA_20": "structure/hold reference",
+      "ATR_14": "risk and target scale",
+      "RSI_14": "state qualifier",
+      "ADX_14": "persistence qualifier"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If expansions resolve as one-bar events instead of multi-bar persistence, the runner logic will overstay.",
+    "first_refinement_path": "If entries exist but runner capture is weak, shorten the runner and tighten the early de-risk before altering the trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "none obvious; expansion and persistence are aligned",
+      "event_sparsity": "managed by moderate expansion thresholds rather than extreme breakout requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 >= 0.7 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 51",
+      "ADX_14 >= 9",
+      "Low >= EMA_20 - 0.1 * ATR_14"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 >= 0.7 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 49",
+      "ADX_14 >= 9",
+      "High <= EMA_20 + 0.1 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.8 * ATR_14 on 40% size",
+      "Take profit: 1.3 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.7 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.8 * ATR_14 on 40% size",
+      "Take profit: 1.3 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.7 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}
