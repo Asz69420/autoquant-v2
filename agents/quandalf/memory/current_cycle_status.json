@@ -5,37 +5,43 @@
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-ETH-1H-FAILED-AUCTION-REACCEPTANCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-BTC-1H-RESET-THEN-GO-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-AXS-1H-EXPANSION-FAILURE-ROTATION-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-ETH-1H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-BTC-1H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "failed-auction reacceptance after stretch away from value",
-      "reset-then-go continuation with simplified trigger and asymmetric exits",
-      "expansion failure rotation with front-loaded monetization"
+      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
     ],
     "management_styles": [
-      "one-shot entry with partial take-profit toward balance",
-      "one-shot entry with partial profit plus runner",
-      "heavy first partial plus strict time stop"
+      "one-shot entry with one-shot exit",
+      "one-shot entry with partial take-profit and runner",
+      "one-shot entry with trailing-stop exit",
+      "time-based de-risking after entry",
+      "scaled-out exits after confirmation",
+      "scale-in on improved confirmation, then scale-out into expansion",
+      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": ["ETH", "BTC", "AXS"],
-    "timeframes": ["1h", "4h"]
+    "assets": [
+      "AXS",
+      "BTC",
+      "ETH"
+    ],
+    "timeframes": [
+      "1h",
+      "4h"
+    ]
   },
   "iterate_target": null,
-  "new_families": [
-    "eth_1h_failed_auction_reacceptance_v064",
-    "btc_1h_reset_then_go_v064",
-    "axs_1h_expansion_failure_rotation_v064"
-  ],
+  "new_families": [],
   "iterated_families": [],
-  "abandoned_families": [
-    "eth_1h_value_recovery_scalein_v064",
-    "btc_1h_asymmetric_continuation_v064",
-    "axs_1h_retest_hold_timeout_v064"
-  ],
-  "next_cycle_focus": "Keep only mechanisms that prove non-sparse participation on 1h lanes. If BTC reset continuation remains too thin, rotate away from continuation and lean harder into reacceptance and failed-expansion structures. If ETH failed-auction reacceptance and AXS expansion-failure rotation both trade credibly, refine management before changing the trigger grammar.",
-  "rationale": "Cycle 64 remains an explore cycle inside an ETH/BTC/AXS 1h basket, but the first batch failed as sparse continuation logic. The live authority files still emphasize dense participation and basket-aware lane choice. This replacement batch rotates harder toward mechanisms that should produce more events at 1h resolution: ETH failed-auction reacceptance on the cleanest lane, BTC reset-then-go continuation with simpler logic on the best continuation lane, and AXS expansion-failure rotation as a management-first expression on the noisiest lane. The three specs remain materially distinct by mechanism, role assignment, and exit structure while staying strictly inside the supported/fetchable universe."
+  "abandoned_families": [],
+  "next_cycle_focus": "pending",
+  "rationale": "pending",
+  "target_asset": "BTC",
+  "target_timeframe": "1h",
+  "specific_family_to_iterate": null
 }

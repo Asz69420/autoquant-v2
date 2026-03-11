@@ -917,7 +917,7 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
         note = f"This {mode} cycle is still building evidence, with best QS {best_qs:.2f} and the next decision waiting on cleaner current-cycle results." if best_qs > 0 else f"This {mode} cycle is still building evidence, and the next decision is waiting on cleaner current-cycle backtest results."
 
     lines = []
-    lines.append("🍳 Cooking" if not decisions_complete else "🔮 Reflection")
+    lines.append("🧪 Research" if not decisions_complete else "🔮 Reflection")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○────────────activity────────────")
     lines.append(f"Generated: {generated}")
@@ -983,7 +983,7 @@ def write_cycle_metrics(metrics):
         pass
 
 
-def should_send_card(cycle_id, card_text):
+def should_send_card(cycle_id, card_kind, card_text):
     fingerprint = hashlib.sha256(card_text.encode("utf-8")).hexdigest()
     state = {}
     try:
@@ -993,22 +993,47 @@ def should_send_card(cycle_id, card_text):
     except Exception:
         state = {}
 
-    last = state.get("last_card") if isinstance(state, dict) else None
-    if isinstance(last, dict) and int(last.get("cycle_id", -1) or -1) == int(cycle_id) and last.get("fingerprint") == fingerprint:
+    cards = state.get("cards") if isinstance(state, dict) else None
+    if not isinstance(cards, dict):
+        cards = {}
+    key = f"{int(cycle_id)}:{str(card_kind or 'research')}"
+    last = cards.get(key)
+    if isinstance(last, dict) and last.get("fingerprint") == fingerprint:
         return False, fingerprint
     return True, fingerprint
 
 
-def remember_card_send(cycle_id, card_text, fingerprint):
+def remember_card_send(cycle_id, card_kind, card_text, fingerprint):
     os.makedirs(os.path.dirname(CARD_STATE_PATH), exist_ok=True)
-    state = {
-        "last_card": {
-            "cycle_id": int(cycle_id),
-            "fingerprint": fingerprint,
-            "sent_at_iso": datetime.now(timezone.utc).isoformat(),
-            "preview": card_text.splitlines(),
-        }
+    state = {}
+    try:
+        if os.path.exists(CARD_STATE_PATH):
+            with open(CARD_STATE_PATH, "r", encoding="utf-8") as f:
+                state = json.load(f)
+    except Exception:
+        state = {}
+    cards = state.get("cards") if isinstance(state, dict) else None
+    if not isinstance(cards, dict):
+        cards = {}
+        legacy = state.get("last_card") if isinstance(state, dict) else None
+        if isinstance(legacy, dict):
+            legacy_key = f"{int(legacy.get('cycle_id', -1) or -1)}:research"
+            cards[legacy_key] = {
+                "cycle_id": int(legacy.get("cycle_id", -1) or -1),
+                "kind": "research",
+                "fingerprint": legacy.get("fingerprint"),
+                "sent_at_iso": legacy.get("sent_at_iso"),
+                "preview": legacy.get("preview") or [],
+            }
+    key = f"{int(cycle_id)}:{str(card_kind or 'research')}"
+    cards[key] = {
+        "cycle_id": int(cycle_id),
+        "kind": str(card_kind or 'research'),
+        "fingerprint": fingerprint,
+        "sent_at_iso": datetime.now(timezone.utc).isoformat(),
+        "preview": card_text.splitlines(),
     }
+    state = {"cards": cards}
     with open(CARD_STATE_PATH, "w", encoding="utf-8") as f:
         json.dump(state, f, indent=2)
 
@@ -1024,7 +1049,8 @@ def send_log_card(cycle_id, log_card, metrics=None):
     if not should_emit:
         return False
 
-    should_send, fingerprint = should_send_card(cycle_id, log_card)
+    card_kind = "reflection" if str(log_card).startswith("🔮 Reflection") else "research"
+    should_send, fingerprint = should_send_card(cycle_id, card_kind, log_card)
     if not should_send:
         return False
 
@@ -1056,7 +1082,7 @@ def send_log_card(cycle_id, log_card, metrics=None):
     if not sent_ok:
         return False
 
-    remember_card_send(cycle_id, log_card, fingerprint)
+    remember_card_send(cycle_id, card_kind, log_card, fingerprint)
     return True
 
 

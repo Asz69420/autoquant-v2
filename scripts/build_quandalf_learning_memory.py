@@ -152,6 +152,10 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
             if queue_id and (qdecision or qrationale):
                 queue_evidence.append(f"{queue_id}={qdecision or 'n/a'} ({qrationale or 'no rationale'})")
 
+        train_result = item.get('train_result') or {}
+        test_results = item.get('test_results') or []
+        stage_metrics = item.get('stage_metrics') or {}
+        latest_result = item.get('latest_result') or {}
         strategy_reviews.append({
             'strategy_spec_id': spec_id,
             'asset': item.get('asset'),
@@ -164,6 +168,10 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
             'why_asset': f"asset={item.get('asset') or 'unknown'} from chosen lane / result context",
             'why_timeframe': f"timeframe={item.get('timeframe') or 'unknown'} from chosen lane / result context",
             'queue_evidence': queue_evidence,
+            'train_result': train_result,
+            'test_results': test_results,
+            'stage_metrics': stage_metrics,
+            'latest_result': latest_result,
         })
 
         for result in results:
@@ -369,6 +377,13 @@ def build_journal_text(payload):
                 journal_lines.append(f"  mechanism: {item.get('edge_mechanism')}")
             if item.get('hypothesis'):
                 journal_lines.append(f"  thesis: {item.get('hypothesis')}")
+            train_result = item.get('train_result') or {}
+            if train_result:
+                journal_lines.append(f"  train: QS {train_result.get('score_total') or train_result.get('qscore') or 0} | Sharpe {train_result.get('sharpe_ratio') or 0} | PF {train_result.get('profit_factor') or 0} | DD {train_result.get('max_drawdown_pct') or 0}% | Trades {train_result.get('total_trades') or 0}")
+            stage_metrics = item.get('stage_metrics') or {}
+            test_stage = stage_metrics.get('test') or {}
+            if test_stage and int(test_stage.get('runs') or 0) > 0:
+                journal_lines.append(f"  test: runs={test_stage.get('runs') or 0} | trades={test_stage.get('trades') or 0} | best QS {test_stage.get('best_qscore') or 0} | best Sharpe {test_stage.get('best_sharpe') or 0} | best PF {test_stage.get('best_pf') or 0} | max DD {test_stage.get('max_dd') or 0}%")
             if item.get('decision_rationale'):
                 journal_lines.append(f"  why: {normalize_first_person_line(item.get('decision_rationale'))}")
             for evidence in (item.get('queue_evidence') or [])[:3]:

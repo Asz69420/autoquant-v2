@@ -129,6 +129,26 @@ def derive_failure_diagnosis(spec, result_rows, queue_rows):
     return "bad implementation"
 
 
+def summarize_stage_metrics(result_rows):
+    summary = {
+        "train": {"runs": 0, "trades": 0, "best_qscore": 0.0, "best_sharpe": 0.0, "best_pf": 0.0, "max_dd": 0.0, "best_return_pct": 0.0},
+        "test": {"runs": 0, "trades": 0, "best_qscore": 0.0, "best_sharpe": 0.0, "best_pf": 0.0, "max_dd": 0.0, "best_return_pct": 0.0},
+    }
+    for row in result_rows or []:
+        stage = str(row.get("stage") or "full").lower()
+        bucket = "train" if stage == "screen" else "test"
+        item = summary[bucket]
+        item["runs"] += 1
+        item["trades"] += int(row.get("total_trades") or 0)
+        item["best_qscore"] = max(float(item["best_qscore"] or 0.0), float(row.get("score_total") or 0.0))
+        item["best_pf"] = max(float(item["best_pf"] or 0.0), float(row.get("profit_factor") or 0.0))
+        item["best_return_pct"] = max(float(item["best_return_pct"] or 0.0), float(row.get("total_return_pct") or 0.0))
+        item["max_dd"] = max(float(item["max_dd"] or 0.0), float(row.get("max_drawdown_pct") or 0.0))
+        metrics = safe_json_load(row.get("metrics"), default={})
+        item["best_sharpe"] = max(float(item["best_sharpe"] or 0.0), float(metrics.get("sharpe_ratio") or row.get("sharpe_ratio") or 0.0))
+    return summary
+
+
 def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
     latest_result = result_rows[0] if result_rows else None
     if latest_result:
@@ -172,6 +192,11 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
                 "family_generation": row.get("family_generation"),
                 "stage": row.get("stage"),
                 "strategy_family": row.get("strategy_family"),
+                "sharpe_ratio": metrics.get("sharpe_ratio") or row.get("sharpe_ratio"),
+                "avg_trade_pct": metrics.get("avg_trade_pct") or row.get("avg_trade_pct"),
+                "degradation_pct": row.get("degradation_pct"),
+                "walk_forward_config": safe_json_load(row.get("walk_forward_config"), default={}),
+                "fold_results": safe_json_load(row.get("fold_results"), default=[]),
                 "metrics": metrics,
                 "regime_metrics": regime_metrics,
                 "ts_iso": row.get("ts_iso"),
@@ -180,6 +205,7 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
 
     variants = [summarize_variant(v) for v in (spec.get("variants") or []) if isinstance(v, dict)]
     diagnosis_category = derive_failure_diagnosis(spec, result_rows, queue_rows)
+    stage_metrics = summarize_stage_metrics(result_rows)
     return {
         "strategy_spec_id": spec_id,
         "spec_path": spec_path,
@@ -202,6 +228,9 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
         "result_count": len(results),
         "latest_result": results[0] if results else None,
         "results": results,
+        "stage_metrics": stage_metrics,
+        "train_result": next((r for r in results if str(r.get("stage") or "").lower() == "screen"), None),
+        "test_results": [r for r in results if str(r.get("stage") or "").lower() != "screen"],
         "outcome": action,
         "recommended_action": action,
         "decision_required": action in {"red_flag", "pending", "fix_only"},
