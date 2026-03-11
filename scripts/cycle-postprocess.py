@@ -25,6 +25,8 @@ BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 CARD_STATE_PATH = os.path.join(ROOT, "data", "state", "cycle_postprocess_card_state.json")
 CURRENT_CYCLE_SPECS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
 CURRENT_CYCLE_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
+REFLECTION_PACKET_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "reflection_packet.json")
+REFINEMENT_DECISIONS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "refinement_decisions.json")
 CURRENT_CYCLE_METRICS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_metrics.json")
 CURRENT_CYCLE_BATCH_SUMMARY_PATH = os.path.join(ROOT, "data", "state", "current_cycle_batch_summary.json")
 RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
@@ -703,14 +705,61 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     return metrics
 
 
+def _decision_counts_for_cycle(cycle_id):
+    decisions_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
+    reflection_payload = load_json_file(REFLECTION_PACKET_PATH) or {}
+
+    strategy_decisions = []
+    if int(decisions_payload.get("cycle_id") or -1) == int(cycle_id):
+        strategy_decisions = decisions_payload.get("strategy_decisions") or []
+
+    counts = {"iterated": 0, "passed": 0, "aborted": 0, "promoted": 0, "decision_count": 0}
+    if isinstance(strategy_decisions, list) and strategy_decisions:
+        for item in strategy_decisions:
+            if not isinstance(item, dict):
+                continue
+            decision = str(item.get("decision") or "").strip().lower()
+            counts["decision_count"] += 1
+            if decision == "refine":
+                counts["iterated"] += 1
+            elif decision == "promote":
+                counts["promoted"] += 1
+                counts["passed"] += 1
+            elif decision == "pass":
+                counts["passed"] += 1
+            elif decision == "abort":
+                counts["aborted"] += 1
+        return counts
+
+    if int(reflection_payload.get("cycle_id") or -1) == int(cycle_id):
+        for item in (reflection_payload.get("strategy_outcomes") or []):
+            if not isinstance(item, dict):
+                continue
+            action = str(item.get("recommended_action") or item.get("outcome") or "").strip().lower()
+            if action in {"pending", "red_flag", "fix_only", ""}:
+                continue
+            counts["decision_count"] += 1
+            if action == "refine":
+                counts["iterated"] += 1
+            elif action == "promote":
+                counts["promoted"] += 1
+                counts["passed"] += 1
+            elif action == "pass":
+                counts["passed"] += 1
+            elif action == "abort":
+                counts["aborted"] += 1
+    return counts
+
+
 def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=None):
     metrics = build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_state=run_state)
     run_elapsed = metrics.get("run_elapsed_seconds", elapsed_seconds)
     elapsed_str = f"{int(run_elapsed // 60)}m {int(run_elapsed % 60)}s" if run_elapsed else "?"
 
+    decision_counts = _decision_counts_for_cycle(cycle_id)
     generated = metrics.get("specs_produced", 0)
-    iterated = len(metrics.get("iterated_families") or [])
-    passed = metrics.get("pass_count", 0)
+    iterated = int(decision_counts.get("iterated") or len(metrics.get("iterated_families") or []))
+    passed = int(decision_counts.get("passed") or metrics.get("pass_count", 0))
     new_families = len(metrics.get("new_families") or [])
     active_families = metrics.get("active_families", 0)
     family_aborted = len(metrics.get("abandoned_families") or [])
@@ -718,8 +767,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     queue_done = int(metrics.get("queue_done") or 0)
     queue_skipped = int(metrics.get("queue_skipped") or 0)
     executed_backtests = queue_done + queue_skipped
-    aborted = family_aborted
+    decided_total = int(decision_counts.get("decision_count") or 0)
     backtests = executed_backtests
+    decision_basis = max(generated, backtests, decided_total)
+    aborted = int(decision_counts.get("aborted") or family_aborted)
+    unresolved = max(0, decision_basis - (passed + iterated + aborted))
+    if unresolved > 0:
+        aborted += unresolved
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
@@ -734,7 +788,7 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     if passed > 0 and best_qs > 0:
         note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
     if integrity_zero_trades > 0 and executed_backtests > 0:
-        note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}, but {integrity_zero_trades} produced 0 trades on valid data. That is a red flag, and Quandalf must explicitly choose iterate or abort for each one.")
+        note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} strategy{'ies' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to iterate.")
     if executed_backtests == 0 and generated > 0 and integrity_zero_trades == 0:
         note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still waiting for evidence before any strategy gets advanced or cut.")
     if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
@@ -755,9 +809,9 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○────────────activity────────────")
     lines.append(f"Generated: {generated}")
-    lines.append(f"Iterated: {iterated}")
     lines.append(f"Backtests: {backtests}")
     lines.append(f"Passed: {passed}")
+    lines.append(f"Iterated: {iterated}")
     lines.append(f"Aborted: {aborted}")
     lines.append("○─────────────note─────────────")
     lines.append(note)

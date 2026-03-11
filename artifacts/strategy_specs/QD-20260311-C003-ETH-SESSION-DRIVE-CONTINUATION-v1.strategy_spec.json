@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C003-ETH-SESSION-DRIVE-CONTINUATION-v1",
+  "cycle_id": 3,
+  "family_name": "eth_session_drive_continuation_v003",
+  "name": "ETH Session Drive Continuation v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {"asset":"ETH","timeframe":"1h"},
+    {"asset":"ETH","timeframe":"4h"}
+  ],
+  "thesis": "ETH 1h is the best-fit primary lane for a session-drive continuation idea only if it is rewritten as dense post-impulse hold logic rather than literal session-window choreography. The edge should come from persistence after a meaningful directional bar that holds value, not from exact clock-based ritual.",
+  "edge_mechanism": "post-impulse hold continuation",
+  "expected_regime": "CHOP_WITH_TRANSITION_POCKETS",
+  "invalidation_condition": "Abort if post-impulse hold setups remain too sparse, if impulse bars mostly mean-revert immediately, or if continuation cannot cover costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A meaningful directional impulse bar shifts short-term flow, and continuation becomes tradable only if the next bar holds above reclaimed value rather than fully retracing.",
+    "why_edge_should_exist": "Even in chop, some intraday expansions create brief persistence. Trading only after the hold should be denser than exact session-timing logic while still respecting the follow-through idea.",
+    "asset_timeframe_fit": "ETH 1h is appropriate because intraday impulse-and-hold structure appears often enough to test density honestly without relying on rare macro bars.",
+    "indicator_role_map": {
+      "EMA_20": "post-impulse hold reference",
+      "ATR_14": "impulse magnitude and risk normalizer",
+      "RSI_14": "state-shift qualifier",
+      "ADX_14": "participation filter",
+      "EMA_55": "background balance anchor"
+    },
+    "expected_regime": "CHOP_WITH_TRANSITION_POCKETS",
+    "likely_failure_mode": "If the market stays fully rotational, impulse bars may revert too quickly for a hold-based continuation to persist.",
+    "first_refinement_path": "If participation exists but the runner underperforms, keep the entry and shorten the back-half exit ambition.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; impulse, hold, and participation are complementary",
+      "event_sparsity": "managed by broad impulse-and-hold logic instead of exact session windows",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20","ATR_14","RSI_14","ADX_14","EMA_55"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.2 * ATR_14",
+      "Close - Open >= 0.28 * ATR_14 OR Close[1] - Open[1] >= 0.28 * ATR_14",
+      "RSI_14 >= 51",
+      "ADX_14 >= 9"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.2 * ATR_14",
+      "Open - Close >= 0.28 * ATR_14 OR Open[1] - Close[1] >= 0.28 * ATR_14",
+      "RSI_14 <= 49",
+      "ADX_14 >= 9"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.75 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.55 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.75 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.55 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":5,"max_concurrent_positions":1}
+}

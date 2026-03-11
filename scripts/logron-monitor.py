@@ -15,6 +15,7 @@ BANNERS = os.path.join(ROOT, "assets", "banners")
 GATEWAY_LOG_DIR = r"C:\tmp\openclaw"
 BOARD_PATH = os.path.join(ROOT, "data", "state", "agent_messages.json")
 HEALTH_SEND_STATE_PATH = os.path.join(ROOT, "data", "state", "health_send_state.json")
+RESET_BASELINE_PATH = os.path.join(ROOT, "data", "state", "system_reset_baseline.json")
 HEALTH_COOLDOWN_SECONDS = 24 * 3600  # daily-only resend for identical health state
 INTEGRITY_SCRIPT = os.path.join(ROOT, "scripts", "db_integrity_check.py")
 HADES_CHAT_ID = "-5133891354"
@@ -165,6 +166,19 @@ def safe_count(conn, table_name):
     return conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
 
 
+def load_reset_baseline():
+    try:
+        if os.path.exists(RESET_BASELINE_PATH):
+            with open(RESET_BASELINE_PATH, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+            ts_iso = payload.get("ts_iso")
+            if ts_iso:
+                return datetime.fromisoformat(str(ts_iso).replace("Z", "+00:00"))
+    except Exception:
+        pass
+    return None
+
+
 def count_backtests_24h(conn, cutoff_24h):
     if not table_exists(conn, "backtest_results"):
         return 0
@@ -250,8 +264,10 @@ def workspace_size_mb(paths):
 def check_health():
     now = datetime.now(timezone.utc)
     cutoff_24h_dt = now - timedelta(hours=24)
-    cutoff_24h_iso = cutoff_24h_dt.isoformat()
-    cutoff_24h_epoch = cutoff_24h_dt.timestamp()
+    reset_baseline = load_reset_baseline()
+    effective_cutoff_dt = reset_baseline if reset_baseline and reset_baseline > cutoff_24h_dt else cutoff_24h_dt
+    cutoff_24h_iso = effective_cutoff_dt.isoformat()
+    cutoff_24h_epoch = effective_cutoff_dt.timestamp()
 
     issues = []
     stats = {}
@@ -260,6 +276,7 @@ def check_health():
 
     backtests_24h = count_backtests_24h(conn, cutoff_24h_iso)
     stats["backtests_24h"] = backtests_24h
+    stats["health_window_started_at"] = effective_cutoff_dt.isoformat()
 
     total_backtests = safe_count(conn, "backtest_results")
     stats["total_backtests"] = total_backtests
@@ -328,10 +345,21 @@ def check_health():
     if ws_size > 10_000:
         issues.append(f"Workspace large ({ws_size}MB)")
 
+    grace_minutes = 30
+    age_since_baseline_minutes = None
+    if reset_baseline:
+        age_since_baseline_minutes = (now - reset_baseline).total_seconds() / 60.0
+        stats["minutes_since_reset"] = round(age_since_baseline_minutes, 1)
     if backtests_24h == 0:
-        issues.append("No backtests in 24h — pipeline may be stalled")
+        if age_since_baseline_minutes is not None and age_since_baseline_minutes < grace_minutes:
+            stats["backtests_grace_suppressed"] = True
+        else:
+            issues.append("No backtests in active health window — pipeline may be stalled")
     if strategy_specs_24h == 0:
-        issues.append("No strategy specs in 24h")
+        if age_since_baseline_minutes is not None and age_since_baseline_minutes < grace_minutes:
+            stats["specs_grace_suppressed"] = True
+        else:
+            issues.append("No strategy specs in active health window")
 
     # DB integrity checks — failures must be loud, not silent
     try:

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C005-BTC-BALANCE-RECLAIM-SWEEP-v1",
+  "cycle_id": 5,
+  "family_name": "btc_balance_reclaim_sweep_v005",
+  "name": "BTC Balance Reclaim Sweep v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset":"BTC","timeframe":"4h"},
+    {"asset":"ETH","timeframe":"4h"}
+  ],
+  "thesis": "BTC 4h is the best-fit primary lane for a balance-reclaim sweep structure that buys or sells failed excursions back into value rather than sparse continuation rituals. In a chop-dominant tape, the edge should come from repeated excursions outside balance that are repaired quickly.",
+  "edge_mechanism": "sweep-and-reclaim into balance",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if reclaim sweeps remain too sparse, if excursions fail to repair back into balance, or if follow-through after reclaim is too weak after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pushes outside short-term balance, fails to find acceptance, and reclaims value with enough follow-through to monetize a balance repair.",
+    "why_edge_should_exist": "A chop-heavy 4h environment should repeatedly generate excursions beyond balance that revert once inventory clears. This is denser than waiting for rare collapse-and-recovery events.",
+    "asset_timeframe_fit": "BTC 4h is appropriate because balance and reclaim structure are visible and less noisy than on smaller-cap names.",
+    "indicator_role_map": {
+      "EMA_20": "balance reference",
+      "EMA_55": "background anchor",
+      "ATR_14": "excursion distance and risk normalizer",
+      "RSI_14": "repair-state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff back toward balance"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If price trends cleanly after the excursion instead of repairing back into balance, the reclaim thesis fails.",
+    "first_refinement_path": "If the repair triggers but continuation is shallow, tighten profit-taking before changing the reclaim definition.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion and reclaim are sequential and broad",
+      "event_sparsity": "managed by moderate sweep thresholds rather than rare capitulation rules",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.32 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.25 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.32 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.25 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":4,"max_concurrent_positions":1}
+}

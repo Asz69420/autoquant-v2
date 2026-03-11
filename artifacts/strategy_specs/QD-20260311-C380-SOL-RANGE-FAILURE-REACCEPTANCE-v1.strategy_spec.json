@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C380-SOL-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 380,
+  "family_name": "sol_range_failure_reacceptance_v380",
+  "name": "SOL Range Failure Reacceptance v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset":"SOL","timeframe":"4h"},
+    {"asset":"ETH","timeframe":"4h"}
+  ],
+  "thesis": "SOL 4h is the best-fit primary lane for a range-failure reversal after a multi-bar breakout loses acceptance and re-enters balance. In a balanced chop/transition tape, the edge should come from trapped continuation flow unwinding back into value rather than from trying to catch exact tops and bottoms.",
+  "edge_mechanism": "range-failure reversal into balance reacceptance",
+  "expected_regime": "CHOP_WITH_TRANSITION_POCKETS",
+  "invalidation_condition": "Abort if range-failure setups remain too sparse, if reacceptance does not rotate price back through value, or if the lane trends too cleanly for reversal logic.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price extends beyond a local range for more than one bar, loses acceptance, and rotates back through near-term value as trapped continuation participants unwind.",
+    "why_edge_should_exist": "With chop and transition evenly represented, failed continuation should remain common. Re-entry into balance is broader and denser than waiting for rare exhaustion candles.",
+    "asset_timeframe_fit": "SOL 4h is suitable because false acceptance after visible expansion is clear enough to define balance loss and reacceptance without needing intraday noise.",
+    "indicator_role_map": {
+      "EMA_20": "near-value reacceptance reference",
+      "BOLLINGER_BANDS_20_2": "range extension context",
+      "ATR_14": "extension and risk normalizer",
+      "RSI_14": "state-shift qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "handoff from continuation to reversal"
+    },
+    "expected_regime": "CHOP_WITH_TRANSITION_POCKETS",
+    "likely_failure_mode": "If SOL enters persistent trend rather than failed continuation, reversal entries will be steamrolled.",
+    "first_refinement_path": "If reversal participation exists but exits too early, widen the back-half exit before tightening the reacceptance trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; extension context and reacceptance are sequential",
+      "event_sparsity": "managed with broad multi-bar extension plus value re-entry instead of exact trap candles",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20","BOLLINGER_BANDS_20_2","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "High[1] >= UPPER_BOLLINGER_20_2[1] OR High[2] >= UPPER_BOLLINGER_20_2[2]",
+      "Close <= EMA_20 + 0.2 * ATR_14",
+      "Close >= EMA_20 - 0.35 * ATR_14",
+      "RSI_14 <= 57",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "Low[1] <= LOWER_BOLLINGER_20_2[1] OR Low[2] <= LOWER_BOLLINGER_20_2[2]",
+      "Close >= EMA_20 - 0.2 * ATR_14",
+      "Close <= EMA_20 + 0.35 * ATR_14",
+      "RSI_14 >= 43",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 0.7 * ATR_14 on 45% size",
+      "Take profit: 1.1 * ATR_14 on 35% size",
+      "Trail remaining 20% behind EMA_20 with 0.4 * ATR_14 buffer",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 0.7 * ATR_14 on 45% size",
+      "Take profit: 1.1 * ATR_14 on 35% size",
+      "Trail remaining 20% behind EMA_20 with 0.4 * ATR_14 buffer",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":5,"max_concurrent_positions":1}
+}

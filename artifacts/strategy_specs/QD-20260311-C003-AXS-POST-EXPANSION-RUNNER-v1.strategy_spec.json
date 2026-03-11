@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C003-AXS-POST-EXPANSION-RUNNER-v1",
+  "cycle_id": 3,
+  "family_name": "axs_post_expansion_runner_v003",
+  "name": "AXS Post Expansion Runner v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {"asset":"AXS","timeframe":"1h"},
+    {"asset":"ETH","timeframe":"1h"}
+  ],
+  "thesis": "AXS 1h is the structurally different lane for a post-expansion partial-profit runner only if the entry itself is broad enough to participate. The edge should come from harvesting the first post-expansion move while leaving a smaller core for persistence when volatility keeps expanding.",
+  "edge_mechanism": "post-expansion continuation with partial-profit runner",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if post-expansion participation remains too sparse, if expansions mean-revert immediately, or if the runner logic has no opportunity to matter after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A fresh expansion bar shifts the short-term range, and continuation becomes tradable when price stays aligned with fast value on the following bar rather than instantly snapping back.",
+    "why_edge_should_exist": "Even in chop, some expansions lead to a second leg. Taking partial profits quickly while leaving a small runner is a management test on top of a deliberately broad participation trigger.",
+    "asset_timeframe_fit": "AXS 1h is the best structurally different lane because volatility expansions are clearer and the runner component has a realistic chance to matter if persistence appears.",
+    "indicator_role_map": {
+      "ATR_14": "expansion magnitude and risk normalizer",
+      "EMA_20": "post-expansion alignment reference",
+      "RSI_14": "state-strength qualifier",
+      "ADX_14": "persistence qualifier",
+      "EMA_55": "background balance anchor"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If AXS expansions revert immediately, the runner layer will never matter and the setup becomes a weak chase.",
+    "first_refinement_path": "If entries engage but the runner is consistently dead money, keep the entry and replace the runner with a full two-target exit.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; expansion and post-expansion alignment are complementary",
+      "event_sparsity": "managed by broad expansion thresholds rather than rare breakout stacks",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["ATR_14","EMA_20","RSI_14","ADX_14","EMA_55"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close - Open >= 0.3 * ATR_14 OR Close[1] - Open[1] >= 0.3 * ATR_14",
+      "Low >= EMA_20 - 0.22 * ATR_14",
+      "RSI_14 >= 52",
+      "ADX_14 >= 8"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Open - Close >= 0.3 * ATR_14 OR Open[1] - Close[1] >= 0.3 * ATR_14",
+      "High <= EMA_20 + 0.22 * ATR_14",
+      "RSI_14 <= 48",
+      "ADX_14 >= 8"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.65 * ATR_14 on 50% size",
+      "Take profit: 1.0 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.7 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.65 * ATR_14 on 50% size",
+      "Take profit: 1.0 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.7 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":5,"max_concurrent_positions":1}
+}

@@ -6,13 +6,31 @@ from datetime import datetime, timezone, timedelta
 
 ROOT = os.environ.get("AUTOQUANT_ROOT", r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 DB = os.path.join(ROOT, "db", "autoquant.db")
+RESET_BASELINE_PATH = os.path.join(ROOT, "data", "state", "system_reset_baseline.json")
+
+
+def load_reset_baseline():
+    try:
+        if os.path.exists(RESET_BASELINE_PATH):
+            with open(RESET_BASELINE_PATH, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+            ts_iso = payload.get("ts_iso")
+            if ts_iso:
+                return datetime.fromisoformat(str(ts_iso).replace("Z", "+00:00"))
+    except Exception:
+        pass
+    return None
 
 
 def main():
     conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     now = datetime.now(timezone.utc)
-    cutoff = (now - timedelta(hours=24)).isoformat()
+    cutoff_dt = now - timedelta(hours=24)
+    baseline = load_reset_baseline()
+    if baseline and baseline > cutoff_dt:
+        cutoff_dt = baseline
+    cutoff = cutoff_dt.isoformat()
 
     checks = {
         "zero_trade_rows": "SELECT COUNT(*) FROM backtest_results WHERE total_trades = 0",
@@ -32,6 +50,11 @@ def main():
             out[key] = conn.execute(sql).fetchone()[0]
     out["status"] = "ok"
     issues = []
+    grace_minutes = 30
+    baseline_age_minutes = None
+    if baseline:
+        baseline_age_minutes = (now - baseline).total_seconds() / 60.0
+        out["minutes_since_reset"] = round(baseline_age_minutes, 1)
     if out["recent_zero_trade_rows"] > 0:
         issues.append(f"recent_zero_trade_rows={out['recent_zero_trade_rows']}")
     if out["recent_impossible_pf_wr"] > 0:
@@ -39,7 +62,10 @@ def main():
     if out["recent_sentinel_minus_half"] > 0:
         issues.append(f"recent_sentinel_minus_half={out['recent_sentinel_minus_half']}")
     if out["recent_healthy_rows"] == 0:
-        issues.append("recent_healthy_rows=0")
+        if baseline_age_minutes is not None and baseline_age_minutes < grace_minutes:
+            out["healthy_rows_grace_suppressed"] = True
+        else:
+            issues.append("recent_healthy_rows=0")
     if issues:
         out["status"] = "fail"
         out["issues"] = issues

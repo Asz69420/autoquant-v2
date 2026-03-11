@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C380-ETH-TREND-RESET-CONTINUATION-v1",
+  "cycle_id": 380,
+  "family_name": "eth_trend_reset_continuation_v380",
+  "name": "ETH Trend Reset Continuation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset":"ETH","timeframe":"4h"},
+    {"asset":"SOL","timeframe":"4h"}
+  ],
+  "thesis": "ETH 4h is the cleaner similar-asset lane for testing trend reset continuation after a deeper pullback instead of shallow EMA-touch logic. The edge should come from a broader reset-and-reclaim structure that still fits a weak transition backdrop.",
+  "edge_mechanism": "deeper pullback trend reset continuation",
+  "expected_regime": "TRANSITION_TO_TREND_UP",
+  "invalidation_condition": "Abort if reset-and-reclaim entries remain too sparse, if deeper pullbacks mostly become full reversals, or if continuation is too weak after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional swing pulls back deeply enough to reset positioning, then regains fast value and resumes in the original direction.",
+    "why_edge_should_exist": "Weak transition-up conditions often punish shallow continuation entries but still reward deeper resets that clear weak positioning before the next leg.",
+    "asset_timeframe_fit": "ETH 4h is the cleaner lane for this because pullback and reclaim structure is usually less chaotic than on SOL while still expressing the same mechanism.",
+    "indicator_role_map": {
+      "EMA_20": "fast reclaim trigger",
+      "EMA_55": "reset support anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "ADX_14": "trend participation qualifier",
+      "RSI_14": "reset-complete state qualifier"
+    },
+    "expected_regime": "TRANSITION_TO_TREND_UP",
+    "likely_failure_mode": "If the market remains fully range-bound, deeper resets may only bounce back to value and fail to continue.",
+    "first_refinement_path": "If the setup trades but the back half underperforms, keep the reset logic and simplify exits before changing the entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reset depth, reclaim, and participation are complementary",
+      "event_sparsity": "managed by a support zone around EMA_55 instead of crash-only reset rules",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_55 + 0.25 * ATR_14",
+      "Low >= EMA_55 - 0.75 * ATR_14",
+      "Close >= EMA_20",
+      "EMA_20 >= EMA_55",
+      "ADX_14 >= 11",
+      "RSI_14 >= 49"
+    ],
+    "short": [
+      "High >= EMA_55 - 0.25 * ATR_14",
+      "High <= EMA_55 + 0.75 * ATR_14",
+      "Close <= EMA_20",
+      "EMA_20 <= EMA_55",
+      "ADX_14 >= 11",
+      "RSI_14 <= 51"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.75 * ATR_14 on 35% size",
+      "Take profit: 1.2 * ATR_14 on 35% size",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14 by selling 15%",
+      "Trail remaining 15% by 0.75 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.75 * ATR_14 on 35% size",
+      "Take profit: 1.2 * ATR_14 on 35% size",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14 by covering 15%",
+      "Trail remaining 15% by 0.75 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":7,"max_concurrent_positions":1}
+}

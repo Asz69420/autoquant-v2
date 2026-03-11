@@ -1,6 +1,89 @@
 {
-  "ts_iso": "2026-03-11T06:44:43.554993+00:00",
-  "cycle_id": 0,
-  "count": 0,
-  "experiments": []
+  "ts_iso": "2026-03-11T07:06:57.860649+00:00",
+  "cycle_id": 4,
+  "count": 3,
+  "experiments": [
+    {
+      "strategy_spec_id": "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1",
+      "hypothesis": "ETH 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a fully choppy regime, the edge should come from broad reclaim-of-value behavior rather than sparse continuation events.",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "pending: no backtest outcome recorded yet",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "pending"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "pending: no backtest outcome recorded yet"
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "hypothesis": "BTC 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. In a chop-dominant environment, the goal is to capture only brief persistence rather than assume full trend follow-through.",
+      "chosen_lane": {
+        "asset": "BTC",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "ATR_14",
+        "ADX_14",
+        "RSI_14",
+        "EMA_55"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "pending: no backtest outcome recorded yet",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "pending"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "pending: no backtest outcome recorded yet"
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1",
+      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear quickly. In a fully choppy regime, the value is not in chasing trend; it is in participating only after a hold and cutting exposure quickly if no extension appears.",
+      "chosen_lane": {
+        "asset": "TAO",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14",
+        "EMA_55"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "pending: no backtest outcome recorded yet",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "pending"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "pending: no backtest outcome recorded yet"
+    }
+  ]
 }

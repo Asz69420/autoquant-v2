@@ -133,11 +133,37 @@ def main():
         ],
     }
 
+    journal_lines = [
+        f"# Quandalf Journal — Cycle {payload['cycle_context']['cycle_id']}",
+        "",
+        f"- ts_iso: {payload['ts_iso']}",
+        f"- mode: {payload['cycle_context'].get('mode')}",
+        f"- lane: {payload['cycle_context'].get('asset')} / {payload['cycle_context'].get('timeframe')}",
+        f"- research_direction: {payload['cycle_context'].get('research_direction')}",
+        "",
+        "## Decision Summary",
+        json.dumps(payload.get('decision_summary') or {}, indent=2),
+        "",
+        "## Diagnosis Breakdown",
+        json.dumps(payload.get('diagnosis_breakdown') or {}, indent=2),
+        "",
+        "## What Worked",
+    ]
+    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('what_worked', [])] or ["- none"])
+    journal_lines.extend(["", "## What Failed"])
+    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('what_failed', [])] or ["- none"])
+    journal_lines.extend(["", "## Why It Failed"])
+    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('why_it_failed', [])] or ["- none"])
+    journal_lines.extend(["", "## Iterate Next"])
+    journal_lines.extend([f"- {x}" for x in (payload.get('dimensions') or {}).get('iterate_next', [])] or ["- none"])
+    journal_text_out = "\n".join(journal_lines) + "\n"
+
     STATE_OUT.parent.mkdir(parents=True, exist_ok=True)
     MEMORY_OUT.parent.mkdir(parents=True, exist_ok=True)
     STATE_OUT.write_text(json.dumps(payload, indent=2), encoding='utf-8')
     MEMORY_OUT.write_text(json.dumps(payload, indent=2), encoding='utf-8')
-    print(json.dumps({'status': 'ok', 'state': str(STATE_OUT), 'memory': str(MEMORY_OUT), 'cycle_id': payload['cycle_context']['cycle_id']}, indent=2))
+    JOURNAL.write_text(journal_text_out, encoding='utf-8')
+    print(json.dumps({'status': 'ok', 'state': str(STATE_OUT), 'memory': str(MEMORY_OUT), 'journal': str(JOURNAL), 'cycle_id': payload['cycle_context']['cycle_id']}, indent=2))
 
 
 if __name__ == '__main__':

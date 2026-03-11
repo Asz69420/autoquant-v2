@@ -1,16 +1,147 @@
 {
-  "cycle_id": 0,
+  "cycle_id": 5,
   "mode": "explore",
-  "research_direction": "fresh_start",
+  "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [],
-  "specs_produced": 0,
-  "exploration_targets": [],
+  "spec_paths": [
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C005-BTC-BALANCE-RECLAIM-SWEEP-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C005-ETH-COMPRESSION-HOLD-RELEASE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C005-TAO-FAILED-BREAK-REPAIR-v1.strategy_spec.json"
+  ],
+  "specs_produced": 3,
+  "exploration_targets": {
+    "concepts": [
+      "trend pullback continuation after deeper value reclaim into structural support",
+      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
+      "failed breakdown reclaim that must hold before continuation entry"
+    ],
+    "management_styles": [
+      "one-shot entry with one-shot exit",
+      "one-shot entry with partial take-profit and runner",
+      "one-shot entry with trailing-stop exit",
+      "time-based de-risking after entry",
+      "scaled-out exits after confirmation",
+      "scale-in on improved confirmation, then scale-out into expansion",
+      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
+    ],
+    "assets": ["BTC", "ETH", "TAO"],
+    "timeframes": ["1h", "4h"]
+  },
   "iterate_target": null,
-  "new_families": [],
+  "new_families": [
+    "btc_balance_reclaim_sweep_v005",
+    "eth_compression_hold_release_v005",
+    "tao_failed_break_repair_v005"
+  ],
   "iterated_families": [],
   "abandoned_families": [],
-  "next_cycle_focus": "fresh start",
-  "rationale": "Clean slate after poisoned backtest invalidation."
+  "next_cycle_focus": "Screen this BTC/ETH/TAO 4h batch and only iterate branches that prove real trade density. If any branch zero-trades or resolves to thin-edge low-trade output, rotate away from that grammar rather than loosening thresholds cosmetically.",
+  "rationale": "Cycle 5 opened on a BTC 4h-led explore brief under a chop/transition regime mix. I aligned the batch to the live hypotheses while deliberately avoiding already-killed families: BTC balance-reclaim sweep as a denser repair-of-value structure, ETH compression hold-release with realistic asymmetric harvesting, and TAO failed-break repair written as a broader reclaim expression instead of strict hold choreography. The set varies mechanism, role assignment, and management while staying fully inside the allowed basket.",
+  "target_asset": "BTC",
+  "target_timeframe": "4h",
+  "specific_family_to_iterate": null,
+  "fallback_source": false,
+  "family_kill_events": [
+    {
+      "ts_iso": "2026-03-11T06:18:55.683555+00:00",
+      "family": "sol_deep_value_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:19:01.465955+00:00",
+      "family": "tao_failed_breakdown_hold",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:23:51.842967+00:00",
+      "family": "sol_deep_value_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:23:57.586665+00:00",
+      "family": "tao_failed_breakdown_hold",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:28:43.889044+00:00",
+      "family": "tao_failed_breakdown_hold",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:28:49.631993+00:00",
+      "family": "sol_deep_value_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:28:55.440601+00:00",
+      "family": "eth_value_reacceptance_exhaustion",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:33:51.417278+00:00",
+      "family": "tao_failed_breakdown_hold",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:33:57.256964+00:00",
+      "family": "btc_inventory_reset_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:34:03.005255+00:00",
+      "family": "sol_deep_value_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:34:08.718023+00:00",
+      "family": "eth_value_reacceptance_exhaustion",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:34:36.825220+00:00",
+      "family": "eth_value_reacceptance_exhaustion",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:34:42.560591+00:00",
+      "family": "tao_failed_breakdown_hold",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:34:48.238363+00:00",
+      "family": "btc_inventory_reset_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:34:53.911820+00:00",
+      "family": "sol_deep_value_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:39:25.687212+00:00",
+      "family": "eth_value_reacceptance_exhaustion",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:39:31.423933+00:00",
+      "family": "sol_deep_value_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:39:37.200069+00:00",
+      "family": "tao_failed_breakdown_hold",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:39:42.944671+00:00",
+      "family": "btc_inventory_reset_reclaim",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T06:39:48.701480+00:00",
+      "family": "eth_value_recovery_scalein_v379",
+      "reason": "screen-stage density below 30 trades"
+    }
+  ]
 }

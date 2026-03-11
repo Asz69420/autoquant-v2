@@ -1,8 +1,562 @@
 {
-  "ts_iso": "2026-03-11T06:44:43.554012+00:00",
+  "ts_iso": "2026-03-11T07:06:02.336048+00:00",
   "type": "reflection",
-  "cycle_id": 0,
-  "strategy_outcomes": [],
+  "cycle_id": 4,
+  "mode": "explore",
+  "research_direction": "explore_new",
+  "target_asset": "ETH",
+  "target_timeframe": "4h",
+  "strategy_outcomes": [
+    {
+      "strategy_spec_id": "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+      "name": "ETH Value Recovery Scale-In v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_value_recovery_scalein_v004",
+      "edge_mechanism": "value recovery with improved-confirmation scale-in",
+      "hypothesis": "ETH 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a fully choppy regime, the edge should come from broad reclaim-of-value behavior rather than sparse continuation events.",
+      "indicators": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "Low <= EMA_20 - 0.34 * ATR_14",
+          "Close >= EMA_20",
+          "Close >= EMA_55 - 0.28 * ATR_14",
+          "RSI_14 >= 44",
+          "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+        ],
+        "short": [
+          "High >= EMA_20 + 0.34 * ATR_14",
+          "Close <= EMA_20",
+          "Close <= EMA_55 + 0.28 * ATR_14",
+          "RSI_14 <= 56",
+          "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.85 * ATR_14 below average entry",
+          "Take profit: 0.6 * ATR_14 on 40% total size",
+          "Take profit: 0.95 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.6 * ATR_14",
+          "Final time stop: 5 bars"
+        ],
+        "short": [
+          "Stop loss: 0.85 * ATR_14 above average entry",
+          "Take profit: 0.6 * ATR_14 on 40% total size",
+          "Take profit: 0.95 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.6 * ATR_14",
+          "Final time stop: 5 bars"
+        ]
+      },
+      "trade_management": {
+        "entry_expression": "scale_in_on_improved_confirmation",
+        "initial_size_pct": 60,
+        "add_on_size_pct": 40,
+        "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"
+      },
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_27dec1b71e45",
+          "stage": "screen",
+          "status": "done",
+          "result_id": null,
+          "notes": {
+            "status": "orphan_discarded",
+            "reason": "orphan_or_legacy_cycle",
+            "discarded_at": "2026-03-11T07:06:00.693743+00:00"
+          },
+          "queued_at": "2026-03-11T07:06:00.684200+00:00",
+          "completed_at": "2026-03-11T07:06:00.693735+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "diagnosis_category": "bad idea",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
+      "name": "BTC Asymmetric Trend Persistence v1",
+      "asset": "BTC",
+      "timeframe": "4h",
+      "strategy_family": "btc_asymmetric_trend_persistence_v004",
+      "edge_mechanism": "broad persistence continuation with asymmetric exits",
+      "hypothesis": "BTC 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. In a chop-dominant environment, the goal is to capture only brief persistence rather than assume full trend follow-through.",
+      "indicators": [
+        "EMA_20",
+        "ATR_14",
+        "ADX_14",
+        "RSI_14",
+        "EMA_55"
+      ],
+      "entry_rules": {
+        "long": [
+          "Close >= EMA_20",
+          "Low >= EMA_20 - 0.18 * ATR_14",
+          "RSI_14 >= 51",
+          "ADX_14 >= 8",
+          "EMA_20 >= EMA_55 * 0.998"
+        ],
+        "short": [
+          "Close <= EMA_20",
+          "High <= EMA_20 + 0.18 * ATR_14",
+          "RSI_14 <= 49",
+          "ADX_14 >= 8",
+          "EMA_20 <= EMA_55 * 1.002"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.8 * ATR_14 below entry",
+          "Take profit: 0.55 * ATR_14 on 50% size",
+          "Take profit: 0.9 * ATR_14 on 25% size",
+          "Exit remaining 25% on close below EMA_55 or 5 bars",
+          "Final time stop: 5 bars"
+        ],
+        "short": [
+          "Stop loss: 0.8 * ATR_14 above entry",
+          "Take profit: 0.55 * ATR_14 on 50% size",
+          "Take profit: 0.9 * ATR_14 on 25% size",
+          "Exit remaining 25% on close above EMA_55 or 5 bars",
+          "Final time stop: 5 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_427d15735766",
+          "stage": "screen",
+          "status": "done",
+          "result_id": null,
+          "notes": {
+            "status": "orphan_discarded",
+            "reason": "orphan_or_legacy_cycle",
+            "discarded_at": "2026-03-11T07:06:00.693800+00:00"
+          },
+          "queued_at": "2026-03-11T07:06:00.690826+00:00",
+          "completed_at": "2026-03-11T07:06:00.693797+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "diagnosis_category": "bad idea",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1.strategy_spec.json",
+      "name": "TAO Retest Hold Derisk v1",
+      "asset": "TAO",
+      "timeframe": "4h",
+      "strategy_family": "tao_retest_hold_derisk_v004",
+      "edge_mechanism": "retest hold continuation with time-based derisk",
+      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear quickly. In a fully choppy regime, the value is not in chasing trend; it is in participating only after a hold and cutting exposure quickly if no extension appears.",
+      "indicators": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14",
+        "EMA_55"
+      ],
+      "entry_rules": {
+        "long": [
+          "Close >= EMA_20",
+          "Low >= EMA_20 - 0.28 * ATR_14",
+          "RSI_14 >= 50",
+          "ADX_14 >= 8",
+          "EMA_20 >= EMA_55 * 0.995"
+        ],
+        "short": [
+          "Close <= EMA_20",
+          "High <= EMA_20 + 0.28 * ATR_14",
+          "RSI_14 <= 50",
+          "ADX_14 >= 8",
+          "EMA_20 <= EMA_55 * 1.005"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.9 * ATR_14 below entry",
+          "Take profit: 0.65 * ATR_14 on 35% size",
+          "Take profit: 1.0 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 5 bars"
+        ],
+        "short": [
+          "Stop loss: 0.9 * ATR_14 above entry",
+          "Take profit: 0.65 * ATR_14 on 35% size",
+          "Take profit: 1.0 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 5 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_0e336344d32b",
+          "stage": "screen",
+          "status": "done",
+          "result_id": null,
+          "notes": {
+            "status": "orphan_discarded",
+            "reason": "orphan_or_legacy_cycle",
+            "discarded_at": "2026-03-11T07:06:00.693818+00:00"
+          },
+          "queued_at": "2026-03-11T07:06:00.692336+00:00",
+          "completed_at": "2026-03-11T07:06:00.693816+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "diagnosis_category": "bad idea",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    }
+  ],
+  "recent_results": [
+    {
+      "strategy_spec_id": "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+      "name": "ETH Value Recovery Scale-In v1",
+      "asset": "ETH",
+      "timeframe": "4h",
+      "strategy_family": "eth_value_recovery_scalein_v004",
+      "edge_mechanism": "value recovery with improved-confirmation scale-in",
+      "hypothesis": "ETH 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a fully choppy regime, the edge should come from broad reclaim-of-value behavior rather than sparse continuation events.",
+      "indicators": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "Low <= EMA_20 - 0.34 * ATR_14",
+          "Close >= EMA_20",
+          "Close >= EMA_55 - 0.28 * ATR_14",
+          "RSI_14 >= 44",
+          "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+        ],
+        "short": [
+          "High >= EMA_20 + 0.34 * ATR_14",
+          "Close <= EMA_20",
+          "Close <= EMA_55 + 0.28 * ATR_14",
+          "RSI_14 <= 56",
+          "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.85 * ATR_14 below average entry",
+          "Take profit: 0.6 * ATR_14 on 40% total size",
+          "Take profit: 0.95 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.6 * ATR_14",
+          "Final time stop: 5 bars"
+        ],
+        "short": [
+          "Stop loss: 0.85 * ATR_14 above average entry",
+          "Take profit: 0.6 * ATR_14 on 40% total size",
+          "Take profit: 0.95 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.6 * ATR_14",
+          "Final time stop: 5 bars"
+        ]
+      },
+      "trade_management": {
+        "entry_expression": "scale_in_on_improved_confirmation",
+        "initial_size_pct": 60,
+        "add_on_size_pct": 40,
+        "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"
+      },
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_27dec1b71e45",
+          "stage": "screen",
+          "status": "done",
+          "result_id": null,
+          "notes": {
+            "status": "orphan_discarded",
+            "reason": "orphan_or_legacy_cycle",
+            "discarded_at": "2026-03-11T07:06:00.693743+00:00"
+          },
+          "queued_at": "2026-03-11T07:06:00.684200+00:00",
+          "completed_at": "2026-03-11T07:06:00.693735+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "diagnosis_category": "bad idea",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
+      "name": "BTC Asymmetric Trend Persistence v1",
+      "asset": "BTC",
+      "timeframe": "4h",
+      "strategy_family": "btc_asymmetric_trend_persistence_v004",
+      "edge_mechanism": "broad persistence continuation with asymmetric exits",
+      "hypothesis": "BTC 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. In a chop-dominant environment, the goal is to capture only brief persistence rather than assume full trend follow-through.",
+      "indicators": [
+        "EMA_20",
+        "ATR_14",
+        "ADX_14",
+        "RSI_14",
+        "EMA_55"
+      ],
+      "entry_rules": {
+        "long": [
+          "Close >= EMA_20",
+          "Low >= EMA_20 - 0.18 * ATR_14",
+          "RSI_14 >= 51",
+          "ADX_14 >= 8",
+          "EMA_20 >= EMA_55 * 0.998"
+        ],
+        "short": [
+          "Close <= EMA_20",
+          "High <= EMA_20 + 0.18 * ATR_14",
+          "RSI_14 <= 49",
+          "ADX_14 >= 8",
+          "EMA_20 <= EMA_55 * 1.002"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.8 * ATR_14 below entry",
+          "Take profit: 0.55 * ATR_14 on 50% size",
+          "Take profit: 0.9 * ATR_14 on 25% size",
+          "Exit remaining 25% on close below EMA_55 or 5 bars",
+          "Final time stop: 5 bars"
+        ],
+        "short": [
+          "Stop loss: 0.8 * ATR_14 above entry",
+          "Take profit: 0.55 * ATR_14 on 50% size",
+          "Take profit: 0.9 * ATR_14 on 25% size",
+          "Exit remaining 25% on close above EMA_55 or 5 bars",
+          "Final time stop: 5 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_427d15735766",
+          "stage": "screen",
+          "status": "done",
+          "result_id": null,
+          "notes": {
+            "status": "orphan_discarded",
+            "reason": "orphan_or_legacy_cycle",
+            "discarded_at": "2026-03-11T07:06:00.693800+00:00"
+          },
+          "queued_at": "2026-03-11T07:06:00.690826+00:00",
+          "completed_at": "2026-03-11T07:06:00.693797+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "diagnosis_category": "bad idea",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1.strategy_spec.json",
+      "name": "TAO Retest Hold Derisk v1",
+      "asset": "TAO",
+      "timeframe": "4h",
+      "strategy_family": "tao_retest_hold_derisk_v004",
+      "edge_mechanism": "retest hold continuation with time-based derisk",
+      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear quickly. In a fully choppy regime, the value is not in chasing trend; it is in participating only after a hold and cutting exposure quickly if no extension appears.",
+      "indicators": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14",
+        "EMA_55"
+      ],
+      "entry_rules": {
+        "long": [
+          "Close >= EMA_20",
+          "Low >= EMA_20 - 0.28 * ATR_14",
+          "RSI_14 >= 50",
+          "ADX_14 >= 8",
+          "EMA_20 >= EMA_55 * 0.995"
+        ],
+        "short": [
+          "Close <= EMA_20",
+          "High <= EMA_20 + 0.28 * ATR_14",
+          "RSI_14 <= 50",
+          "ADX_14 >= 8",
+          "EMA_20 <= EMA_55 * 1.005"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.9 * ATR_14 below entry",
+          "Take profit: 0.65 * ATR_14 on 35% size",
+          "Take profit: 1.0 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 5 bars"
+        ],
+        "short": [
+          "Stop loss: 0.9 * ATR_14 above entry",
+          "Take profit: 0.65 * ATR_14 on 35% size",
+          "Take profit: 1.0 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 5 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_0e336344d32b",
+          "stage": "screen",
+          "status": "done",
+          "result_id": null,
+          "notes": {
+            "status": "orphan_discarded",
+            "reason": "orphan_or_legacy_cycle",
+            "discarded_at": "2026-03-11T07:06:00.693818+00:00"
+          },
+          "queued_at": "2026-03-11T07:06:00.692336+00:00",
+          "completed_at": "2026-03-11T07:06:00.693816+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "pending",
+      "recommended_action": "pending",
+      "decision_required": true,
+      "allowed_next_actions": [],
+      "diagnosis_category": "bad idea",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "pending: no backtest outcome recorded yet",
+      "has_zero_trade_signal": false
+    }
+  ],
+  "external_context_results": [],
+  "recent_lessons": [],
+  "result_count": 0,
+  "current_cycle_result_count": 0,
+  "current_cycle_strategy_count": 3,
+  "external_result_count": 0,
+  "any_promising": false,
+  "best_pf": 0,
+  "best_qscore": 0,
   "decision_summary": {
     "promote": 0,
     "refine": 0,
@@ -11,6 +565,6 @@
   },
   "guidance": {
     "focus_level": "strategy",
-    "instruction": "Fresh start. Generate only thesis-first strategies that should obviously trade."
+    "instruction": "Work strategy-by-strategy. For each spec, decide promote, refine, or abort using the full strategy context plus the concrete backtest outcome. If a strategy produced 0 trades on valid data, treat that as a red flag that must be resolved explicitly as either refine or abort. Do not leave it undecided and do not collapse it into a fake completed outcome."
   }
 }

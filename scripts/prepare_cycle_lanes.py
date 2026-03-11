@@ -60,15 +60,23 @@ def extract_requested_lanes(manifest: dict) -> list[tuple[str, str]]:
             payload = json.loads(Path(raw_path).read_text(encoding="utf-8"))
         except Exception:
             continue
-        asset = str(payload.get("asset") or payload.get("primary_asset") or "").strip().upper()
-        timeframe = str(payload.get("timeframe") or payload.get("primary_timeframe") or "").strip()
-        if not asset or not timeframe:
-            continue
-        key = (asset, timeframe)
-        if key in seen:
-            continue
-        seen.add(key)
-        lanes.append(key)
+        requested = [{
+            "asset": payload.get("asset") or payload.get("primary_asset"),
+            "timeframe": payload.get("timeframe") or payload.get("primary_timeframe"),
+        }]
+        requested.extend(payload.get("validation_basket") or payload.get("test_lanes") or payload.get("validation_targets") or [])
+        for lane in requested:
+            if not isinstance(lane, dict):
+                continue
+            asset = str(lane.get("asset") or "").strip().upper()
+            timeframe = str(lane.get("timeframe") or payload.get("timeframe") or payload.get("primary_timeframe") or "").strip()
+            if not asset or not timeframe:
+                continue
+            key = (asset, timeframe)
+            if key in seen:
+                continue
+            seen.add(key)
+            lanes.append(key)
     return lanes
 
 

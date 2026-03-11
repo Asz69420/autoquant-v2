@@ -1,6 +1,25 @@
 {
-  "cycle_id": 0,
-  "ts_iso": "2026-03-11T06:44:43.554354+00:00",
-  "strategy_decisions": [],
+  "cycle_id": 380,
+  "ts_iso": "2026-03-11T06:48:42.587548+00:00",
+  "strategy_decisions": [
+    {
+      "strategy_spec_id": "QD-20260311-C380-SOL-RANGE-FAILURE-REACCEPTANCE-v1",
+      "decision": "abort",
+      "rationale": "This SOL range-failure reacceptance branch produced 0 trades on valid data. Even with a broader failure-and-reacceptance structure, the mechanism still required too much staged alignment to engage on the lane, so another pass would just cosmetically loosen a dead grammar.",
+      "diagnosis_category": "too sparse"
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C380-ETH-TREND-RESET-CONTINUATION-v1",
+      "decision": "abort",
+      "rationale": "The ETH deeper-reset continuation branch also hard-skipped with zero trades. The reset zone plus reclaim plus participation filter remained structurally too restrictive, which makes this a density failure rather than a refinable near-miss.",
+      "diagnosis_category": "too sparse"
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C380-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "decision": "abort",
+      "rationale": "This TAO compression fakeout branch also never generated a valid-data trade. Compression, fakeout, rejection, and directional handoff still overconstrained entry density, so it should be abandoned rather than diluted further.",
+      "diagnosis_category": "too sparse"
+    }
+  ],
   "jobs": []
 }

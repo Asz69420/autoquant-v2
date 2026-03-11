@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C380-BTC-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 380,
+  "family_name": "btc_value_recovery_scalein_v380",
+  "name": "BTC Value Recovery Scale-In v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset":"BTC","timeframe":"4h"},
+    {"asset":"ETH","timeframe":"4h"}
+  ],
+  "thesis": "BTC 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a chop/transition tape, the edge should come from broad reclaim-of-value behavior rather than sparse continuation rituals.",
+  "edge_mechanism": "value recovery with improved-confirmation scale-in",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if value-recovery participation is still too sparse, if recoveries stall immediately after reclaim, or if confirmation improvement arrives too late to matter after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes through short-term value, reclaims it, and then stabilizes enough to justify adding on improved confirmation instead of taking maximum size immediately.",
+    "why_edge_should_exist": "A chop-heavy 4h tape should create repeated flush-and-repair behavior. A small initial reclaim entry plus confirmation-based add-on tests management variation without depending on a single perfect bar.",
+    "asset_timeframe_fit": "BTC 4h is appropriate because reclaim structure is visible and relatively clean while still offering enough movement for scale-in management to matter.",
+    "indicator_role_map": {
+      "EMA_20": "value reclaim reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "flush depth and risk normalizer",
+      "RSI_14": "confirmation-improvement qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff back toward balance"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the reclaim only bounces back to value and never extends, the add-on logic will either not trigger or will add into dead money.",
+    "first_refinement_path": "If the first reclaim works but the add-on hurts results, keep the reclaim entry and remove the scale-in expression before changing the setup.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; flush, reclaim, and confirmation improvement are sequential but broad",
+      "event_sparsity": "managed with moderate reclaim thresholds instead of rare capitulation rules",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.34 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.28 * ATR_14",
+      "RSI_14 >= 44",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.34 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.28 * ATR_14",
+      "RSI_14 <= 56",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "trade_management": {
+    "entry_expression": "scale_in_on_improved_confirmation",
+    "initial_size_pct": 60,
+    "add_on_size_pct": 40,
+    "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below average entry",
+      "Take profit: 0.6 * ATR_14 on 40% total size",
+      "Take profit: 0.95 * ATR_14 on 35% total size",
+      "Trail remaining 25% by 0.6 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above average entry",
+      "Take profit: 0.6 * ATR_14 on 40% total size",
+      "Take profit: 0.95 * ATR_14 on 35% total size",
+      "Trail remaining 25% by 0.6 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":5,"max_concurrent_positions":1}
+}

@@ -608,32 +608,84 @@ def enqueue_item(conn, item):
     return qid, True
 
 
+def extract_strategy_test_lanes(spec):
+    primary_asset = str(spec.get("asset", "ETH"))
+    primary_timeframe = str(spec.get("timeframe", "4h"))
+    lanes = [{"asset": primary_asset, "timeframe": primary_timeframe, "role": "primary"}]
+    for raw in (spec.get("validation_basket") or spec.get("test_lanes") or spec.get("validation_targets") or []):
+        lane = normalize_validation_target(raw, fallback_timeframe=primary_timeframe)
+        if not lane or not lane.get("asset"):
+            continue
+        lanes.append({
+            "asset": str(lane.get("asset")),
+            "timeframe": str(lane.get("timeframe") or primary_timeframe),
+            "role": str(lane.get("role") or "comparison"),
+        })
+    deduped = []
+    seen = set()
+    for lane in lanes:
+        key = (lane["asset"], lane["timeframe"])
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(lane)
+    return deduped
+
+
 def build_seed_items(conn, spec_path, variant_mode=None, cycle_id=None):
     spec = load_spec(spec_path)
     family = derive_family_name(spec)
-    timeframe = str(spec.get("timeframe", "4h"))
     bucket, reclass_reason = classify_seed_bucket(conn, spec)
     items = []
-    terminal_zero_trade_skips = family_terminal_skip_count(conn, family, timeframe=timeframe)
+    lanes = extract_strategy_test_lanes(spec)
     for variant_name in variant_names_for_spec(spec, variant_mode):
-        notes = {"message": "cycle seed", "declared_mode": str(spec.get("research_mode") or spec.get("mode") or "explore")}
         mutation_type = str(spec.get("mutation_type") or "initial")
-        if reclass_reason:
-            notes["reclassified_from"] = "explore"
-            notes["reclassified_to"] = "refine"
-            notes["reclass_reason"] = reclass_reason
-            mutation_type = "reclassified_refine"
-        if terminal_zero_trade_skips >= 2:
-            notes["blocked_reason"] = "repeat_zero_trade_family"
-            notes["blocked_terminal_zero_trade_skips"] = terminal_zero_trade_skips
-            notes["blocked_timeframe"] = timeframe
+        for idx, lane in enumerate(lanes):
+            timeframe = str(lane.get("timeframe") or spec.get("timeframe", "4h"))
+            notes = {
+                "message": "cycle seed",
+                "declared_mode": str(spec.get("research_mode") or spec.get("mode") or "explore"),
+                "lane_role": lane.get("role") or ("primary" if idx == 0 else "comparison"),
+                "lane_index": idx,
+            }
+            if reclass_reason:
+                notes["reclassified_from"] = "explore"
+                notes["reclassified_to"] = "refine"
+                notes["reclass_reason"] = reclass_reason
+                mutation_type = "reclassified_refine"
+            terminal_zero_trade_skips = family_terminal_skip_count(conn, family, timeframe=timeframe)
+            if terminal_zero_trade_skips >= 2:
+                notes["blocked_reason"] = "repeat_zero_trade_family"
+                notes["blocked_terminal_zero_trade_skips"] = terminal_zero_trade_skips
+                notes["blocked_timeframe"] = timeframe
+                items.append(
+                    {
+                        "cycle_id": cycle_id,
+                        "spec_path": spec_path,
+                        "strategy_spec_id": str(spec.get("id") or safe_spec_id_from_path(spec_path)),
+                        "variant_id": variant_name,
+                        "asset": str(lane.get("asset") or spec.get("asset", "ETH")),
+                        "timeframe": timeframe,
+                        "stage": "screen",
+                        "bucket": bucket,
+                        "priority": 3,
+                        "mutation_type": mutation_type,
+                        "family_generation": int(spec.get("family_generation", 1) or 1),
+                        "parent_result_id": spec.get("parent_id"),
+                        "strategy_family": family,
+                        "validation_target": json.dumps(lane),
+                        "notes": json.dumps(notes),
+                        "blocked": True,
+                    }
+                )
+                continue
             items.append(
                 {
                     "cycle_id": cycle_id,
                     "spec_path": spec_path,
                     "strategy_spec_id": str(spec.get("id") or safe_spec_id_from_path(spec_path)),
                     "variant_id": variant_name,
-                    "asset": str(spec.get("asset", "ETH")),
+                    "asset": str(lane.get("asset") or spec.get("asset", "ETH")),
                     "timeframe": timeframe,
                     "stage": "screen",
                     "bucket": bucket,
@@ -642,29 +694,10 @@ def build_seed_items(conn, spec_path, variant_mode=None, cycle_id=None):
                     "family_generation": int(spec.get("family_generation", 1) or 1),
                     "parent_result_id": spec.get("parent_id"),
                     "strategy_family": family,
+                    "validation_target": json.dumps(lane),
                     "notes": json.dumps(notes),
-                    "blocked": True,
                 }
             )
-            continue
-        items.append(
-            {
-                "cycle_id": cycle_id,
-                "spec_path": spec_path,
-                "strategy_spec_id": str(spec.get("id") or safe_spec_id_from_path(spec_path)),
-                "variant_id": variant_name,
-                "asset": str(spec.get("asset", "ETH")),
-                "timeframe": timeframe,
-                "stage": "screen",
-                "bucket": bucket,
-                "priority": 3,
-                "mutation_type": mutation_type,
-                "family_generation": int(spec.get("family_generation", 1) or 1),
-                "parent_result_id": spec.get("parent_id"),
-                "strategy_family": family,
-                "notes": json.dumps(notes),
-            }
-        )
     return items
 
 
