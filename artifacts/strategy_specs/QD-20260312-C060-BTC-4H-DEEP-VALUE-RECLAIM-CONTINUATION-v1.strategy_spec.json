@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C060-BTC-4H-DEEP-VALUE-RECLAIM-CONTINUATION-v1",
+  "cycle_id": 60,
+  "family_name": "btc_4h_deep_value_reclaim_continuation_v060",
+  "name": "BTC 4h Deep Value Reclaim Continuation v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a deeper pullback into structural support reclaims fast value, then rotates into a continuation leg once the reclaim is confirmed",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 4h is currently mostly transition history with low-confidence chop. That is not a clean trend-following tape, but it is compatible with continuation after a meaningful reset into support. The edge is not immediate dip-buying; it is joining only after deeper value is reclaimed and directional pressure stabilizes.",
+  "invalidation_condition": "If BTC 4h reclaim events remain too sparse, or if reclaimed value repeatedly fails before any continuation leg develops, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back deeply enough to reset inventory, reclaims fast value from structural support, and then extends into the next directional leg.",
+    "why_edge_should_exist": "When a market is not trending cleanly but still carries transition energy, shallow continuation entries fail. Deeper resets can reload the move if structure actually holds, giving a better continuation profile than first-break entries.",
+    "asset_timeframe_fit": "BTC 4h is the best fit because the lane is the cycle primary, has meaningful transition presence, and is structured enough that deeper reclaim logic can be tested without pure noise.",
+    "indicator_role_map": {
+      "EMA_55": "structural support hold",
+      "EMA_20": "fast value reclaim trigger",
+      "ATR_14": "required reset depth and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure reassertion",
+      "RSI_14": "momentum reset qualifier"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The deeper pullback may represent genuine structural breakdown rather than a reset, causing the reclaim to fail quickly.",
+    "first_refinement_path": "If trades occur but reclaim quality is poor, tighten the structural hold around EMA_55 before altering pullback depth.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than mean reversion, but a higher share of meaningful second-leg continuations after the reclaim holds.",
+    "what_would_count_as_success": "BTC 4h produces non-sparse reset-and-reclaim trades, and at least one cross-lane preserves the same continuation structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated reclaim entries that fail before first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because reset depth plus reclaim is denser than ceremonial breakout logic",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for deeper value reclaim continuation under current transition-heavy chop.",
+      "continue_if": "BTC 4h shows enough reset-reclaim sequences and first-target behavior clears costs.",
+      "rotate_away_if": "BTC 4h reclaims stay too sparse or too fragile.",
+      "expected_if_right": "Moderate count with cleaner continuation after reclaim than shallow pullback logic."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same mechanism survives on a cleaner major chop lane.",
+      "continue_if": "ETH 4h preserves the same reset-and-reclaim structure with smaller but cleaner moves.",
+      "rotate_away_if": "ETH 4h is too flat and removes the continuation leg entirely.",
+      "expected_if_right": "Lower amplitude, cleaner reclaim continuation than BTC."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism densifies naturally on a faster lane.",
+      "continue_if": "BTC 1h preserves the same reset-reclaim-continuation sequence with healthier count.",
+      "rotate_away_if": "BTC 1h turns the setup into noisy churn.",
+      "expected_if_right": "Higher trade count, smaller legs, same structural logic."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.50 * ATR_14",
+      "Close >= EMA_20 - 0.05 * ATR_14",
+      "Close >= EMA_55 - 0.18 * ATR_14",
+      "PLUS_DI_14 >= 0.92 * MINUS_DI_14",
+      "RSI_14 >= 46"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.50 * ATR_14",
+      "Close <= EMA_20 + 0.05 * ATR_14",
+      "Close <= EMA_55 + 0.18 * ATR_14",
+      "MINUS_DI_14 >= 0.92 * PLUS_DI_14",
+      "RSI_14 <= 54"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.94 * ATR_14 below entry",
+      "Take profit: 0.60 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 25% size",
+      "Take profit: 1.55 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.82 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.94 * ATR_14 above entry",
+      "Take profit: 0.60 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 25% size",
+      "Take profit: 1.55 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.82 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

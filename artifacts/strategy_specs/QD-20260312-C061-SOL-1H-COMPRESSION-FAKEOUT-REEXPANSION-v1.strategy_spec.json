@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C061-SOL-1H-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 61,
+  "family_name": "sol_1h_compression_fakeout_reexpansion_v061",
+  "name": "SOL 1h Compression Fakeout Re-Expansion v1",
+  "asset": "SOL",
+  "timeframe": "1h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "compression breaks one way, loses acceptance, reclaims fast value, and re-expands in the opposite direction once directional participation flips",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "The cycle wants a compression fakeout concept, but 4h versions have repeatedly died from low density. SOL 1h is the best-fit lane inside the allowed basket because it keeps the same mechanism while dramatically improving event frequency. The edge is the second move after the trap, not the initial breakout.",
+  "invalidation_condition": "If fakeouts still remain too sparse on 1h, or if reclaim-after-fakeout does not create enough opposite-direction follow-through, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, a directional probe fails, price reclaims fast value, and then expands in the opposite direction as trapped positioning unwinds.",
+    "why_edge_should_exist": "Choppy 1h structure should generate more failed first breaks than sustained expansions. Trading the reacceptance and directional handoff should be denser and more robust than chasing the first break.",
+    "asset_timeframe_fit": "SOL 1h is the best fit because it densifies the compression fakeout mechanism while staying inside the allowed basket and retaining enough amplitude for post-trap moves.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "value reclaim line",
+      "ATR_14": "fakeout depth and stop normalization",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff",
+      "ADX_14": "participation gate"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The first break may still be the real move, causing reclaim entries to fade genuine expansion.",
+    "first_refinement_path": "If entries exist but second-leg follow-through is weak, strengthen the DI handoff before loosening the squeeze width threshold.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "More trades than 4h versions, several small stop-outs on true breaks, and a subset of clean trap-and-reexpand winners that carry expectancy.",
+    "what_would_count_as_success": "SOL 1h produces credible compression-fakeout density and a positive post-cost second-leg profile, with at least one slower lane preserving the same structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or reclaims that behave like dead-cat bounces with no second-leg expansion.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "lower than prior fakeout families because the lane is 1h and the sequence is simplified to squeeze, reclaim, handoff",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane in the basket for densifying compression fakeout logic.",
+      "continue_if": "SOL 1h shows enough fakeout-reclaim-hand-off sequences with positive post-cost behavior.",
+      "rotate_away_if": "SOL 1h remains too noisy or too sparse for the mechanism.",
+      "expected_if_right": "Higher trade count than 4h, with enough clean trap unwinds to matter."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Checks whether the same concept survives structurally at the slower primary lane.",
+      "continue_if": "SOL 4h still shows the same fakeout grammar with lower count.",
+      "rotate_away_if": "SOL 4h confirms the mechanism is too sparse when slowed down.",
+      "expected_if_right": "Lower count, cleaner fakeout-to-reexpansion than 1h."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks portability on the cleanest chop lane in the basket.",
+      "continue_if": "ETH 4h preserves the same reclaim-and-handoff structure.",
+      "rotate_away_if": "ETH 4h is too sparse for this mechanism.",
+      "expected_if_right": "Lower amplitude, cleaner fakeout unwinds than SOL 1h."
+    }
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.22 * ATR_14",
+      "Low <= EMA_20 - 0.16 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= 0.95 * MINUS_DI_14",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.22 * ATR_14",
+      "High >= EMA_20 + 0.16 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= 0.95 * PLUS_DI_14",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.92 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.72 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.92 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.72 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

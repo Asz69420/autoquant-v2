@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C060-ETH-4H-SQUEEZE-PERSISTENCE-DE-RISK-v1",
+  "cycle_id": 60,
+  "family_name": "eth_4h_squeeze_persistence_derisk_v060",
+  "name": "ETH 4h Squeeze Persistence De-Risk v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression resolves, but entry waits for persistence after the first breakout bar and quickly de-risks if expansion does not build",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 4h is pure chop and therefore the best basket lane for a squeeze-follow-through test that avoids first-break hero entries. The edge is not predicting breakouts; it is entering only when a compression release proves it can persist, then removing risk quickly if that persistence never arrives.",
+  "invalidation_condition": "If squeezes do not occur often enough, or if persistence confirmation remains too sparse and still fails to build expansion, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, a breakout starts, the next bar confirms persistence, and the move either expands quickly or is reduced to low-risk failure.",
+    "why_edge_should_exist": "Pure chop creates many false first breaks. Requiring one-bar persistence and fast de-risking is a mechanism-level way to screen those out without returning to ceremonial confirmation chains.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because its current regime is the cleanest chop environment in the allowed basket, making fake first breaks and selective follow-through especially relevant.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "post-breakout directional hold",
+      "ATR_14": "stop sizing and follow-through threshold",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff after squeeze release",
+      "ADX_14": "participation gate so the move is not completely dead"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The setup may remain too sparse, or the persistence bar may arrive after the best part of the move is gone.",
+    "first_refinement_path": "If it trades but runner expectancy is weak, keep the same trigger and shift more weight to earlier partial profit instead of relaxing compression thresholds.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Moderate count, many scratched or reduced-risk failures, and a smaller set of meaningful expansion wins.",
+    "what_would_count_as_success": "ETH 4h shows enough squeeze-persistence occurrences, and the de-risk rule clearly improves downside control without erasing all edge.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or no meaningful difference between persisted releases and failed ones.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but broader than prior squeeze families because it trades persistence plus de-risk rather than layered ritual",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best chop lane in the basket for persistence-after-squeeze logic.",
+      "continue_if": "ETH 4h shows enough squeeze releases with confirmed persistence and positive post-cost asymmetry.",
+      "rotate_away_if": "ETH 4h squeezes remain too sparse or persistence arrives too late to matter.",
+      "expected_if_right": "Moderate participation with clean de-risk behavior on false releases and occasional strong expansion runners."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same persistence logic survives on the cycle primary lane.",
+      "continue_if": "BTC 4h preserves squeeze-follow-through with slightly less chop noise.",
+      "rotate_away_if": "BTC 4h never enters the needed compression state often enough.",
+      "expected_if_right": "Lower count, cleaner release structure than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "higher_amplitude_check",
+      "why_included": "Tests whether the same idea survives on a more explosive structurally different asset.",
+      "continue_if": "TAO 4h still shows meaningful squeeze persistence with acceptable structure.",
+      "rotate_away_if": "TAO 4h turns the mechanism into volatility chaos.",
+      "expected_if_right": "Lower count, bigger winners than ETH."
+    }
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.18 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 11"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.18 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 11"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar also closes >= EMA_20 and high exceeds prior high"
+    ],
+    "short": [
+      "Enter only if next bar also closes <= EMA_20 and low breaks prior low"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.84 * ATR_14 below entry",
+      "De-risk to break-even if no 0.32 * ATR_14 expansion within 2 bars",
+      "Take profit: 0.62 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.84 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.84 * ATR_14 above entry",
+      "De-risk to break-even if no 0.32 * ATR_14 expansion within 2 bars",
+      "Take profit: 0.62 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.84 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

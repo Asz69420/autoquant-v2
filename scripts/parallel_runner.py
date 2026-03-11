@@ -1352,11 +1352,19 @@ def process_result_effects(conn, queue_item, result):
 
     if queue_item["stage"] == "full":
         out = payload.get("outofsample") or {}
+        wf_cfg = payload.get("walk_forward_config") or {}
         qs = float(out.get("qscore") or 0)
         degradation = float(payload.get("degradation_pct") or 0)
         trades = int(out.get("total_trades") or 0)
-        passed = qs >= 0.5 and degradation < 50.0 and trades >= MIN_REFINE_TRADES
-        promoted = qs >= 1.5 and degradation < 30.0 and trades >= MIN_PROMOTE_TRADES
+        pass_gate = float(wf_cfg.get("pass_qscore") or 1.0)
+        promote_gate = float(wf_cfg.get("promote_qscore") or 1.5)
+        pass_trade_floor = int(wf_cfg.get("min_total_test_trades") or MIN_REFINE_TRADES)
+        promote_trade_floor = int(wf_cfg.get("min_total_test_trades") or MIN_PROMOTE_TRADES)
+        max_deg = float(wf_cfg.get("max_degradation_pct") or 50.0)
+        max_promote_deg = float(wf_cfg.get("promote_max_degradation_pct") or 30.0)
+        passed_all_tests = bool(wf_cfg.get("passed_all_tests", False))
+        passed = passed_all_tests and qs >= pass_gate and degradation < max_deg and trades >= pass_trade_floor
+        promoted = passed_all_tests and qs >= promote_gate and degradation < max_promote_deg and trades >= promote_trade_floor
         gate = evaluate_refinement_gate(conn, queue_item, payload)
         family_name = queue_item.get("strategy_family") or derive_family_name(spec)
         effects = {"full_pass": False, "promote": False, "branch_queue_ids": [], "validation_queue_ids": [], "reduced_queue_ids": [], "gate": gate}

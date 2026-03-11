@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C061-SOL-4H-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 61,
+  "family_name": "sol_4h_range_failure_reacceptance_v061",
+  "name": "SOL 4h Range Failure Reacceptance v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a multi-bar range excursion loses acceptance, price re-enters balance, and mean-reverts toward deeper value in a chop-heavy market",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "SOL 4h is the primary lane and sits in a balanced chop/transition mix. That favors failed excursions more than clean breakout persistence. The edge is not fading every move mechanically; it is entering only after price clearly reaccepts balance following a failed push beyond the local range.",
+  "invalidation_condition": "If failed range excursions do not occur often enough, or if reacceptance still fails to produce enough travel back toward balance after costs, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pushes beyond a local range edge, cannot sustain acceptance there, closes back into balance, and rotates back toward the center/deeper value.",
+    "why_edge_should_exist": "In chop-to-transition structure, late breakout participation is vulnerable. Failed edge auctions should recur often enough on SOL 4h to create a denser mean-reversion profile than the sparse continuation families that just died.",
+    "asset_timeframe_fit": "SOL 4h is the best fit because it is the cycle primary lane, has enough amplitude to clear costs, and still reflects a chop-heavy regime where failed edge acceptance is plausible.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "range edge detector",
+      "VWAP": "reacceptance/value line",
+      "EMA_55": "deeper balance target",
+      "ATR_14": "overshoot threshold and stop normalization",
+      "RSI_14": "stretch qualifier",
+      "ADX_14": "trend-strength veto"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The move beyond the range may be a true state change, making the reacceptance close a weak fake rather than a real failed auction.",
+    "first_refinement_path": "If density is good but expectancy is weak, reduce target ambition and shorten the hold before changing entry grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Regular first-target captures, fewer full rotations to deeper balance, and limited dependence on runners.",
+    "what_would_count_as_success": "Screen produces credible density, first partial hit rate is healthy, and one cross-lane preserves the same failed-auction structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated entries that immediately resume in breakout direction.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but denser than prior ceremonial logic because the sequence is overshoot plus reacceptance",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for failed range-edge reacceptance in the current cycle.",
+      "continue_if": "SOL 4h shows enough failed-edge reacceptance events with post-cost first-target behavior.",
+      "rotate_away_if": "SOL 4h treats range edges as genuine breakouts instead of failed auctions.",
+      "expected_if_right": "Moderate participation with repeated balance recoveries and occasional deeper rotations."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same mechanism survives on a cleaner pure-chop major lane.",
+      "continue_if": "ETH 4h preserves the same failed-edge reacceptance sequence with cleaner structure.",
+      "rotate_away_if": "ETH 4h is too flat or too sparse for the mechanism.",
+      "expected_if_right": "Slightly lower amplitude, cleaner rotations than SOL."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same failed-auction logic survives on a more expressive lane.",
+      "continue_if": "TAO 4h still shows failed edge reacceptance with enough structure.",
+      "rotate_away_if": "TAO 4h turns the setup into trend continuation rather than balance recovery.",
+      "expected_if_right": "Lower count than SOL but larger reversion legs."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "VWAP", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.18 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 42",
+      "RSI_14 <= 58",
+      "ADX_14 <= 23"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 58",
+      "RSI_14 >= 42",
+      "ADX_14 <= 23"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry",
+      "Take profit: 0.46 * ATR_14 on 45% size",
+      "Take profit: 0.82 * ATR_14 on 35% size",
+      "Exit remaining 20% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry",
+      "Take profit: 0.46 * ATR_14 on 45% size",
+      "Take profit: 0.82 * ATR_14 on 35% size",
+      "Exit remaining 20% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

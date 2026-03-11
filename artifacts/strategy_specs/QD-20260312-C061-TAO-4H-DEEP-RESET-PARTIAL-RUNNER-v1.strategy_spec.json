@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C061-TAO-4H-DEEP-RESET-PARTIAL-RUNNER-v1",
+  "cycle_id": 61,
+  "family_name": "tao_4h_deep_reset_partial_runner_v061",
+  "name": "TAO 4h Deep Reset Partial Runner v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a deeper pullback resets momentum, price reclaims fast structure, early profit is taken aggressively, and only a reduced core is left for continuation if the reset becomes a real second leg",
+  "expected_regime": "TRANSITION_TO_TREND",
+  "thesis": "The cycle wants a trend-reset idea, but earlier TAO reset families died from sparse all-or-nothing continuation logic. This version changes the management expression: monetize the first relief leg aggressively and treat persistence as optional upside rather than a requirement. TAO 4h is the best fit because it has the amplitude to make both early partials and occasional runners meaningful.",
+  "invalidation_condition": "If deeper resets still trade too rarely, or if early partials fail to clear costs often enough, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price undergoes a deeper pullback, reclaims fast structure from within medium-term support, and produces at least a relief leg with some chance of continuation.",
+    "why_edge_should_exist": "TAO carries some trend-up contamination but remains structurally noisy. A management-first expression is more appropriate than demanding every reset become a big continuation leg.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because the lane has enough amplitude that a smaller retained core can still matter after early profit capture, while the early partial structure helps survive noise.",
+    "indicator_role_map": {
+      "EMA_55": "medium-term support hold",
+      "EMA_20": "fast reclaim trigger",
+      "ATR_14": "required reset depth and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure recovery",
+      "RSI_14": "momentum reset qualifier"
+    },
+    "expected_regime": "TRANSITION_TO_TREND",
+    "likely_failure_mode": "The deeper reset may still be actual trend failure, or TAO may only produce brief relief bounces that do not justify even partial continuation positioning.",
+    "first_refinement_path": "If first targets work but the runner consistently gives back gains, cut runner size further before changing entry conditions.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Most expectancy should come from early partial profit, with a smaller contribution from occasional continuation runners.",
+    "what_would_count_as_success": "TAO 4h shows enough reset-reclaim events, first-target hit rate is credible, and the reduced core adds value without erasing gains.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or early partials that still cannot survive post-cost noise.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but more forgiving than earlier reset families because management no longer requires large continuation to validate the trade",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for deeper reset plus partial-profit runner logic.",
+      "continue_if": "TAO 4h shows enough reset-reclaim events and early partials clear costs regularly.",
+      "rotate_away_if": "TAO 4h resets remain too sparse or too unstable even for a management-first expression.",
+      "expected_if_right": "Moderate count with reliable first partials and occasional runner contribution."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same reset-management expression works on the cycle primary lane.",
+      "continue_if": "SOL 4h preserves the same reset-reclaim-relief pattern with slightly smaller amplitude.",
+      "rotate_away_if": "SOL 4h removes the mechanism or makes it too flat.",
+      "expected_if_right": "Lower amplitude, cleaner first-target behavior than TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Tests whether the management expression survives on a cleaner chop lane.",
+      "continue_if": "ETH 4h shows enough relief-leg behavior after reset to validate portability.",
+      "rotate_away_if": "ETH 4h confirms the mechanism needs TAO amplitude to exist.",
+      "expected_if_right": "Lower count, cleaner but smaller relief legs than TAO."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.58 * ATR_14",
+      "Close >= EMA_20 - 0.04 * ATR_14",
+      "Close >= EMA_55 - 0.20 * ATR_14",
+      "PLUS_DI_14 >= 0.90 * MINUS_DI_14",
+      "RSI_14 >= 46"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.58 * ATR_14",
+      "Close <= EMA_20 + 0.04 * ATR_14",
+      "Close <= EMA_55 + 0.20 * ATR_14",
+      "MINUS_DI_14 >= 0.90 * PLUS_DI_14",
+      "RSI_14 <= 54"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.96 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 50% size",
+      "Take profit: 0.96 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.78 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.96 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 50% size",
+      "Take profit: 0.96 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.78 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

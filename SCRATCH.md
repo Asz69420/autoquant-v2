@@ -1,1 +1,1 @@
-No active task.
+Build train->test chain in one cycle: train gate with QS/trade thresholds, staged 3-window tests, fail-fast progression, result recording, and corrected cycle/log-card semantics.

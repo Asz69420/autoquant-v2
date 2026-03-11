@@ -12,9 +12,13 @@ DB_PATH = wfe.DB_PATH
 
 
 def build_simple_result(candles, strategy, asset, timeframe, stage):
+    policy = wfe.load_train_test_policy(timeframe)
     if stage == "screen":
-        test_candles = wfe.trim_to_recent_months(candles, months=3)
-        config = {"mode": "simple_screen", "lookback_months": 3}
+        train_days = int(policy.get("train_days") or wfe.WINDOW_CONFIG.get(timeframe, (90, 21))[0])
+        cpd = {"1d": 1, "4h": 6, "1h": 24, "15m": 96, "5m": 288, "1m": 1440}.get(timeframe, 6)
+        keep = min(len(candles), max(1, train_days * cpd))
+        test_candles = candles[-keep:]
+        config = {"mode": "train_gate", "train_days": train_days}
     else:
         test_candles = candles
         config = {"mode": "simple_full_history"}
@@ -37,10 +41,11 @@ def build_simple_result(candles, strategy, asset, timeframe, stage):
         "grade": str(qscore.get("score_grade") or "D"),
         "flags": qscore.get("score_flags") or "[]",
     }
+    train_gate = metrics["total_trades"] >= int(policy.get("min_train_trades") or wfe.SCREEN_MIN_TRADES) and float(qscore.get("score_total") or 0.0) >= float(policy.get("train_qscore_gate") or 1.0)
     # simple engine treats insample and outofsample identically to avoid walk-forward complexity
     result = {
         "status": "ok",
-        "screen_passed": out["total_trades"] >= wfe.SCREEN_MIN_TRADES and out["profit_factor"] >= 1.0 and out["max_drawdown_pct"] <= 15.0,
+        "screen_passed": train_gate,
         "folds": 1,
         "fold_results": [
             {
@@ -65,7 +70,7 @@ def build_simple_result(candles, strategy, asset, timeframe, stage):
         "insample_aggregate": dict(out),
         "outofsample_aggregate": dict(out),
         "degradation_pct": 0.0,
-        "walk_forward_config": config,
+        "walk_forward_config": {**config, "min_train_trades": int(policy.get("min_train_trades") or wfe.SCREEN_MIN_TRADES), "train_qscore_gate": float(policy.get("train_qscore_gate") or 1.0)},
         "regime_scores": regime_scores,
         "regime_concentration": regime_concentration,
         "primary_regime": primary_regime,

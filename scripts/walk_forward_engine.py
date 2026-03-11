@@ -44,6 +44,7 @@ ROOT = os.environ.get(
 )
 DB_PATH = os.path.join(ROOT, "db", "autoquant.db")
 CANDLES_DIR = os.path.join(ROOT, "data", "candles")
+TRAIN_TEST_POLICY_PATH = os.path.join(ROOT, "config", "train-test-policy.json")
 
 TAKER_FEE_PCT = 0.075
 SLIPPAGE_PCT = 0.05
@@ -51,11 +52,11 @@ TOTAL_COST_PCT = (TAKER_FEE_PCT + SLIPPAGE_PCT) / 100.0
 
 WINDOW_CONFIG = {
     "1d": (365, 90),
-    "4h": (180, 42),
-    "1h": (90, 21),
-    "15m": (30, 7),
-    "5m": (14, 3),
-    "1m": (7, 2),
+    "4h": (240, 60),
+    "1h": (120, 30),
+    "15m": (45, 10),
+    "5m": (21, 5),
+    "1m": (10, 3),
 }
 
 MIN_BLIND_TRADES = 50
@@ -64,6 +65,31 @@ MIN_PROMOTE_TRADES = 50
 PF_MIRAGE_THRESHOLD = 3.0
 PF_MIRAGE_TRADE_FLOOR = 100
 SCREEN_MIN_TRADES = 30
+
+
+def load_train_test_policy(timeframe: str) -> dict:
+    base = {
+        "test_stages": 3,
+        "train_qscore_gate": 1.0,
+        "min_train_trades": 30,
+        "min_test_trades": 10,
+        "min_total_test_trades": 40,
+        "promote_qscore": 1.5,
+        "pass_qscore": 1.0,
+        "max_degradation_pct": 50.0,
+        "promote_max_degradation_pct": 30.0,
+        "train_days": WINDOW_CONFIG.get(timeframe, (180, 42))[0],
+        "test_days": WINDOW_CONFIG.get(timeframe, (180, 42))[1],
+    }
+    try:
+        with open(TRAIN_TEST_POLICY_PATH, "r", encoding="utf-8") as f:
+            payload = json.load(f)
+        merged = dict(base)
+        merged.update(payload.get("default") or {})
+        merged.update((payload.get("timeframes") or {}).get(timeframe) or {})
+        return merged
+    except Exception:
+        return base
 
 
 def load_candles(asset: str, timeframe: str) -> list[dict]:
@@ -978,11 +1004,11 @@ def compute_regime_scores(trades: list[dict], regime_payload: dict) -> tuple[dic
         flags.append("valuable_in_chop")
     return regime_scores, concentration, primary_regime, flags
 
-def extend_blind_window(candles: list[dict], blind_start: int, blind_end: int, strategy: dict, max_end: int) -> int:
+def extend_blind_window(candles: list[dict], blind_start: int, blind_end: int, strategy: dict, max_end: int, min_trades: int = MIN_BLIND_TRADES) -> int:
     current_end = blind_end
     while current_end <= max_end:
         probe = run_strategy_on_candles(candles[blind_start:current_end], strategy)
-        if probe["total_trades"] >= MIN_BLIND_TRADES or current_end == max_end:
+        if probe["total_trades"] >= min_trades or current_end == max_end:
             return current_end
         current_end = min(max_end, current_end + max(1, (current_end - blind_start) // 2))
     return blind_end
@@ -1077,82 +1103,99 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
             },
         }
 
-    train_days, blind_days = WINDOW_CONFIG.get(timeframe, (180, 42))
+    policy = load_train_test_policy(timeframe)
+    train_days = int(policy.get("train_days") or WINDOW_CONFIG.get(timeframe, (180, 42))[0])
+    blind_days = int(policy.get("test_days") or WINDOW_CONFIG.get(timeframe, (180, 42))[1])
+    test_stages = int(policy.get("test_stages") or 3)
+    min_train_trades = int(policy.get("min_train_trades") or SCREEN_MIN_TRADES)
+    min_test_trades = int(policy.get("min_test_trades") or MIN_BLIND_TRADES)
+    min_total_test_trades = int(policy.get("min_total_test_trades") or MIN_PASS_TRADES)
+    train_qscore_gate = float(policy.get("train_qscore_gate") or 1.0)
+    pass_qscore = float(policy.get("pass_qscore") or 1.0)
+    promote_qscore = float(policy.get("promote_qscore") or 1.5)
+    max_degradation_pct = float(policy.get("max_degradation_pct") or 50.0)
+    promote_max_degradation_pct = float(policy.get("promote_max_degradation_pct") or 30.0)
+
     candles_per_day = {"1d": 1, "4h": 6, "1h": 24, "15m": 96, "5m": 288, "1m": 1440}
     cpd = candles_per_day.get(timeframe, 6)
     train_candles = train_days * cpd
     blind_candles = blind_days * cpd
     total_candles = len(candles)
-    if total_candles < train_candles + blind_candles:
-        return {"status": "error", "error": f"Not enough data: {total_candles} candles, need {train_candles + blind_candles}", "folds": 0}
+    required_candles = train_candles + (blind_candles * test_stages)
+    scaled_for_available_data = False
+    if total_candles < required_candles:
+        scale = max(0.25, float(total_candles) / float(required_candles))
+        train_candles = max(cpd * 14, int(train_candles * scale))
+        blind_candles = max(cpd * 5, int(blind_candles * scale))
+        required_candles = train_candles + (blind_candles * test_stages)
+        scaled_for_available_data = True
+        if total_candles < required_candles:
+            return {"status": "error", "error": f"Not enough data even after scaling: {total_candles} candles, need {required_candles}", "folds": 0}
 
     param_grid = param_grid or {}
-    folds = []
-    fold_start = 0
-    while fold_start + train_candles + blind_candles <= total_candles:
-        train_end = fold_start + train_candles
-        blind_end = min(total_candles, train_end + blind_candles)
-        blind_end = extend_blind_window(candles, train_end, blind_end, strategy, total_candles)
-        folds.append({
-            "fold_num": len(folds) + 1,
-            "train_start": fold_start,
-            "train_end": train_end,
-            "blind_start": train_end,
-            "blind_end": blind_end,
-        })
-        fold_start = blind_end
-    if not folds:
-        return {"status": "error", "error": "Could not create any folds with the given data", "folds": 0}
+    train_days_used = max(1, int(round(float(train_candles) / float(cpd))))
+    test_days_used = max(1, int(round(float(blind_candles) / float(cpd))))
+    train_start = max(0, total_candles - required_candles)
+    train_end = train_start + train_candles
+    train_data = candles[train_start:train_end]
+    is_result = run_strategy_on_candles(train_data, strategy)
+    best_params = None
+    best_is_pf = is_result["profit_factor"]
+    if param_grid:
+        param_names = list(param_grid.keys())
+        param_values = list(param_grid.values())
+        for combo in iter_product(*param_values):
+            override = dict(zip(param_names, combo))
+            trial = run_strategy_on_candles(train_data, strategy, params_override=override)
+            if trial["profit_factor"] > best_is_pf and trial["total_trades"] >= 10:
+                best_is_pf = trial["profit_factor"]
+                best_params = override
+                is_result = trial
+    is_qscore = calculate_qscore(is_result)
+    train_gate_passed = is_result["total_trades"] >= min_train_trades and float(is_qscore["score_total"] or 0.0) >= train_qscore_gate
 
     fold_results = []
     all_oos_trades = []
     all_oos_equity = [1.0]
-    all_is_trades = []
+    all_is_trades = list(is_result["trades"])
+    failure_reason = None
+    current_blind_start = train_end
 
-    for fold in folds:
-        train_data = candles[fold["train_start"] : fold["train_end"]]
-        blind_data = candles[fold["blind_start"] : fold["blind_end"]]
-        is_result = run_strategy_on_candles(train_data, strategy)
-        best_params = None
-        best_is_pf = is_result["profit_factor"]
-        if param_grid:
-            param_names = list(param_grid.keys())
-            param_values = list(param_grid.values())
-            for combo in iter_product(*param_values):
-                override = dict(zip(param_names, combo))
-                trial = run_strategy_on_candles(train_data, strategy, params_override=override)
-                if trial["profit_factor"] > best_is_pf and trial["total_trades"] >= 10:
-                    best_is_pf = trial["profit_factor"]
-                    best_params = override
-                    is_result = trial
+    if not train_gate_passed:
+        failure_reason = "train_gate_failed"
+
+    for stage_idx in range(test_stages if train_gate_passed else 0):
+        blind_end = min(total_candles, current_blind_start + blind_candles)
+        blind_end = extend_blind_window(candles, current_blind_start, blind_end, strategy, total_candles, min_trades=min_test_trades)
+        blind_data = candles[current_blind_start:blind_end]
         oos_result = run_strategy_on_candles(blind_data, strategy, params_override=best_params)
         for trade in oos_result["trades"]:
-            trade["entry_idx_abs"] = fold["blind_start"] + int(trade.get("entry_idx", 0))
-            trade["exit_idx_abs"] = fold["blind_start"] + int(trade.get("exit_idx", 0))
-        for trade in is_result["trades"]:
-            trade["entry_idx_abs"] = fold["train_start"] + int(trade.get("entry_idx", 0))
-            trade["exit_idx_abs"] = fold["train_start"] + int(trade.get("exit_idx", 0))
-        all_oos_trades.extend(oos_result["trades"])
-        all_is_trades.extend(is_result["trades"])
-        if oos_result["equity_curve"]:
-            last_equity = all_oos_equity[-1]
-            for eq_val in oos_result["equity_curve"][1:]:
-                all_oos_equity.append(last_equity * eq_val)
-        is_qs = calculate_qscore(is_result)
+            trade["entry_idx_abs"] = current_blind_start + int(trade.get("entry_idx", 0))
+            trade["exit_idx_abs"] = current_blind_start + int(trade.get("exit_idx", 0))
+        if stage_idx == 0:
+            for trade in is_result["trades"]:
+                trade["entry_idx_abs"] = train_start + int(trade.get("entry_idx", 0))
+                trade["exit_idx_abs"] = train_start + int(trade.get("exit_idx", 0))
         oos_qs = calculate_qscore(oos_result)
+        stage_passed = oos_result["total_trades"] >= min_test_trades
+        if oos_result["total_trades"] < min_test_trades and failure_reason is None:
+            failure_reason = f"test_{stage_idx + 1}_below_trade_threshold"
+            stage_passed = False
         fold_results.append({
-            "fold": fold["fold_num"],
-            "train_candles": len(train_data),
+            "fold": stage_idx + 1,
+            "train_candles": len(train_data) if stage_idx == 0 else 0,
             "blind_candles": len(blind_data),
-            "best_params": best_params,
+            "best_params": best_params if stage_idx == 0 else None,
+            "stage_name": f"test_{stage_idx + 1}",
+            "stage_passed": bool(stage_passed),
             "insample": {
                 "trades": is_result["total_trades"],
                 "pf": is_result["profit_factor"],
                 "max_dd": is_result["max_drawdown_pct"],
                 "return_pct": is_result["total_return_pct"],
                 "win_rate": is_result["win_rate_pct"],
-                "qscore": is_qs["score_total"],
-            },
+                "qscore": is_qscore["score_total"],
+            } if stage_idx == 0 else None,
             "outofsample": {
                 "trades": oos_result["total_trades"],
                 "pf": oos_result["profit_factor"],
@@ -1162,6 +1205,14 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
                 "qscore": oos_qs["score_total"],
             },
         })
+        all_oos_trades.extend(oos_result["trades"])
+        if oos_result["equity_curve"]:
+            last_equity = all_oos_equity[-1]
+            for eq_val in oos_result["equity_curve"][1:]:
+                all_oos_equity.append(last_equity * eq_val)
+        current_blind_start = blind_end
+        if not stage_passed:
+            break
 
     agg_is = compute_metrics(all_is_trades, [1.0])
     agg_oos = compute_metrics(all_oos_trades, all_oos_equity)
@@ -1169,25 +1220,33 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
     regime_scores, regime_concentration, primary_regime, regime_flags = compute_regime_scores(all_oos_trades, regime_payload)
     is_qscore = calculate_qscore(agg_is)
     oos_qscore = calculate_qscore(agg_oos)
-    is_qs_val = is_qscore["score_total"]
-    oos_qs_val = oos_qscore["score_total"]
+    is_qs_val = float(is_qscore["score_total"] or 0.0)
+    oos_qs_val = float(oos_qscore["score_total"] or 0.0)
     degradation_pct = round((1.0 - oos_qs_val / is_qs_val) * 100.0, 1) if is_qs_val > 0 else (0.0 if oos_qs_val >= 0 else 100.0)
+    completed_test_stages = len(fold_results)
+    passed_all_tests = train_gate_passed and completed_test_stages == test_stages and all(bool(fr.get("stage_passed")) for fr in fold_results)
 
     final_decision = "fail"
     final_grade = "D"
-    if agg_oos["total_trades"] >= MIN_PROMOTE_TRADES and oos_qs_val >= 1.5 and degradation_pct < 30.0:
+    if passed_all_tests and agg_oos["total_trades"] >= min_total_test_trades and oos_qs_val >= promote_qscore and degradation_pct < promote_max_degradation_pct:
         final_decision = "promote"
         final_grade = "A"
-    elif agg_oos["total_trades"] >= MIN_PASS_TRADES and oos_qs_val >= 0.5 and degradation_pct < 50.0:
+    elif passed_all_tests and agg_oos["total_trades"] >= min_total_test_trades and oos_qs_val >= pass_qscore and degradation_pct < max_degradation_pct:
         final_decision = "pass"
         final_grade = "B"
-    elif oos_qs_val >= 0.5:
+    elif train_gate_passed and oos_qs_val >= pass_qscore:
         final_grade = "C"
 
     final_flags = sorted(set(json.loads(oos_qscore["score_flags"]) + regime_flags))
-    if agg_oos["total_trades"] < MIN_PASS_TRADES:
-        final_flags.append("below_scoring_floor")
-    if agg_oos["total_trades"] < MIN_PASS_TRADES or degradation_pct > 70.0:
+    if is_result["total_trades"] < min_train_trades:
+        final_flags.append("below_train_trade_floor")
+    if agg_oos["total_trades"] < min_total_test_trades:
+        final_flags.append("below_test_trade_floor")
+    if not train_gate_passed:
+        final_flags.append("train_gate_failed")
+    if failure_reason:
+        final_flags.append(failure_reason)
+    if not passed_all_tests or agg_oos["total_trades"] < min_total_test_trades or degradation_pct > 70.0:
         final_decision = "fail"
 
     return {
@@ -1202,7 +1261,7 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
             "win_rate_pct": agg_is["win_rate_pct"],
             "sharpe_ratio": agg_is["sharpe_ratio"],
             "qscore": is_qscore["score_total"],
-            "decision": is_qscore["score_decision"],
+            "decision": "pass" if train_gate_passed else "fail",
         },
         "outofsample_aggregate": {
             "total_trades": agg_oos["total_trades"],
@@ -1226,11 +1285,23 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
         "regime_concentration": regime_concentration,
         "primary_regime": primary_regime,
         "unsupported_management_style": agg_oos.get("unsupported_management_style") or [],
+        "screen_passed": train_gate_passed,
         "walk_forward_config": {
-            "train_days": train_days,
-            "blind_days": blind_days,
+            "train_days": train_days_used,
+            "test_days": test_days_used,
+            "test_stages": test_stages,
             "timeframe": timeframe,
-            "min_blind_trades": MIN_BLIND_TRADES,
+            "min_train_trades": min_train_trades,
+            "min_test_trades": min_test_trades,
+            "min_total_test_trades": min_total_test_trades,
+            "train_qscore_gate": train_qscore_gate,
+            "pass_qscore": pass_qscore,
+            "promote_qscore": promote_qscore,
+            "max_degradation_pct": max_degradation_pct,
+            "promote_max_degradation_pct": promote_max_degradation_pct,
+            "completed_test_stages": completed_test_stages,
+            "passed_all_tests": passed_all_tests,
+            "scaled_for_available_data": scaled_for_available_data,
         },
     }
 
@@ -1421,7 +1492,7 @@ def main():
     ap.add_argument("--variant", default="default", help="Variant name from spec")
     ap.add_argument("--dry-run", action="store_true", help="Print config without running")
     ap.add_argument("--no-db", action="store_true", help="Skip database write")
-    ap.add_argument("--stage", default="full", choices=["full", "screen"], help="Backtest stage")
+    ap.add_argument("--stage", default="full", choices=["full", "screen", "validation"], help="Backtest stage")
     ap.add_argument("--strategy-family", default="", help="Strategy family name")
     ap.add_argument("--parent-id", default="", help="Parent backtest result id")
     ap.add_argument("--mutation-type", default="", help="Mutation type label")
@@ -1444,7 +1515,9 @@ def main():
     fallback_source = 1 if str((strategy.get("spec") or {}).get("source") or "").strip().lower() == "fallback_cooker" or bool((strategy.get("spec") or {}).get("fallback_source")) else 0
 
     if args.dry_run:
-        train_days, blind_days = WINDOW_CONFIG[args.tf]
+        policy = load_train_test_policy(args.tf)
+        train_days = int(policy.get("train_days") or WINDOW_CONFIG[args.tf][0])
+        blind_days = int(policy.get("test_days") or WINDOW_CONFIG[args.tf][1])
         print(json.dumps({
             "status": "dry_run",
             "asset": args.asset,
@@ -1453,7 +1526,10 @@ def main():
             "variant": args.variant,
             "stage": args.stage,
             "train_days": train_days,
-            "blind_days": blind_days,
+            "test_days": blind_days,
+            "test_stages": int(policy.get("test_stages") or 3),
+            "min_train_trades": int(policy.get("min_train_trades") or SCREEN_MIN_TRADES),
+            "min_test_trades": int(policy.get("min_test_trades") or MIN_BLIND_TRADES),
             "spec_id": spec_id,
         }, indent=2))
         return 0

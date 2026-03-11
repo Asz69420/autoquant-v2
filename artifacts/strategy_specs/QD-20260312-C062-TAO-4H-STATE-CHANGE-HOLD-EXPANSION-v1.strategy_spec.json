@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C062-TAO-4H-STATE-CHANGE-HOLD-EXPANSION-v1",
+  "cycle_id": 62,
+  "family_name": "tao_4h_state_change_hold_expansion_v062",
+  "name": "TAO 4h State Change Hold Expansion v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a chop-heavy market begins to improve directionally, reclaims fast structure, proves that reclaim with a next-bar hold, and then expands into a continuation leg",
+  "expected_regime": "TRANSITION_FROM_CHOP",
+  "thesis": "TAO 4h is the primary lane and the only basket member with any current trend-up reading, even if confidence is low. That makes it the best home for a state-change momentum idea. The edge is not first-break chasing; it is entering only after regime improvement is visible and the reclaimed structure survives the next bar.",
+  "invalidation_condition": "If TAO 4h still behaves as unresolved chop and the hold bar repeatedly fails before expansion can develop, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price shifts from chop toward directional improvement, reclaims fast structure, confirms that reclaim on the next bar, and then expands as participation improves.",
+    "why_edge_should_exist": "When trend confidence is low but not zero, the cleanest opportunity is often the first successful hold after structure improvement. That captures genuine state change while filtering many false first breaks.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it mixes enough trend potential with enough noise that a hold-based state-change filter is meaningful. ETH 4h is too purely choppy for this to be the primary lane.",
+    "indicator_role_map": {
+      "EMA_20": "state-improvement reclaim line",
+      "EMA_55": "higher-structure anchor and invalidation context",
+      "ATR_14": "hold tolerance and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional improvement confirmation",
+      "ADX_14": "transition participation gate"
+    },
+    "expected_regime": "TRANSITION_FROM_CHOP",
+    "likely_failure_mode": "What looks like directional improvement may simply be a chop rebound, causing hold-confirmation entries to arrive before any true expansion exists.",
+    "first_refinement_path": "If entries exist but runner expectancy is weak, keep the hold logic and shift more weight to earlier partial profit rather than loosening the trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A moderate number of continuation attempts, several modest first-target wins, and a smaller set of larger expansion runners.",
+    "what_would_count_as_success": "TAO 4h produces enough hold-and-expand occurrences to clear screen density, and at least one cross-lane preserves the same mechanism with cleaner structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated hold confirmations that fail before first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because the hold is a single next-bar confirmation rather than a ceremonial chain",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for state-change momentum after regime improvement.",
+      "continue_if": "TAO 4h shows enough reclaim-hold-expansion sequences with positive post-cost first-target behavior.",
+      "rotate_away_if": "TAO 4h remains too rotational and hold confirmations fail immediately.",
+      "expected_if_right": "Moderate count with several clean first-target wins and occasional larger continuation legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same state-change grammar survives on a cleaner, more purely choppy major.",
+      "continue_if": "ETH 4h preserves reclaim-hold-expansion with cleaner but smaller moves.",
+      "rotate_away_if": "ETH 4h confirms the mechanism needs TAO's trend contamination to exist.",
+      "expected_if_right": "Lower amplitude, cleaner state-change continuation than TAO."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether the same state-change logic can survive on a noisier asset.",
+      "continue_if": "AXS 4h preserves the reclaim-hold-improve sequence with enough structure.",
+      "rotate_away_if": "AXS 4h turns the mechanism into random chop noise.",
+      "expected_if_right": "Messier but occasionally sharper continuation bursts than ETH."
+    }
+  ],
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.12 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 15"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.12 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 15"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar low stays >= EMA_20 - 0.10 * ATR_14 and close remains >= EMA_20"
+    ],
+    "short": [
+      "Enter only if next bar high stays <= EMA_20 + 0.10 * ATR_14 and close remains <= EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.90 * ATR_14 below entry",
+      "Take profit: 0.56 * ATR_14 on 35% size",
+      "Take profit: 1.02 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.90 * ATR_14 above entry",
+      "Take profit: 0.56 * ATR_14 on 35% size",
+      "Take profit: 1.02 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

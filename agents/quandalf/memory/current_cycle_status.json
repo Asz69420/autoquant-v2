@@ -1,20 +1,16 @@
 {
-  "cycle_id": 59,
+  "cycle_id": 63,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C059-ETH-4H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C059-TAO-4H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C059-BTC-4H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json"
-  ],
-  "specs_produced": 3,
+  "spec_paths": [],
+  "specs_produced": 0,
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -26,12 +22,11 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "BTC",
+      "DOGE",
       "ETH",
       "TAO"
     ],
     "timeframes": [
-      "1h",
       "4h"
     ]
   },
@@ -43,12 +38,18 @@
   "rationale": "pending",
   "family_kill_events": [
     {
-      "ts_iso": "2026-03-11T20:44:44.662159+00:00",
-      "family": "tao_4h_deep_reset_persistence_v056",
+      "ts_iso": "2026-03-11T21:13:01.931047+00:00",
+      "family": "tao_4h_deep_reset_partial_runner_v061",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T21:13:07.653175+00:00",
+      "family": "btc_4h_deep_value_reclaim_continuation_v060",
       "reason": "screen-stage density below 30 trades"
     }
   ],
-  "target_asset": "BTC",
+  "target_asset": "DOGE",
   "target_timeframe": "4h",
-  "specific_family_to_iterate": null
+  "specific_family_to_iterate": null,
+  "fallback_source": false
 }
