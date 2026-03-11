@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C366-DOGE-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 366,
+  "family_name": "doge_range_failure_reacceptance",
+  "name": "DOGE Range Failure Reacceptance v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "DOGE", "timeframe": "4h" },
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "DOGE 4h is the best-fit primary lane for testing range-failure reversal after a multi-bar breakout loses acceptance and re-enters balance. The edge should come from balance reacceptance after failed extension, not from single-bar hero reversal timing.",
+  "edge_mechanism": "range failure mean reversion after value reacceptance",
+  "expected_regime": "TRANSITION_TO_CHOP",
+  "invalidation_condition": "Abort if reacceptance setups remain too rare, if excursion and reacceptance logic conflict, or if mean reversion gains do not survive costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A multi-bar breakout attempt loses acceptance, price re-enters balance, and the move back through value continues for several bars.",
+    "why_edge_should_exist": "When a breakout cannot sustain acceptance, trapped late entrants can fuel a reversal back into the prior range; DOGE 4h overshoots should make these failures visible.",
+    "asset_timeframe_fit": "DOGE 4h is the best-fit primary lane because failed breakouts on a volatile 4h canvas can still generate enough excursion to matter without requiring intraday noise chasing.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "excursion detector",
+      "EMA_20": "value reacceptance reference",
+      "EMA_55": "balance anchor",
+      "ATR_14": "excursion and risk normalizer",
+      "RSI_14": "state qualifier"
+    },
+    "expected_regime": "TRANSITION_TO_CHOP",
+    "likely_failure_mode": "If DOGE remains in one-way directional expansion rather than failed breakouts, reacceptance entries will stand in front of continuation.",
+    "first_refinement_path": "If participation exists but reversals are shallow, bring the first profit target closer to balance before tightening the trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion and reacceptance are complementary",
+      "event_sparsity": "managed by proximity thresholds instead of exact reversal-candle requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "EMA_55", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.25 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 43"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.25 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 57"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: EMA_55 or 1.2 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: EMA_55 or 1.2 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

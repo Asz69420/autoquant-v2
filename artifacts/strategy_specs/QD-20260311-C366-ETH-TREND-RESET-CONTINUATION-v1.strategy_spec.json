@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C366-ETH-TREND-RESET-CONTINUATION-v1",
+  "cycle_id": 366,
+  "family_name": "eth_trend_reset_continuation",
+  "name": "ETH Trend Reset Continuation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "4h" },
+    { "asset": "DOGE", "timeframe": "4h" }
+  ],
+  "thesis": "ETH 4h is the best-fit similar-asset lane for testing trend reset continuation after a deeper pullback instead of shallow EMA-touch logic. The edge should come from reset-and-resume structure with broad participation thresholds rather than microscopic touch entries.",
+  "edge_mechanism": "pullback continuation after deeper reset",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if reset setups are too rare, if pullback and continuation filters conflict, or if the resumed leg fails to survive costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional move resets more deeply into value, then resumes once the reset is accepted instead of rolling over further.",
+    "why_edge_should_exist": "When directional pressure pauses, deeper pullbacks can reload the move more effectively than shallow trend-following entries, especially if acceptance back above structure is clear.",
+    "asset_timeframe_fit": "ETH 4h is a clean similar-asset lane because reset-and-resume behavior is common enough on this canvas to preserve structure while still allowing meaningful pullback depth.",
+    "indicator_role_map": {
+      "EMA_20": "reset reclaim reference",
+      "EMA_55": "background trend anchor",
+      "ATR_14": "reset depth and risk normalizer",
+      "RSI_14": "state qualifier",
+      "ADX_14": "minimum continuation filter"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the market remains purely rotational without genuine reset acceptance, continuation entries will be early and get faded.",
+    "first_refinement_path": "If entries exist but resumed legs are too short, cut runner ambition before tightening the reset depth requirement.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reset and continuation roles are sequential",
+      "event_sparsity": "managed by broad reset thresholds instead of exact EMA-touch logic",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.45 * ATR_14",
+      "Close >= EMA_20",
+      "EMA_20 >= EMA_55 * 0.998",
+      "RSI_14 >= 48",
+      "ADX_14 >= 11"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.45 * ATR_14",
+      "Close <= EMA_20",
+      "EMA_20 <= EMA_55 * 1.002",
+      "RSI_14 <= 52",
+      "ADX_14 >= 11"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.85 * ATR_14 on 40% size",
+      "Take profit: 1.35 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.85 * ATR_14 on 40% size",
+      "Take profit: 1.35 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

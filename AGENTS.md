@@ -151,6 +151,15 @@ Never memorize rules — read the config files.
 - .env files, credentials, and logs excluded from git
 - OpenClaw workspace is source of truth, GitHub is backup
 
+## Framework Documentation
+
+Shared framework and memory documentation live here:
+- docs/AGENT_FRAMEWORK_VNEXT.md
+- docs/MEMORY_SYSTEM_VNEXT.md
+- docs/QUANDALF_BUILD_SPEC.md
+
+Use these as the source of truth when debugging or extending the framework.
+
 ## Grind Mode
 
 When Asz says "grind", "grind mode", "iterate on this", "keep working on this", or "keep going until X":

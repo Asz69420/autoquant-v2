@@ -1,27 +1,27 @@
 {
-  "cycle_id": 356,
-  "ts_iso": "2026-03-11T03:27:35Z",
+  "cycle_id": 368,
+  "ts_iso": "2026-03-11T04:59:59.000000+00:00",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
-      "source_strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+      "strategy_spec_id": "QD-20260311-C368-ETH-SESSION-DRIVE-CONTINUATION-v1",
+      "source_strategy_spec_id": "QD-20260311-C368-ETH-SESSION-DRIVE-CONTINUATION-v1",
       "decision": "abort",
-      "diagnosis_category": "too sparse",
-      "rationale": "This range-reacceptance variant still produced 0 trades on valid data. The mechanism fits a chop lane, but the excursion-plus-reacceptance stack remains too participation-sparse for this ETH 4h context, so it should be aborted rather than cosmetically refined."
+      "rationale": "This broadened drive-continuation expression produced 0 trades on valid data, which is a hard red flag. Even after relaxing the session idea into a 4h-compatible drive-and-hold structure, the setup remained participation-sparse and does not justify another rescue attempt.",
+      "diagnosis_category": "too sparse"
     },
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
-      "source_strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
+      "strategy_spec_id": "QD-20260311-C368-BTC-INVENTORY-RESET-RECLAIM-v1",
+      "source_strategy_spec_id": "QD-20260311-C368-BTC-INVENTORY-RESET-RECLAIM-v1",
       "decision": "abort",
-      "diagnosis_category": "wrong regime",
-      "rationale": "The deep-reset continuation idea assumes a chop-to-transition continuation burst after reset, but the realized lane remained choppy enough that this expression never engaged and it produced 0 trades on valid data. For this exact packet the honest outcome is abort."
+      "rationale": "The flush-and-reclaim continuation concept never engaged on valid data. In this fully choppy brief, the exact reclaim-continuation lane expression still failed to participate, so the honest diagnosis is excessive sparsity rather than something worth cosmetic refinement.",
+      "diagnosis_category": "too sparse"
     },
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-      "source_strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "strategy_spec_id": "QD-20260311-C368-TAO-POST-EXPANSION-RUNNER-v1",
+      "source_strategy_spec_id": "QD-20260311-C368-TAO-POST-EXPANSION-RUNNER-v1",
       "decision": "abort",
-      "diagnosis_category": "wrong indicator role assignment",
-      "rationale": "The fakeout re-expansion concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive for this ETH 4h chop lane and yielded 0 trades on valid data. The honest action is abort rather than invented refinement."
+      "rationale": "This runner concept also produced 0 trades on valid data. The expansion detector plus persistence confirmation stack still assigned too much directional responsibility to overlapping components, leaving the setup over-constrained for the chosen lane.",
+      "diagnosis_category": "wrong indicator role assignment"
     }
   ],
   "jobs": []

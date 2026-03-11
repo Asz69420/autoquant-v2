@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 MANIFEST = ROOT / "data" / "state" / "current_cycle_specs.json"
 CANDLES_DIR = ROOT / "data" / "candles"
-MARKET_SKILL = Path.home() / ".openclaw" / "skills" / "autoquant-market-data" / "market.py"
+MARKET_SKILL = ROOT.parent / "skills" / "autoquant-market-data" / "market.py"
 
 DEFAULT_DAYS = {
     "15m": 14,

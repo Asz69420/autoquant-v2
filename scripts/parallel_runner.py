@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 THROTTLE = os.path.join(ROOT, "config", "throttle.json")
-BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
+BACKTESTER = os.path.join(ROOT, "scripts", "simple_backtest_engine.py")
 CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
 BRANCH_DIR = os.path.join(SPECS_DIR, "auto_funnel")

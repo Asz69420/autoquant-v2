@@ -1,137 +1,58 @@
 {
-  "ts_iso": "2026-03-11T03:26:30.911863+00:00",
+  "ts_iso": "2026-03-11T05:06:55.508139+00:00",
   "type": "reflection",
-  "cycle_id": 356,
+  "cycle_id": 370,
   "mode": "explore",
   "research_direction": "explore_new",
-  "target_asset": "ETH",
+  "target_asset": "SOL",
   "target_timeframe": "4h",
   "strategy_outcomes": [
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-      "name": "ETH Range Failure Reacceptance v1",
-      "asset": "ETH",
+      "strategy_spec_id": "QD-20260311-C370-SOL-DEEP-VALUE-RECLAIM-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-SOL-DEEP-VALUE-RECLAIM-v1.strategy_spec.json",
+      "name": "SOL Deep Value Reclaim v1",
+      "asset": "SOL",
       "timeframe": "4h",
-      "strategy_family": "eth_range_failure_reacceptance",
-      "edge_mechanism": "range failure mean reversion after value reacceptance",
-      "hypothesis": "In ETH 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "strategy_family": "sol_deep_value_reclaim",
+      "edge_mechanism": "deep value reclaim continuation",
+      "hypothesis": "SOL 4h is the best-fit primary lane for testing trend pullback continuation after a deeper value reclaim into structural support. The edge should come from a meaningful reclaim after overshoot, not from shallow trend-chasing.",
       "indicators": [
         "EMA_20",
-        "EMA_50",
+        "EMA_55",
         "ATR_14",
         "RSI_14",
-        "BOLLINGER_BANDS_20_2"
+        "PLUS_DI_14",
+        "MINUS_DI_14"
       ],
       "entry_rules": {
         "long": [
-          "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
+          "Low <= EMA_20 - 0.6 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 43"
+          "EMA_20 >= EMA_55 * 0.998",
+          "PLUS_DI_14 >= MINUS_DI_14",
+          "RSI_14 >= 47"
         ],
         "short": [
-          "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
+          "High >= EMA_20 + 0.6 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 57"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 1.1 * ATR_14 below entry",
-          "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
-          "Time stop: 6 bars"
-        ],
-        "short": [
-          "Stop loss: 1.1 * ATR_14 above entry",
-          "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
-          "Time stop: 6 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
-      "queue": [
-        {
-          "queue_id": "rq_e7ab5bd02a5c",
-          "stage": "screen",
-          "status": "skipped",
-          "result_id": null,
-          "notes": {
-            "status": "integrity_skip",
-            "error": "integrity_skip:zero_trades_both_samples",
-            "stderr": ""
-          },
-          "queued_at": "2026-03-11T03:26:29.839363+00:00",
-          "completed_at": "2026-03-11T03:26:30.271906+00:00"
-        }
-      ],
-      "result_count": 0,
-      "latest_result": null,
-      "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
-      "allowed_next_actions": [
-        "refine",
-        "abort"
-      ],
-      "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "has_zero_trade_signal": true
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
-      "name": "ETH Deep Reset Continuation v1",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "strategy_family": "eth_deep_reset_continuation",
-      "edge_mechanism": "pullback continuation after deeper reset",
-      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
-      "indicators": [
-        "EMA_20",
-        "EMA_50",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "EMA_20 >= EMA_50 * 0.999",
-          "Low <= EMA_20 - 0.5 * ATR_14",
-          "Close >= EMA_20",
-          "RSI_14 >= 48",
-          "ADX_14 >= 10"
-        ],
-        "short": [
-          "EMA_20 <= EMA_50 * 1.001",
-          "High >= EMA_20 + 0.5 * ATR_14",
-          "Close <= EMA_20",
-          "RSI_14 <= 52",
-          "ADX_14 >= 10"
+          "EMA_20 <= EMA_55 * 1.002",
+          "MINUS_DI_14 >= PLUS_DI_14",
+          "RSI_14 <= 53"
         ]
       },
       "exit_rules": {
         "long": [
           "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 1.0 * ATR_14 on 50% size",
-          "Trail remaining 50% by 0.8 * ATR_14",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.35 * ATR_14 on 35% size",
+          "Trail remaining 25% by 0.7 * ATR_14",
           "Final time stop: 8 bars"
         ],
         "short": [
           "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 1.0 * ATR_14 on 50% size",
-          "Trail remaining 50% by 0.8 * ATR_14",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.35 * ATR_14 on 35% size",
+          "Trail remaining 25% by 0.7 * ATR_14",
           "Final time stop: 8 bars"
         ]
       },
@@ -139,7 +60,7 @@
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_94c7e042ef37",
+          "queue_id": "rq_5e5ae014d2eb",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -148,8 +69,8 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:26:29.850343+00:00",
-          "completed_at": "2026-03-11T03:26:30.268966+00:00"
+          "queued_at": "2026-03-11T05:06:54.426912+00:00",
+          "completed_at": "2026-03-11T05:06:54.863275+00:00"
         }
       ],
       "result_count": 0,
@@ -178,50 +99,50 @@
       "has_zero_trade_signal": true
     },
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
-      "name": "ETH Compression Fakeout Reexpansion v1",
+      "strategy_spec_id": "QD-20260311-C370-ETH-SQUEEZE-PERSISTENCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-ETH-SQUEEZE-PERSISTENCE-v1.strategy_spec.json",
+      "name": "ETH Squeeze Persistence v1",
       "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "eth_compression_fakeout_reexpansion",
-      "edge_mechanism": "compression fakeout followed by directional re-expansion",
-      "hypothesis": "ETH can compress, fake one side of balance, then re-expand the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "strategy_family": "eth_squeeze_persistence",
+      "edge_mechanism": "squeeze expansion with persistence confirmation",
+      "hypothesis": "ETH 4h is the best-fit similar-asset lane for testing volatility squeeze expansion confirmed by persistence instead of the first breakout bar. The edge should come from expansion that proves itself by holding structure, not from immediate breakout chasing.",
       "indicators": [
         "BOLLINGER_BANDS_20_2",
-        "ATR_14",
-        "RSI_14",
         "EMA_20",
-        "ADX_14"
+        "ATR_14",
+        "ADX_14",
+        "RSI_14"
       ],
       "entry_rules": {
         "long": [
-          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
-          "Low < BOLLINGER_LOWER_20_2",
+          "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 47",
-          "ADX_14 >= 9"
+          "Low >= EMA_20 - 0.1 * ATR_14",
+          "ADX_14 >= 10",
+          "RSI_14 >= 51"
         ],
         "short": [
-          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
-          "High > BOLLINGER_UPPER_20_2",
+          "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 53",
-          "ADX_14 >= 9"
+          "High <= EMA_20 + 0.1 * ATR_14",
+          "ADX_14 >= 10",
+          "RSI_14 <= 49"
         ]
       },
       "exit_rules": {
         "long": [
-          "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.9 * ATR_14 on 40% size",
-          "Take profit: 1.6 * ATR_14 on 40% size",
-          "Trail final 20% by 0.7 * ATR_14",
+          "Stop loss: 0.95 * ATR_14 below entry",
+          "Take profit: 0.8 * ATR_14 on 35% size",
+          "Take profit: 1.25 * ATR_14 on 35% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
           "Final time stop: 7 bars"
         ],
         "short": [
-          "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.9 * ATR_14 on 40% size",
-          "Take profit: 1.6 * ATR_14 on 40% size",
-          "Trail final 20% by 0.7 * ATR_14",
+          "Stop loss: 0.95 * ATR_14 above entry",
+          "Take profit: 0.8 * ATR_14 on 35% size",
+          "Take profit: 1.25 * ATR_14 on 35% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
           "Final time stop: 7 bars"
         ]
       },
@@ -229,7 +150,7 @@
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_007002198024",
+          "queue_id": "rq_e4e0b4471e78",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -238,8 +159,101 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:26:29.856063+00:00",
-          "completed_at": "2026-03-11T03:26:30.270896+00:00"
+          "queued_at": "2026-03-11T05:06:54.436319+00:00",
+          "completed_at": "2026-03-11T05:06:54.861575+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "red_flag",
+      "recommended_action": "red_flag",
+      "decision_required": true,
+      "allowed_next_actions": [
+        "refine",
+        "abort"
+      ],
+      "diagnosis_category": "too sparse",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "has_zero_trade_signal": true
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C370-TAO-FAILED-BREAKDOWN-HOLD-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-TAO-FAILED-BREAKDOWN-HOLD-v1.strategy_spec.json",
+      "name": "TAO Failed Breakdown Hold v1",
+      "asset": "TAO",
+      "timeframe": "4h",
+      "strategy_family": "tao_failed_breakdown_hold",
+      "edge_mechanism": "failed breakdown reclaim continuation",
+      "hypothesis": "TAO 4h is the structurally different lane for testing a failed breakdown reclaim that must hold before continuation entry. The edge should come from rejection of downside acceptance, then continuation only after the reclaim proves durable.",
+      "indicators": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "Low <= EMA_20 - 0.5 * ATR_14",
+          "Close >= EMA_20",
+          "EMA_20 >= EMA_55 * 0.998",
+          "PLUS_DI_14 >= MINUS_DI_14",
+          "RSI_14 >= 48"
+        ],
+        "short": [
+          "High >= EMA_20 + 0.5 * ATR_14",
+          "Close <= EMA_20",
+          "EMA_20 <= EMA_55 * 1.002",
+          "MINUS_DI_14 >= PLUS_DI_14",
+          "RSI_14 <= 52"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.95 * ATR_14 below entry",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.3 * ATR_14 on 30% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14",
+          "Final time stop: 7 bars"
+        ],
+        "short": [
+          "Stop loss: 0.95 * ATR_14 above entry",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.3 * ATR_14 on 30% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14",
+          "Final time stop: 7 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_32eafcacfc17",
+          "stage": "screen",
+          "status": "skipped",
+          "result_id": null,
+          "notes": {
+            "status": "integrity_skip",
+            "error": "integrity_skip:zero_trades_both_samples",
+            "stderr": ""
+          },
+          "queued_at": "2026-03-11T05:06:54.442485+00:00",
+          "completed_at": "2026-03-11T05:06:54.865035+00:00"
         }
       ],
       "result_count": 0,
@@ -270,130 +284,51 @@
   ],
   "recent_results": [
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-      "name": "ETH Range Failure Reacceptance v1",
-      "asset": "ETH",
+      "strategy_spec_id": "QD-20260311-C370-SOL-DEEP-VALUE-RECLAIM-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-SOL-DEEP-VALUE-RECLAIM-v1.strategy_spec.json",
+      "name": "SOL Deep Value Reclaim v1",
+      "asset": "SOL",
       "timeframe": "4h",
-      "strategy_family": "eth_range_failure_reacceptance",
-      "edge_mechanism": "range failure mean reversion after value reacceptance",
-      "hypothesis": "In ETH 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+      "strategy_family": "sol_deep_value_reclaim",
+      "edge_mechanism": "deep value reclaim continuation",
+      "hypothesis": "SOL 4h is the best-fit primary lane for testing trend pullback continuation after a deeper value reclaim into structural support. The edge should come from a meaningful reclaim after overshoot, not from shallow trend-chasing.",
       "indicators": [
         "EMA_20",
-        "EMA_50",
+        "EMA_55",
         "ATR_14",
         "RSI_14",
-        "BOLLINGER_BANDS_20_2"
+        "PLUS_DI_14",
+        "MINUS_DI_14"
       ],
       "entry_rules": {
         "long": [
-          "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
+          "Low <= EMA_20 - 0.6 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 43"
+          "EMA_20 >= EMA_55 * 0.998",
+          "PLUS_DI_14 >= MINUS_DI_14",
+          "RSI_14 >= 47"
         ],
         "short": [
-          "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
+          "High >= EMA_20 + 0.6 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 57"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 1.1 * ATR_14 below entry",
-          "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
-          "Time stop: 6 bars"
-        ],
-        "short": [
-          "Stop loss: 1.1 * ATR_14 above entry",
-          "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
-          "Time stop: 6 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
-      "queue": [
-        {
-          "queue_id": "rq_e7ab5bd02a5c",
-          "stage": "screen",
-          "status": "skipped",
-          "result_id": null,
-          "notes": {
-            "status": "integrity_skip",
-            "error": "integrity_skip:zero_trades_both_samples",
-            "stderr": ""
-          },
-          "queued_at": "2026-03-11T03:26:29.839363+00:00",
-          "completed_at": "2026-03-11T03:26:30.271906+00:00"
-        }
-      ],
-      "result_count": 0,
-      "latest_result": null,
-      "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
-      "allowed_next_actions": [
-        "refine",
-        "abort"
-      ],
-      "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "has_zero_trade_signal": true
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
-      "name": "ETH Deep Reset Continuation v1",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "strategy_family": "eth_deep_reset_continuation",
-      "edge_mechanism": "pullback continuation after deeper reset",
-      "hypothesis": "Even in mostly choppy ETH 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
-      "indicators": [
-        "EMA_20",
-        "EMA_50",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "EMA_20 >= EMA_50 * 0.999",
-          "Low <= EMA_20 - 0.5 * ATR_14",
-          "Close >= EMA_20",
-          "RSI_14 >= 48",
-          "ADX_14 >= 10"
-        ],
-        "short": [
-          "EMA_20 <= EMA_50 * 1.001",
-          "High >= EMA_20 + 0.5 * ATR_14",
-          "Close <= EMA_20",
-          "RSI_14 <= 52",
-          "ADX_14 >= 10"
+          "EMA_20 <= EMA_55 * 1.002",
+          "MINUS_DI_14 >= PLUS_DI_14",
+          "RSI_14 <= 53"
         ]
       },
       "exit_rules": {
         "long": [
           "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 1.0 * ATR_14 on 50% size",
-          "Trail remaining 50% by 0.8 * ATR_14",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.35 * ATR_14 on 35% size",
+          "Trail remaining 25% by 0.7 * ATR_14",
           "Final time stop: 8 bars"
         ],
         "short": [
           "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 1.0 * ATR_14 on 50% size",
-          "Trail remaining 50% by 0.8 * ATR_14",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.35 * ATR_14 on 35% size",
+          "Trail remaining 25% by 0.7 * ATR_14",
           "Final time stop: 8 bars"
         ]
       },
@@ -401,7 +336,7 @@
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_94c7e042ef37",
+          "queue_id": "rq_5e5ae014d2eb",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -410,8 +345,8 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:26:29.850343+00:00",
-          "completed_at": "2026-03-11T03:26:30.268966+00:00"
+          "queued_at": "2026-03-11T05:06:54.426912+00:00",
+          "completed_at": "2026-03-11T05:06:54.863275+00:00"
         }
       ],
       "result_count": 0,
@@ -440,50 +375,50 @@
       "has_zero_trade_signal": true
     },
     {
-      "strategy_spec_id": "QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C356-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
-      "name": "ETH Compression Fakeout Reexpansion v1",
+      "strategy_spec_id": "QD-20260311-C370-ETH-SQUEEZE-PERSISTENCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-ETH-SQUEEZE-PERSISTENCE-v1.strategy_spec.json",
+      "name": "ETH Squeeze Persistence v1",
       "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "eth_compression_fakeout_reexpansion",
-      "edge_mechanism": "compression fakeout followed by directional re-expansion",
-      "hypothesis": "ETH can compress, fake one side of balance, then re-expand the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+      "strategy_family": "eth_squeeze_persistence",
+      "edge_mechanism": "squeeze expansion with persistence confirmation",
+      "hypothesis": "ETH 4h is the best-fit similar-asset lane for testing volatility squeeze expansion confirmed by persistence instead of the first breakout bar. The edge should come from expansion that proves itself by holding structure, not from immediate breakout chasing.",
       "indicators": [
         "BOLLINGER_BANDS_20_2",
-        "ATR_14",
-        "RSI_14",
         "EMA_20",
-        "ADX_14"
+        "ATR_14",
+        "ADX_14",
+        "RSI_14"
       ],
       "entry_rules": {
         "long": [
-          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
-          "Low < BOLLINGER_LOWER_20_2",
+          "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
           "Close >= EMA_20",
-          "RSI_14 >= 47",
-          "ADX_14 >= 9"
+          "Low >= EMA_20 - 0.1 * ATR_14",
+          "ADX_14 >= 10",
+          "RSI_14 >= 51"
         ],
         "short": [
-          "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
-          "High > BOLLINGER_UPPER_20_2",
+          "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
           "Close <= EMA_20",
-          "RSI_14 <= 53",
-          "ADX_14 >= 9"
+          "High <= EMA_20 + 0.1 * ATR_14",
+          "ADX_14 >= 10",
+          "RSI_14 <= 49"
         ]
       },
       "exit_rules": {
         "long": [
-          "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.9 * ATR_14 on 40% size",
-          "Take profit: 1.6 * ATR_14 on 40% size",
-          "Trail final 20% by 0.7 * ATR_14",
+          "Stop loss: 0.95 * ATR_14 below entry",
+          "Take profit: 0.8 * ATR_14 on 35% size",
+          "Take profit: 1.25 * ATR_14 on 35% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
           "Final time stop: 7 bars"
         ],
         "short": [
-          "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.9 * ATR_14 on 40% size",
-          "Take profit: 1.6 * ATR_14 on 40% size",
-          "Trail final 20% by 0.7 * ATR_14",
+          "Stop loss: 0.95 * ATR_14 above entry",
+          "Take profit: 0.8 * ATR_14 on 35% size",
+          "Take profit: 1.25 * ATR_14 on 35% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
           "Final time stop: 7 bars"
         ]
       },
@@ -491,7 +426,7 @@
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_007002198024",
+          "queue_id": "rq_e4e0b4471e78",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -500,8 +435,101 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T03:26:29.856063+00:00",
-          "completed_at": "2026-03-11T03:26:30.270896+00:00"
+          "queued_at": "2026-03-11T05:06:54.436319+00:00",
+          "completed_at": "2026-03-11T05:06:54.861575+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "red_flag",
+      "recommended_action": "red_flag",
+      "decision_required": true,
+      "allowed_next_actions": [
+        "refine",
+        "abort"
+      ],
+      "diagnosis_category": "too sparse",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "has_zero_trade_signal": true
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C370-TAO-FAILED-BREAKDOWN-HOLD-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-TAO-FAILED-BREAKDOWN-HOLD-v1.strategy_spec.json",
+      "name": "TAO Failed Breakdown Hold v1",
+      "asset": "TAO",
+      "timeframe": "4h",
+      "strategy_family": "tao_failed_breakdown_hold",
+      "edge_mechanism": "failed breakdown reclaim continuation",
+      "hypothesis": "TAO 4h is the structurally different lane for testing a failed breakdown reclaim that must hold before continuation entry. The edge should come from rejection of downside acceptance, then continuation only after the reclaim proves durable.",
+      "indicators": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "entry_rules": {
+        "long": [
+          "Low <= EMA_20 - 0.5 * ATR_14",
+          "Close >= EMA_20",
+          "EMA_20 >= EMA_55 * 0.998",
+          "PLUS_DI_14 >= MINUS_DI_14",
+          "RSI_14 >= 48"
+        ],
+        "short": [
+          "High >= EMA_20 + 0.5 * ATR_14",
+          "Close <= EMA_20",
+          "EMA_20 <= EMA_55 * 1.002",
+          "MINUS_DI_14 >= PLUS_DI_14",
+          "RSI_14 <= 52"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.95 * ATR_14 below entry",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.3 * ATR_14 on 30% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14",
+          "Final time stop: 7 bars"
+        ],
+        "short": [
+          "Stop loss: 0.95 * ATR_14 above entry",
+          "Take profit: 0.85 * ATR_14 on 40% size",
+          "Take profit: 1.3 * ATR_14 on 30% size",
+          "Trail remaining 30% by 0.7 * ATR_14",
+          "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14",
+          "Final time stop: 7 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_32eafcacfc17",
+          "stage": "screen",
+          "status": "skipped",
+          "result_id": null,
+          "notes": {
+            "status": "integrity_skip",
+            "error": "integrity_skip:zero_trades_both_samples",
+            "stderr": ""
+          },
+          "queued_at": "2026-03-11T05:06:54.442485+00:00",
+          "completed_at": "2026-03-11T05:06:54.865035+00:00"
         }
       ],
       "result_count": 0,

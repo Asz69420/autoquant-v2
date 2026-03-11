@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C362-BTC-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 362,
+  "family_name": "btc_value_reacceptance_exhaustion",
+  "name": "BTC Value Reacceptance Exhaustion v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "BTC", "timeframe": "4h" },
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "BTC 4h is the best-fit similar-asset lane for testing mean reversion from exhaustion only when structure reaccepts prior value. The edge should come from overextension snapping back into value, not from passive oversold buying.",
+  "edge_mechanism": "exhaustion reacceptance mean reversion",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if the excursion threshold is too rare, if value reacceptance and exhaustion filters conflict, or if reversion gains cannot overcome cost drag.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Directional extension exhausts, price re-enters value, and reversion toward balance follows over the next few bars.",
+    "why_edge_should_exist": "When extension becomes crowded, the first credible move back into value can force late participants to unwind into the mean-reversion move.",
+    "asset_timeframe_fit": "BTC 4h is the right similar-asset lane because its excursions are meaningful enough for structure reacceptance to matter while still offering enough density for a 4h mean-reversion test.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "exhaustion detector",
+      "EMA_20": "value reacceptance reference",
+      "EMA_55": "balance anchor",
+      "ATR_14": "excursion and risk normalizer",
+      "RSI_14": "exhaustion state qualifier"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If directional moves are genuine continuation instead of exhaustion, reacceptance entries will stand in front of trend.",
+    "first_refinement_path": "If participation is healthy but reversions are shallow, reduce target ambition before tightening the excursion trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion and reacceptance are complementary",
+      "event_sparsity": "controlled by proximity thresholds rather than exact oversold extremes",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "EMA_55", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 42"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 58"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: EMA_55 or 1.2 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: EMA_55 or 1.2 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

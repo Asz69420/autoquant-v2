@@ -10,30 +10,30 @@
   "primary_timeframe": "4h",
   "validation_targets": [
     { "asset": "ETH", "timeframe": "4h" },
-    { "asset": "TAO", "timeframe": "4h" }
+    { "asset": "BTC", "timeframe": "4h" }
   ],
-  "thesis": "ETH 4h is the best-fit similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. Even in chop, occasional persistence bursts can exist if management exits quickly when momentum decays.",
+  "thesis": "ETH 4h is the best-fit similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. The edge should come from persistence after a structured hold, while asymmetric exits prevent one indicator stack from doing every job.",
   "edge_mechanism": "trend persistence with asymmetric exit logic",
-  "expected_regime": "CHOP_TO_TRANSITION",
-  "invalidation_condition": "Abort if structure-hold entries are too sparse, if exit asymmetry adds complexity without real benefit, or if persistence decays too fast after costs.",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if structure-hold entries are too sparse, if exit asymmetry adds complexity without improving participation, or if continuation fades before the management logic can monetize it.",
   "pre_submit_reasoning": {
-    "market_behavior_targeted": "A short-lived persistence burst appears after structure is reclaimed and held, but requires different tools for trigger, stop logic, and exit decay.",
-    "why_edge_should_exist": "Even in choppy markets, brief trend bursts occur. Separating the trigger from the exit decay detector can capture those bursts without forcing a single indicator to do every job.",
-    "asset_timeframe_fit": "ETH 4h is cleaner than TAO for this test because brief continuation behavior is more orderly and less erratic, making asymmetric management more interpretable.",
+    "market_behavior_targeted": "A transition into persistence where price holds structure after a breakout and continues, but requires different tools for trigger, stop logic, and exit management.",
+    "why_edge_should_exist": "When regimes transition, continuation can exist but is often mishandled by symmetric all-or-nothing exits. Separating trigger, stop logic, and exit behavior can preserve edge if persistence is real but uneven.",
+    "asset_timeframe_fit": "ETH 4h is a cleaner lane than TAO for testing asymmetric management because the continuation behavior is usually more structured and less erratic.",
     "indicator_role_map": {
       "EMA_20": "trigger hold reference",
       "EMA_55": "background structural bias",
       "ATR_14": "stop and trail normalizer",
-      "ADX_14": "minimum persistence qualifier",
+      "ADX_14": "persistence qualifier",
       "RSI_14": "exit decay detector"
     },
-    "expected_regime": "CHOP_TO_TRANSITION",
-    "likely_failure_mode": "If the market stays purely rotational, continuation entries will degrade into whipsaw before exits can help.",
-    "first_refinement_path": "If entries are valid but persistence is too short, reduce runner exposure before tightening the trigger.",
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the market stays rotational instead of persistent, the trend-continuation thesis will degrade into chop losses.",
+    "first_refinement_path": "If entries are valid but persistence is shorter than expected, reduce runner exposure before tightening the trigger.",
     "density_sanity_check": {
       "plausible_trade_count": "moderate",
-      "contradictory_filters": "none obvious; RSI is reserved for exits rather than entry confirmation",
-      "event_sparsity": "controlled by broad structure-hold definitions instead of rare breakout spikes",
+      "contradictory_filters": "none obvious; structure hold and ADX persistence are aligned, while RSI is used only for exit decay",
+      "event_sparsity": "controlled by broad hold definitions rather than rare breakout spikes",
       "asset_timeframe_mismatch": "none"
     }
   },
@@ -43,13 +43,13 @@
       "EMA_20 >= EMA_55 * 0.999",
       "Close >= EMA_20",
       "Low >= EMA_20 - 0.2 * ATR_14",
-      "ADX_14 >= 11"
+      "ADX_14 >= 12"
     ],
     "short": [
       "EMA_20 <= EMA_55 * 1.001",
       "Close <= EMA_20",
       "High <= EMA_20 + 0.2 * ATR_14",
-      "ADX_14 >= 11"
+      "ADX_14 >= 12"
     ]
   },
   "exit_rules": {

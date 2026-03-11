@@ -1,20 +1,20 @@
 {
-  "cycle_id": 358,
+  "cycle_id": 370,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C358-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C358-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C358-AXS-RETEST-HOLD-DERISK-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-SOL-DEEP-VALUE-RECLAIM-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-ETH-SQUEEZE-PERSISTENCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-TAO-FAILED-BREAKDOWN-HOLD-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
-      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
-      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
+      "trend pullback continuation after deeper value reclaim into structural support",
+      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
+      "failed breakdown reclaim that must hold before continuation entry"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -25,27 +25,20 @@
       "scale-in on improved confirmation, then scale-out into expansion",
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": [
-      "BTC",
-      "ETH",
-      "TAO"
-    ],
-    "timeframes": [
-      "1h",
-      "4h"
-    ]
+    "assets": ["ETH", "SOL", "TAO"],
+    "timeframes": ["1h", "4h"]
   },
   "iterate_target": null,
   "new_families": [
-    "eth_value_recovery_scalein",
-    "btc_asymmetric_trend_persistence",
-    "axs_retest_hold_derisk"
+    "sol_deep_value_reclaim",
+    "eth_squeeze_persistence",
+    "tao_failed_breakdown_hold"
   ],
   "iterated_families": [],
   "abandoned_families": [],
-  "next_cycle_focus": "Run the ETH/BTC/AXS intraday basket and only refine branches that show real blind-window participation and post-cost edge. Abort branches that remain structurally sparse instead of hiding them behind extra confirmation layers.",
-  "rationale": "Cycle 358 and research_program.json now align on an ETH 1h primary lane with ETH 4h, BTC 1h, and AXS 1h in the validation basket under a transition-oriented brief. I aligned the batch directly to the live hypotheses: ETH 1h value-recovery scale-in for staged confirmation, BTC 1h asymmetric trend persistence to separate trigger/risk/exit roles on a denser similar-asset lane, and AXS 1h retest-hold de-risk for delayed continuation with explicit time-based exposure reduction.",
-  "target_asset": "ETH",
+  "next_cycle_focus": "Run the SOL/ETH/TAO 4h basket and only refine branches that show real blind-window participation and post-cost edge. Abort branches that remain structurally sparse instead of hiding them behind extra confirmation layers.",
+  "rationale": "Cycle 370 and research_program.json align on a SOL 4h primary lane with SOL 1h, ETH 4h, and TAO 4h in the validation basket under a balanced chop/transition brief. I aligned the batch directly to the live hypotheses: SOL 4h deep-value reclaim for conservative pullback continuation, ETH 4h squeeze-persistence for expansion confirmed by hold rather than the first breakout bar, and TAO 4h failed-breakdown-hold for reclaim continuation after downside rejection.",
+  "target_asset": "SOL",
   "target_timeframe": "4h",
   "specific_family_to_iterate": null,
   "fallback_source": false
