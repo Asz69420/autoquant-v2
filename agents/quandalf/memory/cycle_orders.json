@@ -1,143 +1,18 @@
 {
-  "cycle_id": 375,
-  "ts_iso": "2026-03-11T06:14:34.903413+00:00",
+  "cycle_id": 0,
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "SOL",
-  "target_timeframe": "4h",
-  "research_direction": "explore_new",
-  "specific_family_to_iterate": null,
-  "iterate_target": null,
-  "current_regime": "CHOP",
-  "regime_confidence": 50.0,
-  "regime_context": {
-    "current": "CHOP",
-    "confidence": 50.0,
-    "adx14": 13.5678,
-    "atr14": 1.84943,
-    "distribution_20bar": {
-      "TRANSITION": 50.0,
-      "CHOP": 50.0
-    }
-  },
-  "external_intel": {
-    "enabled_sources": [
-      "youtube-research-watch",
-      "tradingview-research-watch",
-      "regime-scan"
-    ],
-    "recent_items": [],
-    "target_asset": "SOL",
-    "target_timeframe": "4h",
-    "count": 0
-  },
-  "design_axes": {
-    "indicator_roles": [
-      "regime filter",
-      "setup qualifier",
-      "trigger",
-      "risk",
-      "exit"
-    ],
-    "management_expressions": [
-      "one-shot entry with one-shot exit",
-      "one-shot entry with partial take-profit and runner",
-      "one-shot entry with trailing-stop exit",
-      "time-based de-risking after entry",
-      "scaled-out exits after confirmation",
-      "scale-in on improved confirmation, then scale-out into expansion",
-      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
-    ],
-    "conceptual_space": [
-      "continuation",
-      "reversal",
-      "mean reversion",
-      "session logic",
-      "inventory reset",
-      "expansion follow-through"
-    ],
-    "anti_patterns": [
-      "ceremonial sparse confirmation chains",
-      "same indicator doing every role",
-      "single-bar hero entries with no management logic"
-    ]
-  },
+  "target_asset": null,
+  "target_timeframe": null,
+  "allowed_lanes": [],
+  "validation_basket": [],
   "exploration_targets": {
-    "concepts": [
-      "trend pullback continuation after deeper value reclaim into structural support",
-      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
-      "failed breakdown reclaim that must hold before continuation entry"
-    ],
-    "management_styles": [
-      "one-shot entry with one-shot exit",
-      "one-shot entry with partial take-profit and runner",
-      "one-shot entry with trailing-stop exit",
-      "time-based de-risking after entry",
-      "scaled-out exits after confirmation",
-      "scale-in on improved confirmation, then scale-out into expansion",
-      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
-    ],
-    "assets": [
-      "ETH",
-      "SOL",
-      "TAO"
-    ],
-    "timeframes": [
-      "1h",
-      "4h"
-    ]
+    "concepts": [],
+    "management_styles": [],
+    "assets": [],
+    "timeframes": []
   },
-  "validation_basket": [
-    {
-      "asset": "SOL",
-      "timeframe": "4h",
-      "role": "primary"
-    },
-    {
-      "asset": "SOL",
-      "timeframe": "1h",
-      "role": "adjacent_timeframe"
-    },
-    {
-      "asset": "ETH",
-      "timeframe": "4h",
-      "role": "similar_asset"
-    },
-    {
-      "asset": "TAO",
-      "timeframe": "4h",
-      "role": "structurally_different_asset"
-    }
-  ],
-  "allowed_lanes": [
-    {
-      "asset": "SOL",
-      "timeframe": "4h",
-      "role": "primary"
-    },
-    {
-      "asset": "SOL",
-      "timeframe": "1h",
-      "role": "adjacent_timeframe"
-    },
-    {
-      "asset": "ETH",
-      "timeframe": "4h",
-      "role": "similar_asset"
-    },
-    {
-      "asset": "TAO",
-      "timeframe": "4h",
-      "role": "structurally_different_asset"
-    }
-  ],
-  "lane_authority": {
-    "quandalf_controls_lane_selection": true,
-    "auto_fetch_missing_data": true,
-    "instruction": "Choose the best-fit asset/timeframe based on thesis. Use the validation basket deliberately. If you need a lane inside the supported universe that is not already cached, request it through the spec and the system will prepare the candles before backtest."
-  },
-  "thesis_hint": "Explore fresh SOL 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: CHOP (50.0% confidence). Market is choppy/ranging \u2014 favor mean reversion and range-bound strategies, avoid trend-following. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
-  "stop_condition": "Write 3-4 materially different specs using the best-fit lanes from the allowed basket. At least one spec should test a meaningfully different trade-management expression, at least one should vary indicator-role assignment rather than only entry conditions, and chosen lanes must be justified by thesis.",
-  "rotation_reason": "Deterministic explore rotation away from prior lane (None / None) while preserving freedom to choose the best-fit lane from the basket."
+  "thesis_hint": "Fresh start. Focus on strategies that should obviously generate trades.",
+  "rotation_reason": "Reset after poisoned backtest invalidation."
 }

@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C373-BTC-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 373,
+  "family_name": "btc_inventory_reset_reclaim",
+  "name": "BTC Inventory Reset Reclaim v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "BTC 4h is the best similar-asset lane for inventory-reset continuation after flush-and-reclaim, rewritten as a broad reclaimable reset instead of an exact oversold event chain. The edge should come from forced position cleanup followed by balance recovery, not from static oversold bounce logic.",
+  "edge_mechanism": "flush-and-reclaim continuation",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if reset-and-reclaim setups remain too sparse, if flushes fail to reclaim value quickly enough, or if recovered value does not extend after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, weak inventory is forced out, and continuation becomes tradable only once value is reclaimed and held.",
+    "why_edge_should_exist": "Pure chop often produces inventory flushes that are immediately repaired. A reclaim filter should capture the better resets without requiring crash-only extremes.",
+    "asset_timeframe_fit": "BTC 4h is a clean similar-asset lane for reset/reclaim logic because flushes and recoveries tend to be visible without the extra noise of smaller alts.",
+    "indicator_role_map": {
+      "EMA_20": "value reclaim reference",
+      "ATR_14": "flush depth and risk normalizer",
+      "RSI_14": "reset completion qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "handoff back toward balance",
+      "EMA_55": "background structure anchor"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If flushes become trend continuation rather than inventory resets, the reclaim step will arrive too late or not at all.",
+    "first_refinement_path": "If setups engage but extension is small, simplify exits toward faster balance capture before tightening reclaim depth.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; flush and reclaim are sequential",
+      "event_sparsity": "managed by moderate flush thresholds rather than rare capitulation definitions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "EMA_55"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.45 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 42",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14",
+      "Close >= EMA_55 - 0.5 * ATR_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.45 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 58",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14",
+      "Close <= EMA_55 + 0.5 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.65 * ATR_14 on 45% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Final 20% exits on touch of EMA_20 + 0.45 * ATR_14 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.65 * ATR_14 on 45% size",
+      "Take profit: 1.0 * ATR_14 on 35% size",
+      "Final 20% exits on touch of EMA_20 - 0.45 * ATR_14 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

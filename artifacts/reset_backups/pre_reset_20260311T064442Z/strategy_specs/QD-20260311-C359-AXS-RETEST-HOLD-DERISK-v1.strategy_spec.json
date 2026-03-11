@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C359-AXS-RETEST-HOLD-DERISK-v1",
+  "cycle_id": 359,
+  "family_name": "axs_retest_hold_derisk",
+  "name": "AXS Retest Hold De-Risk v1",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "AXS",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "AXS 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough. The edge should come from delayed confirmation after a retest, not from immediate breakout chasing.",
+  "edge_mechanism": "retest continuation with time-based de-risk",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if retest holds are too rare, if the retest qualifier conflicts with direction confirmation, or if continuation is too weak to justify even the faster de-risking profile.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A breakout does not extend immediately, retests the hold zone, then continues only if acceptance is real. If the second leg does not appear quickly, exposure should be reduced early.",
+    "why_edge_should_exist": "Markets in or near chop often punish immediate breakout entries. A delayed retest entry with quick time-based de-risk can preserve expectancy if continuation exists only intermittently.",
+    "asset_timeframe_fit": "AXS 4h is useful as the structurally different basket lane because it stress-tests the retest thesis on a different volatility personality while staying inside the allowed universe.",
+    "indicator_role_map": {
+      "EMA_20": "retest hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "retest depth and risk normalizer",
+      "PLUS_DI_14/MINUS_DI_14": "direction confirmation",
+      "RSI_14": "secondary state qualifier"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If AXS behaves as pure noise rather than structured retests, the continuation leg will not develop before the time-based de-risk triggers.",
+    "first_refinement_path": "If entries exist but the second leg arrives too slowly, extend the early de-risk window slightly before tightening retest rules.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; retest hold and DI confirmation support each other",
+      "event_sparsity": "kept reasonable by broad retest-distance rules",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_55 * 0.999",
+      "Low <= EMA_20 - 0.25 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "RSI_14 >= 49"
+    ],
+    "short": [
+      "EMA_20 <= EMA_55 * 1.001",
+      "High >= EMA_20 + 0.25 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "RSI_14 <= 51"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.2 * ATR_14 by cutting 50% size",
+      "Take profit: 0.9 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.2 * ATR_14 by cutting 50% size",
+      "Take profit: 0.9 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

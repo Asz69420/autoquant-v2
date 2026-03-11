@@ -1,0 +1,80 @@
+{
+  "version": "quandalf-learning-loop-v2",
+  "ts_iso": "2026-03-11T06:39:18.629542+00:00",
+  "sources": {
+    "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
+    "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
+    "current_cycle_status": "agents\\quandalf\\memory\\current_cycle_status.json",
+    "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
+  },
+  "cycle_context": {
+    "cycle_id": 379,
+    "asset": "ETH",
+    "timeframe": "4h",
+    "mode": "explore",
+    "research_direction": "explore_new"
+  },
+  "decision_summary": {
+    "promote": 0,
+    "refine": 0,
+    "abort": 1,
+    "zero_trade": 2
+  },
+  "diagnosis_breakdown": {
+    "bad idea": 1,
+    "too sparse": 2
+  },
+  "dimensions": {
+    "what_worked": [],
+    "what_failed": [
+      "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1: abort: fail with QS 0.52, PF 0.62, DD 10.2%, trades 4",
+      "QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+    ],
+    "why_it_failed": [
+      "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1: bad idea",
+      "QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1: too sparse",
+      "QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1: too sparse",
+      "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1: bad idea",
+      "QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1: too sparse",
+      "QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1: too sparse"
+    ],
+    "iterate_next": [
+      "QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1: allowed next actions -> refine, abort",
+      "QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1: allowed next actions -> refine, abort",
+      "decision QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1: This ETH value-recovery scale-in branch traded, but it still failed honestly with PF 0.62, negative return, and only 4 trades. The partial improvement in transition bars does not rescue the fact that the tested edge is weak and too thin to trust in a fully choppy brief.",
+      "decision QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1: This BTC asymmetric range-persistence branch produced 0 trades on valid data. Even with cleaner role separation, the entry grammar still overconstrained participation and did not engage at all.",
+      "decision QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1: This TAO retest-hold derisk branch also produced 0 trades on valid data. Time-based de-risking never had a chance to matter because the retest-hold continuation logic remained structurally too sparse for the lane."
+    ],
+    "abandon": [
+      "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1: bad idea"
+    ],
+    "bench_for_later": [],
+    "regime_notes": [],
+    "strategy_family_notes": [
+      "[\"eth_value_recovery_scalein_v379\", \"btc_asymmetric_range_persistence\", \"tao_retest_hold_derisk_v379\"]",
+      "[]"
+    ],
+    "indicator_role_notes": [],
+    "management_notes": [
+      "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1: trade_management -> {\"add_on_condition\": \"Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact\", \"add_on_size_pct\": 40, \"entry_expression\": \"scale_in_on_improved_confirmation\", \"initial"
+    ]
+  },
+  "journal_excerpt": [
+    "## Entry 092 \u0097 Full AXS / 1h Intraday-Rotation Exploration Batch for Cycle 136 (2026-03-09)",
+    "This was the right rotation. VVV just died the same death as the other recent intraday batches, and ETH-family attention has already had too much gravity. AXS / 1h is a supported lane where materially negative funding and faster structure should at least give a fair shot at density if the setup language is alive enough. The key instruction was to avoid reusing dead grammar. Good.",
+    "### Specs written",
+    "1. \u0007rtifacts/strategy_specs/QD-20260309-AXS-NEGATIVE-FUNDING-SQUEEZE-RELEASE-v1.strategy_spec.json",
+    "2. \u0007rtifacts/strategy_specs/QD-20260309-AXS-RANGE-ESCAPE-MOMENTUM-FLIP-v1.strategy_spec.json",
+    "3. \u0007rtifacts/strategy_specs/QD-20260309-AXS-SHALLOW-FLUSH-INVENTORY-RESET-v1.strategy_spec.json",
+    "### Why these three",
+    "I kept the ordered pair fixed \u0097 AXS / 1h \u0097 and changed the mechanism while staying biased toward broader, more live intraday expressions.",
+    "- **Negative-Funding Squeeze Release**",
+    "- tests whether the real edge appears when downside excess is reclaimed while shorts are still paying and squeeze pressure is already releasing."
+  ],
+  "learning_requirements": [
+    "Every cycle must yield diagnosis, lesson extraction, and durable learning update.",
+    "Zero-trade outcomes require explicit diagnosis and one rescue attempt at most.",
+    "PASS should flow into structured refinement variants, not cosmetic tweaks."
+  ]
+}

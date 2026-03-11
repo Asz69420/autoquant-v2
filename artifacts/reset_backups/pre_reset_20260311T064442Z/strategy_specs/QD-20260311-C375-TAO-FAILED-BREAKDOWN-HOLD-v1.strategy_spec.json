@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C375-TAO-FAILED-BREAKDOWN-HOLD-v1",
+  "cycle_id": 375,
+  "family_name": "tao_failed_breakdown_hold",
+  "name": "TAO Failed Breakdown Hold v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "TAO 4h is the structurally different lane for testing a failed breakdown reclaim that must hold before continuation entry. The edge should come from downside rejection plus value hold, not from blindly fading weakness.",
+  "edge_mechanism": "failed breakdown reclaim continuation",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if failed-breakdown reclaims remain too sparse, if hold confirmation does not improve continuation quality, or if the bounce dies before covering costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks below short-term support, quickly reclaims value, and only becomes tradable if that reclaimed level actually holds instead of failing again.",
+    "why_edge_should_exist": "In choppy conditions, breakdowns often fail. Reclaim-plus-hold logic should capture the better repairs while avoiding blind bottom-picking.",
+    "asset_timeframe_fit": "TAO 4h is useful because failed breakdowns and sharp repairs are more visible on a volatile asset, giving this mechanism a fair density test.",
+    "indicator_role_map": {
+      "EMA_20": "reclaim-and-hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "breakdown depth and risk normalizer",
+      "RSI_14": "state recovery qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff after reclaim"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If failed breakdowns only mean-revert weakly and do not continue, the hold-confirmed entry may still be late.",
+    "first_refinement_path": "If entries engage but continuation is too brief, reduce target ambition before changing the reclaim logic.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; breakdown and reclaim-hold are sequential and broad",
+      "event_sparsity": "managed by broad reclaim-hold logic instead of exact candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.5 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.45 * ATR_14",
+      "RSI_14 >= 47",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.5 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.45 * ATR_14",
+      "RSI_14 <= 53",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.75 * ATR_14 on 40% size",
+      "Take profit: 1.2 * ATR_14 on 30% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 20%",
+      "Trail remaining 10% by 0.75 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.75 * ATR_14 on 40% size",
+      "Take profit: 1.2 * ATR_14 on 30% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 20%",
+      "Trail remaining 10% by 0.75 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C380-ETH-SQUEEZE-HOLD-REVERSION-v1",
+  "cycle_id": 380,
+  "family_name": "eth_squeeze_hold_reversion_v380",
+  "name": "ETH Squeeze Hold Reversion v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset":"ETH","timeframe":"4h"},
+    {"asset":"BTC","timeframe":"4h"}
+  ],
+  "thesis": "ETH 4h is the cleaner similar-asset lane for testing volatility squeeze resolution with hold logic, but in a chop-dominant environment the monetization should still be mean-reversion aware rather than pure breakout worship. The edge should come from broad compression-release participation with quicker asymmetric harvesting.",
+  "edge_mechanism": "squeeze release with asymmetric hold/reversion exits",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if squeeze setups remain too sparse, if release bars immediately mean-revert before hold is visible, or if the asymmetric exit structure cannot overcome costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Compression resolves into a short-lived directional release, and entry is taken only when price remains aligned with fast value rather than instantly reversing.",
+    "why_edge_should_exist": "Even in chop, some compression releases persist for a brief second leg. The management edge here is asymmetric harvesting rather than trying to ride a full trend that likely never arrives.",
+    "asset_timeframe_fit": "ETH 4h is the cleaner lane for testing this because squeeze and hold structure is more readable than on TAO while still offering meaningful range expansion.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "post-release hold reference",
+      "ATR_14": "release magnitude and risk normalizer",
+      "ADX_14": "participation qualifier",
+      "EMA_55": "reversion exit reference"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If compression resolves straight back into mean reversion, the release will not persist long enough to justify even the front-half targets.",
+    "first_refinement_path": "If entries engage but the hold never extends, keep the entry and compress exits further rather than tightening setup conditions.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "none obvious; squeeze and hold are sequential",
+      "event_sparsity": "managed with moderate compression thresholds instead of extreme squeeze-only definitions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","ATR_14","ADX_14","EMA_55"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.15 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 >= EMA_55 * 0.998"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.15 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 <= EMA_55 * 1.002"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 50% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Exit remaining 20% on close back through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 50% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Exit remaining 20% on close back through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":4,"max_concurrent_positions":1}
+}

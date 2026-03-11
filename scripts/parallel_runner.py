@@ -15,7 +15,8 @@ from datetime import datetime, timezone
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 THROTTLE = os.path.join(ROOT, "config", "throttle.json")
-BACKTESTER = os.path.join(ROOT, "scripts", "simple_backtest_engine.py")
+SCREEN_BACKTESTER = os.path.join(ROOT, "scripts", "simple_backtest_engine.py")
+VALIDATION_BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
 CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
 BRANCH_DIR = os.path.join(SPECS_DIR, "auto_funnel")
@@ -945,6 +946,28 @@ def write_generated_spec(base_spec, spec_path, asset, timeframe, variant, mutati
     return out_path, spec
 
 
+def queue_full_progression_item(conn, queue_item, spec, screen_result):
+    item = {
+        "cycle_id": queue_item.get("cycle_id"),
+        "spec_path": queue_item["spec_path"],
+        "strategy_spec_id": queue_item["strategy_spec_id"],
+        "variant_id": queue_item["variant_id"],
+        "asset": queue_item["asset"],
+        "timeframe": queue_item["timeframe"],
+        "stage": "full",
+        "bucket": queue_item.get("bucket") or "explore",
+        "priority": 1,
+        "mutation_type": queue_item.get("mutation_type") or str(spec.get("mutation_type") or "initial"),
+        "family_generation": int(queue_item.get("family_generation") or 1),
+        "parent_result_id": screen_result.get("result_id"),
+        "strategy_family": queue_item.get("strategy_family") or derive_family_name(spec),
+        "source_queue_id": queue_item["id"],
+        "notes": json.dumps({"source": "screen_pass", "message": "queued for same-cycle full validation"}),
+    }
+    qid, created = enqueue_item(conn, item)
+    return [qid] if created else []
+
+
 def queue_validation_items(conn, queue_item, spec, full_result, promote=False):
     targets = spec.get("validation_targets") or []
     created = []
@@ -1172,10 +1195,14 @@ def note_leaderboard_candidate(full_result, spec):
     write_json(QUANDALF_JOURNAL_STATUS, status)
 
 
+def backtester_for_stage(stage):
+    return SCREEN_BACKTESTER if str(stage or "").lower() == "screen" else VALIDATION_BACKTESTER
+
+
 def execute_job(job):
     cmd = [
         sys.executable,
-        BACKTESTER,
+        backtester_for_stage(job.get("stage")),
         "--asset",
         job["asset"],
         "--tf",
@@ -1283,8 +1310,9 @@ def process_result_effects(conn, queue_item, result):
             stall_family(conn, queue_item.get("strategy_family") or derive_family_name(spec), f"screen too sparse/weak (trades={trades}, pf={pf:.3f})", artifact_id=payload.get("result_id"))
             return {"screen_to_full": False}
         if payload.get("screen_passed"):
+            full_ids = queue_full_progression_item(conn, queue_item, spec, payload)
             management_ids = queue_management_variant_items(conn, queue_item, spec, payload)
-            return {"screen_to_full": bool(management_ids), "management_variant_queue_ids": management_ids}
+            return {"screen_to_full": bool(full_ids), "full_queue_ids": full_ids, "management_variant_queue_ids": management_ids}
         log_event(conn, "screen_failed", "frodex", f"Screen failed for {queue_item['strategy_spec_id']}:{queue_item['variant_id']}", severity="warn", step="screen", artifact_id=queue_item["id"])
         return {"screen_to_full": False}
 
@@ -1380,7 +1408,7 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
     ok_count = 0
     fail_count = 0
     all_results = []
-    effect_summary = {"screen_to_full": 0, "full_pass": 0, "promote": 0, "branch_specs": 0, "validation_queued": 0, "reduced_queued": 0}
+    effect_summary = {"screen_to_full": 0, "full_pass": 0, "promote": 0, "full_queued": 0, "branch_specs": 0, "validation_queued": 0, "reduced_queued": 0}
 
     def finalize_results(results):
         nonlocal ok_count, fail_count
@@ -1393,6 +1421,7 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
                 effect_summary["screen_to_full"] += 1 if effects.get("screen_to_full") else 0
                 effect_summary["full_pass"] += 1 if effects.get("full_pass") else 0
                 effect_summary["promote"] += 1 if effects.get("promote") else 0
+                effect_summary["full_queued"] += len(effects.get("full_queue_ids") or [])
                 effect_summary["branch_specs"] += len(effects.get("branch_queue_ids") or [])
                 effect_summary["validation_queued"] += len(effects.get("validation_queue_ids") or [])
                 effect_summary["reduced_queued"] += len(effects.get("reduced_queue_ids") or [])

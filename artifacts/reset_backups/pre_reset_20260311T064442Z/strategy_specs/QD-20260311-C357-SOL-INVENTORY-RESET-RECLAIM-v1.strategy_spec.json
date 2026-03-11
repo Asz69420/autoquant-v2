@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C357-SOL-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 357,
+  "family_name": "sol_inventory_reset_reclaim",
+  "name": "SOL Inventory Reset Reclaim v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "SOL",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "SOL 4h is the best-fit basket lane for testing inventory-reset continuation after a flush-and-reclaim rather than static oversold bounce logic. The edge should come from reclaim-after-flush behavior with broader participation thresholds and staged management.",
+  "edge_mechanism": "inventory reset reclaim continuation",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if this remains too sparse, structurally contradictory, or cannot produce enough blind-window trades after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Sharp flush resets inventory, price reclaims value, and continuation follows because the panic move was over-extended.",
+    "why_edge_should_exist": "In transition conditions, forced inventory reset can create a cleaner second-leg move than raw oversold bounce logic.",
+    "asset_timeframe_fit": "SOL 4h fits better than 1h because the inventory reset should be meaningful enough to create multi-bar continuation rather than noise-only rebounds.",
+    "indicator_role_map": {
+      "EMA_20": "reclaim reference",
+      "ATR_14": "flush distance and risk normalizer",
+      "RSI_14": "state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional reclaim confirmation"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the market remains pure chop instead of transition, reclaim moves may only bounce and fade rather than continue.",
+    "first_refinement_path": "If some trades appear but density is weak, reduce reclaim distance requirements before changing management.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reclaim and directional confirmation align after the flush",
+      "event_sparsity": "managed by broad flush threshold and simple qualifier stack",
+      "asset_timeframe_mismatch": "none; 4h fits the inventory-reset thesis"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.7 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 44",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.7 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 56",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.9 * ATR_14 on 50% size",
+      "Take profit: 1.6 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.7 * ATR_14 after first partial",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.9 * ATR_14 on 50% size",
+      "Take profit: 1.6 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.7 * ATR_14 after first partial",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

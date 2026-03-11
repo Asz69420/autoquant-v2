@@ -1,1 +1,1 @@
-Fix the strategy decision loop so Quandalf fully owns strategy decisions (what to backtest, refine, promote, abort), the pipeline only executes and returns results, 0-trade is treated as a red-flag outcome not a skip, and visible log/reporting reflects decisions accurately.
+Implement clean staged backtest pipeline: simple engine for live screening, walk-forward engine for stage-2 validation only, promotion requires walk-forward pass, invalidate tainted recent backtests, and audit backtest path for silent bugs.

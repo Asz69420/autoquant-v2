@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C358-BTC-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 358,
+  "family_name": "btc_value_recovery_scalein",
+  "name": "BTC Value Recovery Scale-In v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "BTC 4h is the best-fit primary lane for value-recovery scale-in because the live program explicitly asks for improved confirmation across bars rather than one-shot timing. The edge should come from recovering value after dislocation, then adding only when confirmation strengthens.",
+  "edge_mechanism": "value recovery continuation with staged entry",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if recovery setups are too rare, if the add-on confirmation contradicts the first reclaim, or if the later add-on leg degrades expectancy after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price dislocates from value, reclaims the key reference, then confirms on the following bar(s) strongly enough to justify adding rather than entering full size immediately.",
+    "why_edge_should_exist": "Transitional markets often punish perfect bottom-picking but reward entering in stages once recovery is actually being accepted.",
+    "asset_timeframe_fit": "BTC 4h is the cleanest lane for this mechanism because the recovery needs enough amplitude and structure to support multi-bar confirmation and staged entry.",
+    "indicator_role_map": {
+      "EMA_20": "initial value recovery reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "recovery distance and risk normalizer",
+      "RSI_14": "confirmation improvement qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "direction confirmation for the scale-in leg"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If recovery bars are only dead-cat bounces and not genuine acceptance, the add-on leg will amplify a weak thesis.",
+    "first_refinement_path": "If the base reclaim works but add-ons hurt expectancy, keep the base entry and tighten the confirmation required for the scale-in.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reclaim, confirmation improvement, and DI agreement are sequential rather than conflicting",
+      "event_sparsity": "managed by broad recovery thresholds instead of rare extreme oversold events",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.6 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 47",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.6 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 53",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "trade_management": {
+    "entry_expression": "scale_in_on_improved_confirmation",
+    "initial_entry_size_pct": 60,
+    "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI confirmation persists",
+    "add_on_size_pct": 40
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below blended entry",
+      "Take profit: 0.9 * ATR_14 on 40% size",
+      "Take profit: 1.5 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.75 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above blended entry",
+      "Take profit: 0.9 * ATR_14 on 40% size",
+      "Take profit: 1.5 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.75 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

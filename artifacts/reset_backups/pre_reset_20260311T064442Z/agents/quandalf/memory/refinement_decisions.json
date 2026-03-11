@@ -1,0 +1,26 @@
+{
+  "cycle_id": 379,
+  "ts_iso": "2026-03-11T06:37:19.924810+00:00",
+  "strategy_decisions": [
+    {
+      "strategy_spec_id": "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1",
+      "source_result_id": "wf_e9be9653b5b7",
+      "decision": "abort",
+      "rationale": "This ETH value-recovery scale-in branch traded, but it still failed honestly with PF 0.62, negative return, and only 4 trades. The partial improvement in transition bars does not rescue the fact that the tested edge is weak and too thin to trust in a fully choppy brief.",
+      "diagnosis_category": "bad idea"
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1",
+      "decision": "abort",
+      "rationale": "This BTC asymmetric range-persistence branch produced 0 trades on valid data. Even with cleaner role separation, the entry grammar still overconstrained participation and did not engage at all.",
+      "diagnosis_category": "too sparse"
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1",
+      "decision": "abort",
+      "rationale": "This TAO retest-hold derisk branch also produced 0 trades on valid data. Time-based de-risking never had a chance to matter because the retest-hold continuation logic remained structurally too sparse for the lane.",
+      "diagnosis_category": "too sparse"
+    }
+  ],
+  "jobs": []
+}

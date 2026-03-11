@@ -621,8 +621,6 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
                 return token_map.get(node.id)
             if isinstance(node, ast.Constant):
                 return node.value
-            if isinstance(node, ast.Num):
-                return node.n
             if isinstance(node, ast.UnaryOp):
                 operand = eval_node(node.operand)
                 if operand is None:

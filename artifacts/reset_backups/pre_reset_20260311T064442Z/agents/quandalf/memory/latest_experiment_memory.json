@@ -1,0 +1,89 @@
+{
+  "ts_iso": "2026-03-11T06:39:17.810752+00:00",
+  "cycle_id": 379,
+  "count": 3,
+  "experiments": [
+    {
+      "strategy_spec_id": "QD-20260311-C379-ETH-VALUE-RECOVERY-SCALEIN-v1",
+      "hypothesis": "ETH 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a fully choppy regime, the edge should come from broad reclaim-of-value behavior rather than rare continuation events.",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "abort: fail with QS 0.52, PF 0.62, DD 10.2%, trades 4",
+      "actual_effect": {
+        "trade_count": 4,
+        "profit_factor": 0.619,
+        "max_drawdown_pct": 10.22,
+        "qscore": 0.517,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "This ETH value-recovery scale-in branch traded, but it still failed honestly with PF 0.62, negative return, and only 4 trades. The partial improvement in transition bars does not rescue the fact that the tested edge is weak and too thin to trust in a fully choppy brief."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C379-BTC-ASYMMETRIC-RANGE-PERSISTENCE-v1",
+      "hypothesis": "BTC 4h is the cleaner similar-asset lane for testing a range-compatible continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. In chop, the goal is not trend chasing; it is capturing the subset of holds that persist briefly before balance reasserts itself.",
+      "chosen_lane": {
+        "asset": "BTC",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "ATR_14",
+        "ADX_14",
+        "RSI_14",
+        "EMA_55"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "This BTC asymmetric range-persistence branch produced 0 trades on valid data. Even with cleaner role separation, the entry grammar still overconstrained participation and did not engage at all."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C379-TAO-RETEST-HOLD-DERISK-v1",
+      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear quickly. In a choppy regime, the value is not in chasing trend; it is in participating only after a hold and cutting exposure fast if no expansion follows.",
+      "chosen_lane": {
+        "asset": "TAO",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14",
+        "EMA_55"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "This TAO retest-hold derisk branch also produced 0 trades on valid data. Time-based de-risking never had a chance to matter because the retest-hold continuation logic remained structurally too sparse for the lane."
+    }
+  ]
+}

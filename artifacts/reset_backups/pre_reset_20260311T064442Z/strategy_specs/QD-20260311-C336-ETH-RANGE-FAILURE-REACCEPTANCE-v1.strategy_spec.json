@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C336-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 336,
+  "family_name": "eth_range_failure_reacceptance",
+  "name": "ETH Range Failure Reacceptance v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "In choppy ETH 4h conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+  "edge_mechanism": "range failure mean reversion after value reacceptance",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if walk-forward testing shows zero trades on valid data, weak blind-window participation, or no post-cost edge.",
+  "indicators": [
+    "EMA_20",
+    "EMA_50",
+    "ATR_14",
+    "RSI_14",
+    "BOLLINGER_BANDS_20_2"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close > BOLLINGER_LOWER_20_2",
+      "Close >= EMA_20 * 0.996",
+      "RSI_14 >= 43"
+    ],
+    "short": [
+      "High > BOLLINGER_UPPER_20_2",
+      "Close < BOLLINGER_UPPER_20_2",
+      "Close <= EMA_20 * 1.004",
+      "RSI_14 <= 57"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: EMA_50 or 1.6 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: EMA_50 or 1.6 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C362-TAO-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 362,
+  "family_name": "tao_delayed_retest_continuation",
+  "name": "TAO Delayed Retest Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "TAO 4h is the structurally different lane for testing breakout continuation with delayed entry after retest rather than immediate trigger. The edge should come from pullback acceptance after the break, not from chasing the first impulse.",
+  "edge_mechanism": "breakout continuation after delayed retest",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if retests are too rare, if retest and continuation filters conflict, or if the second leg fails to survive costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A breakout occurs, price retests rather than extending immediately, and continuation resumes only if the retest holds.",
+    "why_edge_should_exist": "Many failed breakout ideas enter too early; delaying until retest acceptance can improve participation quality and reduce whipsaw risk.",
+    "asset_timeframe_fit": "TAO 4h is a useful structurally different lane because it should show obvious pullback-and-resume behavior when the second leg is real, while still stress-testing the thesis on a more volatile asset.",
+    "indicator_role_map": {
+      "EMA_20": "retest hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "retest depth and risk normalizer",
+      "RSI_14": "continuation state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "direction confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If TAO behaves as pure noise rather than structured retests, the continuation leg may never materialize after entry.",
+    "first_refinement_path": "If entries occur but continuation fades too quickly, tighten the time-based de-risk before making retest depth stricter.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; retest hold and DI confirmation are aligned",
+      "event_sparsity": "kept reasonable by broad retest-distance requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_55 * 0.998",
+      "Low <= EMA_20 - 0.2 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "RSI_14 >= 50"
+    ],
+    "short": [
+      "EMA_20 <= EMA_55 * 1.002",
+      "High >= EMA_20 + 0.2 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "RSI_14 <= 50"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Take profit: 1.35 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.7 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Take profit: 1.35 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.7 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.2 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

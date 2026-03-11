@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C360-DOGE-DEEP-VALUE-RECLAIM-v1",
+  "cycle_id": 360,
+  "family_name": "doge_deep_value_reclaim",
+  "name": "DOGE Deep Value Reclaim v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
+  ],
+  "thesis": "DOGE 4h is the best-fit primary lane for testing trend pullback continuation after a deeper value reclaim into structural support, expressed conservatively for a chop-leaning market. The edge should come from a meaningful reclaim after overshoot, not from shallow trend-chasing.",
+  "edge_mechanism": "deep value reclaim continuation",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if reclaim setups remain too rare, if the support-reclaim and continuation filters conflict, or if continuation fails to pay after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price overshoots below value, reclaims structural support, and then continues for a limited second leg once the reclaim is accepted.",
+    "why_edge_should_exist": "Even in choppy DOGE 4h conditions, deeper overshoots can create reflexive reclaims that continue farther than a plain mean-reversion snapback once support is regained.",
+    "asset_timeframe_fit": "DOGE 4h is the live primary lane and a suitable place to test a deeper reclaim because the asset tends to overshoot local balance enough to make reclaim structure visible.",
+    "indicator_role_map": {
+      "EMA_20": "value reclaim reference",
+      "EMA_55": "structural support anchor",
+      "ATR_14": "overshoot distance and risk normalizer",
+      "RSI_14": "state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "continuation confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If DOGE remains purely rotational, reclaimed support may only produce a one-bar bounce rather than continuation.",
+    "first_refinement_path": "If entries exist but continuation is too short, cut runner ambition before tightening the reclaim trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; overshoot, reclaim, and continuation confirmation are sequential",
+      "event_sparsity": "managed by using a broad deep-reclaim definition rather than rare capitulation-only thresholds",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.6 * ATR_14",
+      "Close >= EMA_20",
+      "EMA_20 >= EMA_55 * 0.998",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "RSI_14 >= 47"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.6 * ATR_14",
+      "Close <= EMA_20",
+      "EMA_20 <= EMA_55 * 1.002",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "RSI_14 <= 53"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.85 * ATR_14 on 40% size",
+      "Take profit: 1.35 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.85 * ATR_14 on 40% size",
+      "Take profit: 1.35 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.7 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

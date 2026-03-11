@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C349-ETH-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 349,
+  "family_name": "eth_value_recovery_scalein",
+  "name": "ETH Value Recovery Scale-In v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h"
+    }
+  ],
+  "thesis": "In ETH 1h transition conditions, deeper pullbacks that recover value can produce denser continuation entries when confirmation improves across bars. The edge should come from broad value repair with staged participation, not single-bar hero timing.",
+  "edge_mechanism": "value recovery continuation with improving confirmation",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if walk-forward testing shows zero trades on valid data, weak blind-window participation, or no post-cost edge.",
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_55 * 0.999",
+      "Low <= EMA_20 - 0.5 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 47",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "Close <= EMA_55 * 1.001",
+      "High >= EMA_20 + 0.5 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 53",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Take profit: 1.8 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.8 * ATR_14",
+      "Final time stop: 9 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Take profit: 1.8 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.8 * ATR_14",
+      "Final time stop: 9 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 9,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}
