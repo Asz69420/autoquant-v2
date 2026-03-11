@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C350-ETH-SQUEEZE-PERSISTENCE-v1",
+  "cycle_id": 350,
+  "family_name": "eth_squeeze_persistence",
+  "name": "ETH Squeeze Persistence v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "ETH 4h frequently compresses before directional bursts, but the useful signal is persistence after release rather than the first breakout print. The edge should come from broader release-plus-hold behavior with active de-risking.",
+  "edge_mechanism": "compression release with persistence confirmation",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if this remains too sparse, internally contradictory, or cannot produce enough blind-window trades after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Compression regime that transitions into directional follow-through after a release bar actually holds.",
+    "why_edge_should_exist": "Breakouts from low-volatility clusters are common, but the durable edge comes from staying with the ones that retain structure rather than fading immediately.",
+    "asset_timeframe_fit": "ETH 4h routinely forms clean volatility contractions and expansions without excessive intrabar noise.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "hold/persistence filter",
+      "ATR_14": "risk and expansion scale",
+      "RSI_14": "directional state qualifier",
+      "ADX_14": "trend-strength qualifier"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If breakout persistence is too rare in this lane, the hold filter may still suppress participation.",
+    "first_refinement_path": "If trade count is low but setup quality looks coherent, relax the persistence threshold before changing the compression logic.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate but acceptable for 4h if compression threshold is broad",
+      "contradictory_filters": "none obvious; compression, hold, and momentum all align post-release",
+      "event_sparsity": "managed by widening band-width threshold and modest ADX floor",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+      "Close > BOLLINGER_UPPER_20_2",
+      "Close >= EMA_20",
+      "RSI_14 >= 51",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+      "Close < BOLLINGER_LOWER_20_2",
+      "Close <= EMA_20",
+      "RSI_14 <= 49",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Take profit: 1.7 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.8 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.35 * ATR_14"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Take profit: 1.7 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.8 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.35 * ATR_14"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

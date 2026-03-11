@@ -1,20 +1,20 @@
 {
-  "cycle_id": 338,
+  "cycle_id": 353,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-RETEST-HOLD-DERISK-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C353-TAO-POST-EXPANSION-RUNNER-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -25,28 +25,20 @@
       "scale-in on improved confirmation, then scale-out into expansion",
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": [
-      "ETH"
-    ],
-    "timeframes": [
-      "1h"
-    ]
+    "assets": ["TAO"],
+    "timeframes": ["4h"]
   },
   "iterate_target": null,
   "new_families": [
-    "eth_value_recovery_scalein",
-    "eth_asymmetric_trend_persistence",
-    "eth_retest_hold_derisk"
+    "tao_range_failure_reacceptance",
+    "tao_inventory_reset_reclaim",
+    "tao_post_expansion_runner"
   ],
   "iterated_families": [],
-  "abandoned_families": [
-    "eth_value_recovery_scalein",
-    "eth_asymmetric_trend_persistence",
-    "eth_retest_hold_derisk"
-  ],
-  "next_cycle_focus": "Rotate away from this sparse ETH 1h batch. The next explore cycle should use materially broader state definitions and denser participation logic; any future branch that still zero-trades should be killed immediately.",
-  "rationale": "All three cycle 338 ETH 1h strategies resolved to the same hard red flag: 0 trades on valid data / integrity_skip:zero_trades_both_samples. The honest current-cycle decision is abort across the entire batch rather than cosmetic refinement.",
-  "target_asset": "ETH",
-  "target_timeframe": "1h",
+  "abandoned_families": [],
+  "next_cycle_focus": "Run the TAO 4h batch and only refine branches that prove real blind-window participation and post-cost edge. Abort any zero-trade branch immediately rather than decorating the grammar.",
+  "rationale": "Cycle 353 is currently aligned to a TAO 4h explore lane in CHOP. I wrote three materially distinct, mechanism-first structures with explicit component roles, failure modes, and density sanity checks to avoid repeating decorative sparse zero-trade grammar.",
+  "target_asset": "TAO",
+  "target_timeframe": "4h",
   "specific_family_to_iterate": null
 }

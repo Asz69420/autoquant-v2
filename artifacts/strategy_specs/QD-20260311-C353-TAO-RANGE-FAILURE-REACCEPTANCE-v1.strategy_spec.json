@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C353-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 353,
+  "family_name": "tao_range_failure_reacceptance",
+  "name": "TAO Range Failure Reacceptance v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "TAO", "timeframe": "4h" }
+  ],
+  "thesis": "In TAO 4h chop conditions, failed excursions from balance can mean-revert once price re-enters value. The edge should come from broad reacceptance after a false break, not exact one-bar reversal timing.",
+  "edge_mechanism": "range failure mean reversion after value reacceptance",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if walk-forward testing shows zero trades on valid data, contradictory filter behavior, weak blind-window participation, or no post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "False breaks from balance that reverse once value is reaccepted in a chop-dominant regime.",
+    "why_edge_should_exist": "Choppy TAO tends to overextend and snap back; when acceptance returns, trapped breakout traders can fuel the reversal.",
+    "asset_timeframe_fit": "TAO 4h is volatile enough to generate broad excursions while still showing repeated range interactions suitable for mean reversion.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "excursion detector",
+      "EMA_20": "value reacceptance reference",
+      "EMA_50": "mean-reversion target",
+      "ATR_14": "excursion and risk normalizer",
+      "RSI_14": "state qualifier"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If TAO starts trending instead of ranging, failed-break logic may underfire or never complete.",
+    "first_refinement_path": "If trade count is low but the concept looks coherent, widen the reacceptance band before changing exits.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion, reacceptance, and target roles are complementary",
+      "event_sparsity": "reduced by using proximity-to-band logic instead of exact-touch reversal bars",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "BOLLINGER_BANDS_20_2"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.25 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 42"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.25 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 58"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: EMA_50 or 1.5 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

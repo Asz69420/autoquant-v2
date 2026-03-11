@@ -116,6 +116,18 @@ def classify_queue_only_action(queue_rows):
     return "pending", "pending: no backtest outcome recorded yet"
 
 
+def derive_failure_diagnosis(spec, result_rows, queue_rows):
+    spec = spec or {}
+    queue_blob = json.dumps(queue_rows or []).lower()
+    result_blob = json.dumps(result_rows or []).lower()
+    text = queue_blob + " " + result_blob
+    if "zero_trade" in text or "zero_trades" in text:
+        return "too sparse"
+    if (spec.get("asset") or "") and (spec.get("timeframe") or ""):
+        return "bad idea"
+    return "bad implementation"
+
+
 def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
     latest_result = result_rows[0] if result_rows else None
     if latest_result:
@@ -166,6 +178,7 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
         )
 
     variants = [summarize_variant(v) for v in (spec.get("variants") or []) if isinstance(v, dict)]
+    diagnosis_category = derive_failure_diagnosis(spec, result_rows, queue_rows)
     return {
         "strategy_spec_id": spec_id,
         "spec_path": spec_path,
@@ -188,6 +201,8 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
         "recommended_action": action,
         "decision_required": action in {"red_flag", "pending", "fix_only"},
         "allowed_next_actions": ["refine", "abort"] if action == "red_flag" else (["fix_only"] if action == "fix_only" else []),
+        "diagnosis_category": diagnosis_category,
+        "failure_diagnosis_categories_allowed": ["bad idea", "bad implementation", "wrong indicator role assignment", "wrong asset", "wrong timeframe", "wrong regime", "weak exit/risk logic", "too sparse", "too complex / overfit"],
         "rationale": rationale,
         "has_zero_trade_signal": any(
             (r.get("total_trades") or 0) <= 0 for r in results

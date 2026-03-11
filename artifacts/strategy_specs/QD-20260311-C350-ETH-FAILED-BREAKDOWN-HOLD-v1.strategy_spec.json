@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C350-ETH-FAILED-BREAKDOWN-HOLD-v1",
+  "cycle_id": 350,
+  "family_name": "eth_failed_breakdown_hold",
+  "name": "ETH Failed Breakdown Hold v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "ETH 4h can reward failed breakdown reclaims that hold instead of instantly reverting. The edge should come from reclaim plus hold persistence, then scaling out as follow-through proves itself.",
+  "edge_mechanism": "failed breakdown reclaim followed by hold persistence",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if hold persistence cannot generate enough participation, if filters conflict structurally, or if post-cost edge does not survive walk-forward testing.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "False downside excursions that quickly regain value and then continue as trapped sellers unwind.",
+    "why_edge_should_exist": "In chop or transition, failed breakdowns often reverse harder than clean breakouts because positioning is wrong-footed and reacceptance forces covering.",
+    "asset_timeframe_fit": "ETH 4h is slow enough to show true reclaim-and-hold behavior while still allowing multiple tests over the sample.",
+    "indicator_role_map": {
+      "EMA_20": "value reclaim reference",
+      "ATR_14": "failure distance and risk normalizer",
+      "RSI_14": "state qualifier after reclaim",
+      "ADX_14": "trend suppression / chop allowance"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If breakdowns do not recover quickly or ADX remains structurally too high, the reclaim signal may be late or absent.",
+    "first_refinement_path": "If trade count is low but conceptually valid, widen reclaim distance and shorten holding window before adding more indicators.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reclaim and low-to-mid ADX are complementary",
+      "event_sparsity": "managed by broad reclaim threshold and simple qualifier stack",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low < EMA_20 - 0.7 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 45",
+      "ADX_14 <= 28"
+    ],
+    "short": [
+      "High > EMA_20 + 0.7 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 55",
+      "ADX_14 <= 28"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.9 * ATR_14 on 50% size",
+      "Take profit: 1.6 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.7 * ATR_14 after first partial",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.9 * ATR_14 on 50% size",
+      "Take profit: 1.6 * ATR_14 on 25% size",
+      "Trail remaining 25% by 0.7 * ATR_14 after first partial",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C351-BTC-DEEP-RESET-CONTINUATION-v1",
+  "cycle_id": 351,
+  "family_name": "btc_deep_reset_continuation",
+  "name": "BTC Deep Reset Continuation v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "BTC", "timeframe": "4h" }
+  ],
+  "thesis": "Even in transition-heavy BTC 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
+  "edge_mechanism": "pullback continuation after deeper reset",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if this collapses into zero-trade grammar, contradictory role assignments, or cannot show enough blind-window participation after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Continuation after a deeper pullback resets positioning but does not destroy structure.",
+    "why_edge_should_exist": "Deeper pullbacks often improve reward/risk and shake out weak hands before the primary directional move resumes.",
+    "asset_timeframe_fit": "BTC 4h offers enough structural persistence for reset-and-resume patterns without requiring hyper-precise intraday timing.",
+    "indicator_role_map": {
+      "EMA_20": "trigger and local reclaim line",
+      "EMA_50": "structure filter",
+      "ATR_14": "reset distance and risk normalizer",
+      "RSI_14": "state qualifier",
+      "ADX_14": "trend-strength qualifier"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the lane is actually balance-dominated rather than transitional, continuation after reset may not follow through often enough.",
+    "first_refinement_path": "If there is some participation but poor density, relax the structure relationship before altering trade management.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; structure, reset, and state qualifiers align",
+      "event_sparsity": "reduced by broad reset distance and modest ADX threshold",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_50 * 0.999",
+      "Low <= EMA_20 - 0.5 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 48",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "EMA_20 <= EMA_50 * 1.001",
+      "High >= EMA_20 + 0.5 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 52",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

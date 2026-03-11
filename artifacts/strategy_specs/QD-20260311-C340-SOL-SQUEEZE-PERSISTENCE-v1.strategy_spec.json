@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C340-SOL-SQUEEZE-PERSISTENCE-v1",
+  "cycle_id": 340,
+  "family_name": "sol_squeeze_persistence",
+  "name": "SOL Squeeze Persistence v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "SOL", "timeframe": "4h" }
+  ],
+  "thesis": "SOL 4h frequently compresses before directional bursts, but the useful signal is persistence after release rather than the first breakout print. The edge should come from broader release-plus-hold behavior with active de-risking.",
+  "edge_mechanism": "compression release with persistence confirmation",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if this remains too sparse or cannot produce enough blind-window trades after costs.",
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.0 * ATR_14",
+      "Close > BOLLINGER_UPPER_20_2",
+      "Close > EMA_20",
+      "RSI_14 >= 52",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.0 * ATR_14",
+      "Close < BOLLINGER_LOWER_20_2",
+      "Close < EMA_20",
+      "RSI_14 <= 48",
+      "ADX_14 >= 12"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.2 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.9 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.5 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.2 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.9 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.5 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

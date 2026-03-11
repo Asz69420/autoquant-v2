@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C339-BTC-DEEP-VALUE-RECLAIM-v1",
+  "cycle_id": 339,
+  "family_name": "btc_deep_value_reclaim",
+  "name": "BTC Deep Value Reclaim v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "BTC", "timeframe": "4h" }
+  ],
+  "thesis": "On BTC 4h, deeper pullbacks that reclaim value can create denser continuation entries than sparse breakout logic. The edge should come from broad value repair into resumed structure, not exact-touch hero timing.",
+  "edge_mechanism": "deep pullback reclaim inside structural state",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if walk-forward results show zero trades on valid data, weak blind-window participation, or no post-cost edge.",
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_55",
+      "Low <= EMA_20 - 0.7 * ATR_14",
+      "Close > EMA_20",
+      "RSI_14 >= 49",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "Close < EMA_55",
+      "High >= EMA_20 + 0.7 * ATR_14",
+      "Close < EMA_20",
+      "RSI_14 <= 51",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.9 * ATR_14 above entry",
+      "Early exit if Close crosses below EMA_20",
+      "Time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.9 * ATR_14 below entry",
+      "Early exit if Close crosses above EMA_20",
+      "Time stop: 10 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 10,
+    "max_concurrent_positions": 1
+  }
+}

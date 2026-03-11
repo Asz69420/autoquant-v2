@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C351-BTC-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 351,
+  "family_name": "btc_compression_fakeout_reexpansion",
+  "name": "BTC Compression Fakeout Reexpansion v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "BTC", "timeframe": "4h" }
+  ],
+  "thesis": "BTC can compress, fake one side of balance, then re-expand the other way. The edge should come from fakeout plus broad re-expansion confirmation, with exits designed to capture the first impulse and keep a small runner.",
+  "edge_mechanism": "compression fakeout followed by directional re-expansion",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if the setup remains too sparse, internally contradictory, or cannot maintain post-cost edge in blind windows.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Compression that resolves through a false move and then expands in the opposite direction.",
+    "why_edge_should_exist": "False breaks during compression often trap traders on the wrong side and create fuel for a more persistent re-expansion move.",
+    "asset_timeframe_fit": "BTC 4h frequently exhibits compression-release sequences with enough structure for fakeout logic to matter.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression and excursion detector",
+      "EMA_20": "directional confirmation line",
+      "ATR_14": "risk and target scale",
+      "RSI_14": "state qualifier",
+      "ADX_14": "expansion-strength qualifier"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If compression releases cleanly without fakeout behavior, the reversal-style entry may not trigger often enough.",
+    "first_refinement_path": "If trade count is low but logic is coherent, broaden the compression width threshold before touching profit management.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "none obvious; compression, excursion, and reversal confirmation align",
+      "event_sparsity": "managed by broad compression width and modest strength floor",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14", "EMA_20", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+      "Low < BOLLINGER_LOWER_20_2",
+      "Close >= EMA_20",
+      "RSI_14 >= 47",
+      "ADX_14 >= 9"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.2 * ATR_14",
+      "High > BOLLINGER_UPPER_20_2",
+      "Close <= EMA_20",
+      "RSI_14 <= 53",
+      "ADX_14 >= 9"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.9 * ATR_14 on 40% size",
+      "Take profit: 1.6 * ATR_14 on 40% size",
+      "Trail final 20% by 0.7 * ATR_14",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.9 * ATR_14 on 40% size",
+      "Take profit: 1.6 * ATR_14 on 40% size",
+      "Trail final 20% by 0.7 * ATR_14",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  }
+}

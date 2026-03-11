@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C341-TAO-RANGE-FAILURE-REACCEPTANCE-v2",
+  "cycle_id": 341,
+  "family_name": "tao_range_failure_reacceptance_v2",
+  "name": "TAO Range Failure Reacceptance v2",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "TAO", "timeframe": "4h" }
+  ],
+  "thesis": "In choppy TAO 4h conditions, false excursions from balance can mean-revert once price re-enters value, but the structure needs broader acceptance bands than the prior sparse batch. The edge should come from repeated value reacceptance, not exact one-bar reversal timing.",
+  "edge_mechanism": "range failure mean reversion after broader value reacceptance",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if walk-forward testing again shows zero trades on valid data or weak blind-window participation.",
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "BOLLINGER_BANDS_20_2"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.25 * ATR_14",
+      "Close > BOLLINGER_LOWER_20_2",
+      "Close >= EMA_20 * 0.992",
+      "RSI_14 >= 40"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.25 * ATR_14",
+      "Close < BOLLINGER_UPPER_20_2",
+      "Close <= EMA_20 * 1.008",
+      "RSI_14 <= 60"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: EMA_20 or 1.4 * ATR_14, whichever comes first",
+      "Time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: EMA_20 or 1.4 * ATR_14, whichever comes first",
+      "Time stop: 7 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 7,
+    "max_concurrent_positions": 1
+  }
+}

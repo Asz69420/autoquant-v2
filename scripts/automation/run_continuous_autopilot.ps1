@@ -38,14 +38,7 @@ try {
       continue
     }
 
-    Write-Host "[autopilot] starting daily maintenance $(Get-Date -Format o)"
-    lobster run --mode tool pipelines/daily-maintenance.lobster
-    $maintExit = $LASTEXITCODE
-    if ($maintExit -ne 0) {
-      Write-Host "[autopilot] maintenance failed with exit $maintExit"
-    }
-
-    Write-Host "[autopilot] cycle finished; chaining immediately into the next research cycle"
+    Write-Host "[autopilot] research cycle finished; chaining immediately into the next research cycle"
   }
 }
 finally {

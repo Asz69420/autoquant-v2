@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1",
+  "cycle_id": 352,
+  "family_name": "sol_retest_continuation_runner",
+  "name": "SOL Retest Continuation Runner v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "SOL", "timeframe": "4h" }
+  ],
+  "thesis": "SOL 4h breakouts in transition often work better after a delayed retest than on the initial break. The edge should come from breakout continuation only once the retest holds, with partial profit and a runner for persistence.",
+  "edge_mechanism": "delayed breakout continuation after successful retest",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if retest logic still collapses into sparse no-trade grammar, contradictory confirmation overlap, or fails to produce durable post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Breakout continuation only after price retests the broken area and holds instead of failing immediately.",
+    "why_edge_should_exist": "Delayed entry after retest can filter false first-break moves while still leaving enough persistence for a runner.",
+    "asset_timeframe_fit": "SOL 4h often trends in impulsive bursts followed by short resets, making retest logic structurally plausible.",
+    "indicator_role_map": {
+      "EMA_20": "retest/hold reference",
+      "EMA_55": "structure anchor",
+      "ATR_14": "retest distance and risk normalizer",
+      "RSI_14": "state qualifier",
+      "ADX_14": "persistence qualifier"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If breakouts do not retest cleanly or persistence is too weak, entries may be underrepresented.",
+    "first_refinement_path": "If there is some participation but low density, widen retest proximity before altering runner management.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "none obvious; retest and persistence filters point in the same direction",
+      "event_sparsity": "managed by broad retest proximity and modest ADX floor",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_55 * 0.999",
+      "Close >= EMA_20",
+      "Low <= EMA_20 + 0.2 * ATR_14",
+      "RSI_14 >= 49",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "EMA_20 <= EMA_55 * 1.001",
+      "Close <= EMA_20",
+      "High >= EMA_20 - 0.2 * ATR_14",
+      "RSI_14 <= 51",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 0.9 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 0.9 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

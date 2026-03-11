@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C350-ETH-DEEP-VALUE-RECLAIM-v1",
+  "cycle_id": 350,
+  "family_name": "eth_deep_value_reclaim",
+  "name": "ETH Deep Value Reclaim v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "ETH", "timeframe": "4h" }
+  ],
+  "thesis": "On ETH 4h in chop-to-transition conditions, deeper pullbacks that reclaim value can create denser continuation entries than sparse breakout logic. The edge should come from broad value repair into resumed structure, not exact-touch hero timing.",
+  "edge_mechanism": "deep pullback reclaim inside structural state",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if walk-forward results show zero trades on valid data, contradictory filter behavior, weak blind-window participation, or no post-cost edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Pullback continuation after a broad reset into value during chop-to-transition conditions.",
+    "why_edge_should_exist": "When ETH mean reverts back into accepted value without fully breaking structure, continuation can resume with better risk/reward than first-break entries.",
+    "asset_timeframe_fit": "ETH 4h is liquid enough for repeated resets and follow-through while still giving enough bars for denser participation.",
+    "indicator_role_map": {
+      "EMA_55": "structure anchor",
+      "EMA_20": "reclaim trigger zone",
+      "ATR_14": "distance and risk normalizer",
+      "RSI_14": "state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If market remains one-sided trend without value resets, or if reclaim rules are still too strict, trade count will collapse.",
+    "first_refinement_path": "If trade count is low but nonzero, widen reclaim distance or relax directional confirmation before changing exits.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; direction filter and reclaim trigger point the same way",
+      "event_sparsity": "reduced versus prior zero-trade grammar by using broader reclaim thresholds",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_55 * 0.999",
+      "Low <= EMA_20 - 0.45 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 47",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "Close <= EMA_55 * 1.001",
+      "High >= EMA_20 + 0.45 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 53",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.6 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 9 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.6 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 9 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 9,
+    "max_concurrent_positions": 1
+  }
+}

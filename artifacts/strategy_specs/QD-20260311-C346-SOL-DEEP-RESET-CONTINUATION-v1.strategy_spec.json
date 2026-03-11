@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C346-SOL-DEEP-RESET-CONTINUATION-v1",
+  "cycle_id": 346,
+  "family_name": "sol_deep_reset_continuation",
+  "name": "SOL Deep Reset Continuation v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "SOL", "timeframe": "4h" }
+  ],
+  "thesis": "Even in mostly transitional SOL 4h conditions, directional bursts can emerge after a deeper reset into value. The edge should come from reset-and-resume structure with simple participation logic rather than shallow EMA-touch entries.",
+  "edge_mechanism": "pullback continuation after deeper reset",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if this collapses into zero-trade grammar or cannot show enough blind-window participation after costs.",
+  "indicators": ["EMA_20", "EMA_50", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_50 * 0.999",
+      "Low <= EMA_20 - 0.5 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 48",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "EMA_20 <= EMA_50 * 1.001",
+      "High >= EMA_20 + 0.5 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 52",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 50% size",
+      "Trail remaining 50% by 0.8 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

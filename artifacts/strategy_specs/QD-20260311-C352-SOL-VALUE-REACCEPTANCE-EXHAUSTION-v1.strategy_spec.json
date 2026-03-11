@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 352,
+  "family_name": "sol_value_reacceptance_exhaustion",
+  "name": "SOL Value Reacceptance Exhaustion v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "SOL", "timeframe": "4h" }
+  ],
+  "thesis": "In transitional SOL 4h conditions, exhaustion moves can reverse only after price reaccepts prior value. The edge should come from broad reclaim-after-stretch behavior rather than raw oversold or overbought touches.",
+  "edge_mechanism": "exhaustion mean reversion after value reacceptance",
+  "expected_regime": "TRANSITION_TO_CHOP",
+  "invalidation_condition": "Abort if this remains too sparse, internally contradictory, or cannot maintain post-cost edge in blind windows.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Overextended moves that snap back only once value is reaccepted rather than continuing trendlessly.",
+    "why_edge_should_exist": "Exhaustion alone is noisy, but exhaustion plus value reacceptance can catch positioning unwind with cleaner confirmation.",
+    "asset_timeframe_fit": "SOL 4h frequently overshoots local value and then mean reverts hard enough to support structured exits.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "stretch detector",
+      "EMA_20": "value reacceptance reference",
+      "ATR_14": "stretch and risk normalizer",
+      "RSI_14": "state qualifier"
+    },
+    "expected_regime": "TRANSITION_TO_CHOP",
+    "likely_failure_mode": "If the asset trends persistently instead of snapping back, stretch-based reacceptance entries may underfire or fail quickly.",
+    "first_refinement_path": "If some trades appear but density is weak, widen the acceptable reacceptance band before touching exits.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; stretch and reclaim are complementary",
+      "event_sparsity": "managed by proximity-to-band logic instead of exact touches only",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= BOLLINGER_LOWER_20_2 + 0.2 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 43"
+    ],
+    "short": [
+      "High >= BOLLINGER_UPPER_20_2 - 0.2 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 57"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.1 * ATR_14 below entry",
+      "Take profit: EMA_20 + 1.4 * ATR_14 or 1.6 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 1.1 * ATR_14 above entry",
+      "Take profit: EMA_20 - 1.4 * ATR_14 or 1.6 * ATR_14, whichever comes first",
+      "Time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

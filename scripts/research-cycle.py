@@ -233,6 +233,68 @@ def main() -> int:
         "funding_rates": funding,
         "recent_backtest_details": backtest_details,
         "supported_backtest_universe": backtest_universe,
+        "strategy_research_contract": {
+            "design_principle": "market mechanism -> component roles -> testable rules -> failure modes -> refinement path",
+            "mandatory_pre_submit_reasoning": [
+                "market behavior targeted",
+                "why edge should exist",
+                "asset/timeframe fit",
+                "indicator role map",
+                "expected regime",
+                "likely failure mode",
+                "first refinement path"
+            ],
+            "indicator_role_categories": [
+                "regime filter",
+                "directional bias",
+                "entry timing",
+                "confirmation",
+                "exit logic",
+                "risk/invalidation",
+                "scale in / scale out",
+                "partial profit",
+                "session filter",
+                "volatility gate"
+            ],
+            "pre_submit_density_checks": [
+                "will this plausibly generate enough trades?",
+                "are filters contradictory?",
+                "is this too event-sparse?",
+                "is asset/timeframe mismatched to mechanism?"
+            ],
+            "zero_trade_policy": {
+                "rule": "0 trades is a red flag, not a silent fail",
+                "allowed_paths": ["refine", "abort"],
+                "max_rescue_attempts": 1,
+                "rescue_options": [
+                    "simplify",
+                    "widen trigger",
+                    "remove filter",
+                    "change asset/timeframe",
+                    "reassign indicator roles"
+                ]
+            },
+            "failure_diagnosis_categories": [
+                "bad idea",
+                "bad implementation",
+                "wrong indicator role assignment",
+                "wrong asset",
+                "wrong timeframe",
+                "wrong regime",
+                "weak exit/risk logic",
+                "too sparse",
+                "too complex / overfit"
+            ],
+            "pass_refinement_requirements": [
+                "exit variants",
+                "regime variants",
+                "timeframe adjacency",
+                "cross-asset checks",
+                "simplification version",
+                "position-management variants"
+            ],
+            "promotion_standard": "Promote only when a strategy thesis survives out-of-sample testing, credible trade count, acceptable drawdown, nearby perturbation, and some portability/stability."
+        }
     }
 
     # Add strategy families

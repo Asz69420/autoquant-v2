@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C347-TAO-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 347,
+  "family_name": "tao_state_change_momentum_hold",
+  "name": "TAO State Change Momentum Hold v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    { "asset": "TAO", "timeframe": "4h" }
+  ],
+  "thesis": "In TAO 4h chop-to-transition conditions, edge can emerge when a weak state improves and price holds above regained structure instead of instantly fading. The signal should come from broad state-change confirmation and post-break hold, not exact breakout hero timing.",
+  "edge_mechanism": "state improvement followed by momentum hold",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if walk-forward testing shows zero trades on valid data, weak blind-window participation, or no post-cost edge.",
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "EMA_20 >= EMA_55 * 0.998",
+      "Close > EMA_20",
+      "RSI_14 >= 50",
+      "ADX_14 >= 9",
+      "Low >= EMA_20 - 0.4 * ATR_14"
+    ],
+    "short": [
+      "EMA_20 <= EMA_55 * 1.002",
+      "Close < EMA_20",
+      "RSI_14 <= 50",
+      "ADX_14 >= 9",
+      "High <= EMA_20 + 0.4 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.9 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.4 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 1.0 * ATR_14 on 40% size",
+      "Trail remaining 60% by 0.9 * ATR_14",
+      "Time-based de-risk after 3 bars if unrealized gain < 0.4 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 8,
+    "max_concurrent_positions": 1
+  }
+}

@@ -1,121 +1,143 @@
 #!/usr/bin/env python3
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / 'agents' / 'quandalf' / 'memory' / 'latest_journal.md'
+JOURNAL = ROOT / 'agents' / 'quandalf' / 'memory' / 'latest_journal.md'
+REFLECTION = ROOT / 'agents' / 'quandalf' / 'memory' / 'reflection_packet.json'
+DECISIONS = ROOT / 'agents' / 'quandalf' / 'memory' / 'refinement_decisions.json'
+STATUS = ROOT / 'agents' / 'quandalf' / 'memory' / 'current_cycle_status.json'
 STATE_OUT = ROOT / 'data' / 'state' / 'quandalf_learning_loop.json'
 MEMORY_OUT = ROOT / 'agents' / 'quandalf' / 'memory' / 'latest_learning_loop.json'
-
-KEYWORDS = {
-    'what_worked': ['worked', 'best', 'edge', 'strongest', 'improved'],
-    'what_failed': ['failed', 'weak', 'broke', 'bad', 'problem'],
-    'why_it_failed': ['because', 'too sparse', 'event-driven', 'non-selective', 'cost drag', 'zero trades'],
-    'iterate_next': ['iterate', 'next', 'improve', 'refine', 'focus'],
-    'abandon': ['abandon', 'kill', 'drop'],
-    'bench_for_later': ['bench', 'later', 'archive for now'],
-    'regime_notes': ['regime', 'transition', 'trend', 'chop', 'compression', 'expansion'],
-    'strategy_family_notes': ['family', 'channel', 'snapback', 'supertrend', 'reversion'],
-    'indicator_role_notes': ['indicator', 'filter', 'trigger', 'entry', 'exit', 'validation'],
-    'management_notes': ['partial', 'runner', 'trailing', 'scale', 'take-profit', 'de-risk']
-}
 
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 
-def split_sections(text: str):
-    sections = []
-    current_title = 'intro'
-    current_lines = []
+def load_json(path, default=None):
+    if default is None:
+        default = {}
+    try:
+        return json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return default
+
+
+def load_text(path):
+    try:
+        return path.read_text(encoding='utf-8')
+    except Exception:
+        return ''
+
+
+def first_lines(text, limit=12):
+    out = []
     for line in text.splitlines():
-        if re.match(r'^#{1,6}\s+', line.strip()):
-            if current_lines:
-                sections.append((current_title, '\n'.join(current_lines).strip()))
-            current_title = re.sub(r'^#{1,6}\s+', '', line.strip()).strip().lower()
-            current_lines = []
-        else:
-            current_lines.append(line)
-    if current_lines:
-        sections.append((current_title, '\n'.join(current_lines).strip()))
-    return sections
-
-
-def extract_cycle_context(text: str):
-    m = re.search(r'(cycle\s*\d+)', text, re.I)
-    cycle_id = m.group(1) if m else None
-    asset = None
-    timeframe = None
-    for token in ['BTC', 'ETH', 'SOL', 'AVAX', 'LINK', 'DOGE', 'ARB', 'OP', 'INJ', 'TAO', 'BABY', 'VVV', 'AXS']:
-        if re.search(rf'\b{token}\b', text):
-            asset = token
+        s = line.strip()
+        if s:
+            out.append(s)
+        if len(out) >= limit:
             break
-    for tf in ['15m', '30m', '1h', '4h']:
-        if re.search(rf'\b{re.escape(tf)}\b', text, re.I):
-            timeframe = tf
-            break
-    return {'cycle_ref': cycle_id, 'asset': asset, 'timeframe': timeframe}
-
-
-def collect_dimension(text: str, dimension: str):
-    hits = []
-    lowered = text.lower()
-    for kw in KEYWORDS[dimension]:
-        for line in text.splitlines():
-            if kw in line.lower() and line.strip():
-                hits.append(line.strip())
-    deduped = []
-    seen = set()
-    for h in hits:
-        key = h.lower()
-        if key not in seen:
-            seen.add(key)
-            deduped.append(h)
-    return deduped[:8]
-
-
-def build_candidates(dimensions):
-    candidates = []
-    if dimensions['what_failed'] and dimensions['iterate_next']:
-        candidates.append({
-            'bucket': 'lessons',
-            'title': 'Quandalf lesson from latest journal',
-            'summary': (dimensions['what_failed'][0] + ' | next: ' + dimensions['iterate_next'][0])[:280],
-            'tags': ['quandalf', 'learning-loop']
-        })
-    if dimensions['strategy_family_notes']:
-        candidates.append({
-            'bucket': 'strategy_families',
-            'title': 'Quandalf family memory candidate',
-            'summary': dimensions['strategy_family_notes'][0][:280],
-            'tags': ['quandalf', 'family-memory']
-        })
-    return candidates[:5]
+    return out
 
 
 def main():
-    text = SOURCE.read_text(encoding='utf-8') if SOURCE.exists() else ''
-    sections = split_sections(text)
-    body = '\n\n'.join(section for _, section in sections if section)
-    dimensions = {k: collect_dimension(body, k) for k in KEYWORDS}
+    reflection = load_json(REFLECTION, {})
+    decisions = load_json(DECISIONS, {})
+    status = load_json(STATUS, {})
+    journal_text = load_text(JOURNAL)
+
+    outcomes = reflection.get('strategy_outcomes') or []
+    strategy_decisions = decisions.get('strategy_decisions') or []
+
+    what_failed = []
+    what_worked = []
+    why_it_failed = []
+    iterate_next = []
+    abandon = []
+    indicator_role_notes = []
+    management_notes = []
+    diagnosis_breakdown = {}
+
+    for item in outcomes:
+        if not isinstance(item, dict):
+            continue
+        name = item.get('strategy_spec_id') or item.get('name') or 'unknown'
+        action = item.get('recommended_action') or item.get('outcome') or 'unknown'
+        diagnosis = item.get('diagnosis_category') or 'unknown'
+        diagnosis_breakdown[diagnosis] = diagnosis_breakdown.get(diagnosis, 0) + 1
+        rationale = str(item.get('rationale') or '').strip()
+        if action in ('promote', 'refine'):
+            what_worked.append(f"{name}: {rationale}")
+        else:
+            what_failed.append(f"{name}: {rationale}")
+            why_it_failed.append(f"{name}: {diagnosis}")
+        if item.get('allowed_next_actions'):
+            iterate_next.append(f"{name}: allowed next actions -> {', '.join(item.get('allowed_next_actions') or [])}")
+        if action == 'abort':
+            abandon.append(f"{name}: {diagnosis}")
+        for variant in item.get('variants') or []:
+            if isinstance(variant, dict) and variant.get('risk_policy'):
+                management_notes.append(f"{name}: risk/management -> {json.dumps(variant.get('risk_policy'), sort_keys=True)[:220]}")
+        if item.get('trade_management'):
+            management_notes.append(f"{name}: trade_management -> {json.dumps(item.get('trade_management'), sort_keys=True)[:220]}")
+
+    for d in strategy_decisions:
+        if not isinstance(d, dict):
+            continue
+        name = d.get('strategy_spec_id') or 'unknown'
+        diag = d.get('diagnosis_category')
+        if diag:
+            why_it_failed.append(f"{name}: {diag}")
+        rationale = str(d.get('rationale') or '').strip()
+        if rationale:
+            iterate_next.append(f"decision {name}: {rationale}")
+
     payload = {
-        'version': 'quandalf-learning-loop-v1',
+        'version': 'quandalf-learning-loop-v2',
         'ts_iso': now_iso(),
-        'source': str(SOURCE.relative_to(ROOT)),
-        'cycle_context': extract_cycle_context(text),
-        'thesis': [section for title, section in sections if 'thesis' in title][:2],
-        'sections': [{'title': title, 'text': section[:1200]} for title, section in sections[:12]],
-        'dimensions': dimensions,
-        'promotion_candidates': build_candidates(dimensions)
+        'sources': {
+            'reflection_packet': str(REFLECTION.relative_to(ROOT)),
+            'refinement_decisions': str(DECISIONS.relative_to(ROOT)),
+            'current_cycle_status': str(STATUS.relative_to(ROOT)),
+            'latest_journal': str(JOURNAL.relative_to(ROOT)) if JOURNAL.exists() else None,
+        },
+        'cycle_context': {
+            'cycle_id': reflection.get('cycle_id') or status.get('cycle_id'),
+            'asset': reflection.get('target_asset') or status.get('target_asset'),
+            'timeframe': reflection.get('target_timeframe') or status.get('target_timeframe'),
+            'mode': reflection.get('mode') or status.get('mode'),
+            'research_direction': reflection.get('research_direction') or status.get('research_direction'),
+        },
+        'decision_summary': reflection.get('decision_summary') or {},
+        'diagnosis_breakdown': diagnosis_breakdown,
+        'dimensions': {
+            'what_worked': what_worked[:12],
+            'what_failed': what_failed[:12],
+            'why_it_failed': why_it_failed[:12],
+            'iterate_next': iterate_next[:12],
+            'abandon': abandon[:12],
+            'bench_for_later': [],
+            'regime_notes': [json.dumps(status.get('regime_context') or {}, sort_keys=True)[:240]] if status.get('regime_context') else [],
+            'strategy_family_notes': [json.dumps(status.get('new_families') or [])[:240], json.dumps(status.get('iterated_families') or [])[:240]],
+            'indicator_role_notes': indicator_role_notes[:12],
+            'management_notes': management_notes[:12],
+        },
+        'journal_excerpt': first_lines(journal_text, limit=10),
+        'learning_requirements': [
+            'Every cycle must yield diagnosis, lesson extraction, and durable learning update.',
+            'Zero-trade outcomes require explicit diagnosis and one rescue attempt at most.',
+            'PASS should flow into structured refinement variants, not cosmetic tweaks.',
+        ],
     }
+
     STATE_OUT.parent.mkdir(parents=True, exist_ok=True)
     MEMORY_OUT.parent.mkdir(parents=True, exist_ok=True)
     STATE_OUT.write_text(json.dumps(payload, indent=2), encoding='utf-8')
     MEMORY_OUT.write_text(json.dumps(payload, indent=2), encoding='utf-8')
-    print(json.dumps({'status': 'ok', 'state': str(STATE_OUT), 'memory': str(MEMORY_OUT)}, indent=2))
+    print(json.dumps({'status': 'ok', 'state': str(STATE_OUT), 'memory': str(MEMORY_OUT), 'cycle_id': payload['cycle_context']['cycle_id']}, indent=2))
 
 
 if __name__ == '__main__':

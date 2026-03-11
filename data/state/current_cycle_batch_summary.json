@@ -1,9 +1,9 @@
 {
-  "cycle_id": 338,
-  "cycle_key": "338",
-  "manifest_cycle_id": 338,
-  "status_cycle_id": 338,
-  "orders_cycle_id": 338,
+  "cycle_id": 352,
+  "cycle_key": "352",
+  "manifest_cycle_id": 352,
+  "status_cycle_id": 352,
+  "orders_cycle_id": 352,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "state_warning": null,
@@ -11,14 +11,14 @@
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "ETH",
-  "target_timeframe": "1h",
+  "target_asset": "SOL",
+  "target_timeframe": "4h",
   "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "state-change momentum after regime improvement and post-break hold",
+      "mean reversion from exhaustion only when structure reaccepts prior value",
+      "breakout continuation with delayed entry after retest rather than immediate trigger"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -30,34 +30,34 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "ETH"
+      "SOL"
     ],
     "timeframes": [
-      "1h"
+      "4h"
     ]
   },
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-RETEST-HOLD-DERISK-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260311-C338-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
-    "QD-20260311-C338-ETH-RETEST-HOLD-DERISK-v1",
-    "QD-20260311-C338-ETH-VALUE-RECOVERY-SCALEIN-v1"
+    "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1",
+    "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
+    "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1"
   ],
   "specs_produced": 3,
   "specs_written": 3,
   "new_families": [
-    "eth_value_recovery_scalein",
-    "eth_asymmetric_trend_persistence",
-    "eth_retest_hold_derisk"
+    "sol_state_change_momentum_hold",
+    "sol_value_reacceptance_exhaustion",
+    "sol_retest_continuation_runner"
   ],
   "iterated_families": [],
   "abandoned_families": [
-    "eth_value_recovery_scalein",
-    "eth_asymmetric_trend_persistence",
-    "eth_retest_hold_derisk"
+    "sol_state_change_momentum_hold",
+    "sol_value_reacceptance_exhaustion",
+    "sol_retest_continuation_runner"
   ],
   "active_families": 3,
   "all_recent_rows": 0,
@@ -96,13 +96,13 @@
   "promotions": 0,
   "best_result": null,
   "best_qscore": 0,
-  "next_cycle_focus": "Rotate away from this sparse ETH 1h batch. The next explore cycle should use materially broader state definitions and denser participation logic; any future branch that still zero-trades should be killed immediately.",
-  "rationale": "All three cycle 338 ETH 1h strategies resolved to the same hard red flag: 0 trades on valid data / integrity_skip:zero_trades_both_samples. The honest current-cycle decision is abort across the entire batch rather than cosmetic refinement.",
+  "next_cycle_focus": "Rotate away from this SOL 4h batch. The next explore cycle should use materially broader state definitions and denser participation logic; avoid continuation-biased role stacks unless screening proves participation first.",
+  "rationale": "All three cycle 352 SOL 4h strategies resolved to red-flag zero-trade outcomes, but the diagnoses differ: state-change momentum hold was too sparse, value reacceptance exhaustion mismatched the realized regime expression, and retest continuation runner used an over-selective role assignment. The honest current-cycle outcome is abort across the batch.",
   "has_reflection_note": true,
-  "elapsed_seconds": 129.8,
-  "run_elapsed_seconds": 129.8,
-  "report_delay_seconds": 28.5,
+  "elapsed_seconds": 222.6,
+  "run_elapsed_seconds": 222.6,
+  "report_delay_seconds": 0.0,
   "is_completed": true,
-  "started_at_epoch": 1773195563.9151816,
-  "ended_at_epoch": 1773195693.7309656
+  "started_at_epoch": 1773198527.875196,
+  "ended_at_epoch": 1773198750.4320905
 }

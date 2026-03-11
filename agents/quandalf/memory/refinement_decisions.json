@@ -1,24 +1,27 @@
 {
-  "cycle_id": 338,
-  "ts_iso": "2026-03-11T02:21:30Z",
+  "cycle_id": 352,
+  "ts_iso": "2026-03-11T03:11:20Z",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C338-ETH-VALUE-RECOVERY-SCALEIN-v1",
-      "source_strategy_spec_id": "QD-20260311-C338-ETH-VALUE-RECOVERY-SCALEIN-v1",
+      "strategy_spec_id": "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
+      "source_strategy_spec_id": "QD-20260311-C352-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
       "decision": "abort",
-      "rationale": "This strategy produced 0 trades on valid data and was explicitly flagged as integrity_skip:zero_trades_both_samples. In this lane that is a hard red flag for non-participating sparse logic, so it should be aborted rather than cosmetically refined."
+      "diagnosis_category": "too sparse",
+      "rationale": "This state-change continuation variant still produced 0 trades on valid data. The mechanism is plausible, but the combined hold and confirmation stack remains too participation-sparse for this SOL 4h transition lane, so it should be aborted rather than cosmetically refined."
     },
     {
-      "strategy_spec_id": "QD-20260311-C338-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
-      "source_strategy_spec_id": "QD-20260311-C338-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "strategy_spec_id": "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+      "source_strategy_spec_id": "QD-20260311-C352-SOL-VALUE-REACCEPTANCE-EXHAUSTION-v1",
       "decision": "abort",
-      "rationale": "This strategy produced 0 trades on valid data and was explicitly flagged as integrity_skip:zero_trades_both_samples. There is no participation evidence to justify another mutation cycle, so the honest outcome is abort."
+      "diagnosis_category": "wrong regime",
+      "rationale": "The exhaustion mean-reversion idea is coherent, but this SOL 4h lane did not express enough balance-reversion behavior for the chosen setup and it produced 0 trades on valid data. For this exact packet the honest outcome is abort."
     },
     {
-      "strategy_spec_id": "QD-20260311-C338-ETH-RETEST-HOLD-DERISK-v1",
-      "source_strategy_spec_id": "QD-20260311-C338-ETH-RETEST-HOLD-DERISK-v1",
+      "strategy_spec_id": "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1",
+      "source_strategy_spec_id": "QD-20260311-C352-SOL-RETEST-CONTINUATION-RUNNER-v1",
       "decision": "abort",
-      "rationale": "This strategy produced 0 trades on valid data and was explicitly flagged as integrity_skip:zero_trades_both_samples. With no blind-window participation, refinement would be fake progress, so it is aborted."
+      "diagnosis_category": "wrong indicator role assignment",
+      "rationale": "The retest-continuation concept is plausible, but the chosen role assignment still made the confirmation stack too restrictive and yielded 0 trades on valid data. For this packet the honest action is abort rather than invented refinement."
     }
   ],
   "jobs": []

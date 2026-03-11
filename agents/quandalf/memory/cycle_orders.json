@@ -1,24 +1,23 @@
 {
-  "cycle_id": 338,
-  "ts_iso": "2026-03-11T02:19:25.967256+00:00",
+  "cycle_id": 353,
+  "ts_iso": "2026-03-11T03:12:35.351799+00:00",
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "ETH",
-  "target_timeframe": "1h",
+  "target_asset": "TAO",
+  "target_timeframe": "4h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
   "iterate_target": null,
-  "current_regime": "TRANSITION",
-  "regime_confidence": 5.0,
+  "current_regime": "CHOP",
+  "regime_confidence": 100.0,
   "regime_context": {
-    "current": "TRANSITION",
-    "confidence": 5.0,
-    "adx14": 44.1825,
-    "atr14": 13.96124,
+    "current": "CHOP",
+    "confidence": 100.0,
+    "adx14": 13.0026,
+    "atr14": 5.664655,
     "distribution_20bar": {
-      "TREND_DOWN": 95.0,
-      "TRANSITION": 5.0
+      "CHOP": 100.0
     }
   },
   "external_intel": {
@@ -27,23 +26,10 @@
       "tradingview-research-watch",
       "regime-scan"
     ],
-    "recent_items": [
-      {
-        "id": "EXT-20260310-105628-6F7F",
-        "source_id": "youtube-research-watch",
-        "category": "research_media",
-        "summary": "Stub ingest proving normalized external-intel storage is operational.",
-        "importance": "medium",
-        "asset_scope": [
-          "ETH"
-        ],
-        "normalized_path": "data\\external_intel\\normalized\\20260310\\EXT-20260310-105628-6F7F.external_intel_item.json",
-        "ts_iso": "2026-03-10T10:56:28.437858+00:00"
-      }
-    ],
-    "target_asset": "ETH",
-    "target_timeframe": "1h",
-    "count": 1
+    "recent_items": [],
+    "target_asset": "TAO",
+    "target_timeframe": "4h",
+    "count": 0
   },
   "design_axes": {
     "indicator_roles": [
@@ -78,9 +64,9 @@
   },
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -92,13 +78,13 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "ETH"
+      "TAO"
     ],
     "timeframes": [
-      "1h"
+      "4h"
     ]
   },
-  "thesis_hint": "Explore fresh ETH 1h structures. Current regime: TRANSITION (5.0% confidence). Market transitioning between states \u2014 favor adaptive strategies that can handle regime shifts. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles and management logic, not just entry triggers.",
+  "thesis_hint": "Explore fresh TAO 4h structures. Current regime: CHOP (100.0% confidence). Market is choppy/ranging \u2014 favor mean reversion and range-bound strategies, avoid trend-following. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles and management logic, not just entry triggers.",
   "stop_condition": "Write 3-4 materially different specs for this asset/timeframe using supported candle data only. At least one spec should test a meaningfully different trade-management expression, and at least one should vary indicator-role assignment rather than only entry conditions.",
-  "rotation_reason": "Deterministic explore rotation away from prior lane (DOGE / 4h)."
+  "rotation_reason": "Deterministic explore rotation away from prior lane (None / None)."
 }
