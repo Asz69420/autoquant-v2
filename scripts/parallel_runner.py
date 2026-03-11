@@ -291,6 +291,8 @@ def holding_logic_signature(spec):
     signatures = set()
     variant = (spec.get("variants") or [{}])[0]
     risk_policy = variant.get("risk_policy") if isinstance(variant, dict) else {}
+    if not isinstance(risk_policy, dict):
+        risk_policy = {}
     if risk_policy.get("max_holding_bars") is not None:
         signatures.add("max_holding_bars")
     if risk_policy.get("stop_atr_mult") is not None:

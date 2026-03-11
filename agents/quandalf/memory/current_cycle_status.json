@@ -1,20 +1,20 @@
 {
-  "cycle_id": 336,
+  "cycle_id": 338,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-BTC-STATE-CHANGE-MOMENTUM-HOLD-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-BTC-VALUE-REACCEPTANCE-EXHAUSTION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C336-BTC-RETEST-CONTINUATION-RUNNER-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C338-ETH-RETEST-HOLD-DERISK-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
-      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
-      "compression fakeout into re-expansion with directional confirmation"
+      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -26,23 +26,27 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "SOL"
+      "ETH"
     ],
     "timeframes": [
-      "4h"
+      "1h"
     ]
   },
   "iterate_target": null,
   "new_families": [
-    "btc_state_change_momentum_hold",
-    "btc_value_reacceptance_exhaustion",
-    "btc_retest_continuation_runner"
+    "eth_value_recovery_scalein",
+    "eth_asymmetric_trend_persistence",
+    "eth_retest_hold_derisk"
   ],
   "iterated_families": [],
-  "abandoned_families": [],
-  "next_cycle_focus": "Run the BTC 4h batch and only refine branches that show real blind-window participation and post-cost edge. Any zero-trade branch should be aborted immediately rather than cosmetically tuned.",
-  "rationale": "The active live cycle remains the BTC 4h explore batch. The reflection packet on disk is a stale ETH 4h packet with pending/no-result entries, so I recorded explicit abort decisions there while preserving the final current-cycle batch fields for the active BTC lane.",
-  "target_asset": "BTC",
-  "target_timeframe": "4h",
+  "abandoned_families": [
+    "eth_value_recovery_scalein",
+    "eth_asymmetric_trend_persistence",
+    "eth_retest_hold_derisk"
+  ],
+  "next_cycle_focus": "Rotate away from this sparse ETH 1h batch. The next explore cycle should use materially broader state definitions and denser participation logic; any future branch that still zero-trades should be killed immediately.",
+  "rationale": "All three cycle 338 ETH 1h strategies resolved to the same hard red flag: 0 trades on valid data / integrity_skip:zero_trades_both_samples. The honest current-cycle decision is abort across the entire batch rather than cosmetic refinement.",
+  "target_asset": "ETH",
+  "target_timeframe": "1h",
   "specific_family_to_iterate": null
 }

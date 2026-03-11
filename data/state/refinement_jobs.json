@@ -1,29 +1,29 @@
 {
-  "cycle_id": 167,
-  "source_cycle_id": 333,
-  "active_cycle_id": 336,
+  "cycle_id": 170,
+  "source_cycle_id": 337,
+  "active_cycle_id": 338,
   "jobs": [],
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C333-DEEP-VALUE-RECLAIM-v1",
-      "source_result_id": "wf_deep_value_reclaim_v1",
+      "strategy_spec_id": "QD-20260311-C337-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
+      "source_strategy_spec_id": "QD-20260311-C337-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
       "decision": "abort",
-      "rationale": "Zero trades on valid data is a hard red flag. This broader reclaim framing still failed the minimum participation test, so it should be killed rather than cosmetically retuned."
+      "rationale": "This strategy produced 0 trades on valid data and was explicitly flagged as integrity_skip:zero_trades_both_samples. In a CHOP lane, that is a hard red flag for ceremonial sparse logic, so it should be aborted rather than cosmetically refined."
     },
     {
-      "strategy_spec_id": "QD-20260311-C333-SQUEEZE-PERSISTENCE-v1",
-      "source_result_id": "wf_squeeze_persistence_v1",
+      "strategy_spec_id": "QD-20260311-C337-TAO-DEEP-RESET-CONTINUATION-v1",
+      "source_strategy_spec_id": "QD-20260311-C337-TAO-DEEP-RESET-CONTINUATION-v1",
       "decision": "abort",
-      "rationale": "The strategy produced zero trades despite persistence-focused compression logic. That means the structure remains too sparse for the active lane and does not deserve refinement."
+      "rationale": "This strategy produced 0 trades on valid data and was explicitly flagged as integrity_skip:zero_trades_both_samples. There is no participation evidence to justify another mutation cycle, so the honest outcome is abort."
     },
     {
-      "strategy_spec_id": "QD-20260311-C333-FAILED-BREAKDOWN-HOLD-v1",
-      "source_result_id": "wf_failed_breakdown_hold_v1",
+      "strategy_spec_id": "QD-20260311-C337-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "source_strategy_spec_id": "QD-20260311-C337-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1",
       "decision": "abort",
-      "rationale": "Reclaim-and-hold continuation also returned zero trades on valid data. With no evidence of density or edge, the only honest action is abort."
+      "rationale": "This strategy produced 0 trades on valid data and was explicitly flagged as integrity_skip:zero_trades_both_samples. With no blind-window participation, refinement would be fake progress, so it is aborted."
     }
   ],
-  "created_at": "2026-03-11T02:06:03.526792+00:00",
+  "created_at": "2026-03-11T02:21:03.766363+00:00",
   "selected_by": "quandalf",
   "status": "stale_decisions_ignored"
 }
