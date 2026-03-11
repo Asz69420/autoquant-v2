@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C020-ETH-TREND-RESET-CONTINUATION-v1",
+  "cycle_id": 20,
+  "family_name": "eth_trend_reset_continuation_v020",
+  "name": "ETH Trend Reset Continuation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "deeper pullback reset into value followed by reclaim and modest continuation",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 4h is the cleaner similar-asset lane for testing whether a deeper reset continuation can still work inside a choppy structure without relying on shallow EMA touches. The edge should come from repaired pullbacks that regain directional control and travel enough for a modest second leg.",
+  "invalidation_condition": "Abort if reset-and-reclaim setups are too sparse, if reclaimed pullbacks fail to travel after costs, or if the market behaves as pure range rotation with no second leg.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back materially inside a broader structure, reclaims fast value, and resumes for a short continuation burst before the next rotation phase.",
+    "why_edge_should_exist": "Even in mixed chop/transition regimes, repaired pullbacks can create repeatable continuation bursts. ETH is the clean control lane for that mechanism.",
+    "asset_timeframe_fit": "ETH 4h offers readable repaired-pullback structure with lower noise than SOL or TAO.",
+    "indicator_role_map": {
+      "EMA_20": "fast value reclaim reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "state recovery confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the broader tape is too rotational, reclaimed pullbacks will look valid but fail to extend beyond costs.",
+    "first_refinement_path": "If entries are correct but travel is short, compress exits or add faster time-based de-risking before changing setup structure.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Selective repaired-pullback entries with first-target capture doing most of the expectancy and only occasional runner contribution.",
+    "what_would_count_as_success": "ETH 4h plus at least one cross-lane show real post-cost continuation after reclaim with acceptable density.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or reclaimed pullbacks that repeatedly stall immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; pullback, reclaim, and participation check align",
+      "event_sparsity": "managed by moderate reset depth rather than rare washout definitions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Clean control lane for repaired-pullback continuation in the current basket.","continue_if":"Reset-reclaim trades show credible density and positive post-cost continuation.","rotate_away_if":"The lane stays too rotational and reclaimed pullbacks never extend.","expected_if_right":"A decent number of repaired pullbacks followed by modest second legs."},
+    {"asset":"SOL","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism transfers to the basket primary lane.","continue_if":"SOL shows comparable repaired continuation with acceptable density.","rotate_away_if":"The mechanism collapses outside ETH.","expected_if_right":"Slightly noisier but still tradable repaired continuation moves."},
+    {"asset":"TAO","timeframe":"4h","role":"structural_stress_test","why_included":"Tests whether the same grammar survives a wilder high-beta lane.","continue_if":"TAO preserves the repaired continuation shape without becoming chaos.","rotate_away_if":"Noise overwhelms continuation structure.","expected_if_right":"Fewer entries but larger post-reclaim legs than ETH."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {"long": ["Low <= EMA_20 - 0.30 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.20 * ATR_14","ADX_14 >= 8","RSI_14 >= 48"],"short": ["High >= EMA_20 + 0.30 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.20 * ATR_14","ADX_14 >= 8","RSI_14 <= 52"]},
+  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.9 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 15%","Trail remaining 10% by 0.6 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.9 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 15%","Trail remaining 10% by 0.6 * ATR_14","Final time stop: 5 bars"]}
+}

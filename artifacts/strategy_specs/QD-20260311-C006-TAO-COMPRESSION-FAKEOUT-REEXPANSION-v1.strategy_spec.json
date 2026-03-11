@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C006-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 6,
+  "family_name": "tao_compression_fakeout_reexpansion_v006",
+  "name": "TAO Compression Fakeout Reexpansion v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression fakeout followed by directional reclaim and re-expansion",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "TAO 4h is the structurally different lane for a compression fakeout idea because fake releases and violent repairs are more visible there. The edge comes from ignoring the first fake move and entering on directional reclaim when expansion resumes.",
+  "invalidation_condition": "Abort if fakeout/reclaim sequences are too sparse, if the reclaim lacks a second expansion leg, or if TAO only generates untradable volatility noise.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Compression resolves the wrong way first, snaps back through value, and then expands in the repaired direction with enough range to support partials plus a runner.",
+    "why_edge_should_exist": "Transitioning chop often prints false initial expansions before the real directional move. TAO should amplify that behavior if the mechanism is real.",
+    "asset_timeframe_fit": "TAO 4h is a good stress-test lane because the mechanism should either be obvious there or fail quickly; ETH/SOL provide sanity checks.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "reclaim reference",
+      "ATR_14": "fakeout magnitude and risk normalizer",
+      "RSI_14": "directional recovery qualifier",
+      "ADX_14": "re-expansion participation filter"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the first fake move is followed by full reversion instead of repaired expansion, the runner logic never gets paid.",
+    "first_refinement_path": "If the setup trades but the runner underperforms, convert more size to early harvesting before changing compression logic.",
+    "expected_trade_density": "Low-to-moderate; less dense than range-failure repair, but materially denser than rare one-candle breakout traps.",
+    "expected_outcome_pattern": "Mixed hit rate with a few outsized repaired expansions carrying the expectancy.",
+    "what_would_count_as_success": "The setup appears across TAO and at least one cross-check lane with enough post-cost range to justify partial-plus-runner management.",
+    "what_would_count_as_failure": "0 trades, fakeouts with no real repaired leg, or only cosmetic low-trade PF mirages.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "moderate but sequentially coherent",
+      "event_sparsity": "kept reasonable by broad fakeout/reclaim logic rather than exact candle sequencing",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Most expressive lane for fakeout-repair behavior in the current basket.",
+      "continue_if": "The pattern prints enough repaired expansions to justify the management structure.",
+      "rotate_away_if": "TAO only produces chaos with no repaired second leg.",
+      "expected_if_right": "Sharp fake release, fast reclaim, then a meaningful second expansion leg."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "similar_mechanism_crosscheck",
+      "why_included": "Checks whether the mechanism survives on a liquid high-beta major rather than only a wild structurally different asset.",
+      "continue_if": "SOL shows the same repaired-expansion shape with cleaner fills.",
+      "rotate_away_if": "The idea only appears on TAO and disappears elsewhere.",
+      "expected_if_right": "Fewer but cleaner fakeout-repair expansions than TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleanliness_control",
+      "why_included": "Determines whether the mechanism generalizes to a cleaner similar-asset lane.",
+      "continue_if": "ETH still produces tradable repaired expansions, even with lower amplitude.",
+      "rotate_away_if": "Mechanism fully vanishes on the cleaner lane, implying it may just be TAO noise exploitation.",
+      "expected_if_right": "Smaller but more orderly repaired expansions."
+    }
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Low <= EMA_20 - 0.22 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 49",
+      "ADX_14 >= 8"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "High >= EMA_20 + 0.22 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 51",
+      "ADX_14 >= 8"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  }
+}

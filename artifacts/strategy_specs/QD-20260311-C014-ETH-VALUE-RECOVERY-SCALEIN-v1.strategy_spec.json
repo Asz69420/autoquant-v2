@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C014-ETH-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 14,
+  "family_name": "eth_value_recovery_scalein_v014",
+  "name": "ETH Value Recovery Scale-In v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "broad value-recovery mean reversion with staged confirmation",
+  "expected_regime": "CHOP",
+  "thesis": "ETH 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a fully choppy 4h tape, repaired value behavior should be denser and more realistic than continuation-only logic.",
+  "invalidation_condition": "Abort if value-recovery entries remain too sparse, if the confirmation leg rarely appears, or if staged complexity adds no measurable post-cost benefit over simpler recovery logic.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from short-term value, reclaims balance, then confirms recovery on the following bar so size can be staged rather than committed all at once.",
+    "why_edge_should_exist": "In a 100% chop regime, value repair should recur more often than clean continuation. Scaling in after reclaim plus confirmation may reduce bad first-touch entries without killing density.",
+    "asset_timeframe_fit": "ETH 4h offers visible value-recovery structure with cleaner execution than TAO and less noise than 1h.",
+    "indicator_role_map": {
+      "EMA_20": "value reference",
+      "EMA_55": "background anchor",
+      "ATR_14": "stretch and risk normalizer",
+      "RSI_14": "recovery-state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff confirmation"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If price only snaps back to value and stalls, the added scale-in leg becomes unnecessary complexity with no edge gain.",
+    "first_refinement_path": "If density is acceptable but second-leg confirmation adds no value, simplify to one-shot entry while preserving the recovery thesis.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Frequent entries, modest average winners, and improved expectancy only if staged sizing meaningfully reduces bad first-touch entries.",
+    "what_would_count_as_success": "ETH 4h plus at least one confirmation lane show real density and better post-cost recovery behavior than a single-shot entry would imply.",
+    "what_would_count_as_failure": "0 trades, low-trade mirage, or no measurable benefit from the staged confirmation leg.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate; stretch, reclaim, and confirmation are sequential",
+      "event_sparsity": "kept broad enough to avoid ceremonial sparse logic",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Best lane for visible value-recovery structure in current conditions.","continue_if":"Density is real and staged confirmation improves trade quality.","rotate_away_if":"Scale-in adds complexity without better outcomes or density collapses.","expected_if_right":"Repeated reclaim-and-confirm recoveries with tradable but modest range expansion."},
+    {"asset":"ETH","timeframe":"1h","role":"adjacent_timeframe","why_included":"Checks whether the same recovery mechanism survives on a faster structure.","continue_if":"1h adds density without destroying trade quality.","rotate_away_if":"1h becomes pure noise or needs ceremonial filtering.","expected_if_right":"More frequent but smaller recovery moves than 4h."},
+    {"asset":"BTC","timeframe":"4h","role":"similar_asset","why_included":"Tests whether the mechanism is structural across majors rather than ETH-specific.","continue_if":"BTC shows similar recovery behavior with comparable density.","rotate_away_if":"Only ETH works, implying asset-specific behavior.","expected_if_right":"Slightly cleaner but less explosive recovery signals than ETH."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {"long": ["Low <= EMA_20 - 0.30 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.22 * ATR_14","RSI_14 >= 45","MINUS_DI_14 >= 0.80 * PLUS_DI_14"],"short": ["High >= EMA_20 + 0.30 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.22 * ATR_14","RSI_14 <= 55","PLUS_DI_14 >= 0.80 * MINUS_DI_14"]},
+  "trade_management": {"entry_expression":"scale_in_on_improved_confirmation","initial_size_pct":60,"add_on_size_pct":40,"add_on_condition":"Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"},
+  "exit_rules": {"long": ["Stop loss: 0.80 * ATR_14 below average entry","Take profit: 0.50 * ATR_14 on 45% size","Take profit: 0.85 * ATR_14 on 35% size","Trail remaining 20% by 0.55 * ATR_14","Final time stop: 4 bars"],"short": ["Stop loss: 0.80 * ATR_14 above average entry","Take profit: 0.50 * ATR_14 on 45% size","Take profit: 0.85 * ATR_14 on 35% size","Trail remaining 20% by 0.55 * ATR_14","Final time stop: 4 bars"]}
+}

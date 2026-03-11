@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v2",
-  "ts_iso": "2026-03-11T07:06:58.682284+00:00",
+  "ts_iso": "2026-03-11T09:18:40.000000+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -8,68 +8,82 @@
     "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
   },
   "cycle_context": {
-    "cycle_id": 4,
+    "cycle_id": 22,
     "asset": "ETH",
-    "timeframe": "4h",
+    "timeframe": "1h",
     "mode": "explore",
     "research_direction": "explore_new"
   },
   "decision_summary": {
     "promote": 0,
     "refine": 0,
-    "abort": 0,
-    "zero_trade": 0
+    "abort": 3,
+    "fix_only": 0,
+    "zero_trade": 2
   },
   "diagnosis_breakdown": {
-    "bad idea": 3
+    "too sparse": 2,
+    "bad idea": 1
   },
   "dimensions": {
     "what_worked": [],
     "what_failed": [
-      "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1: pending: no backtest outcome recorded yet",
-      "QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1: pending: no backtest outcome recorded yet",
-      "QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1: pending: no backtest outcome recorded yet"
+      "QD-20260311-C022-ETH-STATE-CHANGE-MOMENTUM-HOLD-v1: valid-data zero-trade outcome via integrity_skip:zero_trades_both_samples shows the break-and-hold state-change grammar is too sparse.",
+      "QD-20260311-C022-BTC-VALUE-REACCEPTANCE-EXHAUSTION-v1: valid BTC and ETH screen results both failed with PF 0.00, QScore -0.149, DD 14.94%, and only 3 trades.",
+      "QD-20260311-C022-AXS-DELAYED-RETEST-CONTINUATION-v1: valid-data zero-trade outcome via integrity_skip:zero_trades_both_samples shows delayed retest continuation is too sparse in this tape."
     ],
     "why_it_failed": [
-      "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1: bad idea",
-      "QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1: bad idea",
-      "QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1: bad idea",
-      "QD-20260311-C380-SOL-RANGE-FAILURE-REACCEPTANCE-v1: too sparse",
-      "QD-20260311-C380-ETH-TREND-RESET-CONTINUATION-v1: too sparse",
-      "QD-20260311-C380-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1: too sparse"
+      "Valid zero-trade packets are not execution faults; they are structural density failures that must resolve to refine or abort.",
+      "Break-and-hold state-change logic and delayed retest continuation were both too selective for the observed intraday structure.",
+      "BTC value reacceptance exhaustion was worse than sparse: when it did trade, it lost decisively on both BTC and ETH, indicating the thesis itself is economically wrong in this environment."
     ],
     "iterate_next": [
-      "decision QD-20260311-C380-SOL-RANGE-FAILURE-REACCEPTANCE-v1: This SOL range-failure reacceptance branch produced 0 trades on valid data. Even with a broader failure-and-reacceptance structure, the mechanism still required too much staged alignment to engage on the lane, so another pass would just cosmetically loosen a dead grammar.",
-      "decision QD-20260311-C380-ETH-TREND-RESET-CONTINUATION-v1: The ETH deeper-reset continuation branch also hard-skipped with zero trades. The reset zone plus reclaim plus participation filter remained structurally too restrictive, which makes this a density failure rather than a refinable near-miss.",
-      "decision QD-20260311-C380-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1: This TAO compression fakeout branch also never generated a valid-data trade. Compression, fakeout, rejection, and directional handoff still overconstrained entry density, so it should be abandoned rather than diluted further."
+      "Rotate away from sparse continuation grammar that cannot clear basic participation density on valid data.",
+      "Do not rescue BTC value reacceptance exhaustion with cosmetic parameter edits after PF 0.00 valid-data failure.",
+      "Prefer denser participation logic and clearer role separation in the next cycle rather than ceremonial hold filters or late retest choreography."
     ],
-    "abandon": [],
+    "abandon": [
+      "eth_state_change_momentum_hold_v022",
+      "btc_value_reacceptance_exhaustion_v022",
+      "axs_delayed_retest_continuation_v022"
+    ],
     "bench_for_later": [],
-    "regime_notes": [],
-    "strategy_family_notes": [
-      "[\"eth_value_recovery_scalein_v004\", \"btc_asymmetric_trend_persistence_v004\", \"tao_retest_hold_derisk_v004\"]",
-      "[]"
+    "regime_notes": [
+      "Cycle 22 ran in an ETH 1h chop-dominant intraday regime with TRANSITION 55%, TREND_UP 40%, and CHOP 5%. The tested continuation grammars were too selective, while the exhaustion fade thesis lost when it actually traded."
     ],
-    "indicator_role_notes": [],
+    "strategy_family_notes": [
+      "eth_state_change_momentum_hold_v022: abort as too sparse.",
+      "btc_value_reacceptance_exhaustion_v022: abort as bad idea.",
+      "axs_delayed_retest_continuation_v022: abort as too sparse."
+    ],
+    "indicator_role_notes": [
+      "Combining break, hold, state confirmation, and continuation expectation created event scarcity on ETH/AXS intraday lanes.",
+      "Value reacceptance plus exhaustion plus rollover confirmation on BTC produced trades, but the trades were economically wrong rather than merely rare."
+    ],
     "management_notes": [
-      "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1: trade_management -> {\"add_on_condition\": \"Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact\", \"add_on_size_pct\": 40, \"entry_expression\": \"scale_in_on_improved_confirmation\", \"initial"
+      "Management was not the primary issue on the zero-trade strategies; entry grammar never produced participation.",
+      "For BTC value reacceptance exhaustion, management changes are not justified before thesis replacement because PF was 0.00 across valid trades."
     ]
   },
   "journal_excerpt": [
-    "# Quandalf Journal \u2014 Cycle 3",
-    "- ts_iso: 2026-03-11T07:02:55.016340+00:00",
+    "# Quandalf Journal — Cycle 22 Reflection",
+    "- ts_iso: 2026-03-11T09:18:40.000000+00:00",
     "- mode: explore",
     "- lane: ETH / 1h",
     "- research_direction: explore_new",
     "## Decision Summary",
     "{",
-    "\"promote\": 0,",
-    "\"refine\": 0,",
-    "\"abort\": 0,"
+    "  \"promote\": 0,",
+    "  \"refine\": 0,",
+    "  \"abort\": 3,",
+    "  \"fix_only\": 0,",
+    "  \"zero_trade\": 2",
+    "}"
   ],
   "learning_requirements": [
     "Every cycle must yield diagnosis, lesson extraction, and durable learning update.",
     "Zero-trade outcomes require explicit diagnosis and one rescue attempt at most.",
-    "PASS should flow into structured refinement variants, not cosmetic tweaks."
+    "PASS should flow into structured refinement variants, not cosmetic tweaks.",
+    "Valid zero-trade outcomes must be classified as refine or abort, never fix_only."
   ]
 }

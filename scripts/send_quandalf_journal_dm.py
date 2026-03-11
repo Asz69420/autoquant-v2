@@ -69,8 +69,11 @@ def build_fallback():
 
 def main():
     message = build_from_learning(load_learning()) if load_learning() else build_fallback()
-    subprocess.run(['python', str(TG_NOTIFY), '--bot', 'oragorn', '--channel', 'asz', '--message', message], check=False)
-    print(message)
+    subprocess.run(['python', str(TG_NOTIFY), '--bot', 'quandalf', '--channel', 'dm', '--message', message], check=False)
+    try:
+        print(message.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore'))
+    except Exception:
+        pass
 
 
 if __name__ == '__main__':

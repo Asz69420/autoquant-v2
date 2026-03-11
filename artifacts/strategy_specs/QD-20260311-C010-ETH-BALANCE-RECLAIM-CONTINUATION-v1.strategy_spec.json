@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C010-ETH-BALANCE-RECLAIM-CONTINUATION-v1",
+  "cycle_id": 10,
+  "family_name": "eth_balance_reclaim_continuation_v010",
+  "name": "ETH Balance Reclaim Continuation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "deeper value reclaim that resumes into a modest continuation leg",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 4h is the best-fit primary lane for testing whether a deeper pullback into value can reclaim balance and still produce a modest continuation leg, without depending on shallow trend-touch behavior. The edge is in repaired continuation after value is retaken.",
+  "invalidation_condition": "Abort if reclaim-continuation remains too sparse, if reclaims only bounce back to value without a second leg, or if the continuation component adds no value beyond plain mean reversion.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back deeper into value, repairs back through balance, and extends just enough for a second-leg continuation before chop reasserts.",
+    "why_edge_should_exist": "In a fully choppy 4h tape, shallow trend continuation is unreliable, but deeper repairs back into value can still generate a modest continuation burst before rotation resumes.",
+    "asset_timeframe_fit": "ETH 4h is appropriate because value reclaims are visible and less noisy than on faster or thinner lanes.",
+    "indicator_role_map": {
+      "EMA_20": "balance reclaim reference",
+      "EMA_55": "deeper structural anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "RSI_14": "recovery-state qualifier",
+      "ADX_14": "continuation participation check"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the market remains pure chop, the reclaim may stop at value and fail to produce the continuation leg.",
+    "first_refinement_path": "If reclaims trade with density but continuation is weak, convert the thesis into a pure reclaim mean-reversion management structure instead of forcing persistence.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Reasonable signal count with many smaller wins and a minority of cleaner second-leg continuations.",
+    "what_would_count_as_success": "ETH 4h plus one confirmation lane show credible density and post-cost extension beyond simple value retake.",
+    "what_would_count_as_failure": "0 trades, low-trade output, or reclaims that consistently die at the first balance touch.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate but sequentially coherent",
+      "event_sparsity": "controlled by broad reclaim logic rather than exact swing choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best clean lane for deeper reclaim-then-continue behavior in current conditions.",
+      "continue_if": "Reclaims show real density and continuation beyond the first balance retake.",
+      "rotate_away_if": "The second leg never appears or density collapses.",
+      "expected_if_right": "Frequent value repairs with modest but tradable continuation legs."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism is structural across majors rather than ETH-specific.",
+      "continue_if": "BTC shows similar reclaim-continuation behavior with comparable density.",
+      "rotate_away_if": "Only ETH works and the mechanism vanishes on BTC.",
+      "expected_if_right": "Slightly cleaner, slightly less explosive version of the same reclaim pattern."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the mechanism survives faster structure without collapsing into noise.",
+      "continue_if": "1h adds density without destroying trade quality.",
+      "rotate_away_if": "1h becomes pure noise or requires cosmetic tightening.",
+      "expected_if_right": "More frequent but smaller reclaim-continuation events than 4h."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.28 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.18 * ATR_14",
+      "RSI_14 >= 49",
+      "ADX_14 >= 8"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.28 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.18 * ATR_14",
+      "RSI_14 <= 51",
+      "ADX_14 >= 8"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Exit remaining 25% on close through EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Exit remaining 25% on close through EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

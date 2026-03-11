@@ -9,8 +9,14 @@
   "primary_asset": "BTC",
   "primary_timeframe": "1h",
   "validation_targets": [
-    {"asset":"BTC","timeframe":"1h"},
-    {"asset":"ETH","timeframe":"1h"}
+    {
+      "asset": "BTC",
+      "timeframe": "1h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h"
+    }
   ],
   "thesis": "BTC 1h is the best similar-asset lane for inventory-reset continuation after flush-and-reclaim, rewritten as a broad reclaimable reset instead of an exact oversold event chain. The edge should come from forced position cleanup followed by value recovery, not from static oversold bounce logic.",
   "edge_mechanism": "flush-and-reclaim continuation",
@@ -37,7 +43,14 @@
       "asset_timeframe_mismatch": "none"
     }
   },
-  "indicators": ["EMA_20","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14","EMA_55"],
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "EMA_55"
+  ],
   "entry_rules": {
     "long": [
       "Low <= EMA_20 - 0.38 * ATR_14",
@@ -70,5 +83,11 @@
       "Final time stop: 4 bars"
     ]
   },
-  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":4,"max_concurrent_positions":1}
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 4,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C024-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+  "cycle_id": 24,
+  "family_name": "eth_asymmetric_trend_persistence_v024",
+  "name": "ETH Asymmetric Trend Persistence v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+  "expected_regime": "TRANSITION_WITH_SELECTIVE_PERSISTENCE",
+  "thesis": "ETH 4h is the cleaner similar-asset lane for testing whether continuation can survive in chop if the exit logic is intentionally asymmetric: simple trigger, separate risk anchor, and faster exit detector. The edge should come from role separation, not from stacking the same indicator into every job.",
+  "invalidation_condition": "Abort if continuation entries are too sparse, if role separation still fails to preserve post-cost persistence, or if the exit logic proves no better than symmetric one-size-fits-all management.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A continuation setup forms after directional alignment, but exits should react faster than the entry trigger because chop can erase persistence quickly.",
+    "why_edge_should_exist": "In mixed markets, continuation can exist briefly, but symmetric management often gives back too much. Separating trigger, risk anchor, and exit detector may preserve small persistence bursts better.",
+    "asset_timeframe_fit": "ETH 4h is appropriate because continuation bursts are visible enough to test while remaining cleaner than TAO.",
+    "indicator_role_map": {
+      "EMA_20": "trigger alignment",
+      "EMA_55": "risk anchor",
+      "ATR_14": "position risk normalizer",
+      "ADX_14": "setup qualifier",
+      "RSI_14": "fast exit detector"
+    },
+    "expected_regime": "TRANSITION_WITH_SELECTIVE_PERSISTENCE",
+    "likely_failure_mode": "If continuation barely exists in this regime, asymmetric management will only reduce losses rather than create real edge.",
+    "first_refinement_path": "If the idea trades but exit timing is still late, simplify further by tightening the exit detector before altering the trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A modest set of continuation trades where rapid exit response matters more than long-runner capture.",
+    "what_would_count_as_success": "ETH 4h and one cross-lane show credible density and better containment of failed continuations through asymmetric exits.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or no measurable benefit from asymmetric management.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low; trigger, risk, and exit roles are intentionally separated",
+      "event_sparsity": "managed by simple continuation trigger rather than ceremonial confirmation chains",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Best clean lane for testing indicator role separation in continuation logic.","continue_if":"Continuation entries show enough density and asymmetric exits reduce damage on failed moves.","rotate_away_if":"The setup is too sparse or role separation adds no measurable benefit.","expected_if_right":"A modest number of continuations where faster exits improve expectancy vs symmetric management."},
+    {"asset":"BTC","timeframe":"4h","role":"similar_asset","why_included":"Checks whether role-separated continuation transfers to a cleaner major lane.","continue_if":"BTC shows comparable continuation behavior with the same role map.","rotate_away_if":"The benefit disappears outside ETH.","expected_if_right":"Cleaner but slightly smaller continuation bursts than ETH."},
+    {"asset":"TAO","timeframe":"4h","role":"structural_stress_test","why_included":"Tests whether the asymmetric exit idea survives a wilder lane.","continue_if":"TAO preserves the continuation shape without management collapsing.","rotate_away_if":"TAO turns the concept into noise.","expected_if_right":"Fewer but larger continuation bursts where fast exits matter even more."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "EMA_20 >= EMA_55 * 0.998",
+      "ADX_14 >= 9"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "EMA_20 <= EMA_55 * 1.002",
+      "ADX_14 >= 9"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Initial stop: 0.85 * ATR_14 below entry using EMA_55 as structural fail context",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Exit remaining on RSI_14 < 49 or close below EMA_20",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Initial stop: 0.85 * ATR_14 above entry using EMA_55 as structural fail context",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Exit remaining on RSI_14 > 51 or close above EMA_20",
+      "Final time stop: 4 bars"
+    ]
+  }
+}

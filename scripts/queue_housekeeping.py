@@ -27,9 +27,10 @@ def main():
         )
 
     max_cycle = conn.execute("SELECT COALESCE(MAX(cycle_id),0) FROM research_funnel_queue WHERE cycle_id < 90000").fetchone()[0] or 0
+    orphan_cutoff = (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat()
     orphan = conn.execute(
-        "SELECT id, cycle_id, stage, strategy_spec_id, variant_id FROM research_funnel_queue WHERE status='queued' AND (cycle_id >= 90000 OR cycle_id < ?)",
-        (max(0, int(max_cycle) - 20),),
+        "SELECT id, cycle_id, stage, strategy_spec_id, variant_id FROM research_funnel_queue WHERE status='queued' AND queued_at < ? AND (cycle_id >= 90000 OR cycle_id < ?)",
+        (orphan_cutoff, max(0, int(max_cycle) - 20)),
     ).fetchall()
     for row in orphan:
         conn.execute(

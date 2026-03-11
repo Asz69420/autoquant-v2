@@ -882,11 +882,12 @@ def reset_stale_running_jobs(conn, stale_minutes=10):
     return len(rows)
 
 
-def cleanup_orphan_queue(conn, max_valid_gap=20):
+def cleanup_orphan_queue(conn, max_valid_gap=20, min_age_minutes=60):
     max_cycle = conn.execute("SELECT COALESCE(MAX(cycle_id),0) FROM research_funnel_queue WHERE cycle_id < 90000").fetchone()[0] or 0
+    cutoff_sql = f"-{int(min_age_minutes)} minutes"
     rows = conn.execute(
-        "SELECT id, cycle_id, status, stage, strategy_spec_id, variant_id FROM research_funnel_queue WHERE status='queued' AND (cycle_id >= 90000 OR cycle_id < ?)",
-        (max(0, int(max_cycle) - int(max_valid_gap)),),
+        "SELECT id, cycle_id, status, stage, strategy_spec_id, variant_id FROM research_funnel_queue WHERE status='queued' AND datetime(queued_at) <= datetime('now', ?) AND (cycle_id >= 90000 OR cycle_id < ?)",
+        (cutoff_sql, max(0, int(max_cycle) - int(max_valid_gap))),
     ).fetchall()
     for row in rows:
         conn.execute(
@@ -894,7 +895,7 @@ def cleanup_orphan_queue(conn, max_valid_gap=20):
             (now_iso(), json.dumps({"status": "orphan_discarded", "reason": "orphan_or_legacy_cycle", "discarded_at": now_iso()}), row[0]),
         )
     if rows:
-        log_event(conn, "queue_orphan_cleanup", "logron", f"Discarded {len(rows)} orphan queued jobs", severity="warn", step="queue_housekeeping", metadata={"count": len(rows), "rows": [dict(zip(['id','cycle_id','status','stage','strategy_spec_id','variant_id'], r)) for r in rows[:10]]})
+        log_event(conn, "queue_orphan_cleanup", "logron", f"Discarded {len(rows)} orphan queued jobs", severity="warn", step="queue_housekeeping", metadata={"count": len(rows), "min_age_minutes": int(min_age_minutes), "rows": [dict(zip(['id','cycle_id','status','stage','strategy_spec_id','variant_id'], r)) for r in rows[:10]]})
     return len(rows)
 
 

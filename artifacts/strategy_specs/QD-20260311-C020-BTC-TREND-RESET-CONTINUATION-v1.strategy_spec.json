@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C020-BTC-TREND-RESET-CONTINUATION-v1",
+  "cycle_id": 20,
+  "family_name": "btc_trend_reset_continuation_v020",
+  "name": "BTC Trend Reset Continuation v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "deeper intraday pullback reset that reclaims fast value before continuation",
+  "expected_regime": "TRANSITION_TO_TREND_UP",
+  "thesis": "BTC 1h is the cleaner similar-asset lane for testing whether a deeper reset continuation can still work without shallow EMA-touch fragility. The edge should come from repaired pullbacks that re-establish directional control after inventory reset.",
+  "invalidation_condition": "Abort if reset-and-reclaim setups are too sparse, if reclaimed pullbacks do not extend, or if the intraday lane behaves as pure chop with no second leg.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back materially within an existing directional move, reclaims fast value, and resumes with a modest second leg.",
+    "why_edge_should_exist": "Even in mixed intraday structure, BTC often repairs deeper pullbacks more cleanly than alts. That makes it a good continuation control lane.",
+    "asset_timeframe_fit": "BTC 1h offers enough structure for reset logic without the thinness of smaller high-beta names.",
+    "indicator_role_map": {
+      "EMA_20": "fast value reclaim reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "ADX_14": "trend participation qualifier",
+      "RSI_14": "state recovery confirmation"
+    },
+    "expected_regime": "TRANSITION_TO_TREND_UP",
+    "likely_failure_mode": "If the market is too range-bound, repaired pullbacks will look valid but fail to produce continuation travel.",
+    "first_refinement_path": "If continuation exists but is short-lived, compress exits or add faster de-risking before touching pullback logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Selective repaired-pullback entries with decent first-target hit rate and occasional runner contribution.",
+    "what_would_count_as_success": "BTC 1h and at least one cross-lane show real post-cost continuation after reclaim with acceptable density.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or reclaimed pullbacks that repeatedly stall immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; pullback, reclaim, and participation check align",
+      "event_sparsity": "managed by using moderate reset depth rather than rare washout definitions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {"asset":"BTC","timeframe":"1h","role":"primary","why_included":"Cleanest continuation-control lane in the current basket.","continue_if":"Reset-reclaim trades show credible density and positive post-cost continuation.","rotate_away_if":"The lane stays too choppy and reclaimed pullbacks never extend.","expected_if_right":"A decent number of repaired pullbacks followed by modest second legs."},
+    {"asset":"ETH","timeframe":"1h","role":"similar_asset","why_included":"Checks whether the continuation mechanism transfers to the basket primary lane.","continue_if":"ETH shows comparable repaired pullback behavior.","rotate_away_if":"The mechanism collapses on ETH and only works on BTC.","expected_if_right":"Slightly noisier but still tradable repaired continuations."},
+    {"asset":"AXS","timeframe":"1h","role":"structural_stress_test","why_included":"Tests whether the same grammar survives a higher-beta lane.","continue_if":"AXS preserves the reset-continuation shape without becoming chaotic.","rotate_away_if":"Noise overwhelms continuation structure.","expected_if_right":"Fewer entries but larger post-reclaim legs than majors."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {"long": ["Low <= EMA_20 - 0.3 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.18 * ATR_14","ADX_14 >= 10","RSI_14 >= 49"],"short": ["High >= EMA_20 + 0.3 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.18 * ATR_14","ADX_14 >= 10","RSI_14 <= 51"]},
+  "exit_rules": {"long": ["Stop loss: 0.8 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.9 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 15%","Trail remaining 10% by 0.6 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.8 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.9 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 15%","Trail remaining 10% by 0.6 * ATR_14","Final time stop: 5 bars"]}
+}

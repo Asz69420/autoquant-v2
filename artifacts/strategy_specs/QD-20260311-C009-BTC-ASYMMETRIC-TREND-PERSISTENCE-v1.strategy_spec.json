@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C009-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1",
+  "cycle_id": 9,
+  "family_name": "btc_asymmetric_trend_persistence_v009",
+  "name": "BTC Asymmetric Trend Persistence v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "continuation with front-loaded exits and structure-based back-half risk",
+  "expected_regime": "TRANSITION",
+  "thesis": "BTC 1h is the cleaner similar-asset lane for testing whether continuation can still work in a mixed transition tape when trigger, risk, and exit indicators have clearly separated roles. The edge here is more about management asymmetry than pure trend conviction.",
+  "invalidation_condition": "Abort if continuation remains too sparse, if front-half exits realize but the back-half structure never pays, or if the regime is too rangy for continuation to survive after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional move stays aligned with fast value long enough for a first target, while the remaining size is managed by a slower structural exit rather than fixed take-profit only.",
+    "why_edge_should_exist": "Even in mixed transition, some intraday continuations pay the first leg but fail as full trends. Separating trigger, risk, and exit roles may allow harvesting that partial persistence.",
+    "asset_timeframe_fit": "BTC 1h is the best clean lane for this because continuation behavior is more interpretable than on thinner alts.",
+    "indicator_role_map": {
+      "EMA_20": "trigger alignment",
+      "ATR_14": "risk normalizer",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "entry state confirmation",
+      "EMA_55": "back-half structure exit"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the tape is too rotational, the first leg may exist but the residual persistence will be too weak to justify continuation framing.",
+    "first_refinement_path": "If entries trade with density but runners fail, compress the back-half exposure before changing trigger logic.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Smaller number of entries than the recovery spec, but decent first-target hit rate with mixed runner outcomes.",
+    "what_would_count_as_success": "Primary lane plus one cross-check lane show credible density and better-than-random continuation after front-half harvesting.",
+    "what_would_count_as_failure": "0 trades, low-trade output, or continuation expectancy entirely dependent on a tiny number of outliers.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because alignment logic is broad",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Cleanest lane for testing asymmetric continuation management in a transitional intraday tape.",
+      "continue_if": "Continuation trades appear with credible density and front-half exits realize consistently.",
+      "rotate_away_if": "Signals are too sparse or only first-target scalps exist with no residual structure edge.",
+      "expected_if_right": "A modest stream of continuations where early harvesting does most of the work."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same management asymmetry generalizes across major intraday lanes.",
+      "continue_if": "ETH shows similar trigger density and comparable first-leg continuation.",
+      "rotate_away_if": "Only BTC works, implying asset-specific structure.",
+      "expected_if_right": "Slightly noisier but similar asymmetric continuation profile."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the management idea survives on a slower timeframe where structure exits matter more.",
+      "continue_if": "4h yields fewer but cleaner continuation trades with viable runner contribution.",
+      "rotate_away_if": "The idea only exists in short-term intraday noise.",
+      "expected_if_right": "Lower frequency but cleaner persistence after first-target harvesting."
+    }
+  ],
+  "indicators": ["EMA_20","ATR_14","ADX_14","RSI_14","EMA_55"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.18 * ATR_14",
+      "RSI_14 >= 51",
+      "ADX_14 >= 8",
+      "EMA_20 >= EMA_55 * 0.998"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.18 * ATR_14",
+      "RSI_14 <= 49",
+      "ADX_14 >= 8",
+      "EMA_20 <= EMA_55 * 1.002"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 50% size",
+      "Take profit: 0.90 * ATR_14 on 25% size",
+      "Exit remaining 25% on close below EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 50% size",
+      "Take profit: 0.90 * ATR_14 on 25% size",
+      "Exit remaining 25% on close above EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

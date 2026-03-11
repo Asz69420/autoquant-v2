@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C024-BTC-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 24,
+  "family_name": "btc_value_recovery_scalein_v024",
+  "name": "BTC Value Recovery Scale-In v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 4h is the cleanest primary lane for testing whether value recovery should be accumulated across improving confirmation rather than expressed as a one-bar all-in reclaim. In a chop-heavy environment, gradual confirmation may capture repaired balance moves without depending on a single perfect timing bar.",
+  "invalidation_condition": "Abort if value recovery still lacks trade density, if staggered confirmation never improves economics after costs, or if scale-in simply adds complexity without changing outcomes.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price returns toward value after a flush, confirms recovery over more than one bar, and then moves far enough toward balance for staged participation to help.",
+    "why_edge_should_exist": "Choppy markets often repair in steps rather than one decisive reclaim bar. Scaling in as confirmation improves may match that repair path better than a single-entry expression.",
+    "asset_timeframe_fit": "BTC 4h is the best fit because recovery structure is readable and less noisy than on thinner assets, while still offering enough amplitude for staged entries.",
+    "indicator_role_map": {
+      "EMA_20": "value recovery reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "flush depth and risk normalizer",
+      "RSI_14": "recovery improvement qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the market only mean-reverts shallowly and never develops a cleaner recovery sequence, scale-in will add complexity without improving expectancy.",
+    "first_refinement_path": "If the recovery thesis is correct but the second scale-in is unnecessary, simplify to one entry with the same confirmation stack before changing the core recovery idea.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A limited but usable number of recovery trades where the second entry only appears when the recovery actually stabilizes.",
+    "what_would_count_as_success": "BTC 4h and one cross-lane show credible density plus better post-cost recovery behavior than one-shot reclaim logic.",
+    "what_would_count_as_failure": "0 trades, too-sparse participation, or no measurable benefit from staged confirmation.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; recovery and improving confirmation are sequential",
+      "event_sparsity": "managed by broad recovery logic rather than rare capitulation-only triggers",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best control lane for staged value-recovery participation.",
+      "continue_if": "Recovery trades show enough density and improved economics from staged confirmation.",
+      "rotate_away_if": "The setup is too sparse or staged entry adds no benefit.",
+      "expected_if_right": "Flushes recover in steps and the second entry improves average position quality."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism transfers to the similar-asset lane.",
+      "continue_if": "ETH shows the same stepwise recovery behavior.",
+      "rotate_away_if": "The mechanism disappears outside BTC.",
+      "expected_if_right": "Slightly noisier but still tradable staged recoveries."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same recovery logic survives on a faster adjacent lane.",
+      "continue_if": "1h preserves the mechanism without collapsing into noise.",
+      "rotate_away_if": "The faster lane overtrades without edge.",
+      "expected_if_right": "More signals than 4h with smaller but still tradable recovery legs."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Entry tranche 1: Low <= EMA_20 - 0.30 * ATR_14",
+      "Entry tranche 1: Close >= EMA_20",
+      "Entry tranche 1: RSI_14 >= 44",
+      "Entry tranche 2: Next bar Close >= prior Close",
+      "Entry tranche 2: PLUS_DI_14 >= MINUS_DI_14",
+      "Entry tranche 2: Close >= EMA_55 - 0.20 * ATR_14"
+    ],
+    "short": [
+      "Entry tranche 1: High >= EMA_20 + 0.30 * ATR_14",
+      "Entry tranche 1: Close <= EMA_20",
+      "Entry tranche 1: RSI_14 <= 56",
+      "Entry tranche 2: Next bar Close <= prior Close",
+      "Entry tranche 2: MINUS_DI_14 >= PLUS_DI_14",
+      "Entry tranche 2: Close <= EMA_55 + 0.20 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below average entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above average entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C007-AXS-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 7,
+  "family_name": "axs_delayed_retest_continuation_v007",
+  "name": "AXS Delayed Retest Continuation v1",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "delayed entry after breakout retest holds",
+  "expected_regime": "TRANSITION_TO_TREND_UP",
+  "thesis": "AXS 4h is the structurally different lane for testing delayed retest continuation: enter after the breakout proves it can hold, not on the first impulse. This should be denser and less fragile than immediate trigger logic.",
+  "invalidation_condition": "Abort if retest-hold entries are still too sparse, if AXS only prints impulsive spikes with no orderly retest, or if held retests fail to extend.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A breakout occurs, price revisits the break zone without losing acceptance, and the continuation entry is taken on the resumed push rather than the original breakout bar.",
+    "why_edge_should_exist": "Delayed retests often clean up breakout quality by letting weak breakouts fail before entry, especially when trend confidence is present but not dominant.",
+    "asset_timeframe_fit": "AXS 4h is useful because it stress-tests whether the retest grammar can survive on a structurally different, thinner high-beta asset.",
+    "indicator_role_map": {
+      "EMA_20": "retest hold reference",
+      "EMA_55": "background trend anchor",
+      "ATR_14": "retest tolerance and risk normalizer",
+      "ADX_14": "continuation participation filter",
+      "RSI_14": "resume trigger confirmation"
+    },
+    "expected_regime": "TRANSITION_TO_TREND_UP",
+    "likely_failure_mode": "If AXS only gaps through levels or mean reverts too hard, orderly retests will not exist often enough.",
+    "first_refinement_path": "If retests hold but the second leg is short, reduce runner ambition before increasing entry strictness.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Moderate hit rate with better average trade quality than immediate breakout entries.",
+    "what_would_count_as_success": "AXS plus one cleaner lane show tradable retest holds with enough density and post-cost expansion.",
+    "what_would_count_as_failure": "0 trades, chaotic spikes with no retest structure, or repeated holds that fail to extend.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "managed by broad retest-hold conditions instead of exact candle timing",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Stress-test lane for whether delayed retest continuation survives outside the majors.",
+      "continue_if": "Retest holds print with enough density and meaningful continuation.",
+      "rotate_away_if": "No orderly retest structure appears or density collapses.",
+      "expected_if_right": "A small number of high-quality retest holds should outperform immediate breakout chasing."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "higher_beta_confirmation",
+      "why_included": "Checks whether the same delayed-entry continuation logic works on another volatile lane.",
+      "continue_if": "TAO shows comparable retest-hold behavior with better amplitude.",
+      "rotate_away_if": "The pattern appears too asset-specific to AXS.",
+      "expected_if_right": "More violent but still recognizable retest continuations."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "clean_lane_control",
+      "why_included": "Determines whether the retest grammar generalizes to a cleaner market.",
+      "continue_if": "ETH still prints delayed retests with orderly follow-through.",
+      "rotate_away_if": "Only high-beta names show the pattern.",
+      "expected_if_right": "Cleaner but smaller continuation legs after held retests."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.22 * ATR_14",
+      "EMA_20 >= EMA_55 * 0.998",
+      "ADX_14 >= 9",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.22 * ATR_14",
+      "EMA_20 <= EMA_55 * 1.002",
+      "ADX_14 >= 9",
+      "RSI_14 <= 49"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

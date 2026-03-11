@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C008-DOGE-SESSION-DRIVE-CONTINUATION-v1",
+  "cycle_id": 8,
+  "family_name": "doge_session_drive_continuation_v008",
+  "name": "DOGE Session Drive Continuation v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "opening-range continuation after directional session dominance",
+  "expected_regime": "TRANSITION",
+  "thesis": "DOGE 4h is the best-fit primary lane for testing whether session-driven directional control can produce a second-leg continuation after the dominant session establishes range leadership. The edge is participation in broad follow-through, not blind breakout chasing.",
+  "invalidation_condition": "Abort if session-drive continuation stays too sparse, if dominant-session moves fail to produce second-leg follow-through, or if the setup only captures one-bar bursts that mean-revert immediately.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "One session structurally dominates the 4h bar, price holds near session-led value rather than fully mean reverting, and continuation engages on the follow-through leg.",
+    "why_edge_should_exist": "Transition regimes often print uneven participation where one session does the real work and the next leg extends that imbalance before mean reversion catches up.",
+    "asset_timeframe_fit": "DOGE 4h is appropriate because session-led surges are visible and amplitude is high enough to support partial exits plus a runner.",
+    "indicator_role_map": {
+      "EMA_20": "near-value hold reference",
+      "EMA_55": "background directional anchor",
+      "ATR_14": "session-drive size and risk normalizer",
+      "ADX_14": "participation strength filter",
+      "RSI_14": "follow-through confirmation"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the market is actually pure chop, session dominance will not persist long enough and continuation entries will stall.",
+    "first_refinement_path": "If entries trade with acceptable density but the runner rarely pays, shorten the management structure before changing the continuation trigger.",
+    "expected_trade_density": "Low-to-moderate; denser than exact opening-range rituals, but still selective.",
+    "expected_outcome_pattern": "Mixed hit rate with a few cleaner continuation bursts carrying expectancy.",
+    "what_would_count_as_success": "DOGE plus at least one cross-lane show credible density and post-cost continuation after the session-driven move.",
+    "what_would_count_as_failure": "0 trades, thin low-trade outputs, or repeated hold entries that fail to produce a second leg.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low; hold and continuation are sequential",
+      "event_sparsity": "kept reasonable by broad dominance/hold logic instead of exact intraday windows",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best fit for session-led momentum with enough amplitude to pay asymmetric exits.",
+      "continue_if": "Continuation appears with credible density and positive post-cost behavior.",
+      "rotate_away_if": "Only isolated one-bar spikes appear or density collapses.",
+      "expected_if_right": "A small but tradable set of dominant-session holds should extend into a second leg."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism survives on a cleaner major lane rather than only meme-asset volatility.",
+      "continue_if": "ETH shows comparable but cleaner hold-and-follow-through behavior.",
+      "rotate_away_if": "The mechanism disappears outside DOGE.",
+      "expected_if_right": "Smaller but more orderly continuation than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether session-drive continuation survives on a wilder structurally different lane.",
+      "continue_if": "TAO preserves the setup shape without collapsing into noise.",
+      "rotate_away_if": "TAO shows only chaos or no repeatable session-led continuation.",
+      "expected_if_right": "More violent but still recognizable second-leg continuation after dominant-session control."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.20 * ATR_14",
+      "EMA_20 >= EMA_55 * 0.998",
+      "ADX_14 >= 9",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.20 * ATR_14",
+      "EMA_20 <= EMA_55 * 1.002",
+      "ADX_14 >= 9",
+      "RSI_14 <= 49"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

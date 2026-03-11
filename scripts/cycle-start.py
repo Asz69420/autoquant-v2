@@ -9,6 +9,7 @@ ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 STATE_DIR = os.path.join(ROOT, "data", "state")
 OUT_PATH = os.path.join(STATE_DIR, "research_cycle_started_at.json")
 COUNTER_PATH = os.path.join(STATE_DIR, "cycle_counter.json")
+ACTIVE_RUN_STALE_MINUTES = 25
 
 # Files that carry a cycle_id and should be coherent
 CYCLE_ID_FILES = {
@@ -146,19 +147,42 @@ def next_cycle_id():
     return data["last_cycle_id"]
 
 
-def reuse_or_next_cycle_id():
-    """Reuse the previous cycle_id if it never completed (prevents drift from repeated failures)."""
+def resolve_next_cycle_id_or_exit():
+    """Serialize research cycles: reject overlapping starts, roll forward only after stale abandonment."""
     run_state = load_json(OUT_PATH)
     prev_status = run_state.get("status")
     prev_cycle = run_state.get("cycle_id")
     prev_ended = run_state.get("ended_at_epoch")
+    prev_started = float(run_state.get("started_at_epoch", 0) or 0)
 
     if prev_cycle and prev_status == "started" and not prev_ended:
+        age_seconds = max(0.0, time.time() - prev_started) if prev_started else 0.0
+        if age_seconds < ACTIVE_RUN_STALE_MINUTES * 60:
+            payload = {
+                "status": "busy",
+                "reason": "active_cycle_in_progress",
+                "active_cycle_id": int(prev_cycle),
+                "active_age_seconds": round(age_seconds, 1),
+                "stale_after_minutes": ACTIVE_RUN_STALE_MINUTES,
+            }
+            print(
+                f"[cycle-start] active cycle {prev_cycle} is still in progress; refusing overlapping start",
+                file=sys.stderr,
+            )
+            print(json.dumps(payload))
+            raise SystemExit(2)
+
+        abandoned_at = datetime.now(timezone.utc)
+        run_state["status"] = "stale_abandoned"
+        run_state["ended_at_epoch"] = abandoned_at.timestamp()
+        run_state["ended_at_iso"] = abandoned_at.isoformat()
+        run_state["run_elapsed_seconds"] = round(max(0.0, run_state["ended_at_epoch"] - prev_started), 1) if prev_started else None
+        with open(OUT_PATH, "w", encoding="utf-8") as f:
+            json.dump(run_state, f, indent=2)
         print(
-            f"[cycle-start] previous cycle {prev_cycle} never completed (status={prev_status}), reusing cycle_id",
+            f"[cycle-start] previous cycle {prev_cycle} exceeded {ACTIVE_RUN_STALE_MINUTES}m; marked stale and starting a new cycle",
             file=sys.stderr,
         )
-        return int(prev_cycle)
 
     return next_cycle_id()
 
@@ -166,7 +190,7 @@ def reuse_or_next_cycle_id():
 os.makedirs(STATE_DIR, exist_ok=True)
 started_at_epoch = time.time()
 started_at_iso = datetime.now(timezone.utc).isoformat()
-cycle_id = reuse_or_next_cycle_id()
+cycle_id = resolve_next_cycle_id_or_exit()
 
 # Coherence check: warn and auto-sync drifted state files
 check_cycle_coherence(cycle_id)

@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C020-ETH-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 20,
+  "family_name": "eth_range_failure_reacceptance_v020",
+  "name": "ETH Range Failure Reacceptance v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "failed excursion back into balance after multi-bar breakout loses acceptance",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 1h is the cleanest primary lane for a range-failure reversal that fades failed acceptance outside balance after a multi-bar push. In a chop-heavy intraday regime, the edge should come from quick re-entry into value, not from chasing extension.",
+  "invalidation_condition": "Abort if failed excursions rarely re-enter balance, if trade count is too sparse, or if reacceptance lacks enough travel after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A multi-bar push outside short-term balance loses acceptance and re-enters value, creating a reversal back toward the center of the range.",
+    "why_edge_should_exist": "Choppy 1h structure frequently overextends and then snaps back into balance. ETH should express this cleanly with enough density to matter.",
+    "asset_timeframe_fit": "ETH 1h is liquid and rhythmically mean-reverting enough for failed-break reacceptance logic without excessive micro-noise.",
+    "indicator_role_map": {
+      "EMA_20": "fast balance reference",
+      "EMA_55": "outer structure anchor",
+      "ATR_14": "excursion distance and risk normalizer",
+      "RSI_14": "acceptance-loss qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional rollover confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the market trends through excursions instead of failing them, the reversal thesis will keep stepping in front of continuation.",
+    "first_refinement_path": "If reacceptance triggers are correct but travel is too shallow, tighten exits before making entry logic more ceremonial.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Many short-hold balance-repair trades where first target harvesting drives most expectancy.",
+    "what_would_count_as_success": "ETH 1h and at least one cross-lane produce credible density and positive post-cost move back toward balance.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or repeated reacceptance signals that do not travel enough after costs.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "none obvious; excursion, re-entry, and rollover are complementary",
+      "event_sparsity": "managed by broad excursion/reacceptance rules rather than exact candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best clean lane for intraday failed-break reacceptance in the current basket.",
+      "continue_if": "Credible density and positive post-cost balance-repair travel.",
+      "rotate_away_if": "Excursions trend through instead of failing, or density collapses.",
+      "expected_if_right": "Frequent failed pushes that return toward balance within a few bars."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism generalizes across majors rather than being ETH-specific.",
+      "continue_if": "BTC shows comparable failed-excursion repair behavior.",
+      "rotate_away_if": "The mechanism disappears outside ETH.",
+      "expected_if_right": "Slightly cleaner but sometimes smaller reacceptance moves than ETH."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same balance-repair idea survives on a slower structure lane.",
+      "continue_if": "4h still trades plausibly with enough excursion depth.",
+      "rotate_away_if": "The slower lane becomes too sparse.",
+      "expected_if_right": "Fewer but larger range-failure reacceptance trades."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.34 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 44",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.34 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 56",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.78 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.5 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.78 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.5 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

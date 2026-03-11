@@ -21,6 +21,7 @@ REFINEMENT_STATE_PATH = os.path.join(ROOT, "data", "state", "refinement_cycle_st
 REFINEMENT_JOBS_PATH = os.path.join(ROOT, "data", "state", "refinement_jobs.json")
 REFINEMENT_RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "refinement_cycle_run_state.json")
 QUANDALF_REFINEMENT_DECISIONS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "refinement_decisions.json")
+QUANDALF_DECISION_VALIDATOR = os.path.join(ROOT, "scripts", "validate_quandalf_decisions.py")
 
 STATUS_ORDER = {
     None: 0,
@@ -517,6 +518,11 @@ def candidate_rows(conn):
 
 
 def build_jobs(conn, cycle_id, max_jobs):
+    validator = subprocess.run([sys.executable, QUANDALF_DECISION_VALIDATOR], cwd=ROOT, capture_output=True, text=True)
+    if validator.returncode != 0:
+        write_json(REFINEMENT_JOBS_PATH, {"cycle_id": cycle_id, "jobs": [], "created_at": now_iso(), "selected_by": "quandalf", "status": "invalid_strategy_decisions", "validator_stdout": (validator.stdout or '').strip(), "validator_stderr": (validator.stderr or '').strip()})
+        return [], []
+
     decisions = load_json(QUANDALF_REFINEMENT_DECISIONS_PATH, default={})
     requested = decisions.get("jobs") or []
     strategy_decisions = decisions.get("strategy_decisions") or []

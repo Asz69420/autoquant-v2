@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C007-ETH-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 7,
+  "family_name": "eth_value_reacceptance_exhaustion_v007",
+  "name": "ETH Value Reacceptance Exhaustion v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "exhaustion reversal only after structure reaccepts prior value",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "ETH 4h is the cleaner lane for a constrained exhaustion-reacceptance idea. This is not blind mean reversion; it only engages after a failed extension structurally returns to value.",
+  "invalidation_condition": "Abort if exhaustion-plus-reacceptance remains too sparse again, if reversals fail to travel after reacceptance, or if the regime is too trend-persistent for reversal logic.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A stretched move loses momentum, value is reaccepted, and price mean reverts enough to monetize the failure of extension.",
+    "why_edge_should_exist": "When trend confidence is weak and chop dominates the 20-bar mix, failed extensions into reaccepted value can still produce dense repair moves on ETH.",
+    "asset_timeframe_fit": "ETH 4h is chosen because it is cleaner than TAO and more reliable for testing whether reacceptance logic can be made broad enough to trade.",
+    "indicator_role_map": {
+      "EMA_20": "value reacceptance reference",
+      "EMA_55": "background anchor",
+      "ATR_14": "stretch and risk normalizer",
+      "RSI_14": "exhaustion qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "handoff away from extension"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "This family has historically risked density collapse; if reacceptance is still too ceremonial, it will zero-trade or produce thin mirages again.",
+    "first_refinement_path": "If density exists but the repair move is too small, tighten exits before adding more confirmation layers.",
+    "expected_trade_density": "Moderate if the broad reacceptance expression works; otherwise structurally too low.",
+    "expected_outcome_pattern": "High-ish win rate but smaller average win than continuation ideas, with expectancy dependent on dense participation.",
+    "what_would_count_as_success": "Trades appear on ETH and at least one cross-lane with real density and no low-trade mirage profile.",
+    "what_would_count_as_failure": "0 trades, low-trade PF illusion, or immediate collapse back into the prior extension direction.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate if broadened successfully",
+      "contradictory_filters": "moderate but sequentially coherent",
+      "event_sparsity": "explicitly broadened to avoid prior ceremonial grammar",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Cleanest lane for determining whether this formerly sparse family can be rehabilitated structurally.",
+      "continue_if": "Density is real and reversals travel enough after costs.",
+      "rotate_away_if": "It zero-trades or produces another low-trade mirage.",
+      "expected_if_right": "Broad failed extensions should revert toward value with enough frequency to matter."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "volatility_crosscheck",
+      "why_included": "Checks whether the same reacceptance logic breaks under higher-beta volatility.",
+      "continue_if": "TAO shows similar structure without degenerating into chaos.",
+      "rotate_away_if": "Only ETH works and TAO fully breaks the thesis.",
+      "expected_if_right": "Bigger reversals but more variance than ETH."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "stress_test_lane",
+      "why_included": "Tests whether the family is structural or too fragile for thinner assets.",
+      "continue_if": "The mechanism survives with acceptable density.",
+      "rotate_away_if": "Noise dominates and no orderly reacceptance appears.",
+      "expected_if_right": "Less clean than ETH but still tradable failed extensions into balance repair."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.30 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.78 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.30 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.78 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

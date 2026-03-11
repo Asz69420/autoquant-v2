@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C020-TAO-TREND-RESET-CONTINUATION-v1",
+  "cycle_id": 20,
+  "family_name": "tao_trend_reset_continuation_v020",
+  "name": "TAO Trend Reset Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "deeper pullback reset inside an uptrend followed by value reclaim and continuation",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "TAO 4h is the best-fit primary lane for testing whether a stronger-trending asset can resume after a deeper reset, provided price reclaims fast value and directional pressure rotates back with it. The edge is not buying shallow EMA taps; it is buying repaired pullbacks after inventory is reset.",
+  "invalidation_condition": "Abort if deeper resets rarely reclaim fast value, if reclaimed pullbacks fail to extend after costs, or if signals become too sparse.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Uptrend pauses with a deeper pullback into value, then resumes once price reclaims the fast balance reference and directional pressure re-aligns.",
+    "why_edge_should_exist": "A low-confidence trend-up backdrop often produces messy but tradable repaired pullbacks. TAO should express that mechanism more clearly than ETH because its swings are larger.",
+    "asset_timeframe_fit": "TAO 4h is appropriate because the pullback-reset structure is large enough to matter and still slow enough to avoid intrabar noise.",
+    "indicator_role_map": {
+      "EMA_20": "fast value reclaim reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "ADX_14": "trend participation qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff after reset"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "If trend quality is weaker than advertised, deeper pullbacks may become outright reversals instead of repaired resets.",
+    "first_refinement_path": "If entries are valid but second-leg extension is too brief, reduce target ambition and shorten the runner rather than tightening pullback depth.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A workable number of repaired-pullback entries with front-half exits doing most of the expectancy and occasional runner contribution.",
+    "what_would_count_as_success": "TAO 4h and at least one cross-lane show credible density and positive post-cost continuation after value reclaim.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or reclaimed pullbacks repeatedly fail to print a second leg.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; reset depth, reclaim, and directional handoff are complementary",
+      "event_sparsity": "managed by using broad reset logic rather than exact candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"TAO","timeframe":"4h","role":"primary","why_included":"Best lane for a repaired deeper-pullback continuation mechanism in the current basket.","continue_if":"Credible density and positive continuation after reclaim.","rotate_away_if":"Pullbacks reclaim but fail to extend, or the setup is too sparse.","expected_if_right":"Sharp resets followed by a visible second-leg continuation after fast value reclaim."},
+    {"asset":"ETH","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism is structural on a cleaner large-cap lane.","continue_if":"ETH shows similar repaired-pullback continuation with acceptable density.","rotate_away_if":"The mechanism only survives on TAO volatility and disappears on ETH.","expected_if_right":"Fewer but cleaner repaired-pullback continuations than TAO."},
+    {"asset":"AXS","timeframe":"4h","role":"structural_stress_test","why_included":"Tests whether the same continuation grammar survives on a more fragile high-beta lane.","continue_if":"AXS preserves the repaired continuation shape without collapsing into noise.","rotate_away_if":"AXS becomes structurally noisy or too sparse.","expected_if_right":"Less frequent but punchier repaired-continuation moves than ETH."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {"long": ["Low <= EMA_20 - 0.34 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.18 * ATR_14","ADX_14 >= 12","PLUS_DI_14 >= MINUS_DI_14"],"short": ["High >= EMA_20 + 0.34 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.18 * ATR_14","ADX_14 >= 12","MINUS_DI_14 >= PLUS_DI_14"]},
+  "exit_rules": {"long": ["Stop loss: 0.85 * ATR_14 below entry","Take profit: 0.6 * ATR_14 on 40% size","Take profit: 1.0 * ATR_14 on 35% size","Trail remaining 25% by 0.7 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.85 * ATR_14 above entry","Take profit: 0.6 * ATR_14 on 40% size","Take profit: 1.0 * ATR_14 on 35% size","Trail remaining 25% by 0.7 * ATR_14","Final time stop: 5 bars"]}
+}

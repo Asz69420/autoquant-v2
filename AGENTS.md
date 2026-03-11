@@ -157,6 +157,7 @@ Shared framework and memory documentation live here:
 - docs/AGENT_FRAMEWORK_VNEXT.md
 - docs/MEMORY_SYSTEM_VNEXT.md
 - docs/QUANDALF_BUILD_SPEC.md
+- docs/INDICATOR_ROLE_LEARNING_SPEC.md
 
 Use these as the source of truth when debugging or extending the framework.
 

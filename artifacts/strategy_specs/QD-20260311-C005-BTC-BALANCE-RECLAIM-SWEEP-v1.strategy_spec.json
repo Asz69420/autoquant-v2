@@ -9,8 +9,14 @@
   "primary_asset": "BTC",
   "primary_timeframe": "4h",
   "validation_targets": [
-    {"asset":"BTC","timeframe":"4h"},
-    {"asset":"ETH","timeframe":"4h"}
+    {
+      "asset": "BTC",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h"
+    }
   ],
   "thesis": "BTC 4h is the best-fit primary lane for a balance-reclaim sweep structure that buys or sells failed excursions back into value rather than sparse continuation rituals. In a chop-dominant tape, the edge should come from repeated excursions outside balance that are repaired quickly.",
   "edge_mechanism": "sweep-and-reclaim into balance",
@@ -37,7 +43,14 @@
       "asset_timeframe_mismatch": "none"
     }
   },
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
   "entry_rules": {
     "long": [
       "Low <= EMA_20 - 0.32 * ATR_14",
@@ -70,5 +83,11 @@
       "Final time stop: 4 bars"
     ]
   },
-  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":4,"max_concurrent_positions":1}
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 4,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

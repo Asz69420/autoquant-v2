@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C010-BTC-SQUEEZE-HOLD-RELEASE-v1",
+  "cycle_id": 10,
+  "family_name": "btc_squeeze_hold_release_v010",
+  "name": "BTC Squeeze Hold Release v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression release with post-release hold confirmation",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 4h is the cleaner similar-asset lane for testing a squeeze-release idea that only enters after release bars prove they can hold above fast value. The edge comes from persistent release, not from buying the first breakout bar blindly.",
+  "invalidation_condition": "Abort if squeeze-release remains too sparse, if release bars immediately mean-revert before any hold, or if the hold condition adds complexity without better post-cost continuation.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Compression resolves directionally, price remains aligned with fast value after release, and a brief second push becomes available for asymmetric harvesting.",
+    "why_edge_should_exist": "Even in chop, some 4h compressions release into one more tradable leg. Requiring a hold after release should filter fake first bars without making the setup overly ceremonial.",
+    "asset_timeframe_fit": "BTC 4h is a clean lane for squeeze-release structure and better suited than thinner alts for determining whether post-release persistence is real.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "post-release hold reference",
+      "ATR_14": "release size and risk normalizer",
+      "ADX_14": "participation qualifier",
+      "EMA_55": "runner/structure exit"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If compressions mostly fake out and revert immediately, the hold confirmation will either be too sparse or too late to matter.",
+    "first_refinement_path": "If entries trade with density but follow-through is short, tighten exits before adding more setup conditions.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Selective entries, decent first-target hit rate, and occasional cleaner runner contributions when persistence is real.",
+    "what_would_count_as_success": "BTC 4h and one confirmation lane show tradable density with positive post-cost continuation after release hold.",
+    "what_would_count_as_failure": "0 trades, low-trade output, or holds that consistently fail to extend after entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low; squeeze and hold are sequential",
+      "event_sparsity": "moderate but acceptable with broad compression thresholds",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best clean lane for release persistence after compression.",
+      "continue_if": "Release-hold setups trade with credible density and positive post-cost continuation.",
+      "rotate_away_if": "The setup is too sparse or release holds do not extend.",
+      "expected_if_right": "A modest number of clean squeeze releases with one more leg after the hold."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism generalizes across majors with comparable structure.",
+      "continue_if": "ETH shows similar release-hold behavior with comparable trade density.",
+      "rotate_away_if": "Only BTC works and ETH does not participate at all.",
+      "expected_if_right": "Similar but slightly noisier release-persistence behavior than BTC."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the same release-hold logic survives on a higher-volatility lane.",
+      "continue_if": "TAO preserves the mechanism without collapsing into chaos.",
+      "rotate_away_if": "TAO becomes pure noise and invalidates the structure.",
+      "expected_if_right": "Fewer but larger release-persistence events than BTC."
+    }
+  ],
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "EMA_20",
+    "ATR_14",
+    "ADX_14",
+    "EMA_55"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.10 * ATR_14",
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.12 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 >= EMA_55 * 0.998"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.10 * ATR_14",
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.12 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 <= EMA_55 * 1.002"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.50 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.50 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

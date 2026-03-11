@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C011-TAO-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 11,
+  "family_name": "tao_delayed_retest_continuation_v011",
+  "name": "TAO Delayed Retest Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "delayed entry after breakout retest holds",
+  "expected_regime": "TRANSITION",
+  "thesis": "TAO 4h is the structurally different lane for testing delayed retest continuation: enter only after the breakout survives a retest, not on the first impulse. The edge should come from better trade quality rather than maximum signal count.",
+  "invalidation_condition": "Abort if retest-hold continuation remains too sparse, if TAO only prints impulsive spikes with no orderly retest, or if held retests fail to extend after entry.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A breakout occurs, price revisits the break zone without losing acceptance, and continuation entry is taken on resumed directional movement rather than the original breakout bar.",
+    "why_edge_should_exist": "Delayed retests can filter false breaks by letting weak impulses fail before entry. In a chop/transition mix, that may preserve the few real breakouts while avoiding many fake first bars.",
+    "asset_timeframe_fit": "TAO 4h is useful because it stress-tests whether the retest grammar can survive on a high-volatility structurally different asset.",
+    "indicator_role_map": {
+      "EMA_20": "retest hold reference",
+      "EMA_55": "background trend anchor",
+      "ATR_14": "retest tolerance and risk normalizer",
+      "ADX_14": "continuation participation filter",
+      "RSI_14": "resume trigger confirmation"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If TAO only gaps through levels or mean reverts too hard, orderly retests will not appear often enough.",
+    "first_refinement_path": "If retests hold but second legs are short, reduce runner ambition before tightening the retest logic.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Lower signal count than the reversion idea, but better average trade quality when continuation actually emerges.",
+    "what_would_count_as_success": "TAO plus one cleaner lane show tradable retest holds with enough density and post-cost expansion.",
+    "what_would_count_as_failure": "0 trades, chaotic spikes with no retest structure, or repeated holds that fail to extend.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "managed by broad retest-hold conditions instead of exact candle timing",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Stress-test lane for whether delayed retest continuation survives on a volatile structurally different asset.",
+      "continue_if": "Retest holds appear with enough density and meaningful continuation.",
+      "rotate_away_if": "No orderly retest structure appears or density collapses.",
+      "expected_if_right": "A small number of high-quality retest holds should outperform immediate breakout chasing."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "similar_expressive_lane",
+      "why_included": "Checks whether the same delayed-entry continuation logic works on a cleaner expressive lane.",
+      "continue_if": "SOL shows comparable retest-hold behavior with better structure.",
+      "rotate_away_if": "The pattern appears too TAO-specific.",
+      "expected_if_right": "Cleaner but still meaningful retest continuations."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "clean_lane_control",
+      "why_included": "Determines whether the retest grammar generalizes to a cleaner market.",
+      "continue_if": "ETH still prints delayed retests with orderly follow-through.",
+      "rotate_away_if": "Only the wild lane shows the pattern.",
+      "expected_if_right": "Fewer but cleaner continuation legs after held retests."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.22 * ATR_14",
+      "EMA_20 >= EMA_55 * 0.998",
+      "ADX_14 >= 9",
+      "RSI_14 >= 51"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.22 * ATR_14",
+      "EMA_20 <= EMA_55 * 1.002",
+      "ADX_14 >= 9",
+      "RSI_14 <= 49"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

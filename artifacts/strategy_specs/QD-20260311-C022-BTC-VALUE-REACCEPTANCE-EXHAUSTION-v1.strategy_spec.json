@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C022-BTC-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 22,
+  "family_name": "btc_value_reacceptance_exhaustion_v022",
+  "name": "BTC Value Reacceptance Exhaustion v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "mean reversion from exhaustion only after price reaccepts prior value",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 1h is the cleaner similar-asset lane for a value reacceptance exhaustion setup that waits for structure to re-enter prior balance before fading the move. The edge should come from exhaustion repair, not blind oversold catching.",
+  "invalidation_condition": "Abort if reacceptance-exhaustion setups are too sparse, if reaccepted moves do not travel back into value after costs, or if exhaustion signals keep appearing in genuine continuation trends.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from value, then reaccepts prior balance and mean-reverts far enough to monetize the exhaustion repair.",
+    "why_edge_should_exist": "In chop-heavy intraday conditions, stretched moves often fail once value is reaccepted. BTC is a clean lane to test that without alt noise.",
+    "asset_timeframe_fit": "BTC 1h is suitable because value reacceptance is easier to read on a liquid major and should still provide enough signal density.",
+    "indicator_role_map": {
+      "EMA_20": "value reacceptance reference",
+      "EMA_55": "broader structure anchor",
+      "ATR_14": "exhaustion distance and risk normalizer",
+      "RSI_14": "exhaustion qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "rollover confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the market is more trend-persistent than it looks, exhaustion signals will keep fading valid continuation.",
+    "first_refinement_path": "If reacceptance is correct but repair travel is short, shorten exits before adding more restrictive filters.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Repeated short-hold exhaustion repairs with front-half harvesting doing most of the expectancy.",
+    "what_would_count_as_success": "BTC 1h and at least one cross-lane show credible density and positive post-cost value-repair behavior.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or repeated reacceptance signals that fail to move enough after entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; exhaustion and reacceptance are sequential",
+      "event_sparsity": "managed by broad reacceptance rules rather than exact reversal candle requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Cleanest lane for value reacceptance mean reversion in the current basket.",
+      "continue_if": "Reacceptance-exhaustion entries show enough density and positive repair travel.",
+      "rotate_away_if": "Signals are too sparse or keep fading real trends.",
+      "expected_if_right": "A reasonable number of exhaustion repairs back into balance."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism transfers to the basket primary lane.",
+      "continue_if": "ETH shows similar reacceptance-repair behavior.",
+      "rotate_away_if": "The setup disappears outside BTC.",
+      "expected_if_right": "Slightly noisier but still tradable exhaustion repairs."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the same logic can survive on a higher-beta lane.",
+      "continue_if": "AXS preserves the mechanism without becoming churn.",
+      "rotate_away_if": "Noise overwhelms the repair thesis.",
+      "expected_if_right": "Fewer but larger exhaustion repair moves than majors."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.34 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 44",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.34 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 56",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.78 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.5 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.78 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.82 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.5 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

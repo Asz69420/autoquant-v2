@@ -713,18 +713,24 @@ def _decision_counts_for_cycle(cycle_id):
     if int(decisions_payload.get("cycle_id") or -1) == int(cycle_id):
         strategy_decisions = decisions_payload.get("strategy_decisions") or []
 
-    counts = {"iterated": 0, "passed": 0, "aborted": 0, "promoted": 0, "decision_count": 0}
+    counts = {"iterated": 0, "passed": 0, "aborted": 0, "promoted": 0, "decision_count": 0, "queue_decision_count": 0, "expected_queue_count": 0}
+    if int(reflection_payload.get("cycle_id") or -1) == int(cycle_id):
+        for item in (reflection_payload.get("strategy_outcomes") or []):
+            if not isinstance(item, dict):
+                continue
+            counts["expected_queue_count"] += len(item.get("queue") or [])
+
     if isinstance(strategy_decisions, list) and strategy_decisions:
         for item in strategy_decisions:
             if not isinstance(item, dict):
                 continue
             decision = str(item.get("decision") or "").strip().lower()
             counts["decision_count"] += 1
+            queue_decisions = item.get("queue_decisions") or []
+            if isinstance(queue_decisions, list):
+                counts["queue_decision_count"] += len(queue_decisions)
             if decision == "refine":
                 counts["iterated"] += 1
-            elif decision == "promote":
-                counts["promoted"] += 1
-                counts["passed"] += 1
             elif decision == "pass":
                 counts["passed"] += 1
             elif decision == "abort":
@@ -736,14 +742,11 @@ def _decision_counts_for_cycle(cycle_id):
             if not isinstance(item, dict):
                 continue
             action = str(item.get("recommended_action") or item.get("outcome") or "").strip().lower()
-            if action in {"pending", "red_flag", "fix_only", ""}:
+            if action in {"pending", "red_flag", "fix_only", "", "promote"}:
                 continue
             counts["decision_count"] += 1
             if action == "refine":
                 counts["iterated"] += 1
-            elif action == "promote":
-                counts["promoted"] += 1
-                counts["passed"] += 1
             elif action == "pass":
                 counts["passed"] += 1
             elif action == "abort":
@@ -768,12 +771,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     queue_skipped = int(metrics.get("queue_skipped") or 0)
     executed_backtests = queue_done + queue_skipped
     decided_total = int(decision_counts.get("decision_count") or 0)
+    queue_decided_total = int(decision_counts.get("queue_decision_count") or 0)
+    expected_queue_total = int(decision_counts.get("expected_queue_count") or 0)
     backtests = executed_backtests
     decision_basis = max(generated, backtests, decided_total)
     aborted = int(decision_counts.get("aborted") or family_aborted)
     unresolved = max(0, decision_basis - (passed + iterated + aborted))
-    if unresolved > 0:
-        aborted += unresolved
+    unresolved_queue = max(0, expected_queue_total - queue_decided_total)
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
@@ -787,7 +791,11 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     note_candidates = []
     if passed > 0 and best_qs > 0:
         note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
-    if integrity_zero_trades > 0 and executed_backtests > 0:
+    if unresolved_queue > 0:
+        note_candidates.append(f"This {mode} cycle is missing {unresolved_queue} explicit queue-row decision{'s' if unresolved_queue != 1 else ''} from Quandalf. Every tested backtest row must resolve to pass, refine, or abort before the cycle can be considered complete.")
+    elif unresolved > 0:
+        note_candidates.append(f"This {mode} cycle is missing {unresolved} explicit strategy decision{'s' if unresolved != 1 else ''} from Quandalf. Every strategy must resolve to pass, refine, or abort before the cycle can be considered complete.")
+    elif integrity_zero_trades > 0 and executed_backtests > 0:
         note_candidates.append(f"This {mode} cycle ran {executed_backtests} backtest{'s' if executed_backtests != 1 else ''}. {aborted} strategy{'ies' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to iterate.")
     if executed_backtests == 0 and generated > 0 and integrity_zero_trades == 0:
         note_candidates.append(f"This {mode} cycle generated fresh work but no backtests have executed yet, so the batch is still waiting for evidence before any strategy gets advanced or cut.")
@@ -1819,12 +1827,24 @@ def main():
         send_tg_as("<pre>🚨 Research cycle integrity alert\nCycle produced results, but none were healthy enough for reflection (need trades>=15, PF>0, WR>0). Check backtester/output integrity.</pre>", "hades", "logron")
         send_tg_as("<pre>🚨 Research cycle integrity alert\nNo healthy rows this cycle. Reflection quality is compromised. Check Hades.</pre>", "dm", "oragorn")
 
+    latest_journal_entry = sync_live_journal(cycle_id)
     journal_sent = False
+    if latest_journal_entry.strip():
+        try:
+            journal_proc = subprocess.run(
+                [sys.executable, os.path.join(ROOT, "scripts", "send_quandalf_journal_dm.py")],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            journal_sent = journal_proc.returncode == 0
+        except Exception:
+            journal_sent = False
 
     log_event(
         "notification_sent",
         "oragorn",
-        f"Sent {len(rows_for_dm)} current-cycle result updates to Hades and a cooking card to log; live cycle journal delivery disabled",
+        f"Sent {len(rows_for_dm)} current-cycle result updates to Hades, a cooking card to log, and Quandalf live journal DM sent={journal_sent}",
         pipeline="research_cycle",
         step="notify",
     )
@@ -1881,7 +1901,7 @@ def main():
         step="postprocess",
     )
 
-    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("queue_integrity_skips", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
+    if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("queue_integrity_skips", 0) or 0) > 0 or unresolved > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
         record_pipeline_completion(
             record_prefix="CYCLE-{0}".format(cycle_id),
             actor="logron",

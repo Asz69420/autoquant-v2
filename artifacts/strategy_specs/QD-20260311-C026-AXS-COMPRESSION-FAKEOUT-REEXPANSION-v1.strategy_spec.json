@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C026-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 26,
+  "family_name": "axs_compression_fakeout_reexpansion_v026",
+  "name": "AXS Compression Fakeout Reexpansion v1",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression fakeout loses acceptance, reclaims direction, then re-expands with confirmation",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "AXS 4h is the structurally different lane for testing whether compression fakeouts can reverse and re-expand more profitably than plain first-break entries. In a mixed chop 4h environment, false initial breaks should occur often enough for a reclaim-and-corrected-expansion setup to matter.",
+  "invalidation_condition": "Abort if fakeouts are too sparse, if confirmation arrives too late after reclaim, or if high-beta noise destroys the edge.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Compression resolves the wrong way first, loses acceptance, and then reclaims in the opposite direction with a tradable corrected expansion leg.",
+    "why_edge_should_exist": "In chop, false initial breaks are common. AXS should exaggerate that enough to produce meaningful fakeout-to-reexpansion sequences when filtered through reclaim confirmation.",
+    "asset_timeframe_fit": "AXS 4h is useful because its larger swings create clearer fakeout amplitude than ETH while remaining slow enough for bar-based management.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "directional reclaim reference",
+      "ATR_14": "fakeout size and risk normalizer",
+      "RSI_14": "state-flip qualifier",
+      "ADX_14": "re-expansion participation check"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If AXS is only noise, fakeouts will not convert into orderly re-expansion and the setup becomes churn.",
+    "first_refinement_path": "If the fakeout idea is right but confirmation is late, simplify exits and reduce hold time before altering the reclaim condition.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Patchy but meaningful fakeout reversals where first-target harvesting matters more than long runners.",
+    "what_would_count_as_success": "AXS 4h and one cleaner cross-lane produce a tradable number of fakeout-to-reexpansion events with positive post-cost outcomes.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or fakeouts that never convert into directional re-expansion.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; compression, reclaim, and re-expansion are sequential",
+      "event_sparsity": "managed through moderate compression definitions rather than extreme rarity",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"AXS","timeframe":"4h","role":"primary","why_included":"Best stress-test lane for fakeout-to-reexpansion logic in the current basket.","continue_if":"A tradable number of fakeout reversals convert into real re-expansion.","rotate_away_if":"The lane is too noisy or fakeouts fail to follow through.","expected_if_right":"Clear wrong-side breaks that reverse and deliver one corrected directional leg."},
+    {"asset":"ETH","timeframe":"4h","role":"cleaner_crosscheck","why_included":"Checks whether the same fakeout mechanism survives on a cleaner major lane.","continue_if":"ETH prints the same pattern with lower noise and acceptable density.","rotate_away_if":"The mechanism only exists on AXS volatility.","expected_if_right":"Fewer but cleaner fakeout reversals than AXS."},
+    {"asset":"TAO","timeframe":"4h","role":"similar_asset","why_included":"Tests whether the concept transfers to another expressive high-beta lane.","continue_if":"TAO preserves the fakeout-reexpansion mechanism with acceptable density.","rotate_away_if":"The idea depends entirely on AXS's volatility profile.","expected_if_right":"Larger but less frequent fakeout repairs than AXS."}
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","ATR_14","RSI_14","ADX_14"],
+  "entry_rules": {"long": ["BOLLINGER_WIDTH_20 <= 1.15 * ATR_14","Low <= EMA_20 - 0.22 * ATR_14","Close >= EMA_20","RSI_14 >= 50","ADX_14 >= 8"],"short": ["BOLLINGER_WIDTH_20 <= 1.15 * ATR_14","High >= EMA_20 + 0.22 * ATR_14","Close <= EMA_20","RSI_14 <= 50","ADX_14 >= 8"]},
+  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.58 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 35% size","Trail remaining 20% by 0.62 * ATR_14","Final time stop: 4 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.58 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 35% size","Trail remaining 20% by 0.62 * ATR_14","Final time stop: 4 bars"]}
+}

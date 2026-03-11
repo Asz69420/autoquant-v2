@@ -1,14 +1,41 @@
 {
-  "ts_iso": "2026-03-11T07:06:57.860649+00:00",
-  "cycle_id": 4,
+  "ts_iso": "2026-03-11T08:32:07.516959+00:00",
+  "cycle_id": 18,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260311-C004-ETH-VALUE-RECOVERY-SCALEIN-v1",
-      "hypothesis": "ETH 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. In a fully choppy regime, the edge should come from broad reclaim-of-value behavior rather than sparse continuation events.",
+      "strategy_spec_id": "QD-20260311-C018-ETH-SESSION-DRIVE-CONTINUATION-v1",
+      "hypothesis": "ETH 1h is the best-fit primary lane for testing whether a dominant session can create a short-lived continuation edge after price holds near session-led value. The edge is participation in broad follow-through, not blind breakout chasing.",
       "chosen_lane": {
         "asset": "ETH",
-        "timeframe": "4h"
+        "timeframe": "1h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "ADX_14",
+        "RSI_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "pending: no backtest outcome recorded yet",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "fix_only"
+      },
+      "regime_context": {},
+      "diagnosis": "bad implementation",
+      "lesson_extracted": "Expected behavior: ETH 1h plus at least one confirmation lane should have produced a modest set of dominant-session second-leg continuation trades, showing whether session-led directional control survives in a mixed transition/chop intraday backdrop. Actual behavior: every queued screen run was discarded as orphan_or_legacy_cycle with null result_id before any evaluation occurred. The mismatch is execution-layer rather than market-layer, so there is no basis for refine, abort, or promote."
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C018-BTC-INVENTORY-RESET-RECLAIM-v1",
+      "hypothesis": "BTC 1h is the cleaner similar-asset lane for testing inventory-reset continuation after a flush-and-reclaim rather than static oversold bounce logic. The edge should come from repaired positioning and resumed drift back with the prior direction.",
+      "chosen_lane": {
+        "asset": "BTC",
+        "timeframe": "1h"
       },
       "component_roles": [
         "EMA_20",
@@ -25,18 +52,18 @@
         "profit_factor": null,
         "max_drawdown_pct": null,
         "qscore": null,
-        "decision": "pending"
+        "decision": "fix_only"
       },
       "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pending: no backtest outcome recorded yet"
+      "diagnosis": "bad implementation",
+      "lesson_extracted": "Expected behavior: BTC 1h flush-and-reclaim continuation should either prove real repaired-continuation density across BTC and a cross-lane or fail on genuine screen results. Actual behavior: all queued runs were orphan-discarded before any result existed, so there is no valid-data comparison between expected repaired continuation and realized market outcome. This is a system execution fault rather than a trading diagnosis such as too sparse or wrong regime."
     },
     {
-      "strategy_spec_id": "QD-20260311-C004-BTC-ASYMMETRIC-TREND-PERSISTENCE-v1",
-      "hypothesis": "BTC 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. In a chop-dominant environment, the goal is to capture only brief persistence rather than assume full trend follow-through.",
+      "strategy_spec_id": "QD-20260311-C018-AXS-POST-EXPANSION-RUNNER-v1",
+      "hypothesis": "AXS 1h is the structurally different lane for testing whether entering after expansion confirmation and then aggressively taking partials while keeping a small core can outperform all-in/all-out management. The edge is partly in management structure, not just the trigger.",
       "chosen_lane": {
-        "asset": "BTC",
-        "timeframe": "4h"
+        "asset": "AXS",
+        "timeframe": "1h"
       },
       "component_roles": [
         "EMA_20",
@@ -52,38 +79,11 @@
         "profit_factor": null,
         "max_drawdown_pct": null,
         "qscore": null,
-        "decision": "pending"
+        "decision": "fix_only"
       },
       "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pending: no backtest outcome recorded yet"
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C004-TAO-RETEST-HOLD-DERISK-v1",
-      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear quickly. In a fully choppy regime, the value is not in chasing trend; it is in participating only after a hold and cutting exposure quickly if no extension appears.",
-      "chosen_lane": {
-        "asset": "TAO",
-        "timeframe": "4h"
-      },
-      "component_roles": [
-        "EMA_20",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14",
-        "EMA_55"
-      ],
-      "mutation_surface": "initial",
-      "expected_effect": "pending: no backtest outcome recorded yet",
-      "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
-        "decision": "pending"
-      },
-      "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pending: no backtest outcome recorded yet"
+      "diagnosis": "bad implementation",
+      "lesson_extracted": "Expected behavior: AXS 1h plus one confirmation lane should have shown whether post-expansion partial-profit runner management realizes frequent first targets with occasional residual runner contribution. Actual behavior: every queued screen run was discarded as orphan_or_legacy_cycle and no result_id was produced, so the management thesis never reached valid backtest evaluation. Because the failure happened before testing, the correct classification is fix_only."
     }
   ]
 }

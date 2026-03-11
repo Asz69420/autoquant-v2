@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C011-SOL-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 11,
+  "family_name": "sol_state_change_momentum_hold_v011",
+  "name": "SOL State Change Momentum Hold v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "regime-improvement momentum after held break",
+  "expected_regime": "TRANSITION",
+  "thesis": "SOL 4h is the best-fit primary lane for testing whether a genuine state change can still occur inside a 50/50 chop-transition backdrop, provided the break is confirmed by a hold rather than bought on first impulse. The edge is in second-leg participation after acceptance, not breakout chasing.",
+  "invalidation_condition": "Abort if held-break entries remain too sparse, if state-change setups fail to produce second-leg continuation, or if the regime is too rotational for persistence to survive costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional break establishes new acceptance, the next bar holds above that acceptance zone, and momentum re-accelerates into a second leg.",
+    "why_edge_should_exist": "Even in mixed chop/transition conditions, some breaks become real state changes. Waiting for hold confirmation should participate in the ones with persistence while filtering one-bar fakes.",
+    "asset_timeframe_fit": "SOL 4h offers enough amplitude for state-change follow-through and is the best expressive lane in the current basket.",
+    "indicator_role_map": {
+      "EMA_20": "post-break hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "break size and risk normalizer",
+      "ADX_14": "state-change participation filter",
+      "RSI_14": "re-acceleration confirmation"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If chop dominates more than transition, the hold may form but fail to produce any persistent second leg.",
+    "first_refinement_path": "If entries trade but the runner underperforms, shorten the back-half exit before tightening setup logic.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Selective entries with moderate hit rate; expectancy depends on a minority of stronger state-change follow-through trades.",
+    "what_would_count_as_success": "SOL 4h plus at least one cross-lane show credible density and post-cost continuation after the held break.",
+    "what_would_count_as_failure": "0 trades, low-trade output, or repeated held breaks that stall immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low; break, hold, and re-acceleration are sequential",
+      "event_sparsity": "managed by broad hold logic instead of rare candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best fit for expressive state-change follow-through in the current basket.",
+      "continue_if": "Held breaks produce real second-leg continuation with credible density.",
+      "rotate_away_if": "Signals are too sparse or continuation never appears.",
+      "expected_if_right": "A modest number of held breaks should resolve into meaningful second-leg continuation."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism generalizes to a cleaner major lane.",
+      "continue_if": "ETH shows similar but cleaner state-change continuation.",
+      "rotate_away_if": "The idea only works on SOL volatility.",
+      "expected_if_right": "Smaller but more orderly held-break continuation than SOL."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the mechanism survives faster structure without collapsing into noise.",
+      "continue_if": "1h increases density while preserving trade quality.",
+      "rotate_away_if": "1h becomes pure noise or requires ceremonial filtering.",
+      "expected_if_right": "More signals than 4h, with smaller but still tradable follow-through."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.18 * ATR_14",
+      "EMA_20 >= EMA_55 * 0.997",
+      "ADX_14 >= 9",
+      "RSI_14 >= 52"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.18 * ATR_14",
+      "EMA_20 <= EMA_55 * 1.003",
+      "ADX_14 >= 9",
+      "RSI_14 <= 48"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.60 * ATR_14 on 40% size",
+      "Take profit: 1.00 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.70 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.60 * ATR_14 on 40% size",
+      "Take profit: 1.00 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.70 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  }
+}

@@ -188,6 +188,10 @@ def build_strategy_entry(spec_id, spec_path, spec, result_rows, queue_rows):
         "strategy_family": spec.get("family_name") or (latest_result or {}).get("strategy_family"),
         "edge_mechanism": spec.get("edge_mechanism"),
         "hypothesis": spec.get("hypothesis") or spec.get("thesis") or spec.get("rationale"),
+        "expected_trade_density": spec.get("expected_trade_density"),
+        "expected_outcome_pattern": spec.get("expected_outcome_pattern"),
+        "success_criteria": spec.get("success_criteria") or spec.get("what_counts_as_success"),
+        "failure_criteria": spec.get("failure_criteria") or spec.get("what_counts_as_failure"),
         "indicators": spec.get("indicators") or [],
         "entry_rules": spec.get("entry_rules") or {},
         "exit_rules": spec.get("exit_rules") or {},
@@ -342,8 +346,8 @@ def main():
             "zero_trade": zero_trade_count,
         },
         "guidance": {
-            "focus_level": "strategy",
-            "instruction": "Work strategy-by-strategy. For each spec, decide promote, refine, or abort using the full strategy context plus the concrete backtest outcome. If a strategy produced 0 trades on valid data, treat that as a red flag that must be resolved explicitly as either refine or abort. Do not leave it undecided and do not collapse it into a fake completed outcome.",
+            "focus_level": "strategy_and_queue",
+            "instruction": "Work strategy-by-strategy and queue-row-by-queue-row. For each spec, choose exactly one overall decision: pass, refine, or abort. Inside that strategy decision, include one queue_decision for every queue row in the packet. If a strategy produced 0 trades on valid data, treat that as a red flag that must resolve explicitly as either refine or abort. Do not omit any tested row and do not use promote, fix_only, skip, pending, or undecided.",
         },
     }
 

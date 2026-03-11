@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C011-ETH-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 11,
+  "family_name": "eth_value_reacceptance_exhaustion_v011",
+  "name": "ETH Value Reacceptance Exhaustion v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "exhaustion reversal after structural value reacceptance",
+  "expected_regime": "CHOP",
+  "thesis": "ETH 4h is the cleaner lane for retesting a broadened exhaustion-reacceptance idea in a chop-heavy backdrop. This is not blind countertrend fading; it only engages after failed extension structurally returns to value and shows a real handoff.",
+  "invalidation_condition": "Abort if the broadened reacceptance expression is still too sparse, if reversals fail to travel after value is retaken, or if the family again survives only as a low-trade mirage.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A stretched move loses momentum, value is reaccepted, and price mean reverts enough to monetize failure of extension rather than continuation.",
+    "why_edge_should_exist": "In chop-dominant 4h conditions, failed extensions into reaccepted value should occur more often than clean persistent breaks. ETH is the best clean lane to test whether the family can be made broad enough to trade honestly.",
+    "asset_timeframe_fit": "ETH 4h is more suitable than SOL or TAO for this retest because it gives cleaner value structure while still offering enough travel after reclaim.",
+    "indicator_role_map": {
+      "EMA_20": "value reacceptance reference",
+      "EMA_55": "background anchor",
+      "ATR_14": "stretch and risk normalizer",
+      "RSI_14": "exhaustion qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "handoff away from extension"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "This family has repeatedly risked density collapse; if the broadening is still insufficient, it will zero-trade or produce a low-trade PF mirage again.",
+    "first_refinement_path": "If density exists but the repair move is too small, front-load exits further before adding new setup confirmation.",
+    "expected_trade_density": "Moderate if the broadening worked; otherwise structurally too low.",
+    "expected_outcome_pattern": "Potentially high hit rate but smaller average wins, with expectancy dependent on honest density rather than a handful of outliers.",
+    "what_would_count_as_success": "ETH plus at least one cross-lane show real trade density with no low-trade mirage profile and repeatable post-cost repair moves.",
+    "what_would_count_as_failure": "0 trades, low-trade PF illusion, or immediate collapse back into the prior extension direction.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate if broadened successfully",
+      "contradictory_filters": "moderate but sequentially coherent",
+      "event_sparsity": "explicitly broadened to avoid prior ceremonial grammar",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Cleanest lane for determining whether this previously sparse family can work structurally.",
+      "continue_if": "Density is real and repairs travel enough after costs.",
+      "rotate_away_if": "It zero-trades again or produces another low-trade mirage.",
+      "expected_if_right": "Broad failed extensions should revert toward value with enough frequency to matter."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reacceptance logic survives on a more expressive but still liquid lane.",
+      "continue_if": "SOL preserves the same repair structure with acceptable density.",
+      "rotate_away_if": "Only ETH works and SOL fully breaks the thesis.",
+      "expected_if_right": "Larger reversals but more variance than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the family is structural or too fragile for a wilder lane.",
+      "continue_if": "TAO still shows orderly reacceptance repairs with usable density.",
+      "rotate_away_if": "Noise dominates and no orderly reacceptance appears.",
+      "expected_if_right": "Messier but still recognizable failed extensions into balance repair."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.30 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.78 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.30 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.78 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.50 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.50 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  }
+}

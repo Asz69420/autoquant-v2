@@ -1,20 +1,20 @@
 {
-  "cycle_id": 5,
+  "cycle_id": 26,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C005-BTC-BALANCE-RECLAIM-SWEEP-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C005-ETH-COMPRESSION-HOLD-RELEASE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C005-TAO-FAILED-BREAK-REPAIR-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C026-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C026-ETH-TREND-RESET-CONTINUATION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C026-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "trend pullback continuation after deeper value reclaim into structural support",
-      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
-      "failed breakdown reclaim that must hold before continuation entry"
+      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+      "compression fakeout into re-expansion with directional confirmation"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -25,20 +25,25 @@
       "scale-in on improved confirmation, then scale-out into expansion",
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": ["BTC", "ETH", "TAO"],
-    "timeframes": ["1h", "4h"]
+    "assets": ["AXS", "ETH", "TAO"],
+    "timeframes": ["4h"]
   },
   "iterate_target": null,
   "new_families": [
-    "btc_balance_reclaim_sweep_v005",
-    "eth_compression_hold_release_v005",
-    "tao_failed_break_repair_v005"
+    "tao_range_failure_reacceptance_v026",
+    "eth_trend_reset_continuation_v026",
+    "axs_compression_fakeout_reexpansion_v026"
   ],
   "iterated_families": [],
-  "abandoned_families": [],
-  "next_cycle_focus": "Screen this BTC/ETH/TAO 4h batch and only iterate branches that prove real trade density. If any branch zero-trades or resolves to thin-edge low-trade output, rotate away from that grammar rather than loosening thresholds cosmetically.",
-  "rationale": "Cycle 5 opened on a BTC 4h-led explore brief under a chop/transition regime mix. I aligned the batch to the live hypotheses while deliberately avoiding already-killed families: BTC balance-reclaim sweep as a denser repair-of-value structure, ETH compression hold-release with realistic asymmetric harvesting, and TAO failed-break repair written as a broader reclaim expression instead of strict hold choreography. The set varies mechanism, role assignment, and management while staying fully inside the allowed basket.",
-  "target_asset": "BTC",
+  "abandoned_families": [
+    "btc_value_reacceptance_exhaustion_v022",
+    "doge_range_failure_reacceptance_v021",
+    "btc_inventory_reset_reclaim_v023",
+    "sol_range_failure_reacceptance_v020"
+  ],
+  "next_cycle_focus": "Screen this TAO/ETH/AXS 4h batch and continue only mechanisms that prove real density on the primary lane plus at least one cross-check lane. If repaired pullbacks or fakeout repairs trigger but travel is weak, change management before adding cosmetic entry filters. If any valid rerun later yields 0 trades, resolve it to refine or abort rather than recycling the same grammar.",
+  "rationale": "Cycle 26 opened on a TAO-led 4h explore brief in a mixed chop/trend-up regime. I wrote three materially distinct mechanisms aligned to the live allowed basket: TAO range-failure reacceptance for dense failed-expansion repair, ETH trend-reset continuation as the cleaner repaired-pullback control lane, and AXS compression fakeout reexpansion as the structurally different false-break test. The batch stays inside the supported universe, varies mechanism and role assignment, and explicitly avoids ceremonial sparse logic.",
+  "target_asset": "TAO",
   "target_timeframe": "4h",
   "specific_family_to_iterate": null,
   "fallback_source": false,
@@ -141,6 +146,46 @@
     {
       "ts_iso": "2026-03-11T06:39:48.701480+00:00",
       "family": "eth_value_recovery_scalein_v379",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:09:58.902420+00:00",
+      "family": "sol_range_failure_reacceptance_v020",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:13:35.470159+00:00",
+      "family": "doge_range_failure_reacceptance_v021",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:13:41.145779+00:00",
+      "family": "sol_range_failure_reacceptance_v020",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:17:47.948631+00:00",
+      "family": "doge_range_failure_reacceptance_v021",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:17:53.783107+00:00",
+      "family": "btc_value_reacceptance_exhaustion_v022",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:17:59.504875+00:00",
+      "family": "sol_range_failure_reacceptance_v020",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:18:40.000000+00:00",
+      "family": "eth_state_change_momentum_hold_v022",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:18:40.000000+00:00",
+      "family": "axs_delayed_retest_continuation_v022",
       "reason": "screen-stage density below 30 trades"
     }
   ]

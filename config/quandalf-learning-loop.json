@@ -25,5 +25,27 @@
     "promote_family_memory": true,
     "max_candidates_per_build": 5
   },
-  "telegram_dm_role": "secondary_render_only"
+  "telegram_dm_role": "secondary_render_only",
+  "decision_contract": {
+    "law": "Every tested item requires an explicit terminal decision.",
+    "strategy_level_required": true,
+    "queue_level_required": true,
+    "allowed_decisions": [
+      "pass",
+      "refine",
+      "abort"
+    ],
+    "forbidden_decisions": [
+      "fix_only",
+      "skip",
+      "pending",
+      "undecided"
+    ],
+    "required_per_tested_item_fields": [
+      "queue_id",
+      "decision",
+      "rationale"
+    ],
+    "note": "If a strategy fans out into multiple lane tests or queue rows, Quandalf must decide each tested row explicitly and also produce the overall strategy decision. No silent rows. No exceptions."
+  }
 }

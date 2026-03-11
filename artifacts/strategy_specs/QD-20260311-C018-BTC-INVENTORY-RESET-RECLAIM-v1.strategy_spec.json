@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C018-BTC-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 18,
+  "family_name": "btc_inventory_reset_reclaim_v018",
+  "name": "BTC Inventory Reset Reclaim v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "flush-and-reclaim continuation after inventory reset",
+  "expected_regime": "TRANSITION_TO_CHOP",
+  "thesis": "BTC 1h is the cleaner similar-asset lane for testing inventory-reset continuation after a flush-and-reclaim rather than static oversold bounce logic. The edge should come from repaired positioning and resumed drift back with the prior direction.",
+  "invalidation_condition": "Abort if flush-and-reclaim remains too sparse, if reclaims fail to extend beyond a weak bounce, or if the idea only survives as low-trade cosmetic output.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes away from short-term value, quickly reclaims balance, and then continues for a second leg as trapped inventory unwinds.",
+    "why_edge_should_exist": "Transition-heavy intraday tapes often reset positioning violently before resuming prior directional drift. A reclaim-based continuation should be denser than deep-value bottom-picking.",
+    "asset_timeframe_fit": "BTC 1h is chosen because reclaim structure is cleaner and less noisy than on AXS while still offering enough range for continuation after the reset.",
+    "indicator_role_map": {
+      "EMA_20": "reclaim reference",
+      "EMA_55": "background anchor",
+      "ATR_14": "flush depth and risk normalizer",
+      "RSI_14": "state-recovery qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "handoff back toward continuation"
+    },
+    "expected_regime": "TRANSITION_TO_CHOP",
+    "likely_failure_mode": "If the reclaim only repairs to balance and never resumes, the continuation thesis is wrong and exits will harvest only noise.",
+    "first_refinement_path": "If density is acceptable but extension is weak, convert more size to early harvesting before changing the reclaim logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Reasonable hit rate with medium winners when inventory repair transitions into continuation.",
+    "what_would_count_as_success": "BTC and at least one cross-lane show real trade density with repaired-continuation follow-through after costs.",
+    "what_would_count_as_failure": "0 trades, low-trade PF mirage, or reclaims that consistently die at first value touch.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate but sequentially coherent",
+      "event_sparsity": "managed by broad flush/reclaim logic instead of exact candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Cleanest lane for testing whether flush-and-reclaim can continue rather than just mean revert.",
+      "continue_if": "Credible density and post-cost second-leg follow-through appear.",
+      "rotate_away_if": "Reclaims remain too sparse or die immediately after balance is retaken.",
+      "expected_if_right": "Regular repaired continuations after flushes, with cleaner structure than ETH or AXS."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same repair-of-inventory mechanism generalizes across majors.",
+      "continue_if": "ETH shows the same shape with similar density and coherent structure.",
+      "rotate_away_if": "Only BTC works and ETH breaks the thesis.",
+      "expected_if_right": "Slightly noisier but still recognizable repaired continuations."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the mechanism survives on a wilder structurally different asset.",
+      "continue_if": "AXS preserves the reclaim-continuation profile with acceptable density.",
+      "rotate_away_if": "The pattern collapses into random swings.",
+      "expected_if_right": "More volatile but still recognizable flush-reclaim-second-leg behavior."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.32 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.24 * ATR_14",
+      "RSI_14 >= 46",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.32 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.24 * ATR_14",
+      "RSI_14 <= 54",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.6 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.6 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

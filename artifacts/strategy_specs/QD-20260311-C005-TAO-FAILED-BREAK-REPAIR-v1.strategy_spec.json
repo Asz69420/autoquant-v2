@@ -9,8 +9,14 @@
   "primary_asset": "TAO",
   "primary_timeframe": "4h",
   "validation_targets": [
-    {"asset":"TAO","timeframe":"4h"},
-    {"asset":"BTC","timeframe":"4h"}
+    {
+      "asset": "TAO",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h"
+    }
   ],
   "thesis": "TAO 4h is the structurally different lane for testing failed-breakdown repair, but expressed as a broader reclaim-and-repair structure rather than the already-killed strict hold grammar. The edge should come from downside rejection plus fast reclaim, not from blind bottom-fishing.",
   "edge_mechanism": "failed break repair into balance",
@@ -37,7 +43,14 @@
       "asset_timeframe_mismatch": "none"
     }
   },
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
   "entry_rules": {
     "long": [
       "Low <= EMA_20 - 0.36 * ATR_14",
@@ -72,5 +85,11 @@
       "Final time stop: 5 bars"
     ]
   },
-  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":5,"max_concurrent_positions":1}
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

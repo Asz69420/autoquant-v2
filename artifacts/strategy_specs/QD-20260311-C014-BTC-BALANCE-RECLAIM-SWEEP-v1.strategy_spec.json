@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C014-BTC-BALANCE-RECLAIM-SWEEP-v1",
+  "cycle_id": 14,
+  "family_name": "btc_balance_reclaim_sweep_v014",
+  "name": "BTC Balance Reclaim Sweep v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "sweep-and-reclaim into balance",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 4h is the best-fit primary lane for a balance-reclaim sweep structure that buys or sells failed excursions back into value rather than sparse continuation rituals. In a chop-dominant tape, the edge should come from repeated excursions outside balance that repair quickly.",
+  "invalidation_condition": "Abort if reclaim sweeps remain too sparse, if excursions fail to repair back into balance, or if follow-through after reclaim is too weak after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pushes outside short-term balance, fails to find acceptance, and reclaims value with enough follow-through to monetize a balance repair.",
+    "why_edge_should_exist": "A chop-heavy 4h environment should repeatedly generate excursions beyond balance that revert once inventory clears. This is denser than waiting for rare collapse-and-recovery events.",
+    "asset_timeframe_fit": "BTC 4h is appropriate because balance and reclaim structure are visible and less noisy than on thinner names.",
+    "indicator_role_map": {
+      "EMA_20": "balance reference",
+      "EMA_55": "background anchor",
+      "ATR_14": "excursion distance and risk normalizer",
+      "RSI_14": "repair-state qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff back toward balance"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If price trends cleanly after the excursion instead of repairing back into balance, the reclaim thesis fails.",
+    "first_refinement_path": "If the repair triggers but continuation is shallow, tighten profit-taking before changing the reclaim definition.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Regular short-hold repair trades with front-half harvesting doing most of the expectancy.",
+    "what_would_count_as_success": "BTC 4h plus at least one confirmation lane show credible density and positive post-cost balance-repair behavior.",
+    "what_would_count_as_failure": "0 trades, low-trade mirage, or excursions that trend onward instead of repairing.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; excursion and reclaim are sequential and broad",
+      "event_sparsity": "managed by moderate sweep thresholds rather than rare capitulation rules",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best clean lane for failed-excursion balance repairs in the current basket.",
+      "continue_if": "Credible trade density with positive post-cost repair behavior.",
+      "rotate_away_if": "0 trades, low-trade mirage, or persistent breakout behavior overwhelms balance repair.",
+      "expected_if_right": "Frequent failed excursions that travel back toward value quickly."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism is structural across majors rather than BTC-specific.",
+      "continue_if": "ETH shows similar reclaim behavior with comparable density.",
+      "rotate_away_if": "The mechanism disappears outside BTC.",
+      "expected_if_right": "Slightly lower volatility but cleaner balance repairs than BTC."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism survives faster structure without collapsing into noise.",
+      "continue_if": "Density rises without destroying edge quality.",
+      "rotate_away_if": "Noise dominates and false reclaims explode.",
+      "expected_if_right": "More signals than 4h, but still enough repair travel for smaller targets."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.32 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.25 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.32 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.25 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

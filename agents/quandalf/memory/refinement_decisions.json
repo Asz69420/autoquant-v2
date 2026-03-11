@@ -1,24 +1,78 @@
 {
-  "cycle_id": 380,
-  "ts_iso": "2026-03-11T06:48:42.587548+00:00",
+  "cycle_id": 24,
+  "ts_iso": "2026-03-11T09:37:20.000000+00:00",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C380-SOL-RANGE-FAILURE-REACCEPTANCE-v1",
+      "strategy_spec_id": "QD-20260311-C024-BTC-VALUE-RECOVERY-SCALEIN-v1",
       "decision": "abort",
-      "rationale": "This SOL range-failure reacceptance branch produced 0 trades on valid data. Even with a broader failure-and-reacceptance structure, the mechanism still required too much staged alignment to engage on the lane, so another pass would just cosmetically loosen a dead grammar.",
-      "diagnosis_category": "too sparse"
+      "source_strategy_spec_id": "QD-20260311-C024-BTC-VALUE-RECOVERY-SCALEIN-v1",
+      "rationale": "Expected behavior: BTC 4h plus a cross-lane should have produced a workable set of staged value-recovery trades where confirmation improves across bars and staged entry adds value over one-shot timing. Actual behavior: the tested lanes returned valid-data zero-trade integrity outcomes. The mismatch is that staged recovery confirmation is still too selective for this regime, so the added scale-in structure does not clear minimum participation density.",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_e7e186322935",
+          "decision": "abort",
+          "rationale": "Queue row ended with valid-data zero-trade integrity evidence, so this lane is aborted with the parent strategy as too sparse."
+        },
+        {
+          "queue_id": "rq_4aa26dfe62b9",
+          "decision": "abort",
+          "rationale": "Queue row ended with valid-data zero-trade integrity evidence, so this lane is aborted with the parent strategy as too sparse."
+        },
+        {
+          "queue_id": "rq_da450176c2c4",
+          "decision": "abort",
+          "rationale": "The remaining queued lane should not continue once the tested lanes already established that the strategy is too sparse on valid data."
+        }
+      ]
     },
     {
-      "strategy_spec_id": "QD-20260311-C380-ETH-TREND-RESET-CONTINUATION-v1",
+      "strategy_spec_id": "QD-20260311-C024-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
       "decision": "abort",
-      "rationale": "The ETH deeper-reset continuation branch also hard-skipped with zero trades. The reset zone plus reclaim plus participation filter remained structurally too restrictive, which makes this a density failure rather than a refinable near-miss.",
-      "diagnosis_category": "too sparse"
+      "source_strategy_spec_id": "QD-20260311-C024-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "rationale": "Expected behavior: ETH 4h and a cross-lane should have produced a modest set of continuation trades where explicit trigger, risk, and exit role separation improved economics in a choppy environment. Actual behavior: the tested lanes returned valid-data zero-trade integrity outcomes. The mismatch is that role separation did not solve the deeper problem: the continuation setup itself is too sparse for this market state.",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_2b376e098548",
+          "decision": "abort",
+          "rationale": "Queue row ended with valid-data zero-trade integrity evidence, so this lane is aborted with the parent strategy as too sparse."
+        },
+        {
+          "queue_id": "rq_2cc8fba6fa20",
+          "decision": "abort",
+          "rationale": "Queue row ended with valid-data zero-trade integrity evidence, so this lane is aborted with the parent strategy as too sparse."
+        },
+        {
+          "queue_id": "rq_8939376df105",
+          "decision": "abort",
+          "rationale": "The remaining queued lane should not continue once the tested lanes already showed the strategy cannot clear minimum trade density."
+        }
+      ]
     },
     {
-      "strategy_spec_id": "QD-20260311-C380-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "strategy_spec_id": "QD-20260311-C024-TAO-RETEST-HOLD-DERISK-v1",
       "decision": "abort",
-      "rationale": "This TAO compression fakeout branch also never generated a valid-data trade. Compression, fakeout, rejection, and directional handoff still overconstrained entry density, so it should be abandoned rather than diluted further.",
-      "diagnosis_category": "too sparse"
+      "source_strategy_spec_id": "QD-20260311-C024-TAO-RETEST-HOLD-DERISK-v1",
+      "rationale": "Expected behavior: TAO 4h plus a cleaner cross-lane should have produced a moderate number of retest-hold continuations where rapid time-based de-risking improved containment of weak trades. Actual behavior: the tested lanes returned valid-data zero-trade integrity outcomes. The mismatch is that the retest-hold entry grammar is too selective for this regime, so the de-risk logic never even reaches the stage where it can help.",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_7094f59509b1",
+          "decision": "abort",
+          "rationale": "Queue row ended with valid-data zero-trade integrity evidence, so this lane is aborted with the parent strategy as too sparse."
+        },
+        {
+          "queue_id": "rq_847fd7005c4d",
+          "decision": "abort",
+          "rationale": "Queue row ended with valid-data zero-trade integrity evidence, so this lane is aborted with the parent strategy as too sparse."
+        },
+        {
+          "queue_id": "rq_beb2fa34026d",
+          "decision": "abort",
+          "rationale": "The remaining queued lane should not continue once the tested lanes already showed the strategy cannot clear minimum trade density."
+        }
+      ]
     }
   ],
   "jobs": []

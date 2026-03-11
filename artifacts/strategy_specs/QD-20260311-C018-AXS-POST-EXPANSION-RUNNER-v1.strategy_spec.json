@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C018-AXS-POST-EXPANSION-RUNNER-v1",
+  "cycle_id": 18,
+  "family_name": "axs_post_expansion_runner_v018",
+  "name": "AXS Post Expansion Runner v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "post-expansion entry with front-loaded harvesting and residual trend runner",
+  "expected_regime": "TRANSITION",
+  "thesis": "AXS 1h is the structurally different lane for testing whether entering after expansion confirmation and then aggressively taking partials while keeping a small core can outperform all-in/all-out management. The edge is partly in management structure, not just the trigger.",
+  "invalidation_condition": "Abort if confirmed post-expansion entries remain too sparse, if the first target is rarely reached, or if the runner never earns enough to justify the added complexity.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A genuine expansion move confirms directional participation, the strategy enters after confirmation instead of on the first spike, and the trade is monetized through aggressive early harvesting with a small residual runner.",
+    "why_edge_should_exist": "In transitional tapes, many moves offer one more leg after the first visible expansion, but not enough persistence to justify full-size trend holding. A partial-plus-runner structure may fit that reality better.",
+    "asset_timeframe_fit": "AXS 1h is ideal for testing this management thesis because amplitude is large enough that both the front-half targets and the residual runner can matter.",
+    "indicator_role_map": {
+      "EMA_20": "post-expansion hold reference",
+      "ATR_14": "expansion magnitude and risk normalizer",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "directional trigger confirmation",
+      "EMA_55": "runner exit reference"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If post-expansion moves usually exhaust immediately, even the first target will struggle and the management thesis collapses.",
+    "first_refinement_path": "If first targets hit but runners do not pay, cut the runner share further instead of changing the entry trigger.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Many trades should monetize the first target, with a minority of runners driving upside expectancy.",
+    "what_would_count_as_success": "Primary lane plus one confirmation lane show acceptable density and frequent first-target realization, with occasional profitable runner extension.",
+    "what_would_count_as_failure": "0 trades, too-few trades, or first-target failure rates high enough that the runner thesis is irrelevant.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "managed by broad post-expansion confirmation rather than exact breakout-bar timing",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"AXS","timeframe":"1h","role":"primary","why_included":"Best lane for testing whether the runner-management thesis matters because amplitude is large enough.","continue_if":"Density is credible, first targets realize often, and occasional runner extension adds expectancy.","rotate_away_if":"The setup barely trades or front-half exits do not monetize consistently.","expected_if_right":"Frequent first-target hits with a minority of meaningful runner extensions."},
+    {"asset":"ETH","timeframe":"1h","role":"clean_lane_control","why_included":"Determines whether the management thesis survives on a cleaner, lower-amplitude market.","continue_if":"ETH still realizes the first target often enough to justify the structure.","rotate_away_if":"The idea fully disappears on a cleaner lane.","expected_if_right":"Fewer but cleaner first-target hits and smaller runner contribution."},
+    {"asset":"BTC","timeframe":"1h","role":"similar_asset","why_included":"Tests whether the same management expression works on a liquid similar-asset lane.","continue_if":"BTC shows similar first-target behavior without collapsing into noise.","rotate_away_if":"The management edge appears too AXS-specific.","expected_if_right":"Cleaner but smaller first-target frequency, with fewer large runners than AXS."}
+  ],
+  "indicators": ["EMA_20","ATR_14","ADX_14","RSI_14","EMA_55"],
+  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.15 * ATR_14","ADX_14 >= 9","RSI_14 >= 52","EMA_20 >= EMA_55 * 0.998"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.15 * ATR_14","ADX_14 >= 9","RSI_14 <= 48","EMA_20 <= EMA_55 * 1.002"]},
+  "exit_rules": {"long": ["Stop loss: 0.8 * ATR_14 below entry","Take profit: 0.5 * ATR_14 on 55% size","Take profit: 0.85 * ATR_14 on 25% size","Exit remaining 20% on close through EMA_55 or 5 bars","Final time stop: 5 bars"],"short": ["Stop loss: 0.8 * ATR_14 above entry","Take profit: 0.5 * ATR_14 on 55% size","Take profit: 0.85 * ATR_14 on 25% size","Exit remaining 20% on close through EMA_55 or 5 bars","Final time stop: 5 bars"]}
+}

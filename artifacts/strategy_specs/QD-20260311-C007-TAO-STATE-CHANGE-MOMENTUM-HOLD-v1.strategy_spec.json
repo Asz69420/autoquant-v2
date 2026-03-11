@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C007-TAO-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 7,
+  "family_name": "tao_state_change_momentum_hold_v007",
+  "name": "TAO State Change Momentum Hold v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "regime-improvement momentum after post-break hold",
+  "expected_regime": "TRANSITION_TO_TREND_UP",
+  "thesis": "TAO 4h is the best-fit primary lane for a state-change momentum thesis where trend participation improves after breakout acceptance is confirmed by a hold, not by chasing the first expansion bar.",
+  "invalidation_condition": "Abort if post-break holds are too sparse, if holds fail to re-accelerate, or if the move behaves like noisy mean reversion instead of state change.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional break establishes new acceptance, the next bar holds above that acceptance zone, and momentum re-accelerates for a second leg.",
+    "why_edge_should_exist": "Transitioning tapes often produce a better edge on the second acceptance leg than on the initial breakout impulse.",
+    "asset_timeframe_fit": "TAO 4h is volatile enough to express state changes clearly, while 4h avoids overly noisy intrabar churn.",
+    "indicator_role_map": {
+      "EMA_20": "post-break hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "break and risk normalizer",
+      "ADX_14": "state-change participation filter",
+      "RSI_14": "re-acceleration confirmation"
+    },
+    "expected_regime": "TRANSITION_TO_TREND_UP",
+    "likely_failure_mode": "If the regime remains mostly chop, held breaks will not produce enough second-leg continuation.",
+    "first_refinement_path": "If entries trade but the runner underperforms, shorten the back-half exit before altering the hold logic.",
+    "expected_trade_density": "Low-to-moderate, but denser than immediate breakout chasing.",
+    "expected_outcome_pattern": "Moderate win rate with a few strong second-leg trend extensions carrying expectancy.",
+    "what_would_count_as_success": "Primary lane plus at least one cross-lane show credible density and post-cost continuation after the hold.",
+    "what_would_count_as_failure": "0 trades, thin low-trade outputs, or repeated post-break holds that stall immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "low; break, hold, and re-acceleration are sequential",
+      "event_sparsity": "reduced by broad hold logic instead of rare candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for detecting larger state changes with enough amplitude.",
+      "continue_if": "Held breaks produce real second-leg follow-through with credible density.",
+      "rotate_away_if": "Signals are too sparse or stall after acceptance.",
+      "expected_if_right": "A small set of clean post-break holds should lead to outsized continuation legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Tests whether the mechanism generalizes to a cleaner major-asset lane.",
+      "continue_if": "ETH shows similar holds with slightly cleaner but smaller follow-through.",
+      "rotate_away_if": "The idea only works on TAO volatility and vanishes on ETH.",
+      "expected_if_right": "Fewer amplitude bursts than TAO, but more orderly second-leg continuation."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether state-change momentum survives on a thinner high-beta lane.",
+      "continue_if": "AXS preserves the setup shape without collapsing into noise.",
+      "rotate_away_if": "Only noisy one-bar spikes appear.",
+      "expected_if_right": "Messier but still recognizable post-break holds with occasional strong follow-through."
+    }
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.18 * ATR_14",
+      "EMA_20 >= EMA_55 * 0.997",
+      "ADX_14 >= 10",
+      "RSI_14 >= 52"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.18 * ATR_14",
+      "EMA_20 <= EMA_55 * 1.003",
+      "ADX_14 >= 10",
+      "RSI_14 <= 48"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.7 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 1.0 * ATR_14 on 30% size",
+      "Trail remaining 30% by 0.7 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  }
+}
