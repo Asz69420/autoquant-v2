@@ -38,11 +38,73 @@
     }
   },
   "test_lanes": [
-    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Best clean lane for release persistence after compression.","continue_if":"Release-hold setups trade with credible density and positive post-cost continuation.","rotate_away_if":"The setup is too sparse or release holds do not extend.","expected_if_right":"A modest number of clean squeeze releases with one more leg after the hold."},
-    {"asset":"BTC","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism generalizes across majors with comparable structure.","continue_if":"BTC shows similar release-hold behavior with comparable trade density.","rotate_away_if":"Only ETH works and BTC does not participate.","expected_if_right":"Similar but slightly cleaner release-persistence behavior than ETH."},
-    {"asset":"TAO","timeframe":"4h","role":"structural_stress_test","why_included":"Tests whether the same release-hold logic survives on a higher-volatility lane.","continue_if":"TAO preserves the mechanism without collapsing into chaos.","rotate_away_if":"TAO becomes pure noise and invalidates the structure.","expected_if_right":"Fewer but larger release-persistence events than ETH."}
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best clean lane for release persistence after compression.",
+      "continue_if": "Release-hold setups trade with credible density and positive post-cost continuation.",
+      "rotate_away_if": "The setup is too sparse or release holds do not extend.",
+      "expected_if_right": "A modest number of clean squeeze releases with one more leg after the hold."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism generalizes across majors with comparable structure.",
+      "continue_if": "BTC shows similar release-hold behavior with comparable trade density.",
+      "rotate_away_if": "Only ETH works and BTC does not participate.",
+      "expected_if_right": "Similar but slightly cleaner release-persistence behavior than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the same release-hold logic survives on a higher-volatility lane.",
+      "continue_if": "TAO preserves the mechanism without collapsing into chaos.",
+      "rotate_away_if": "TAO becomes pure noise and invalidates the structure.",
+      "expected_if_right": "Fewer but larger release-persistence events than ETH."
+    }
   ],
-  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","ATR_14","ADX_14","EMA_55"],
-  "entry_rules": {"long": ["BOLLINGER_WIDTH_20 <= 1.1 * ATR_14","Close >= EMA_20","Low >= EMA_20 - 0.12 * ATR_14","ADX_14 >= 8","EMA_20 >= EMA_55 * 0.998"],"short": ["BOLLINGER_WIDTH_20 <= 1.1 * ATR_14","Close <= EMA_20","High <= EMA_20 + 0.12 * ATR_14","ADX_14 >= 8","EMA_20 <= EMA_55 * 1.002"]},
-  "exit_rules": {"long": ["Stop loss: 0.8 * ATR_14 below entry","Take profit: 0.5 * ATR_14 on 50% size","Take profit: 0.85 * ATR_14 on 30% size","Exit remaining 20% on close back through EMA_55 or 4 bars","Final time stop: 4 bars"],"short": ["Stop loss: 0.8 * ATR_14 above entry","Take profit: 0.5 * ATR_14 on 50% size","Take profit: 0.85 * ATR_14 on 30% size","Exit remaining 20% on close back through EMA_55 or 4 bars","Final time stop: 4 bars"]}
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "EMA_20",
+    "ATR_14",
+    "ADX_14",
+    "EMA_55"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.12 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 >= EMA_55 * 0.998"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.12 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 <= EMA_55 * 1.002"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close back through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close back through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

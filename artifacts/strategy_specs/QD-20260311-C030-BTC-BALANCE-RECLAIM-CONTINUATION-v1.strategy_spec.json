@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C030-BTC-BALANCE-RECLAIM-CONTINUATION-v1",
+  "cycle_id": 30,
+  "family_name": "btc_balance_reclaim_continuation_v030",
+  "name": "BTC Balance Reclaim Continuation v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "trend pullback continuation after deeper value reclaim into structural support",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 4h is the best-fit primary lane for testing whether deeper pullbacks inside a choppy structure can still deliver a modest continuation leg after price reclaims fast value. The edge is not trend worship; it is a short continuation burst after balance repair.",
+  "invalidation_condition": "Abort if repaired pullbacks rarely reclaim balance, if continuation travel is too shallow after costs, or if the setup remains too sparse.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back materially into support inside a broad range, reclaims fast value, and then continues far enough for a modest second leg before reversion resumes.",
+    "why_edge_should_exist": "Even in chop, repaired pullbacks can produce short continuation bursts after inventory resets. BTC should express that more cleanly than thinner assets.",
+    "asset_timeframe_fit": "BTC 4h is appropriate because pullback-and-reclaim structure is visible and less noisy than 1h while still dense enough to test.",
+    "indicator_role_map": {
+      "EMA_20": "fast value reclaim reference",
+      "EMA_55": "structural support anchor",
+      "ATR_14": "pullback depth and risk normalizer",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "state recovery confirmation"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If the market remains pure range rotation, repaired pullbacks will reclaim value but fail to extend enough after entry.",
+    "first_refinement_path": "If entries are valid but second-leg travel is weak, shorten exit ambition and de-risk faster before changing pullback grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A workable number of repaired pullbacks with front-half exits doing most of the expectancy and limited runner contribution.",
+    "what_would_count_as_success": "BTC 4h plus one confirmation lane show credible density and positive post-cost continuation after balance reclaim.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or reclaimed pullbacks that repeatedly stall immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; pullback depth, reclaim, and recovery confirmation are complementary",
+      "event_sparsity": "managed by broad reclaim logic instead of exact candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best clean lane for repaired pullback continuation in the active basket.",
+      "continue_if": "Credible density with positive post-cost continuation after reclaim.",
+      "rotate_away_if": "Reclaims happen but second-leg travel is consistently too shallow, or density is poor.",
+      "expected_if_right": "Repeated pullback repairs that travel enough for modest continuation harvests."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism is structural across majors rather than BTC-specific.",
+      "continue_if": "ETH shows comparable repaired-pullback continuation density.",
+      "rotate_away_if": "The mechanism disappears outside BTC.",
+      "expected_if_right": "Similar but slightly noisier repaired continuation than BTC."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same repaired-pullback idea survives on a faster adjacent lane.",
+      "continue_if": "1h preserves the mechanism without collapsing into noise.",
+      "rotate_away_if": "1h becomes noisy or overtrades without edge.",
+      "expected_if_right": "More signals than 4h with smaller but still tradable continuation legs."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14",
+    "RSI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.30 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.20 * ATR_14",
+      "ADX_14 >= 8",
+      "RSI_14 >= 48"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.30 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.20 * ATR_14",
+      "ADX_14 >= 8",
+      "RSI_14 <= 52"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

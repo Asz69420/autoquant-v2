@@ -66,7 +66,14 @@
       "expected_if_right": "More volatile but still recognizable flush-reclaim-second-leg behavior."
     }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
   "entry_rules": {
     "long": [
       "Low <= EMA_20 - 0.32 * ATR_14",
@@ -98,5 +105,7 @@
       "Trail remaining 20% by 0.6 * ATR_14",
       "Final time stop: 4 bars"
     ]
-  }
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

@@ -38,11 +38,76 @@
     }
   },
   "validation_basket": [
-    {"asset":"TAO","timeframe":"4h","role":"primary","why_included":"Best expressive lane for failed-break repair in the active basket.","continue_if":"Repair trades show enough density and post-cost travel to matter.","rotate_away_if":"TAO only adds noise or the pattern is still too sparse.","expected_if_right":"Sharp failed breaks, quick reclaim, then a modest repair leg back toward balance."},
-    {"asset":"ETH","timeframe":"4h","role":"cleaner_crosscheck","why_included":"Checks whether the mechanism survives on a cleaner major rather than only a volatile lane.","continue_if":"ETH shows the same repair shape with acceptable density.","rotate_away_if":"The idea only appears on TAO and disappears elsewhere.","expected_if_right":"Fewer but cleaner failed-break repairs than TAO."},
-    {"asset":"SOL","timeframe":"4h","role":"similar_asset","why_included":"Tests whether the repair grammar transfers to another expressive but cleaner alt lane.","continue_if":"SOL preserves the failed-break repair shape with acceptable density.","rotate_away_if":"The mechanism depends entirely on TAO volatility.","expected_if_right":"More orderly repairs than TAO with slightly smaller follow-through."}
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best expressive lane for failed-break repair in the active basket.",
+      "continue_if": "Repair trades show enough density and post-cost travel to matter.",
+      "rotate_away_if": "TAO only adds noise or the pattern is still too sparse.",
+      "expected_if_right": "Sharp failed breaks, quick reclaim, then a modest repair leg back toward balance."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the mechanism survives on a cleaner major rather than only a volatile lane.",
+      "continue_if": "ETH shows the same repair shape with acceptable density.",
+      "rotate_away_if": "The idea only appears on TAO and disappears elsewhere.",
+      "expected_if_right": "Fewer but cleaner failed-break repairs than TAO."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Tests whether the repair grammar transfers to another expressive but cleaner alt lane.",
+      "continue_if": "SOL preserves the failed-break repair shape with acceptable density.",
+      "rotate_away_if": "The mechanism depends entirely on TAO volatility.",
+      "expected_if_right": "More orderly repairs than TAO with slightly smaller follow-through."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
-  "entry_rules": {"long": ["Low <= EMA_20 - 0.36 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.30 * ATR_14","RSI_14 >= 46","MINUS_DI_14 >= 0.8 * PLUS_DI_14"],"short": ["High >= EMA_20 + 0.36 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.30 * ATR_14","RSI_14 <= 54","PLUS_DI_14 >= 0.8 * MINUS_DI_14"]},
-  "exit_rules": {"long": ["Stop loss: 0.85 * ATR_14 below entry","Take profit: 0.6 * ATR_14 on 40% size","Take profit: 0.95 * ATR_14 on 35% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 15%","Trail remaining 10% by 0.65 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.85 * ATR_14 above entry","Take profit: 0.6 * ATR_14 on 40% size","Take profit: 0.95 * ATR_14 on 35% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 15%","Trail remaining 10% by 0.65 * ATR_14","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.36 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.30 * ATR_14",
+      "RSI_14 >= 46",
+      "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.36 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.30 * ATR_14",
+      "RSI_14 <= 54",
+      "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 15%",
+      "Trail remaining 10% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 40% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 15%",
+      "Trail remaining 10% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C028-AXS-POST-EXPANSION-RUNNER-v1",
+  "cycle_id": 28,
+  "family_name": "axs_post_expansion_runner_v028",
+  "name": "AXS Post Expansion Runner v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "post-expansion partial-profit runner structure that keeps a core position for trend persistence",
+  "expected_regime": "CHOP_WITH_VOLATILITY_BURSTS",
+  "thesis": "AXS 1h is the structurally different lane for testing whether a post-expansion entry with partial-profit runner management can outperform flat one-shot exits by harvesting the first push while keeping a small core for persistence. The edge is management structure after valid expansion, not prediction of long trends.",
+  "invalidation_condition": "Abort if post-expansion participation is too sparse, if the first target rarely gets hit, or if the runner never contributes enough after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A valid expansion has already occurred, price remains structurally aligned with fast value, and a follow-through leg develops with enough amplitude to justify scaling out and leaving a small runner.",
+    "why_edge_should_exist": "In volatile chop, full-trend capture is unreliable, but expansion afterglow often exists for one more leg. Partial-profit plus runner management should monetize that asymmetry better than all-in/all-out logic.",
+    "asset_timeframe_fit": "AXS 1h is suitable because follow-through amplitude is large enough for staged exits to matter and fast enough to test whether the runner contributes before the move dies.",
+    "indicator_role_map": {
+      "EMA_20": "post-expansion hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "expansion size and risk normalizer",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "state persistence confirmation"
+    },
+    "expected_regime": "CHOP_WITH_VOLATILITY_BURSTS",
+    "likely_failure_mode": "If expansions mean-revert instantly, partial-profit runner structure will not save the trade because even the first leg will be too weak.",
+    "first_refinement_path": "If the first target hits but the runner adds no value, reduce or remove the runner before changing the entry logic.",
+    "expected_trade_density": "Low-to-moderate.",
+    "expected_outcome_pattern": "Selective entries where the first target captures most expectancy and the runner contributes occasionally but meaningfully.",
+    "what_would_count_as_success": "AXS 1h and one cross-lane show tradable density, decent first-target hit rate, and at least occasional runner contribution after costs.",
+    "what_would_count_as_failure": "0 trades, too few setups, or expansions that never follow through enough for staged exits.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "none obvious; post-expansion participation and staged exits are compatible",
+      "event_sparsity": "managed by broad post-expansion hold logic rather than extreme breakout rarity",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"AXS","timeframe":"1h","role":"primary","why_included":"Best lane for testing whether staged exits add value after valid expansion.","continue_if":"First target hit rate is acceptable and the runner occasionally contributes after costs.","rotate_away_if":"Setups are too sparse or runner contribution is consistently nonexistent.","expected_if_right":"A few meaningful post-expansion entries with front-half harvesting and occasional runner upside."},
+    {"asset":"ETH","timeframe":"1h","role":"cleaner_crosscheck","why_included":"Checks whether the same management logic has value on a cleaner major lane.","continue_if":"ETH shows the same first-target asymmetry, even with smaller amplitude.","rotate_away_if":"The setup only works on AXS volatility.","expected_if_right":"Fewer but cleaner post-expansion runner opportunities."},
+    {"asset":"BTC","timeframe":"1h","role":"similar_asset","why_included":"Tests whether the management edge transfers to another major lane.","continue_if":"BTC preserves the staged-exit edge without requiring AXS-specific volatility.","rotate_away_if":"The concept collapses outside AXS.","expected_if_right":"More orderly but smaller runner contribution than AXS."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.18 * ATR_14","EMA_20 >= EMA_55 * 0.998","ADX_14 >= 11","RSI_14 >= 53"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.18 * ATR_14","EMA_20 <= EMA_55 * 1.002","ADX_14 >= 11","RSI_14 <= 47"]},"exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.6 * ATR_14 on 50% size","Take profit: 1.0 * ATR_14 on 30% size","Trail remaining 20% by 0.7 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.6 * ATR_14 on 50% size","Take profit: 1.0 * ATR_14 on 30% size","Trail remaining 20% by 0.7 * ATR_14","Final time stop: 5 bars"]}}

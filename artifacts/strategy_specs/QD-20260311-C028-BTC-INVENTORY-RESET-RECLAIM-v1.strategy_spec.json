@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C028-BTC-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 28,
+  "family_name": "btc_inventory_reset_reclaim_v028",
+  "name": "BTC Inventory Reset Reclaim v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 1h is the cleaner similar-asset lane for testing whether an inventory flush that reclaims value can lead to continuation rather than just a short oversold snapback. The edge should come from reset-and-reclaim structure, not generic mean reversion.",
+  "invalidation_condition": "Abort if flush-and-reclaim setups are too sparse, if reclaims fail to continue after costs, or if the reset logic simply fades into chop without directional payoff.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A flush resets inventory away from value, price reclaims fast value, and continuation follows because weak inventory has already been cleared.",
+    "why_edge_should_exist": "In choppy markets, flushes can still clear one-sided positioning. When value is reclaimed afterward, the next move can continue briefly even without a full trend backdrop.",
+    "asset_timeframe_fit": "BTC 1h is the clean control lane for inventory-reset logic because reclaim structure is easier to read than on alts.",
+    "indicator_role_map": {
+      "EMA_20": "value reclaim reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "flush depth and risk normalizer",
+      "RSI_14": "reset exhaustion qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff after reclaim"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If reclaims do not actually reset directional control, the strategy will buy or sell exhausted rebounds that stall immediately.",
+    "first_refinement_path": "If reclaims are valid but continuation is short, adjust exit ambition and shorten hold time before making the reclaim condition stricter.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A limited but repeatable set of reset-reclaim entries with front-loaded exits carrying most expectancy.",
+    "what_would_count_as_success": "BTC 1h and one cross-lane show credible density and positive post-cost continuation after flush-and-reclaim.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or repeated reclaims that fail immediately after entry.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; flush, reclaim, and directional handoff are sequential",
+      "event_sparsity": "managed by broad reset definitions instead of rare capitulation-only triggers",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Cleanest control lane for inventory-reset reclaim in the current basket.",
+      "continue_if": "Reset-reclaim setups show enough density and positive post-cost continuation.",
+      "rotate_away_if": "Setups are too sparse or reclaims keep stalling.",
+      "expected_if_right": "Flushes that reclaim value and carry into a modest second leg."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism transfers to the basket primary asset.",
+      "continue_if": "ETH shows similar reclaim-continuation behavior.",
+      "rotate_away_if": "The mechanism disappears outside BTC.",
+      "expected_if_right": "Slightly noisier but still tradable reset-reclaim continuations."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same reset grammar survives a more violent lane.",
+      "continue_if": "AXS preserves the reclaim structure without becoming chaos.",
+      "rotate_away_if": "AXS turns the setup into unusable noise.",
+      "expected_if_right": "Fewer entries but larger continuation legs than BTC."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.32 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.32 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.9 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

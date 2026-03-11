@@ -38,11 +38,74 @@
     }
   },
   "validation_basket": [
-    {"asset":"TAO","timeframe":"4h","role":"primary","why_included":"Best expressive lane for failed-expansion repair in the active basket.","continue_if":"Credible density with positive post-cost travel back into balance.","rotate_away_if":"Excursions keep trending through or density is too low.","expected_if_right":"Frequent failed pushes that revert toward balance within a few bars."},
-    {"asset":"ETH","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism generalizes to a cleaner major lane.","continue_if":"ETH shows comparable failed-expansion repair behavior.","rotate_away_if":"The mechanism disappears outside TAO.","expected_if_right":"Slightly cleaner but smaller repair moves than TAO."},
-    {"asset":"AXS","timeframe":"4h","role":"structurally_different_asset","why_included":"Tests whether the same balance-repair idea survives on another high-beta lane.","continue_if":"AXS preserves the mechanism without collapsing into chaos.","rotate_away_if":"AXS turns the repair grammar into unusable noise.","expected_if_right":"Patchier but still meaningful failed-expansion repairs."}
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best expressive lane for failed-expansion repair in the active basket.",
+      "continue_if": "Credible density with positive post-cost travel back into balance.",
+      "rotate_away_if": "Excursions keep trending through or density is too low.",
+      "expected_if_right": "Frequent failed pushes that revert toward balance within a few bars."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism generalizes to a cleaner major lane.",
+      "continue_if": "ETH shows comparable failed-expansion repair behavior.",
+      "rotate_away_if": "The mechanism disappears outside TAO.",
+      "expected_if_right": "Slightly cleaner but smaller repair moves than TAO."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same balance-repair idea survives on another high-beta lane.",
+      "continue_if": "AXS preserves the mechanism without collapsing into chaos.",
+      "rotate_away_if": "AXS turns the repair grammar into unusable noise.",
+      "expected_if_right": "Patchier but still meaningful failed-expansion repairs."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
-  "entry_rules": {"long": ["Low <= EMA_20 - 0.34 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.24 * ATR_14","RSI_14 >= 45","MINUS_DI_14 >= 0.85 * PLUS_DI_14"],"short": ["High >= EMA_20 + 0.34 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.24 * ATR_14","RSI_14 <= 55","PLUS_DI_14 >= 0.85 * MINUS_DI_14"]},
-  "exit_rules": {"long": ["Stop loss: 0.8 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 50% size","Take profit: 0.9 * ATR_14 on 30% size","Trail remaining 20% by 0.55 * ATR_14","Final time stop: 4 bars"],"short": ["Stop loss: 0.8 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 50% size","Take profit: 0.9 * ATR_14 on 30% size","Trail remaining 20% by 0.55 * ATR_14","Final time stop: 4 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.34 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.24 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.34 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.24 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 50% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 50% size",
+      "Take profit: 0.9 * ATR_14 on 30% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C028-DOGE-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 28,
+  "family_name": "doge_state_change_momentum_hold_v028",
+  "name": "DOGE State Change Momentum Hold v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "state-change momentum after regime improvement and post-break hold",
+  "expected_regime": "TRANSITION_TO_TREND_UP",
+  "thesis": "DOGE 4h is the best-fit primary lane for testing whether a fresh state-change move can continue after a break and hold above fast value, even in a market that is mostly chop with a small transitional component. The edge is not raw breakout chasing; it is participation only after the market proves that the new directional state is being accepted.",
+  "invalidation_condition": "Abort if post-break holds fail to extend, if the setup is too sparse, or if state-change signals collapse into one-bar fakeouts.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price improves from chop into a fresh directional phase, holds above fast value after the break, and then delivers a second-leg continuation.",
+    "why_edge_should_exist": "In transition regimes, many breaks fail immediately, but a small subset establishes a new directional state. Waiting for the hold should filter out some false starts while still capturing the first continuation leg.",
+    "asset_timeframe_fit": "DOGE 4h is appropriate because regime shifts are expressive enough to matter while remaining slow enough to manage with bar-based rules.",
+    "indicator_role_map": {
+      "EMA_20": "post-break hold reference",
+      "EMA_55": "background structure anchor",
+      "ADX_14": "regime-improvement qualifier",
+      "ATR_14": "risk and extension normalizer",
+      "RSI_14": "state confirmation"
+    },
+    "expected_regime": "TRANSITION_TO_TREND_UP",
+    "likely_failure_mode": "If the market remains mostly rotational, the hold will occur but momentum will fail to produce a real second leg.",
+    "first_refinement_path": "If entries are valid but extension is weak, adjust exit ambition and time-based de-risking before touching the hold logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A reasonable number of fresh-momentum entries with first-target capture doing most expectancy and occasional runner contribution.",
+    "what_would_count_as_success": "DOGE 4h and one cross-lane show credible density and positive post-cost continuation after the hold.",
+    "what_would_count_as_failure": "0 trades, too-sparse output, or repeated hold entries that fail to accelerate.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; break, hold, and state confirmation are sequential",
+      "event_sparsity": "managed by broad hold logic rather than rare breakout conditions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"DOGE","timeframe":"4h","role":"primary","why_included":"Best expressive lane for regime-improvement momentum in the active basket.","continue_if":"Hold entries show credible density and positive post-cost second-leg travel.","rotate_away_if":"Hold entries are too sparse or repeatedly fail to accelerate.","expected_if_right":"Fresh momentum breaks that hold and deliver a second 4h leg."},
+    {"asset":"ETH","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism is structural across a cleaner major lane.","continue_if":"ETH shows comparable state-change momentum behavior.","rotate_away_if":"The mechanism disappears outside DOGE.","expected_if_right":"Cleaner but sometimes smaller second-leg continuation than DOGE."},
+    {"asset":"TAO","timeframe":"4h","role":"structurally_different_asset","why_included":"Tests whether the same state-change logic survives on a more violent expressive lane.","continue_if":"TAO preserves the mechanism without collapsing into noise.","rotate_away_if":"TAO becomes chaotic and invalidates the hold filter.","expected_if_right":"Patchier but larger second-leg continuation than DOGE."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ADX_14","ATR_14","RSI_14"],
+  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.15 * ATR_14","EMA_20 >= EMA_55 * 0.998","ADX_14 >= 10","RSI_14 >= 52"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.15 * ATR_14","EMA_20 <= EMA_55 * 1.002","ADX_14 >= 10","RSI_14 <= 48"]},
+  "exit_rules": {"long": ["Stop loss: 0.8 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.14 * ATR_14 by selling 15%","Trail remaining 10% by 0.65 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.8 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.14 * ATR_14 by covering 15%","Trail remaining 10% by 0.65 * ATR_14","Final time stop: 5 bars"]}
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C028-TAO-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 28,
+  "family_name": "tao_delayed_retest_continuation_v028",
+  "name": "TAO Delayed Retest Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "breakout continuation with delayed entry after retest rather than immediate trigger",
+  "expected_regime": "TRANSITION_TO_TREND_UP",
+  "thesis": "TAO 4h is the structurally different lane for testing whether breakout continuation works better through delayed retest entry instead of immediate breakout chase. The edge should come from letting structure prove itself after the break, then entering only when the retest holds.",
+  "invalidation_condition": "Abort if retest holds are too sparse, if continuation never accelerates after retest, or if the high-beta lane produces only whipsaw.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A prior expansion pauses, retests the breakout zone, holds above fast value, then resumes in the original direction.",
+    "why_edge_should_exist": "In transition phases, many first breaks are noisy, but some retests hold and restart. Delayed entry should avoid the worst chase prices and keep only the better structural continuations.",
+    "asset_timeframe_fit": "TAO 4h is suitable because breakout/retest behavior is expressive there, and 4h is slow enough that delayed confirmation can still survive costs.",
+    "indicator_role_map": {
+      "EMA_20": "retest hold reference",
+      "EMA_55": "background structure anchor",
+      "ATR_14": "breakout size and risk normalizer",
+      "ADX_14": "expansion quality qualifier",
+      "RSI_14": "state confirmation after retest"
+    },
+    "expected_regime": "TRANSITION_TO_TREND_UP",
+    "likely_failure_mode": "If breakouts in this lane are mostly one-bar events with no second leg, the retest hold will still fail after entry.",
+    "first_refinement_path": "If entries are valid but acceleration is late, keep the retest grammar and adjust de-risk timing before touching entry thresholds.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Enough first-target hits with occasional continuation when expansion resumes; not many huge runners.",
+    "what_would_count_as_success": "TAO 4h and at least one cleaner lane show retest-hold continuation with acceptable density and manageable whipsaw.",
+    "what_would_count_as_failure": "0 trades, too-sparse setups, or repeated retest holds that fail to accelerate.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; breakout, retest, and hold are sequential",
+      "event_sparsity": "managed by broad retest-hold definitions rather than exact breakout candle requirements",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {"asset":"TAO","timeframe":"4h","role":"primary","why_included":"Best stress-test lane for delayed retest continuation in the active basket.","continue_if":"Retest-hold setups produce enough density with acceptable whipsaw.","rotate_away_if":"Retest holds are too sparse or fail to accelerate repeatedly.","expected_if_right":"Patchy but tradable retest continuations with clean second-leg behavior."},
+    {"asset":"ETH","timeframe":"4h","role":"cleaner_crosscheck","why_included":"Checks whether the same retest grammar survives on a cleaner, more liquid lane.","continue_if":"ETH shows similar retest continuation, even with smaller range.","rotate_away_if":"The setup only exists on TAO and disappears on ETH.","expected_if_right":"Fewer false starts and cleaner retest holds than TAO."},
+    {"asset":"DOGE","timeframe":"4h","role":"similar_asset","why_included":"Tests whether delayed continuation works on another expressive but slightly cleaner alt lane.","continue_if":"DOGE preserves the retest-continuation mechanism.","rotate_away_if":"The mechanism collapses outside TAO.","expected_if_right":"More orderly retest continuations than TAO."}
+  ],
+  "indicators": ["EMA_20","EMA_55","ATR_14","ADX_14","RSI_14"],
+  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.18 * ATR_14","EMA_20 >= EMA_55 * 0.998","ADX_14 >= 11","RSI_14 >= 52"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.18 * ATR_14","EMA_20 <= EMA_55 * 1.002","ADX_14 >= 11","RSI_14 <= 48"]},
+  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 15%","Trail remaining 10% by 0.65 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 15%","Trail remaining 10% by 0.65 * ATR_14","Final time stop: 5 bars"]}
+}

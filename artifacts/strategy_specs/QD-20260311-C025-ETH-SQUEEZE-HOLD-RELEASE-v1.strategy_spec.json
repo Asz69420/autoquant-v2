@@ -38,11 +38,73 @@
     }
   },
   "test_lanes": [
-    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Cleanest control lane for compression release persistence.","continue_if":"Release-hold setups show enough density and positive follow-through after costs.","rotate_away_if":"Setups are too sparse or holds fail to extend.","expected_if_right":"A modest number of clean persistence entries after release."},
-    {"asset":"SOL","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the mechanism transfers to the primary basket asset.","continue_if":"SOL shows comparable release-persistence behavior.","rotate_away_if":"The pattern vanishes outside ETH.","expected_if_right":"Slightly noisier but still tradable post-break persistence."},
-    {"asset":"TAO","timeframe":"4h","role":"structural_stress_test","why_included":"Tests whether the same persistence filter can survive a wilder lane.","continue_if":"TAO preserves the mechanism without degenerating into chaos.","rotate_away_if":"TAO becomes pure false-break noise.","expected_if_right":"Fewer but larger persistence events than ETH."}
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Cleanest control lane for compression release persistence.",
+      "continue_if": "Release-hold setups show enough density and positive follow-through after costs.",
+      "rotate_away_if": "Setups are too sparse or holds fail to extend.",
+      "expected_if_right": "A modest number of clean persistence entries after release."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the mechanism transfers to the primary basket asset.",
+      "continue_if": "SOL shows comparable release-persistence behavior.",
+      "rotate_away_if": "The pattern vanishes outside ETH.",
+      "expected_if_right": "Slightly noisier but still tradable post-break persistence."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structural_stress_test",
+      "why_included": "Tests whether the same persistence filter can survive a wilder lane.",
+      "continue_if": "TAO preserves the mechanism without degenerating into chaos.",
+      "rotate_away_if": "TAO becomes pure false-break noise.",
+      "expected_if_right": "Fewer but larger persistence events than ETH."
+    }
   ],
-  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","EMA_55","ATR_14","ADX_14"],
-  "entry_rules": {"long": ["BOLLINGER_WIDTH_20 <= 1.1 * ATR_14","Close >= EMA_20","Low >= EMA_20 - 0.12 * ATR_14","ADX_14 >= 8","EMA_20 >= EMA_55 * 0.998"],"short": ["BOLLINGER_WIDTH_20 <= 1.1 * ATR_14","Close <= EMA_20","High <= EMA_20 + 0.12 * ATR_14","ADX_14 >= 8","EMA_20 <= EMA_55 * 1.002"]},
-  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.5 * ATR_14 on 50% size","Take profit: 0.85 * ATR_14 on 30% size","Exit remaining 20% on close back through EMA_55 or 4 bars","Final time stop: 4 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.5 * ATR_14 on 50% size","Take profit: 0.85 * ATR_14 on 30% size","Exit remaining 20% on close back through EMA_55 or 4 bars","Final time stop: 4 bars"]}
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.12 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 >= EMA_55 * 0.998"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.12 * ATR_14",
+      "ADX_14 >= 8",
+      "EMA_20 <= EMA_55 * 1.002"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close back through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 50% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 20% on close back through EMA_55 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

@@ -1,6 +1,6 @@
 {
-  "ts_iso": "2026-03-11T09:38:56.774262+00:00",
-  "cycle_id": 26,
+  "ts_iso": "2026-03-11T10:04:09.170677+00:00",
+  "cycle_id": 31,
   "search_priorities": [
     "mechanism-first research",
     "lane choice justified by thesis",
@@ -10,12 +10,17 @@
   "active_hypotheses": [
     {
       "concept": "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
-      "primary_lane": "TAO/4h",
+      "primary_lane": "SOL/4h",
       "allowed_basket": [
         {
-          "asset": "TAO",
+          "asset": "SOL",
           "timeframe": "4h",
           "role": "primary"
+        },
+        {
+          "asset": "SOL",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
         },
         {
           "asset": "ETH",
@@ -23,7 +28,7 @@
           "role": "similar_asset"
         },
         {
-          "asset": "AXS",
+          "asset": "TAO",
           "timeframe": "4h",
           "role": "structurally_different_asset"
         }
@@ -33,12 +38,17 @@
     },
     {
       "concept": "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
-      "primary_lane": "TAO/4h",
+      "primary_lane": "SOL/4h",
       "allowed_basket": [
         {
-          "asset": "TAO",
+          "asset": "SOL",
           "timeframe": "4h",
           "role": "primary"
+        },
+        {
+          "asset": "SOL",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
         },
         {
           "asset": "ETH",
@@ -46,7 +56,7 @@
           "role": "similar_asset"
         },
         {
-          "asset": "AXS",
+          "asset": "TAO",
           "timeframe": "4h",
           "role": "structurally_different_asset"
         }
@@ -56,12 +66,17 @@
     },
     {
       "concept": "compression fakeout into re-expansion with directional confirmation",
-      "primary_lane": "TAO/4h",
+      "primary_lane": "SOL/4h",
       "allowed_basket": [
         {
-          "asset": "TAO",
+          "asset": "SOL",
           "timeframe": "4h",
           "role": "primary"
+        },
+        {
+          "asset": "SOL",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
         },
         {
           "asset": "ETH",
@@ -69,7 +84,7 @@
           "role": "similar_asset"
         },
         {
-          "asset": "AXS",
+          "asset": "TAO",
           "timeframe": "4h",
           "role": "structurally_different_asset"
         }
@@ -87,12 +102,17 @@
   "lane_rotation_policy": {
     "use_validation_basket": true,
     "rotate_when_concentration_high": true,
-    "current_primary_lane": "TAO/4h",
+    "current_primary_lane": "SOL/4h",
     "allowed_basket": [
       {
-        "asset": "TAO",
+        "asset": "SOL",
         "timeframe": "4h",
         "role": "primary"
+      },
+      {
+        "asset": "SOL",
+        "timeframe": "1h",
+        "role": "adjacent_timeframe"
       },
       {
         "asset": "ETH",
@@ -100,7 +120,7 @@
         "role": "similar_asset"
       },
       {
-        "asset": "AXS",
+        "asset": "TAO",
         "timeframe": "4h",
         "role": "structurally_different_asset"
       }
@@ -113,10 +133,7 @@
     "change management structure",
     "test adjacent timeframe or cross-asset robustness"
   ],
-  "diagnosis_breakdown": {
-    "too sparse": 2,
-    "bad idea": 1
-  },
+  "diagnosis_breakdown": {},
   "current_directives": [
     "Every strategy must carry a reasoning block.",
     "0 trades is a red flag that must resolve to refine or abort.",

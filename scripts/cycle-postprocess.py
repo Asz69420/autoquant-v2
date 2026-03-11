@@ -18,6 +18,7 @@ TASK_GOVERNOR = os.path.join(ROOT, "scripts", "task_governor.py")
 JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journal.md")
 DAILY_JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "daily_journal.md")
 JOURNAL_ARCHIVE_DIR = os.path.join(ROOT, "agents", "quandalf", "memory", "journal")
+DECISION_COMPLETION_SCRIPT = os.path.join(ROOT, "scripts", "ensure_quandalf_decisions_complete.py")
 BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
 BALROG = r"C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\balrog-validate.py"
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
@@ -1026,6 +1027,33 @@ def sync_live_journal(cycle_id=None):
     return latest_entry
 
 
+def ensure_decision_closure(cycle_id, timeout_seconds=180):
+    reflection_payload = load_json_file(REFLECTION_PACKET_PATH) or {}
+    if int(reflection_payload.get("cycle_id") or -1) != int(cycle_id):
+        return False, {"status": "error", "reason": "reflection_cycle_mismatch", "reflection_cycle_id": reflection_payload.get("cycle_id"), "cycle_id": cycle_id}
+    try:
+        proc = subprocess.run(
+            [sys.executable, DECISION_COMPLETION_SCRIPT],
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+    except Exception as e:
+        return False, {"status": "error", "reason": "decision_completion_exception", "error": str(e), "cycle_id": cycle_id}
+
+    payload = {}
+    raw = (proc.stdout or "").strip()
+    if raw:
+        try:
+            payload = json.loads(raw)
+        except Exception:
+            payload = {"status": "error", "reason": "decision_completion_output_parse_failed", "stdout": raw[-1000:]}
+    else:
+        payload = {"status": "error", "reason": "decision_completion_no_output", "stderr": (proc.stderr or "")[-1000:]}
+    ok = proc.returncode == 0 and str(payload.get("status") or "").lower() == "ok"
+    return ok, payload
+
+
 def normalize_rule_block(block):
     if isinstance(block, dict):
         long_rules = block.get("long") or []
@@ -1827,7 +1855,8 @@ def main():
         send_tg_as("<pre>🚨 Research cycle integrity alert\nCycle produced results, but none were healthy enough for reflection (need trades>=15, PF>0, WR>0). Check backtester/output integrity.</pre>", "hades", "logron")
         send_tg_as("<pre>🚨 Research cycle integrity alert\nNo healthy rows this cycle. Reflection quality is compromised. Check Hades.</pre>", "dm", "oragorn")
 
-    latest_journal_entry = sync_live_journal(cycle_id)
+    active_cycle_id_for_journal = cycle_id_preview
+    latest_journal_entry = sync_live_journal(active_cycle_id_for_journal)
     journal_sent = False
     if latest_journal_entry.strip():
         try:
@@ -1861,6 +1890,37 @@ def main():
             best_pf = r["profit_factor"]
 
     backtest_count = count_backtests(rows)
+    decision_required = backtest_count > 0 or int(run_state.get("queue_done", 0) or 0) > 0 or int(run_state.get("queue_skipped", 0) or 0) > 0
+    if decision_required:
+        decisions_ok, decisions_payload = ensure_decision_closure(cycle_id)
+        if not decisions_ok:
+            detail = json.dumps({"cycle_id": cycle_id, "decision_payload": decisions_payload}, ensure_ascii=False)[:900]
+            log_event(
+                "decision_closure_blocked_card",
+                "logron",
+                f"Cycle {cycle_id} card suppressed until Quandalf completes all required decisions. {detail}",
+                severity="warn",
+                pipeline="research_cycle",
+                step="postprocess",
+            )
+            print(json.dumps({"status": "awaiting_complete_decisions", "cycle_id": cycle_id, "decision_payload": decisions_payload}, indent=2))
+            raise SystemExit(1)
+        try:
+            subprocess.run(
+                [sys.executable, os.path.join(ROOT, "scripts", "build_quandalf_experiment_memory.py")],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            subprocess.run(
+                [sys.executable, os.path.join(ROOT, "scripts", "build_quandalf_learning_memory.py")],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+        except Exception:
+            pass
+
     log_card, metrics = build_log_card(cycle_id, rows, elapsed, backtest_count, run_state=run_state)
     write_cycle_metrics(metrics)
     log_card_sent = send_log_card(cycle_id, log_card, metrics=metrics)

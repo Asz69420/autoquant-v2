@@ -38,11 +38,73 @@
     }
   },
   "validation_basket": [
-    {"asset":"TAO","timeframe":"4h","role":"primary","why_included":"Best stress-test lane for fakeout-to-reexpansion logic in the current basket.","continue_if":"A tradable number of fakeout reversals convert into real re-expansion.","rotate_away_if":"The lane is too noisy or fakeouts fail to follow through.","expected_if_right":"Clear wrong-side breaks that reverse and deliver one corrected directional leg."},
-    {"asset":"ETH","timeframe":"4h","role":"cleaner_crosscheck","why_included":"Checks whether the same fakeout mechanism survives on a cleaner major lane.","continue_if":"ETH prints the same pattern with lower noise and acceptable density.","rotate_away_if":"The mechanism only exists on TAO volatility.","expected_if_right":"Fewer but cleaner fakeout reversals than TAO."},
-    {"asset":"DOGE","timeframe":"4h","role":"similar_alt_crosscheck","why_included":"Tests whether the concept transfers to another expressive alt lane without requiring TAO-specific volatility.","continue_if":"DOGE preserves the fakeout-reexpansion mechanism with acceptable density.","rotate_away_if":"The idea depends entirely on TAO's volatility profile.","expected_if_right":"More orderly fakeout repairs than TAO with slightly smaller follow-through."}
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best stress-test lane for fakeout-to-reexpansion logic in the current basket.",
+      "continue_if": "A tradable number of fakeout reversals convert into real re-expansion.",
+      "rotate_away_if": "The lane is too noisy or fakeouts fail to follow through.",
+      "expected_if_right": "Clear wrong-side breaks that reverse and deliver one corrected directional leg."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the same fakeout mechanism survives on a cleaner major lane.",
+      "continue_if": "ETH prints the same pattern with lower noise and acceptable density.",
+      "rotate_away_if": "The mechanism only exists on TAO volatility.",
+      "expected_if_right": "Fewer but cleaner fakeout reversals than TAO."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "similar_alt_crosscheck",
+      "why_included": "Tests whether the concept transfers to another expressive alt lane without requiring TAO-specific volatility.",
+      "continue_if": "DOGE preserves the fakeout-reexpansion mechanism with acceptable density.",
+      "rotate_away_if": "The idea depends entirely on TAO's volatility profile.",
+      "expected_if_right": "More orderly fakeout repairs than TAO with slightly smaller follow-through."
+    }
   ],
-  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","ATR_14","RSI_14","ADX_14"],
-  "entry_rules": {"long": ["BOLLINGER_WIDTH_20 <= 1.15 * ATR_14","Low <= EMA_20 - 0.22 * ATR_14","Close >= EMA_20","RSI_14 >= 50","ADX_14 >= 8"],"short": ["BOLLINGER_WIDTH_20 <= 1.15 * ATR_14","High >= EMA_20 + 0.22 * ATR_14","Close <= EMA_20","RSI_14 <= 50","ADX_14 >= 8"]},
-  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.58 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 35% size","Trail remaining 20% by 0.62 * ATR_14","Final time stop: 4 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.58 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 35% size","Trail remaining 20% by 0.62 * ATR_14","Final time stop: 4 bars"]}
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Low <= EMA_20 - 0.22 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 50",
+      "ADX_14 >= 8"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "High >= EMA_20 + 0.22 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 50",
+      "ADX_14 >= 8"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.58 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.62 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.58 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.62 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

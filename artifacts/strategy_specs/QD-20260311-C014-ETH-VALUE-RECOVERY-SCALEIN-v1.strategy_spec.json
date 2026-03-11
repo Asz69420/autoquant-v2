@@ -38,12 +38,80 @@
     }
   },
   "validation_basket": [
-    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Best lane for visible value-recovery structure in current conditions.","continue_if":"Density is real and staged confirmation improves trade quality.","rotate_away_if":"Scale-in adds complexity without better outcomes or density collapses.","expected_if_right":"Repeated reclaim-and-confirm recoveries with tradable but modest range expansion."},
-    {"asset":"ETH","timeframe":"1h","role":"adjacent_timeframe","why_included":"Checks whether the same recovery mechanism survives on a faster structure.","continue_if":"1h adds density without destroying trade quality.","rotate_away_if":"1h becomes pure noise or needs ceremonial filtering.","expected_if_right":"More frequent but smaller recovery moves than 4h."},
-    {"asset":"BTC","timeframe":"4h","role":"similar_asset","why_included":"Tests whether the mechanism is structural across majors rather than ETH-specific.","continue_if":"BTC shows similar recovery behavior with comparable density.","rotate_away_if":"Only ETH works, implying asset-specific behavior.","expected_if_right":"Slightly cleaner but less explosive recovery signals than ETH."}
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for visible value-recovery structure in current conditions.",
+      "continue_if": "Density is real and staged confirmation improves trade quality.",
+      "rotate_away_if": "Scale-in adds complexity without better outcomes or density collapses.",
+      "expected_if_right": "Repeated reclaim-and-confirm recoveries with tradable but modest range expansion."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Checks whether the same recovery mechanism survives on a faster structure.",
+      "continue_if": "1h adds density without destroying trade quality.",
+      "rotate_away_if": "1h becomes pure noise or needs ceremonial filtering.",
+      "expected_if_right": "More frequent but smaller recovery moves than 4h."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Tests whether the mechanism is structural across majors rather than ETH-specific.",
+      "continue_if": "BTC shows similar recovery behavior with comparable density.",
+      "rotate_away_if": "Only ETH works, implying asset-specific behavior.",
+      "expected_if_right": "Slightly cleaner but less explosive recovery signals than ETH."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","PLUS_DI_14","MINUS_DI_14"],
-  "entry_rules": {"long": ["Low <= EMA_20 - 0.30 * ATR_14","Close >= EMA_20","Close >= EMA_55 - 0.22 * ATR_14","RSI_14 >= 45","MINUS_DI_14 >= 0.80 * PLUS_DI_14"],"short": ["High >= EMA_20 + 0.30 * ATR_14","Close <= EMA_20","Close <= EMA_55 + 0.22 * ATR_14","RSI_14 <= 55","PLUS_DI_14 >= 0.80 * MINUS_DI_14"]},
-  "trade_management": {"entry_expression":"scale_in_on_improved_confirmation","initial_size_pct":60,"add_on_size_pct":40,"add_on_condition":"Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"},
-  "exit_rules": {"long": ["Stop loss: 0.80 * ATR_14 below average entry","Take profit: 0.50 * ATR_14 on 45% size","Take profit: 0.85 * ATR_14 on 35% size","Trail remaining 20% by 0.55 * ATR_14","Final time stop: 4 bars"],"short": ["Stop loss: 0.80 * ATR_14 above average entry","Take profit: 0.50 * ATR_14 on 45% size","Take profit: 0.85 * ATR_14 on 35% size","Trail remaining 20% by 0.55 * ATR_14","Final time stop: 4 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.30 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 45",
+      "MINUS_DI_14 >= 0.80 * PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.30 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 55",
+      "PLUS_DI_14 >= 0.80 * MINUS_DI_14"
+    ]
+  },
+  "trade_management": {
+    "entry_expression": "scale_in_on_improved_confirmation",
+    "initial_size_pct": 60,
+    "add_on_size_pct": 40,
+    "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below average entry",
+      "Take profit: 0.50 * ATR_14 on 45% size",
+      "Take profit: 0.85 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above average entry",
+      "Take profit: 0.50 * ATR_14 on 45% size",
+      "Take profit: 0.85 * ATR_14 on 35% size",
+      "Trail remaining 20% by 0.55 * ATR_14",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

@@ -1,15 +1,11 @@
 {
-  "cycle_id": 26,
+  "cycle_id": 31,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C026-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C026-ETH-TREND-RESET-CONTINUATION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C026-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json"
-  ],
-  "specs_produced": 3,
+  "spec_paths": [],
+  "specs_produced": 0,
   "exploration_targets": {
     "concepts": [
       "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
@@ -25,25 +21,23 @@
       "scale-in on improved confirmation, then scale-out into expansion",
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": ["AXS", "ETH", "TAO"],
-    "timeframes": ["4h"]
+    "assets": [
+      "ETH",
+      "SOL",
+      "TAO"
+    ],
+    "timeframes": [
+      "1h",
+      "4h"
+    ]
   },
   "iterate_target": null,
-  "new_families": [
-    "tao_range_failure_reacceptance_v026",
-    "eth_trend_reset_continuation_v026",
-    "axs_compression_fakeout_reexpansion_v026"
-  ],
+  "new_families": [],
   "iterated_families": [],
-  "abandoned_families": [
-    "btc_value_reacceptance_exhaustion_v022",
-    "doge_range_failure_reacceptance_v021",
-    "btc_inventory_reset_reclaim_v023",
-    "sol_range_failure_reacceptance_v020"
-  ],
-  "next_cycle_focus": "Screen this TAO/ETH/AXS 4h batch and continue only mechanisms that prove real density on the primary lane plus at least one cross-check lane. If repaired pullbacks or fakeout repairs trigger but travel is weak, change management before adding cosmetic entry filters. If any valid rerun later yields 0 trades, resolve it to refine or abort rather than recycling the same grammar.",
-  "rationale": "Cycle 26 opened on a TAO-led 4h explore brief in a mixed chop/trend-up regime. I wrote three materially distinct mechanisms aligned to the live allowed basket: TAO range-failure reacceptance for dense failed-expansion repair, ETH trend-reset continuation as the cleaner repaired-pullback control lane, and AXS compression fakeout reexpansion as the structurally different false-break test. The batch stays inside the supported universe, varies mechanism and role assignment, and explicitly avoids ceremonial sparse logic.",
-  "target_asset": "TAO",
+  "abandoned_families": [],
+  "next_cycle_focus": "pending",
+  "rationale": "pending",
+  "target_asset": "SOL",
   "target_timeframe": "4h",
   "specific_family_to_iterate": null,
   "fallback_source": false,
@@ -186,6 +180,31 @@
     {
       "ts_iso": "2026-03-11T09:18:40.000000+00:00",
       "family": "axs_delayed_retest_continuation_v022",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:46:34.483765+00:00",
+      "family": "btc_value_reacceptance_exhaustion_v022",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:46:40.173609+00:00",
+      "family": "btc_inventory_reset_reclaim_v023",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:46:45.765546+00:00",
+      "family": "tao_range_failure_reacceptance_v026",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T09:46:51.474681+00:00",
+      "family": "tao_failed_break_repair_v025",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-11T10:11:22.213897+00:00",
+      "family": "btc_inventory_reset_reclaim_v028",
       "reason": "screen-stage density below 30 trades"
     }
   ]

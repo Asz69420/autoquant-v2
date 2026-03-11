@@ -9,8 +9,14 @@
   "primary_asset": "TAO",
   "primary_timeframe": "4h",
   "validation_targets": [
-    {"asset":"TAO","timeframe":"4h"},
-    {"asset":"BTC","timeframe":"4h"}
+    {
+      "asset": "TAO",
+      "timeframe": "4h"
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h"
+    }
   ],
   "thesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough. In a chop/transition regime, the value is not in chasing trend; it is in participating only after a hold and cutting exposure quickly if no extension appears.",
   "edge_mechanism": "retest hold continuation with time-based derisk",
@@ -37,7 +43,13 @@
       "asset_timeframe_mismatch": "none"
     }
   },
-  "indicators": ["EMA_20","ATR_14","RSI_14","ADX_14","EMA_55"],
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14",
+    "EMA_55"
+  ],
   "entry_rules": {
     "long": [
       "Close >= EMA_20",
@@ -72,5 +84,11 @@
       "Final time stop: 5 bars"
     ]
   },
-  "risk_policy": {"risk_per_trade_pct":0.004,"max_holding_bars":5,"max_concurrent_positions":1}
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }
