@@ -228,6 +228,13 @@ def build_from_learning(data, reflection, decisions):
                 lines.append(f"  mechanism: {compact(item.get('edge_mechanism'))}")
             if item.get('hypothesis'):
                 lines.append(f"  thesis: {compact(item.get('hypothesis'))}")
+            train_result = item.get('train_result') or {}
+            if train_result:
+                lines.append(f"  train: QS {train_result.get('score_total') or train_result.get('qscore') or 0} | Sharpe {train_result.get('sharpe_ratio') or 0} | PF {train_result.get('profit_factor') or 0} | DD {train_result.get('max_drawdown_pct') or 0}% | Trades {train_result.get('total_trades') or 0}")
+            stage_metrics = item.get('stage_metrics') or {}
+            test_stage = stage_metrics.get('test') or {}
+            if test_stage and int(test_stage.get('runs') or 0) > 0:
+                lines.append(f"  test: runs={test_stage.get('runs') or 0} | trades={test_stage.get('trades') or 0} | best QS {test_stage.get('best_qscore') or 0} | best Sharpe {test_stage.get('best_sharpe') or 0} | best PF {test_stage.get('best_pf') or 0}")
             if item.get('decision_rationale'):
                 lines.append(f"  why: {to_first_person(item.get('decision_rationale'))}")
             for evidence in (item.get('queue_evidence') or [])[:3]:
