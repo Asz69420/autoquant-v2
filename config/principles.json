@@ -10,9 +10,9 @@
  },
  {
  "id": "P02",
- "name": "commander_delegates",
- "rule": "Oragorn delegates, never does work himself. Spawn sub-agents or trigger pipelines.",
- "enforcement": "Oragorn SOUL.md enforces. Logron monitors for commander doing execution work."
+ "name": "commander_executes_directly",
+ "rule": "Oragorn executes work directly by default. Delegate only when Asz explicitly asks for it or when a pipeline step deterministically requires a specialist.",
+ "enforcement": "Oragorn SOUL.md enforces direct execution as the default. Delegation is an exception, not the norm."
  },
  {
  "id": "P03",
@@ -49,6 +49,12 @@
  "name": "self_healing_first",
  "rule": "Errors auto-fix when possible. Only escalate when auto-fix fails.",
  "enforcement": "known_fixes registry. Logron matches errors, applies fixes, logs results."
+ },
+ {
+ "id": "P08b",
+ "name": "proactive_completion",
+ "rule": "When the root cause is clear and the repair is safe within workspace authority, complete the repair in the same pass and verify the result before reporting back.",
+ "enforcement": "Oragorn should not stop at diagnosis for safe in-scope fixes. Ask Asz only for destructive, ambiguous, or external/manual actions."
  },
  {
  "id": "P09",

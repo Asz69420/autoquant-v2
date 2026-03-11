@@ -1,56 +1,85 @@
 {
   "cycle_id": 53,
-  "ts_iso": "2026-03-11T12:36:52.154666+00:00",
+  "ts_iso": "2026-03-11T20:04:07.340807+00:00",
   "strategy_decisions": [
     {
       "strategy_spec_id": "QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1",
-      "decision": "abort"
+      "decision": "abort",
+      "rationale": "I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_0dcd0c5fea87",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_0dcd0c5fea87 because its evidence was integrity_skip:zero_trades_both_samples.",
+          "source_result_id": null
+        },
+        {
+          "queue_id": "rq_935119bcda99",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_935119bcda99 because its evidence was integrity_skip:zero_trades_both_samples.",
+          "source_result_id": null
+        },
+        {
+          "queue_id": "rq_65360bd09a8c",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_65360bd09a8c because its evidence was too sparse / zero-trade behavior.",
+          "source_result_id": null
+        }
+      ]
     },
     {
       "strategy_spec_id": "QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1",
-      "decision": "abort"
+      "decision": "abort",
+      "rationale": "I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_a5ea7255c4ac",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_a5ea7255c4ac because its evidence was integrity_skip:zero_trades_both_samples.",
+          "source_result_id": null
+        },
+        {
+          "queue_id": "rq_e61cdb8bb63d",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_e61cdb8bb63d because its evidence was integrity_skip:zero_trades_both_samples.",
+          "source_result_id": null
+        },
+        {
+          "queue_id": "rq_0d33ba91cf55",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_0d33ba91cf55 because its evidence was too sparse / zero-trade behavior.",
+          "source_result_id": null
+        }
+      ]
     },
     {
       "strategy_spec_id": "QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1",
-      "decision": "abort"
+      "decision": "abort",
+      "rationale": "I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_ad16c0bfb974",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_ad16c0bfb974 because its evidence was integrity_skip:zero_trades_both_samples.",
+          "source_result_id": null
+        },
+        {
+          "queue_id": "rq_85d6f261ec9b",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_85d6f261ec9b because its evidence was integrity_skip:zero_trades_both_samples.",
+          "source_result_id": null
+        },
+        {
+          "queue_id": "rq_cc974108812f",
+          "decision": "abort",
+          "rationale": "I aborted queue row rq_cc974108812f because its evidence was too sparse / zero-trade behavior.",
+          "source_result_id": null
+        }
+      ]
     }
   ],
-  "jobs": [
-    {
-      "queue_id": "rq_0dcd0c5fea87",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_935119bcda99",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_65360bd09a8c",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_a5ea7255c4ac",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_e61cdb8bb63d",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_0d33ba91cf55",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_ad16c0bfb974",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_85d6f261ec9b",
-      "decision": "abort"
-    },
-    {
-      "queue_id": "rq_cc974108812f",
-      "decision": "abort"
-    }
-  ]
+  "jobs": []
 }

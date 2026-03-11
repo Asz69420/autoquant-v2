@@ -82,6 +82,7 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
     abandon = []
     indicator_role_notes = []
     management_notes = []
+    strategy_reviews = []
     diagnosis_breakdown = {}
     assets_touched = []
     timeframes_touched = []
@@ -141,6 +142,30 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
         if decision_rationale:
             iterate_next.append(f"decision {spec_id}: {decision_rationale}")
 
+        queue_evidence = []
+        for qd in queue_decisions if isinstance(queue_decisions, list) else []:
+            if not isinstance(qd, dict):
+                continue
+            queue_id = str(qd.get('queue_id') or '').strip()
+            qdecision = str(qd.get('decision') or '').strip().lower()
+            qrationale = str(qd.get('rationale') or '').strip()
+            if queue_id and (qdecision or qrationale):
+                queue_evidence.append(f"{queue_id}={qdecision or 'n/a'} ({qrationale or 'no rationale'})")
+
+        strategy_reviews.append({
+            'strategy_spec_id': spec_id,
+            'asset': item.get('asset'),
+            'timeframe': item.get('timeframe'),
+            'edge_mechanism': item.get('edge_mechanism'),
+            'hypothesis': item.get('hypothesis'),
+            'diagnosis_category': diag or diagnosis,
+            'decision': decision or action,
+            'decision_rationale': decision_rationale or rationale,
+            'why_asset': f"asset={item.get('asset') or 'unknown'} from chosen lane / result context",
+            'why_timeframe': f"timeframe={item.get('timeframe') or 'unknown'} from chosen lane / result context",
+            'queue_evidence': queue_evidence,
+        })
+
         for result in results:
             if not isinstance(result, dict):
                 continue
@@ -196,6 +221,7 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
             ], limit=6),
             'indicator_role_notes': dedupe_keep_order(indicator_role_notes),
             'management_notes': dedupe_keep_order(management_notes),
+            'strategy_reviews': strategy_reviews,
         },
         'journal_excerpt': first_lines(journal_text, limit=10),
         'learning_requirements': [
@@ -332,6 +358,23 @@ def build_journal_text(payload):
     journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('why_it_failed', [])] or ["- none"])
     journal_lines.extend(["", "## What I Would Improve Next"])
     journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('iterate_next', [])] or ["- none"])
+    journal_lines.extend(["", "## Strategy-by-Strategy Reasons"])
+    reviews = dims.get('strategy_reviews') or []
+    if reviews:
+        for item in reviews:
+            if not isinstance(item, dict):
+                continue
+            journal_lines.append(f"- {item.get('strategy_spec_id')}: asset={item.get('asset') or '?'} | timeframe={item.get('timeframe') or '?'} | decision={item.get('decision') or '?'} | diagnosis={item.get('diagnosis_category') or '?'}")
+            if item.get('edge_mechanism'):
+                journal_lines.append(f"  mechanism: {item.get('edge_mechanism')}")
+            if item.get('hypothesis'):
+                journal_lines.append(f"  thesis: {item.get('hypothesis')}")
+            if item.get('decision_rationale'):
+                journal_lines.append(f"  why: {normalize_first_person_line(item.get('decision_rationale'))}")
+            for evidence in (item.get('queue_evidence') or [])[:3]:
+                journal_lines.append(f"  evidence: {evidence}")
+    else:
+        journal_lines.append("- none")
     return "\n".join(journal_lines) + "\n"
 
 

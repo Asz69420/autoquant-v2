@@ -1,11 +1,11 @@
 {
-  "ts_iso": "2026-03-11T12:36:52.154666+00:00",
+  "ts_iso": "2026-03-11T20:04:07.339121+00:00",
   "type": "reflection",
   "cycle_id": 53,
   "mode": "explore",
   "research_direction": "explore_new",
-  "target_asset": null,
-  "target_timeframe": null,
+  "target_asset": "BTC",
+  "target_timeframe": "4h",
   "strategy_outcomes": [
     {
       "strategy_spec_id": "QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1",
@@ -16,52 +16,6 @@
       "strategy_family": "eth_1h_vwap_reclaim_rotation_v053",
       "edge_mechanism": "intraday inventory gets stretched away from value, price reclaims session value, and rotates back toward medium balance in a choppy tape",
       "hypothesis": "ETH 1h is the best lane in the allowed basket for dense value-reclaim logic. In a low-confidence chop regime, the edge should come from fading failed short-term displacement after value is reclaimed, not from demanding multi-bar trend confirmation.",
-      "expected_trade_density": null,
-      "expected_outcome_pattern": null,
-      "success_criteria": null,
-      "failure_criteria": null,
-      "indicators": [
-        "VWAP",
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= VWAP - 0.40 * ATR_14",
-          "Close >= VWAP",
-          "RSI_14 >= 45",
-          "RSI_14 <= 60",
-          "ADX_14 <= 24"
-        ],
-        "short": [
-          "High >= VWAP + 0.40 * ATR_14",
-          "Close <= VWAP",
-          "RSI_14 <= 55",
-          "RSI_14 >= 40",
-          "ADX_14 <= 24"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 0.90 * ATR_14 below entry",
-          "Take profit: 0.45 * ATR_14 on 50% size",
-          "Take profit: 0.85 * ATR_14 on 30% size",
-          "Exit remaining 20% on touch of EMA_55 or 4 bars",
-          "Final time stop: 4 bars"
-        ],
-        "short": [
-          "Stop loss: 0.90 * ATR_14 above entry",
-          "Take profit: 0.45 * ATR_14 on 50% size",
-          "Take profit: 0.85 * ATR_14 on 30% size",
-          "Exit remaining 20% on touch of EMA_55 or 4 bars",
-          "Final time stop: 4 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
       "queue": [
         {
           "queue_id": "rq_0dcd0c5fea87",
@@ -107,29 +61,18 @@
           "completed_at": null
         }
       ],
-      "result_count": 0,
-      "latest_result": null,
       "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
+      "latest_result": null,
+      "result_count": 0,
+      "outcome": "abort",
+      "recommended_action": "abort",
+      "decision_required": false,
       "allowed_next_actions": [
         "refine",
         "abort"
       ],
       "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "rationale": "I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.",
       "has_zero_trade_signal": true
     },
     {
@@ -141,51 +84,6 @@
       "strategy_family": "btc_4h_range_edge_absorption_v053",
       "edge_mechanism": "range-edge overshoot gets absorbed back into balance and mean-reverts toward the center of the range",
       "hypothesis": "BTC 4h currently reads as low-confidence chop with transition history. That makes range-edge absorption more plausible than continuation. The edge is not buying oversold or selling overbought mechanically; it is trading reacceptance after failed edge auctions.",
-      "expected_trade_density": null,
-      "expected_outcome_pattern": null,
-      "success_criteria": null,
-      "failure_criteria": null,
-      "indicators": [
-        "DONCHIAN_20",
-        "EMA_20",
-        "ATR_14",
-        "ADX_14",
-        "RSI_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= DONCHIAN_LOW_20 - 0.18 * ATR_14",
-          "Close >= DONCHIAN_LOW_20",
-          "Close >= EMA_20 - 0.12 * ATR_14",
-          "RSI_14 >= 40",
-          "ADX_14 <= 20"
-        ],
-        "short": [
-          "High >= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
-          "Close <= DONCHIAN_HIGH_20",
-          "Close <= EMA_20 + 0.12 * ATR_14",
-          "RSI_14 <= 60",
-          "ADX_14 <= 20"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 0.95 * ATR_14 below entry",
-          "Take profit: 0.60 * ATR_14 on 35% size",
-          "Take profit: 1.10 * ATR_14 on 35% size",
-          "Trail remaining 30% by 0.80 * ATR_14",
-          "Final time stop: 6 bars"
-        ],
-        "short": [
-          "Stop loss: 0.95 * ATR_14 above entry",
-          "Take profit: 0.60 * ATR_14 on 35% size",
-          "Take profit: 1.10 * ATR_14 on 35% size",
-          "Trail remaining 30% by 0.80 * ATR_14",
-          "Final time stop: 6 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
       "queue": [
         {
           "queue_id": "rq_a5ea7255c4ac",
@@ -228,29 +126,18 @@
           "completed_at": null
         }
       ],
-      "result_count": 0,
-      "latest_result": null,
       "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
+      "latest_result": null,
+      "result_count": 0,
+      "outcome": "abort",
+      "recommended_action": "abort",
+      "decision_required": false,
       "allowed_next_actions": [
         "refine",
         "abort"
       ],
       "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "rationale": "I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.",
       "has_zero_trade_signal": true
     },
     {
@@ -262,52 +149,6 @@
       "strategy_family": "tao_4h_flush_reclaim_persistence_v053",
       "edge_mechanism": "impulsive flush resets positioning, price reclaims structure, then partial profits are taken while a core runner stays for persistence if the move becomes real",
       "hypothesis": "TAO 4h is the best lane in the basket for testing a management-first idea: flush and reclaim can create a tradable reversal, but the right expression is not all-or-nothing. The setup should monetize the first relief move while keeping a smaller core for persistence if TAO turns the reclaim into a bigger directional leg.",
-      "expected_trade_density": null,
-      "expected_outcome_pattern": null,
-      "success_criteria": null,
-      "failure_criteria": null,
-      "indicators": [
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14",
-        "ADX_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= EMA_20 - 0.65 * ATR_14",
-          "Close >= EMA_20 - 0.05 * ATR_14",
-          "Close >= EMA_55 - 0.20 * ATR_14",
-          "PLUS_DI_14 >= 0.92 * MINUS_DI_14",
-          "ADX_14 <= 28"
-        ],
-        "short": [
-          "High >= EMA_20 + 0.65 * ATR_14",
-          "Close <= EMA_20 + 0.05 * ATR_14",
-          "Close <= EMA_55 + 0.20 * ATR_14",
-          "MINUS_DI_14 >= 0.92 * PLUS_DI_14",
-          "ADX_14 <= 28"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 1.00 * ATR_14 below entry",
-          "Take profit: 0.55 * ATR_14 on 45% size",
-          "Take profit: 1.00 * ATR_14 on 30% size",
-          "Trail remaining 25% by EMA_20 with 0.70 * ATR_14 fail-safe",
-          "Final time stop: 7 bars"
-        ],
-        "short": [
-          "Stop loss: 1.00 * ATR_14 above entry",
-          "Take profit: 0.55 * ATR_14 on 45% size",
-          "Take profit: 1.00 * ATR_14 on 30% size",
-          "Trail remaining 25% by EMA_20 with 0.70 * ATR_14 fail-safe",
-          "Final time stop: 7 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
       "queue": [
         {
           "queue_id": "rq_ad16c0bfb974",
@@ -350,29 +191,18 @@
           "completed_at": null
         }
       ],
-      "result_count": 0,
-      "latest_result": null,
       "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
+      "latest_result": null,
+      "result_count": 0,
+      "outcome": "abort",
+      "recommended_action": "abort",
+      "decision_required": false,
       "allowed_next_actions": [
         "refine",
         "abort"
       ],
       "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "rationale": "I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.",
       "has_zero_trade_signal": true
     }
   ],
@@ -386,52 +216,6 @@
       "strategy_family": "eth_1h_vwap_reclaim_rotation_v053",
       "edge_mechanism": "intraday inventory gets stretched away from value, price reclaims session value, and rotates back toward medium balance in a choppy tape",
       "hypothesis": "ETH 1h is the best lane in the allowed basket for dense value-reclaim logic. In a low-confidence chop regime, the edge should come from fading failed short-term displacement after value is reclaimed, not from demanding multi-bar trend confirmation.",
-      "expected_trade_density": null,
-      "expected_outcome_pattern": null,
-      "success_criteria": null,
-      "failure_criteria": null,
-      "indicators": [
-        "VWAP",
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= VWAP - 0.40 * ATR_14",
-          "Close >= VWAP",
-          "RSI_14 >= 45",
-          "RSI_14 <= 60",
-          "ADX_14 <= 24"
-        ],
-        "short": [
-          "High >= VWAP + 0.40 * ATR_14",
-          "Close <= VWAP",
-          "RSI_14 <= 55",
-          "RSI_14 >= 40",
-          "ADX_14 <= 24"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 0.90 * ATR_14 below entry",
-          "Take profit: 0.45 * ATR_14 on 50% size",
-          "Take profit: 0.85 * ATR_14 on 30% size",
-          "Exit remaining 20% on touch of EMA_55 or 4 bars",
-          "Final time stop: 4 bars"
-        ],
-        "short": [
-          "Stop loss: 0.90 * ATR_14 above entry",
-          "Take profit: 0.45 * ATR_14 on 50% size",
-          "Take profit: 0.85 * ATR_14 on 30% size",
-          "Exit remaining 20% on touch of EMA_55 or 4 bars",
-          "Final time stop: 4 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
       "queue": [
         {
           "queue_id": "rq_0dcd0c5fea87",
@@ -477,29 +261,18 @@
           "completed_at": null
         }
       ],
-      "result_count": 0,
-      "latest_result": null,
       "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
+      "latest_result": null,
+      "result_count": 0,
+      "outcome": "abort",
+      "recommended_action": "abort",
+      "decision_required": false,
       "allowed_next_actions": [
         "refine",
         "abort"
       ],
       "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "rationale": "I aborted this ETH 1h VWAP reclaim rotation idea because the lane stayed too sparse on valid data and never produced enough executable trade density.",
       "has_zero_trade_signal": true
     },
     {
@@ -511,51 +284,6 @@
       "strategy_family": "btc_4h_range_edge_absorption_v053",
       "edge_mechanism": "range-edge overshoot gets absorbed back into balance and mean-reverts toward the center of the range",
       "hypothesis": "BTC 4h currently reads as low-confidence chop with transition history. That makes range-edge absorption more plausible than continuation. The edge is not buying oversold or selling overbought mechanically; it is trading reacceptance after failed edge auctions.",
-      "expected_trade_density": null,
-      "expected_outcome_pattern": null,
-      "success_criteria": null,
-      "failure_criteria": null,
-      "indicators": [
-        "DONCHIAN_20",
-        "EMA_20",
-        "ATR_14",
-        "ADX_14",
-        "RSI_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= DONCHIAN_LOW_20 - 0.18 * ATR_14",
-          "Close >= DONCHIAN_LOW_20",
-          "Close >= EMA_20 - 0.12 * ATR_14",
-          "RSI_14 >= 40",
-          "ADX_14 <= 20"
-        ],
-        "short": [
-          "High >= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
-          "Close <= DONCHIAN_HIGH_20",
-          "Close <= EMA_20 + 0.12 * ATR_14",
-          "RSI_14 <= 60",
-          "ADX_14 <= 20"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 0.95 * ATR_14 below entry",
-          "Take profit: 0.60 * ATR_14 on 35% size",
-          "Take profit: 1.10 * ATR_14 on 35% size",
-          "Trail remaining 30% by 0.80 * ATR_14",
-          "Final time stop: 6 bars"
-        ],
-        "short": [
-          "Stop loss: 0.95 * ATR_14 above entry",
-          "Take profit: 0.60 * ATR_14 on 35% size",
-          "Take profit: 1.10 * ATR_14 on 35% size",
-          "Trail remaining 30% by 0.80 * ATR_14",
-          "Final time stop: 6 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
       "queue": [
         {
           "queue_id": "rq_a5ea7255c4ac",
@@ -598,29 +326,18 @@
           "completed_at": null
         }
       ],
-      "result_count": 0,
-      "latest_result": null,
       "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
+      "latest_result": null,
+      "result_count": 0,
+      "outcome": "abort",
+      "recommended_action": "abort",
+      "decision_required": false,
       "allowed_next_actions": [
         "refine",
         "abort"
       ],
       "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "rationale": "I aborted this BTC 4h range-edge absorption idea because the 4h grammar remained structurally too sparse and the evidence did not justify another refinement pass.",
       "has_zero_trade_signal": true
     },
     {
@@ -632,52 +349,6 @@
       "strategy_family": "tao_4h_flush_reclaim_persistence_v053",
       "edge_mechanism": "impulsive flush resets positioning, price reclaims structure, then partial profits are taken while a core runner stays for persistence if the move becomes real",
       "hypothesis": "TAO 4h is the best lane in the basket for testing a management-first idea: flush and reclaim can create a tradable reversal, but the right expression is not all-or-nothing. The setup should monetize the first relief move while keeping a smaller core for persistence if TAO turns the reclaim into a bigger directional leg.",
-      "expected_trade_density": null,
-      "expected_outcome_pattern": null,
-      "success_criteria": null,
-      "failure_criteria": null,
-      "indicators": [
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14",
-        "ADX_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "Low <= EMA_20 - 0.65 * ATR_14",
-          "Close >= EMA_20 - 0.05 * ATR_14",
-          "Close >= EMA_55 - 0.20 * ATR_14",
-          "PLUS_DI_14 >= 0.92 * MINUS_DI_14",
-          "ADX_14 <= 28"
-        ],
-        "short": [
-          "High >= EMA_20 + 0.65 * ATR_14",
-          "Close <= EMA_20 + 0.05 * ATR_14",
-          "Close <= EMA_55 + 0.20 * ATR_14",
-          "MINUS_DI_14 >= 0.92 * PLUS_DI_14",
-          "ADX_14 <= 28"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 1.00 * ATR_14 below entry",
-          "Take profit: 0.55 * ATR_14 on 45% size",
-          "Take profit: 1.00 * ATR_14 on 30% size",
-          "Trail remaining 25% by EMA_20 with 0.70 * ATR_14 fail-safe",
-          "Final time stop: 7 bars"
-        ],
-        "short": [
-          "Stop loss: 1.00 * ATR_14 above entry",
-          "Take profit: 0.55 * ATR_14 on 45% size",
-          "Take profit: 1.00 * ATR_14 on 30% size",
-          "Trail remaining 25% by EMA_20 with 0.70 * ATR_14 fail-safe",
-          "Final time stop: 7 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
       "queue": [
         {
           "queue_id": "rq_ad16c0bfb974",
@@ -720,499 +391,38 @@
           "completed_at": null
         }
       ],
-      "result_count": 0,
-      "latest_result": null,
       "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
+      "latest_result": null,
+      "result_count": 0,
+      "outcome": "abort",
+      "recommended_action": "abort",
+      "decision_required": false,
       "allowed_next_actions": [
         "refine",
         "abort"
       ],
       "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "rationale": "I aborted this TAO 4h flush reclaim persistence idea because both completed screen lanes showed zero-trade behavior on valid data, which points to a bad sparse design rather than a small implementation miss.",
       "has_zero_trade_signal": true
     }
   ],
-  "external_context_results": [
-    {
-      "id": "wf_cde7b28b25a6",
-      "ts_iso": "2026-03-11T12:21:38.453361+00:00",
-      "strategy_spec_id": "QD-20260311-C051-TAO-RESET-PULLBACK-PERSISTENCE-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.512,
-      "max_drawdown_pct": 7.52,
-      "total_trades": 5,
-      "win_rate_pct": 40.0,
-      "total_return_pct": 5.54,
-      "score_total": 1.437,
-      "score_decision": "fail",
-      "strategy_family": "tao_reset_pullback_persistence_v051",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_668d902fbb82",
-      "ts_iso": "2026-03-11T12:21:38.438603+00:00",
-      "strategy_spec_id": "QD-20260311-C051-TAO-RESET-PULLBACK-PERSISTENCE-v1",
-      "variant_id": "default",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "profit_factor": 1.857,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 6,
-      "win_rate_pct": 50.0,
-      "total_return_pct": 12.45,
-      "score_total": 1.755,
-      "score_decision": "fail",
-      "strategy_family": "tao_reset_pullback_persistence_v051",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_f4cf3c95d788",
-      "ts_iso": "2026-03-11T11:33:46.877534+00:00",
-      "strategy_spec_id": "QD-20260311-C045-TAO-FAILED-BREAK-REPAIR-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.238,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 5,
-      "win_rate_pct": 40.0,
-      "total_return_pct": 2.46,
-      "score_total": 1.136,
-      "score_decision": "fail",
-      "strategy_family": "tao_failed_break_repair_v045",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_43cf869042ea",
-      "ts_iso": "2026-03-11T11:33:46.858384+00:00",
-      "strategy_spec_id": "QD-20260311-C045-TAO-FAILED-BREAK-REPAIR-v1",
-      "variant_id": "default",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "profit_factor": 0.464,
-      "max_drawdown_pct": 19.4,
-      "total_trades": 5,
-      "win_rate_pct": 20.0,
-      "total_return_pct": -11.55,
-      "score_total": 0.27,
-      "score_decision": "fail",
-      "strategy_family": "tao_failed_break_repair_v045",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_277a3dd67294",
-      "ts_iso": "2026-03-11T11:28:10.076928+00:00",
-      "strategy_spec_id": "QD-20260311-C044-TAO-VALUE-RECOVERY-SCALEIN-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.299,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 6,
-      "win_rate_pct": 50.0,
-      "total_return_pct": 3.44,
-      "score_total": 1.197,
-      "score_decision": "fail",
-      "strategy_family": "tao_value_recovery_scalein_v044",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_743b7844a132",
-      "ts_iso": "2026-03-11T11:28:10.060875+00:00",
-      "strategy_spec_id": "QD-20260311-C044-TAO-VALUE-RECOVERY-SCALEIN-v1",
-      "variant_id": "default",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "profit_factor": 2.476,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 7,
-      "win_rate_pct": 57.14285714285714,
-      "total_return_pct": 23.41,
-      "score_total": 2.374,
-      "score_decision": "fail",
-      "strategy_family": "tao_value_recovery_scalein_v044",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_1bb66fbe29d9",
-      "ts_iso": "2026-03-11T11:22:07.336735+00:00",
-      "strategy_spec_id": "QD-20260311-C043-ETH-INVENTORY-RESET-RECLAIM-v1",
-      "variant_id": "default",
-      "asset": "SOL",
-      "timeframe": "4h",
-      "profit_factor": 0.844,
-      "max_drawdown_pct": 19.4,
-      "total_trades": 8,
-      "win_rate_pct": 37.5,
-      "total_return_pct": -5.57,
-      "score_total": 0.65,
-      "score_decision": "fail",
-      "strategy_family": "eth_inventory_reset_reclaim_v043",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_8e686d69934b",
-      "ts_iso": "2026-03-11T11:22:07.074754+00:00",
-      "strategy_spec_id": "QD-20260311-C043-ETH-INVENTORY-RESET-RECLAIM-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.299,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 6,
-      "win_rate_pct": 50.0,
-      "total_return_pct": 3.44,
-      "score_total": 1.197,
-      "score_decision": "fail",
-      "strategy_family": "eth_inventory_reset_reclaim_v043",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_0d33ad00ff19",
-      "ts_iso": "2026-03-11T11:10:52.333860+00:00",
-      "strategy_spec_id": "QD-20260311-C041-BTC-TREND-RESET-CONTINUATION-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 0.531,
-      "max_drawdown_pct": 27.64,
-      "total_trades": 9,
-      "win_rate_pct": 22.22222222222222,
-      "total_return_pct": -17.42,
-      "score_total": 0.255,
-      "score_decision": "fail",
-      "strategy_family": "btc_trend_reset_continuation_v041",
-      "mutation_type": "initial",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_60ccc3be300f",
-      "ts_iso": "2026-03-11T11:10:52.070296+00:00",
-      "strategy_spec_id": "QD-20260311-C041-BTC-TREND-RESET-CONTINUATION-v1",
-      "variant_id": "default",
-      "asset": "BTC",
-      "timeframe": "4h",
-      "profit_factor": 0.464,
-      "max_drawdown_pct": 11.55,
-      "total_trades": 5,
-      "win_rate_pct": 20.0,
-      "total_return_pct": -11.55,
-      "score_total": 0.349,
-      "score_decision": "fail",
-      "strategy_family": "btc_trend_reset_continuation_v041",
-      "mutation_type": "initial",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_a192e9643207",
-      "ts_iso": "2026-03-11T11:04:54.624041+00:00",
-      "strategy_spec_id": "QD-20260311-C040-AXS-FAILED-BREAK-REPAIR-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "1h",
-      "profit_factor": 0.115,
-      "max_drawdown_pct": 19.4,
-      "total_trades": 5,
-      "win_rate_pct": 20.0,
-      "total_return_pct": -17.46,
-      "score_total": -0.079,
-      "score_decision": "fail",
-      "strategy_family": "axs_failed_break_repair_v040",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_aab4d88cb84b",
-      "ts_iso": "2026-03-11T11:04:54.609485+00:00",
-      "strategy_spec_id": "QD-20260311-C040-AXS-FAILED-BREAK-REPAIR-v1",
-      "variant_id": "default",
-      "asset": "AXS",
-      "timeframe": "1h",
-      "profit_factor": 0.625,
-      "max_drawdown_pct": 14.94,
-      "total_trades": 5,
-      "win_rate_pct": 40.0,
-      "total_return_pct": -6.55,
-      "score_total": 0.476,
-      "score_decision": "fail",
-      "strategy_family": "axs_failed_break_repair_v040",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_58fa5d51a24f",
-      "ts_iso": "2026-03-11T10:59:18.745647+00:00",
-      "strategy_spec_id": "QD-20260311-C039-DOGE-VALUE-RECOVERY-SCALEIN-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.299,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 6,
-      "win_rate_pct": 50.0,
-      "total_return_pct": 3.44,
-      "score_total": 1.197,
-      "score_decision": "fail",
-      "strategy_family": "doge_value_recovery_scalein_v039",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_33e95ec11e5c",
-      "ts_iso": "2026-03-11T10:59:18.717489+00:00",
-      "strategy_spec_id": "QD-20260311-C039-DOGE-VALUE-RECOVERY-SCALEIN-v1",
-      "variant_id": "default",
-      "asset": "DOGE",
-      "timeframe": "4h",
-      "profit_factor": 0.929,
-      "max_drawdown_pct": 14.94,
-      "total_trades": 9,
-      "win_rate_pct": 33.33333333333333,
-      "total_return_pct": -4.35,
-      "score_total": 0.78,
-      "score_decision": "fail",
-      "strategy_family": "doge_value_recovery_scalein_v039",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_8af08deba73c",
-      "ts_iso": "2026-03-11T10:53:31.640101+00:00",
-      "strategy_spec_id": "QD-20260311-C038-ETH-INVENTORY-RESET-RECLAIM-v1",
-      "variant_id": "default",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "profit_factor": 1.857,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 8,
-      "win_rate_pct": 50.0,
-      "total_return_pct": 16.93,
-      "score_total": 1.755,
-      "score_decision": "fail",
-      "strategy_family": "eth_inventory_reset_reclaim_v038",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_d494bcad7777",
-      "ts_iso": "2026-03-11T10:53:31.371825+00:00",
-      "strategy_spec_id": "QD-20260311-C038-ETH-INVENTORY-RESET-RECLAIM-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.299,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 6,
-      "win_rate_pct": 50.0,
-      "total_return_pct": 3.44,
-      "score_total": 1.197,
-      "score_decision": "fail",
-      "strategy_family": "eth_inventory_reset_reclaim_v038",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_2111d8a19667",
-      "ts_iso": "2026-03-11T10:42:24.467748+00:00",
-      "strategy_spec_id": "QD-20260311-C036-ETH-TREND-RESET-CONTINUATION-v1",
-      "variant_id": "default",
-      "asset": "BTC",
-      "timeframe": "4h",
-      "profit_factor": 0.464,
-      "max_drawdown_pct": 11.55,
-      "total_trades": 5,
-      "win_rate_pct": 20.0,
-      "total_return_pct": -11.55,
-      "score_total": 0.349,
-      "score_decision": "fail",
-      "strategy_family": "eth_trend_reset_continuation_v036",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_4fc4721254ac",
-      "ts_iso": "2026-03-11T10:42:24.198803+00:00",
-      "strategy_spec_id": "QD-20260311-C036-ETH-TREND-RESET-CONTINUATION-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 0.531,
-      "max_drawdown_pct": 27.64,
-      "total_trades": 9,
-      "win_rate_pct": 22.22222222222222,
-      "total_return_pct": -17.42,
-      "score_total": 0.255,
-      "score_decision": "fail",
-      "strategy_family": "eth_trend_reset_continuation_v036",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_772d9957b7bc",
-      "ts_iso": "2026-03-11T10:36:57.318128+00:00",
-      "strategy_spec_id": "QD-20260311-C035-TAO-FAILED-BREAK-REPAIR-v1",
-      "variant_id": "default",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "profit_factor": 1.238,
-      "max_drawdown_pct": 10.22,
-      "total_trades": 5,
-      "win_rate_pct": 40.0,
-      "total_return_pct": 2.46,
-      "score_total": 1.136,
-      "score_decision": "fail",
-      "strategy_family": "tao_failed_break_repair_v035",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    },
-    {
-      "id": "wf_81b5def6d682",
-      "ts_iso": "2026-03-11T10:36:57.307217+00:00",
-      "strategy_spec_id": "QD-20260311-C035-TAO-FAILED-BREAK-REPAIR-v1",
-      "variant_id": "default",
-      "asset": "TAO",
-      "timeframe": "4h",
-      "profit_factor": 0.464,
-      "max_drawdown_pct": 19.4,
-      "total_trades": 5,
-      "win_rate_pct": 20.0,
-      "total_return_pct": -11.55,
-      "score_total": 0.27,
-      "score_decision": "fail",
-      "strategy_family": "tao_failed_break_repair_v035",
-      "mutation_type": "reclassified_refine",
-      "refinement_round": 0,
-      "family_generation": 1,
-      "stage": "screen"
-    }
-  ],
-  "recent_lessons": [
-    {
-      "observation": "Strategy QD-20260311-C045-TAO-FAILED-BREAK-REPAIR-v1 on TAO/4h has very low PF (0.464). Entry logic may be anti-correlated with price movement.",
-      "implication": "Consider inverting entry conditions or switching to a different indicator combination."
-    },
-    {
-      "observation": "Strategy QD-20260311-C045-TAO-FAILED-BREAK-REPAIR-v1 on ETH/4h shows thin edge (PF 1.238) but too few trades (5). Mechanism is too sparse.",
-      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
-    },
-    {
-      "observation": "Strategy QD-20260311-C044-TAO-VALUE-RECOVERY-SCALEIN-v1 on TAO/4h shows thin edge (PF 2.476) but too few trades (7). Mechanism is too sparse.",
-      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
-    },
-    {
-      "observation": "Strategy QD-20260311-C044-TAO-VALUE-RECOVERY-SCALEIN-v1 on ETH/4h shows thin edge (PF 1.299) but too few trades (6). Mechanism is too sparse.",
-      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
-    },
-    {
-      "observation": "Strategy QD-20260311-C043-ETH-INVENTORY-RESET-RECLAIM-v1 on ETH/4h shows thin edge (PF 1.299) but too few trades (6). Mechanism is too sparse.",
-      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
-    },
-    {
-      "observation": "Strategy QD-20260311-C043-ETH-INVENTORY-RESET-RECLAIM-v1 on SOL/4h is slightly losing (PF 0.844). Edge exists but costs eat it.",
-      "implication": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-    },
-    {
-      "observation": "Strategy QD-20260311-C041-BTC-TREND-RESET-CONTINUATION-v1 on BTC/4h has very low PF (0.464). Entry logic may be anti-correlated with price movement.",
-      "implication": "Consider inverting entry conditions or switching to a different indicator combination."
-    },
-    {
-      "observation": "Strategy QD-20260311-C041-BTC-TREND-RESET-CONTINUATION-v1 on ETH/4h is slightly losing (PF 0.531). Edge exists but costs eat it.",
-      "implication": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-    },
-    {
-      "observation": "Strategy QD-20260311-C040-AXS-FAILED-BREAK-REPAIR-v1 on AXS/1h is slightly losing (PF 0.625). Edge exists but costs eat it.",
-      "implication": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-    },
-    {
-      "observation": "Strategy QD-20260311-C040-AXS-FAILED-BREAK-REPAIR-v1 on ETH/1h has very low PF (0.115). Entry logic may be anti-correlated with price movement.",
-      "implication": "Consider inverting entry conditions or switching to a different indicator combination."
-    },
-    {
-      "observation": "Strategy QD-20260311-C039-DOGE-VALUE-RECOVERY-SCALEIN-v1 on DOGE/4h is slightly losing (PF 0.929). Edge exists but costs eat it.",
-      "implication": "Try tightening stops, widening TP, or adding a regime filter to trade only in favorable conditions."
-    },
-    {
-      "observation": "Strategy QD-20260311-C039-DOGE-VALUE-RECOVERY-SCALEIN-v1 on ETH/4h shows thin edge (PF 1.299) but too few trades (6). Mechanism is too sparse.",
-      "implication": "Abandon this sparse mechanism. Do not relax triggers to chase trade count; find a denser concept instead."
-    }
-  ],
+  "external_context_results": [],
+  "recent_lessons": [],
   "result_count": 0,
   "current_cycle_result_count": 0,
   "current_cycle_strategy_count": 3,
-  "external_result_count": 20,
+  "external_result_count": 0,
   "any_promising": false,
   "best_pf": 0,
   "best_qscore": 0,
   "decision_summary": {
     "promote": 0,
     "refine": 0,
-    "abort": 0,
+    "abort": 3,
     "zero_trade": 3
   },
   "guidance": {
     "focus_level": "strategy_and_queue",
-    "instruction": "Work strategy-by-strategy and queue-row-by-queue-row. For each spec, choose exactly one overall decision: pass, refine, or abort. Inside that strategy decision, include one queue_decision for every queue row in the packet. If a strategy produced 0 trades on valid data, treat that as a red flag that must resolve explicitly as either refine or abort. Do not omit any tested row and do not use promote, fix_only, skip, pending, or undecided."
+    "instruction": "Cycle repaired into new schema. Strategy decisions and queue decisions are explicit and authoritative."
   }
 }

@@ -1,1 +1,1 @@
-Fix AutoQuant pipeline health: diagnose and repair sparse-strategy / zero-trade / integrity-skip bottleneck, verify queue progression, then summarize remaining risk.
+No active task.

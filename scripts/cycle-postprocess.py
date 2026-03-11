@@ -266,6 +266,16 @@ def resolve_cycle_id(run_state=None):
         return 0
 
 
+def unresolved_queue_rows_for_cycle(cycle_id):
+    try:
+        conn = sqlite3.connect(DB, timeout=10)
+        row = conn.execute("SELECT COUNT(*) FROM research_funnel_queue WHERE cycle_id=? AND status IN ('queued','running')", (int(cycle_id),)).fetchone()
+        conn.close()
+        return int(row[0] or 0) if row else 0
+    except Exception:
+        return 0
+
+
 def resolve_reporting_cycle_id(run_state=None):
     run_state = run_state or load_run_state()
     run_cycle_id = int(run_state.get("cycle_id", 0) or 0)
@@ -276,11 +286,12 @@ def resolve_reporting_cycle_id(run_state=None):
     decision_cycle_id = int(decisions.get("cycle_id", 0) or 0)
 
     if reflection_cycle_id > 0 and reflection_cycle_id == decision_cycle_id:
+        unresolved = unresolved_queue_rows_for_cycle(reflection_cycle_id)
         if run_cycle_id <= 0:
             return reflection_cycle_id
         if reflection_cycle_id == run_cycle_id:
             return reflection_cycle_id
-        if run_status in {"started", "busy", "pending"} and reflection_cycle_id < run_cycle_id:
+        if unresolved > 0 and run_status in {"started", "busy", "pending"} and reflection_cycle_id < run_cycle_id:
             return reflection_cycle_id
 
     return resolve_cycle_id(run_state)

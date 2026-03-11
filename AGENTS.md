@@ -9,7 +9,7 @@ All artifacts flow as schema-validated JSON. SQLite is the structured data backb
 ### Agent Roster
 | Agent | Role | Model | Interface |
 |-------|------|-------|-----------|
-| Oragorn | Commander — executes directly by default, delegates selectively | Claude Opus | Telegram DM |
+| Oragorn | Commander — executes directly by default; only delegates when Asz explicitly asks or a pipeline step requires it | Claude Opus | Telegram DM |
 | Quandalf | Strategy brain — ALL strategy decisions | Claude Opus | agent-send |
 | Frodex | Execution — code, data, backtests | OpenClaw Codex | agent-send |
 | Balrog | Firewall — deterministic, immutable rules | No LLM | pipeline step |
@@ -54,7 +54,12 @@ This is non-negotiable. Reference: Summer Yue incident.
 
 ## Delegation Protocol
 
-### Before Every Delegation
+Delegation is exception-only.
+Use it only when:
+1. Asz explicitly asks for delegation, or
+2. A pipeline step deterministically requires a specialist.
+
+If delegation is used:
 1. Read the relevant data first — don't delegate blind
 2. Check config/principles.json — does this follow architectural rules?
 3. Include: WHY (context), WHAT (specific data), HOW (clear instructions), DONE (success criteria)
@@ -65,10 +70,9 @@ This is non-negotiable. Reference: Summer Yue incident.
  - Security check → Balrog runs automatically in pipeline
 
 ### Sub-Agent Spawning
-- Sub-agent spawning is PIPELINE-DRIVEN, not agent-choice
-- Agents will NOT reliably spawn sub-agents on their own
-- Lobster pipeline steps dictate when specialists are spawned
-- Sub-agents are temporary: narrow task, focused context, return result, terminate
+- Do not spawn sub-agents by default
+- If a pipeline step requires a specialist, keep the delegation narrow and verifiable
+- Sub-agents are temporary: focused task, return result, terminate
 
 ### Root Cause Rule
 When something breaks:
@@ -84,7 +88,7 @@ When triggered by a cron job, you:
 1. Run the Lobster pipeline as instructed
 2. Read the pipeline output
 3. Decide next action based on results:
- - New strategy spec produced → delegate backtest to parallel_runner.py
+ - New strategy spec produced → run the backtest path directly unless a pipeline step already owns it
  - Backtest results ready → check if xQS automation needed
  - Errors detected → check known_fixes, self-heal or escalate
  - Promotable strategies → log to leaderboard, include in next daily intel

@@ -165,6 +165,7 @@ def extract_batch_summary(reflection, decisions):
 def build_from_learning(data, reflection, decisions):
     ctx = data.get('cycle_context') or {}
     dims = data.get('dimensions') or {}
+    strategy_reviews = dims.get('strategy_reviews') or []
     summary = extract_batch_summary(reflection, decisions)
     cycle_id = ctx.get('cycle_id') or reflection.get('cycle_id') or decisions.get('cycle_id') or '—'
     mode = ctx.get('mode') or '—'
@@ -215,7 +216,24 @@ def build_from_learning(data, reflection, decisions):
         '',
         f"{bold('What I am aborting')}",
         f"• {to_first_person(first(abandon_items),)}",
+        '',
+        f"{bold('Strategy-by-strategy reasons')}",
     ]
+    if strategy_reviews:
+        for item in strategy_reviews:
+            if not isinstance(item, dict):
+                continue
+            lines.append(f"• {item.get('strategy_spec_id') or '?'} | asset={item.get('asset') or '?'} | timeframe={item.get('timeframe') or '?'} | decision={item.get('decision') or '?'}")
+            if item.get('edge_mechanism'):
+                lines.append(f"  mechanism: {compact(item.get('edge_mechanism'))}")
+            if item.get('hypothesis'):
+                lines.append(f"  thesis: {compact(item.get('hypothesis'))}")
+            if item.get('decision_rationale'):
+                lines.append(f"  why: {to_first_person(item.get('decision_rationale'))}")
+            for evidence in (item.get('queue_evidence') or [])[:3]:
+                lines.append(f"  evidence: {compact(evidence)}")
+    else:
+        lines.append('• none')
     return '\n'.join(lines).strip()
 
 
@@ -226,12 +244,26 @@ def build_fallback():
     return f"🧠 {bold('Quandalf Journal')}\n\n{preview}"
 
 
+def trim_message(message, limit=3400):
+    text = str(message or '').strip()
+    if len(text) <= limit:
+        return text
+    marker = f"\n\n{bold('Strategy-by-strategy reasons')}"
+    if marker in text:
+        head, tail = text.split(marker, 1)
+        trimmed = head.strip()
+        budget = max(0, limit - len(trimmed) - len(marker) - 20)
+        return (trimmed + marker + "\n" + tail.strip()[:budget].rstrip() + "…").strip()
+    return text[:limit].rstrip() + '…'
+
+
 def main():
     learning = load_learning()
     reflection = load_json(REFLECTION, {})
     decisions = load_json(DECISIONS, {})
     message = build_from_learning(learning, reflection, decisions) if learning else build_fallback()
     message = message.replace('Why he judged it that way', 'Why I judged it that way').replace('What he would improve next', 'What I would improve next')
+    message = trim_message(message)
     subprocess.run(['python', str(TG_NOTIFY), '--bot', 'quandalf', '--channel', 'dm', '--message', message], check=False)
     try:
         print(message.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore'))
