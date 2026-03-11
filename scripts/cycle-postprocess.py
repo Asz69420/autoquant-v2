@@ -144,8 +144,20 @@ def post_agent_message(from_agent, to_agent, msg_type, message):
         except Exception:
             board = {"messages": []}
 
+    recent = board.get("messages", [])[-20:]
+    now_dt = datetime.now(timezone.utc)
+    for item in reversed(recent):
+        if item.get("from") != from_agent or item.get("to") != to_agent or item.get("type") != msg_type or item.get("message") != message:
+            continue
+        try:
+            ts = datetime.fromisoformat(str(item.get("ts_iso")).replace("Z", "+00:00"))
+        except Exception:
+            ts = None
+        if ts and (now_dt - ts).total_seconds() < 6 * 3600:
+            return
+
     entry = {
-        "ts_iso": datetime.now(timezone.utc).isoformat(),
+        "ts_iso": now_dt.isoformat(),
         "from": from_agent,
         "to": to_agent,
         "type": msg_type,
@@ -1999,14 +2011,27 @@ def main():
 
     if metrics.get("state_warning"):
         log_event("cycle_state_warning", "logron", f"Cycle state warning: {metrics['state_warning']}", severity="warn", pipeline="research_cycle", step="postprocess")
-    if log_card_sent and metrics.get("cycle_results_present"):
+    should_post_oragorn_summary = (
+        bool(metrics.get("state_warning"))
+        or int(metrics.get("pass_count", 0) or 0) > 0
+        or int(metrics.get("promote_count", 0) or 0) > 0
+        or int(metrics.get("queue_terminal_failures", 0) or 0) > 0
+        or unresolved > 0
+    )
+    should_post_oragorn_integrity = (
+        int(metrics.get("queue_integrity_skips", 0) or 0) > 0
+        and not metrics.get("cycle_results_present")
+        and int(metrics.get("queue_terminal_failures", 0) or 0) > 0
+    )
+
+    if log_card_sent and should_post_oragorn_summary:
         post_agent_message(
             "logron",
             "oragorn",
             "observation",
             f"Cycle batch postprocess: {metrics['specs_produced']} specs, {metrics['backtests_completed']}/{metrics['backtests_queued']} backtests complete, passes {metrics['pass_count']}, promotions {metrics['promote_count']}, best QS {best_qscore:.2f}",
         )
-    elif log_card_sent and int(metrics.get("queue_integrity_skips", 0) or 0) > 0:
+    elif log_card_sent and should_post_oragorn_integrity:
         post_agent_message(
             "logron",
             "oragorn",

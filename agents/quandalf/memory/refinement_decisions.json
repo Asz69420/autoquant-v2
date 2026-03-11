@@ -1,85 +1,56 @@
 {
-  "cycle_id": 49,
-  "ts_iso": "2026-03-11T12:13:15.000000+00:00",
+  "cycle_id": 53,
+  "ts_iso": "2026-03-11T12:36:52.154666+00:00",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260311-C049-SOL-VALUE-RECOVERY-SCALEIN-v1",
-      "decision": "abort",
-      "diagnosis_category": "too sparse",
-      "rationale": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the staged value-recovery grammar failed density on valid data and is not worth another iteration.",
-      "queue_decisions": [
-        {
-          "queue_id": "rq_721f9ae1dc83",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Completed screen lane produced zero trades on valid data."
-        },
-        {
-          "queue_id": "rq_a30d650cc0e7",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Completed screen lane produced zero trades on valid data."
-        },
-        {
-          "queue_id": "rq_3e23e8c847f6",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Seeded lane is not worth continuing because completed lanes already failed density."
-        }
-      ]
+      "strategy_spec_id": "QD-20260311-C053-ETH-1H-VWAP-RECLAIM-ROTATION-v1",
+      "strategy_decision": "abort"
     },
     {
-      "strategy_spec_id": "QD-20260311-C049-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
-      "decision": "abort",
-      "diagnosis_category": "too sparse",
-      "rationale": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the asymmetric continuation-exit grammar remains structurally too sparse.",
-      "queue_decisions": [
-        {
-          "queue_id": "rq_c3cacc6df4ce",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Completed screen lane produced zero trades on valid data."
-        },
-        {
-          "queue_id": "rq_3165e60b2af5",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Completed screen lane produced zero trades on valid data."
-        },
-        {
-          "queue_id": "rq_9606aca066da",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Seeded lane is not worth continuing because completed lanes already failed density."
-        }
-      ]
+      "strategy_spec_id": "QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1",
+      "strategy_decision": "abort"
     },
     {
-      "strategy_spec_id": "QD-20260311-C049-TAO-RETEST-HOLD-DERISK-v1",
-      "decision": "abort",
-      "diagnosis_category": "too sparse",
-      "rationale": "Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so the retest-hold with time-based de-risk grammar is still structurally too sparse and should be killed rather than cosmetically loosened.",
-      "queue_decisions": [
-        {
-          "queue_id": "rq_a129946e1208",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Completed screen lane produced zero trades on valid data."
-        },
-        {
-          "queue_id": "rq_8724707ff41d",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Completed screen lane produced zero trades on valid data."
-        },
-        {
-          "queue_id": "rq_8a391b0e8c1f",
-          "decision": "abort",
-          "diagnosis_category": "too sparse",
-          "rationale": "Seeded lane is not worth continuing because completed lanes already failed density."
-        }
-      ]
+      "strategy_spec_id": "QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1",
+      "strategy_decision": "abort"
     }
   ],
-  "jobs": []
+  "jobs": [
+    {
+      "queue_id": "rq_0dcd0c5fea87",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_935119bcda99",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_65360bd09a8c",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_a5ea7255c4ac",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_e61cdb8bb63d",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_0d33ba91cf55",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_ad16c0bfb974",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_85d6f261ec9b",
+      "job_decision": "abort"
+    },
+    {
+      "queue_id": "rq_cc974108812f",
+      "job_decision": "abort"
+    }
+  ]
 }

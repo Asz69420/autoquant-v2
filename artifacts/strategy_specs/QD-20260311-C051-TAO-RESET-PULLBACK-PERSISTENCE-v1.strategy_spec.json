@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C051-TAO-RESET-PULLBACK-PERSISTENCE-v1",
+  "cycle_id": 51,
+  "family_name": "tao_reset_pullback_persistence_v051",
+  "name": "TAO Reset Pullback Persistence v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "trend resumption after a deeper pullback resets momentum without fully breaking medium-term structure",
+  "expected_regime": "TRANSITION_TO_TREND",
+  "thesis": "TAO 4h is the best structurally different lane for testing whether deeper pullbacks can reset momentum and then resume once directional pressure reasserts through medium-term structure. The edge is not shallow EMA-touch continuation; it is buying or selling the reset after enough adverse movement has already washed out weak positioning.",
+  "invalidation_condition": "Abort if reset pullbacks remain one-bar wonders, if TAO keeps mean-reverting instead of persisting after reset, or if structure references are too loose and produce anti-trend churn.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A strong move cools off through a deeper pullback, momentum recenters, structure holds, and directional pressure returns for another leg in the original direction.",
+    "why_edge_should_exist": "Volatile assets like TAO often need a larger reset before trend participants can re-engage. If the pullback is deep enough to shake out weak positions but not deep enough to truly break structure, the next impulse can be more tradeable than the initial move.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because the asset tends to overshoot enough for genuine reset behavior, while 4h keeps the pullback visible instead of devolving into micro-noise.",
+    "indicator_role_map": {
+      "EMA_55": "medium-term structure hold / directional bias",
+      "EMA_20": "re-entry timing after reset",
+      "ATR_14": "required pullback depth and stop normalizer",
+      "RSI_14": "momentum reset detector rather than overbought/oversold label",
+      "PLUS_DI_14/MINUS_DI_14": "persistence confirmation once directional pressure returns"
+    },
+    "expected_regime": "TRANSITION_TO_TREND",
+    "likely_failure_mode": "The pullback may be deep because trend is actually broken, causing persistence entries to fire into a fresh reversal rather than a resumed trend.",
+    "first_refinement_path": "If signals are dense but too noisy, tighten the structure hold around EMA_55 before changing pullback depth.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than pure mean reversion but larger average winners when persistence reasserts after a real reset.",
+    "what_would_count_as_success": "TAO shows repeated reset-then-persist sequences with credible density, and ETH or DOGE confirms the mechanism in a milder form.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated entries that reveal the reset was actually structural breakdown.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low; deep pullback, structure hold, momentum recentering, and DI persistence are sequential",
+      "event_sparsity": "higher than range reacceptance but materially broader than the killed shallow-reset families because pullback depth and persistence thresholds are looser and role-separated",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for testing whether deeper resets on a volatile asset produce a cleaner second impulse.",
+      "continue_if": "TAO shows real reset depth followed by directional persistence and non-trivial follow-through.",
+      "rotate_away_if": "TAO keeps turning reset entries into reversals or chop.",
+      "expected_if_right": "A moderate number of larger continuation moves after deeper resets."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "clean_major_check",
+      "why_included": "Verifies whether the same reset-persistence idea survives on a cleaner, lower-beta lane.",
+      "continue_if": "ETH shows the same sequence with smaller but cleaner follow-through.",
+      "rotate_away_if": "The thesis is only volatility-dependent and disappears on ETH.",
+      "expected_if_right": "Fewer, cleaner reset continuations than TAO."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "behavioral_comparison",
+      "why_included": "Tests whether the mechanism works on a meme-driven expressive lane with different crowding behavior.",
+      "continue_if": "DOGE preserves the reset-persistence sequence with enough density.",
+      "rotate_away_if": "DOGE mean-reverts too hard for persistence after reset.",
+      "expected_if_right": "More false starts than ETH but enough second-leg moves to validate the thesis."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.55 * ATR_14",
+      "Close >= EMA_20 - 0.08 * ATR_14",
+      "Close >= EMA_55 - 0.22 * ATR_14",
+      "RSI_14 >= 48",
+      "PLUS_DI_14 >= 0.90 * MINUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.55 * ATR_14",
+      "Close <= EMA_20 + 0.08 * ATR_14",
+      "Close <= EMA_55 + 0.22 * ATR_14",
+      "RSI_14 <= 52",
+      "MINUS_DI_14 >= 0.90 * PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.96 * ATR_14 below entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 25% size",
+      "Take profit: 1.55 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.78 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.96 * ATR_14 above entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 25% size",
+      "Take profit: 1.55 * ATR_14 on 20% size",
+      "Trail remaining 25% by 0.78 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C051-ETH-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 51,
+  "family_name": "eth_compression_fakeout_reexpansion_v051",
+  "name": "ETH Compression Fakeout Re-Expansion v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression fakeout resolves back through value and expands in the opposite direction after acceptance",
+  "expected_regime": "COMPRESSION_TO_TRANSITION",
+  "thesis": "ETH 4h is the best clean lane in the basket for testing whether compressions often fake one way before resolving through fast value in the opposite direction. The edge is not the first break; it is the post-fakeout acceptance and re-expansion leg once trapped breakout positioning unwinds.",
+  "invalidation_condition": "Abort if the fakeout grammar is still too event-sparse, if fakeouts do not travel after reacceptance, or if ETH compression releases are mostly genuine directional trends rather than trap-and-reverse events.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, price pokes one way, loses that acceptance, reclaims fast value, and then expands through the other side as the failed side unwinds.",
+    "why_edge_should_exist": "ETH 4h currently sits in strong chop. In persistent chop, squeeze breaks frequently fail before a real directional move emerges. Capturing the second move after value is reclaimed should be more robust than chasing the first breakout print.",
+    "asset_timeframe_fit": "ETH 4h is a strong fit because compression structure is cleaner than DOGE while still offering enough movement for a fakeout-to-reexpansion sequence.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "acceptance line after fakeout",
+      "ATR_14": "fakeout depth and stop/trailing normalizer",
+      "PLUS_DI_14/MINUS_DI_14": "post-fakeout directional handoff",
+      "ADX_14": "re-expansion participation qualifier"
+    },
+    "expected_regime": "COMPRESSION_TO_TRANSITION",
+    "likely_failure_mode": "True expansions may continue in the breakout direction, so reclaiming EMA_20 might simply be noise inside a real trend rather than a trap unwind.",
+    "first_refinement_path": "If triggers occur but reversals lack follow-through, require a slightly stronger DI handoff before changing the compression threshold.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than range-reacceptance, but better asymmetry when fakeouts unwind and runners can participate in the re-expansion leg.",
+    "what_would_count_as_success": "ETH shows non-sparse compression fakeouts with positive follow-through, and one of DOGE or TAO confirms the same trap-unwind behavior.",
+    "what_would_count_as_failure": "0 trades, too few squeeze events, or reclaims that behave like dead-cat bounces with no second-leg expansion.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low; compression, reclaim, DI handoff, and ADX participation are sequential rather than contradictory",
+      "event_sparsity": "moderate but intentionally broader than prior squeeze-hold grammar by using acceptance plus directional handoff instead of exact breakout persistence",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Cleanest lane in the basket for seeing whether squeeze fakeouts genuinely re-expand the other way.",
+      "continue_if": "ETH produces credible compression-fakeout density and positive post-cost second-leg expansion.",
+      "rotate_away_if": "ETH compressions mostly trend cleanly or remain too sparse to justify the mechanism.",
+      "expected_if_right": "A moderate number of trap-and-reexpand sequences with occasional runner contribution."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "expressive_comparison",
+      "why_included": "Checks whether the same fakeout logic becomes more frequent on a noisier expressive lane.",
+      "continue_if": "DOGE shows the same trap-and-reexpand structure without collapsing into noise.",
+      "rotate_away_if": "DOGE fakeouts are indistinguishable from random chop.",
+      "expected_if_right": "More frequent but messier fakeouts than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "volatility_stress_test",
+      "why_included": "Tests whether the mechanism survives a faster, larger-amplitude lane.",
+      "continue_if": "TAO preserves the fakeout-reclaim-reexpansion sequence with enough structure to harvest.",
+      "rotate_away_if": "TAO turns compression fakeouts into uncontrolled whipsaw.",
+      "expected_if_right": "Lower frequency but bigger second-leg expansion than ETH."
+    }
+  ],
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "EMA_20",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.18 * ATR_14",
+      "Low <= EMA_20 - 0.18 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= 0.95 * MINUS_DI_14",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.18 * ATR_14",
+      "High >= EMA_20 + 0.18 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= 0.95 * PLUS_DI_14",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.90 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 35% size",
+      "Take profit: 0.95 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.72 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.90 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 35% size",
+      "Take profit: 0.95 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.72 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

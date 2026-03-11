@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C052-BTC-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 52,
+  "family_name": "btc_delayed_retest_continuation_v052",
+  "name": "BTC Delayed Retest Continuation v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "breakout continuation entered on delayed retest after acceptance, not on initial break",
+  "expected_regime": "TRANSITION_TO_EXPANSION",
+  "thesis": "If the current 1h environment transitions out of chop, the best continuation expression is not immediate breakout chasing. It is waiting for acceptance beyond a short-term structure boundary, then joining on the retest while risk is tighter and participation can still be dense enough on BTC 1h.",
+  "invalidation_condition": "If retests fail too often or if the lane remains pure chop with no accepted moves away from structure, the continuation thesis is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks a short-term structure boundary, holds beyond it, retests the breakout area, then continues in the new direction.",
+    "why_edge_should_exist": "Delayed retests exploit trapped countertrend inventory after acceptance, while avoiding the poor location and slippage of first-break entries.",
+    "asset_timeframe_fit": "BTC 1h is the best continuation lane in the basket because it is liquid, tradable, and less erratic than AXS while offering more state change than ETH 4h.",
+    "indicator_role_map": {
+      "EMA_20": "short-term directional bias after acceptance",
+      "DONCHIAN_20": "structure boundary / retest zone",
+      "ATR_14": "retest tolerance and stop/trailing distance",
+      "ADX_14": "state-change qualifier from chop into expansion",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation after retest"
+    },
+    "expected_regime": "TRANSITION_TO_EXPANSION",
+    "likely_failure_mode": "The lane may remain range-bound, producing many false retests that never become real continuation.",
+    "first_refinement_path": "If triggers are dense but false, raise the acceptance requirement rather than shrinking the retest window.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than mean reversion, but higher asymmetry when a real expansion leg follows the retest.",
+    "what_would_count_as_success": "BTC 1h produces credible retest density with asymmetric winners, and ETH 1h shows a milder version of the same continuation grammar.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or repeated retests that collapse straight back inside the prior range.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "controlled by using retest tolerance and modest ADX threshold rather than heroic breakout chains",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best lane in the basket for delayed retest continuation once state changes out of chop.",
+      "continue_if": "BTC prints enough accepted-retest sequences with positive post-cost asymmetry.",
+      "rotate_away_if": "BTC remains too rotational and turns every retest into chop.",
+      "expected_if_right": "A moderate number of continuation trades with occasional large runner legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the continuation grammar survives on the cycle's primary lane.",
+      "continue_if": "ETH preserves accepted break plus retest behavior with slightly lower volatility.",
+      "rotate_away_if": "ETH shows only reclaim noise and no accepted continuation state change.",
+      "expected_if_right": "More frequent but slightly smaller follow-through than BTC."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether the same continuation mechanism works on a thinner, more expressive asset.",
+      "continue_if": "AXS keeps the pattern intact without devolving into random spikes.",
+      "rotate_away_if": "AXS noise overwhelms retest structure.",
+      "expected_if_right": "Messier but potentially sharper continuation bursts."
+    }
+  ],
+  "indicators": ["EMA_20", "DONCHIAN_20", "ATR_14", "ADX_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Low <= DONCHIAN_HIGH_20 + 0.20 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 16"
+    ],
+    "short": [
+      "Close <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "High >= DONCHIAN_LOW_20 - 0.20 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 16"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.70 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.90 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.70 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.90 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

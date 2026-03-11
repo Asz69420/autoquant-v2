@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C053-TAO-4H-FLUSH-RECLAIM-PERSISTENCE-v1",
+  "cycle_id": 53,
+  "family_name": "tao_4h_flush_reclaim_persistence_v053",
+  "name": "TAO 4h Flush Reclaim Persistence v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "impulsive flush resets positioning, price reclaims structure, then partial profits are taken while a core runner stays for persistence if the move becomes real",
+  "expected_regime": "TRANSITION",
+  "thesis": "TAO 4h is the best lane in the basket for testing a management-first idea: flush and reclaim can create a tradable reversal, but the right expression is not all-or-nothing. The setup should monetize the first relief move while keeping a smaller core for persistence if TAO turns the reclaim into a bigger directional leg.",
+  "invalidation_condition": "If reclaim trades do not even reach early partial targets, or if runner contribution never materializes and first-leg expectancy is too weak, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A sharp flush stretches price away from structure, reclaim occurs, a relief move follows, and sometimes that relief turns into a larger persistence leg.",
+    "why_edge_should_exist": "TAO is more expressive than ETH or BTC on 4h. That makes flush-and-reclaim behavior more visible, but also noisier. A partial-profit plus runner structure is the correct component choice because it does not require every reclaim to become a full reversal.",
+    "asset_timeframe_fit": "TAO 4h fits better than ETH 4h for this idea because the amplitude is larger, increasing the chance that the first relief leg clears costs even when the runner does not pay.",
+    "indicator_role_map": {
+      "EMA_20": "reclaim timing and fast structure",
+      "EMA_55": "medium structure hold / runner management",
+      "ATR_14": "flush threshold and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional pressure handoff after reclaim",
+      "ADX_14": "avoid entering in already-mature trend expansion"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "TAO may overshoot so violently that reclaim closes are only dead-cat bounces and not true reset points.",
+    "first_refinement_path": "If early partials work but the runner consistently gives back gains, cut runner size and tighten structure-based trailing rather than changing entry grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Partial-profit hit rate should be materially higher than full-move completion rate; total expectancy depends on early monetization plus occasional persistence runners.",
+    "what_would_count_as_success": "TAO 4h reaches early partial targets often enough to prove the reclaim mechanism is real, with occasional runner extension on stronger resets.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or reclaim events that fail before the first partial often enough to erase expectancy.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but deliberately improved versus prior TAO 4h families by simplifying to flush, reclaim, and pressure handoff",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for expressive flush-and-reclaim behavior plus runner-aware management.",
+      "continue_if": "TAO 4h hits early partials with enough regularity and occasionally extends into runner territory.",
+      "rotate_away_if": "TAO reclaim behavior is too chaotic and first partial capture is unreliable.",
+      "expected_if_right": "A mix of frequent first-target captures and occasional larger runner legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_major_check",
+      "why_included": "Tests whether the same flush-reclaim logic survives on a cleaner slower lane.",
+      "continue_if": "ETH 4h shows milder but still tradable reclaim relief moves.",
+      "rotate_away_if": "ETH 4h loses the mechanism entirely or becomes too sparse.",
+      "expected_if_right": "Lower amplitude but cleaner partial-profit behavior."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe_density_check",
+      "why_included": "Checks whether the mechanism densifies on ETH 1h without losing structural coherence.",
+      "continue_if": "ETH 1h preserves the flush-reclaim pattern with healthier density.",
+      "rotate_away_if": "ETH 1h becomes pure noise or requires different role assignment.",
+      "expected_if_right": "Higher frequency than 4h with smaller but more numerous partial captures."
+    }
+  ],
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.65 * ATR_14",
+      "Close >= EMA_20 - 0.05 * ATR_14",
+      "Close >= EMA_55 - 0.20 * ATR_14",
+      "PLUS_DI_14 >= 0.92 * MINUS_DI_14",
+      "ADX_14 <= 28"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.65 * ATR_14",
+      "Close <= EMA_20 + 0.05 * ATR_14",
+      "Close <= EMA_55 + 0.20 * ATR_14",
+      "MINUS_DI_14 >= 0.92 * PLUS_DI_14",
+      "ADX_14 <= 28"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.00 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 1.00 * ATR_14 on 30% size",
+      "Trail remaining 25% by EMA_20 with 0.70 * ATR_14 fail-safe",
+      "Final time stop: 7 bars"
+    ],
+    "short": [
+      "Stop loss: 1.00 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 1.00 * ATR_14 on 30% size",
+      "Trail remaining 25% by EMA_20 with 0.70 * ATR_14 fail-safe",
+      "Final time stop: 7 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

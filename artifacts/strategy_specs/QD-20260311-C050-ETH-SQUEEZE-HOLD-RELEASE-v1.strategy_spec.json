@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C050-ETH-SQUEEZE-HOLD-RELEASE-v1",
+  "cycle_id": 50,
+  "family_name": "eth_squeeze_hold_release_v050",
+  "name": "ETH Squeeze Hold Release v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
+  "expected_regime": "TRANSITION_TO_TREND",
+  "thesis": "ETH 4h is the best similar-asset lane for testing whether squeeze release should only be entered after price proves persistence beyond the initial expansion bar. The edge is the hold after release, not the first breakout candle.",
+  "invalidation_condition": "Abort if post-squeeze persistence remains too sparse or if held releases still fail to extend enough after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A volatility compression resolves, price holds the release instead of snapping back, and then continuation follows.",
+    "why_edge_should_exist": "The first breakout bar is often noisy. Waiting for persistence after release should filter fake breaks while still participating in real expansions.",
+    "asset_timeframe_fit": "ETH 4h is a clean lane for squeeze-release structure because persistence is more visible than on faster timeframes.",
+    "indicator_role_map": {"BOLLINGER_BANDS_20_2":"compression detector","EMA_20":"post-release hold reference","ATR_14":"expansion and risk normalizer","PLUS_DI_14/MINUS_DI_14":"directional confirmation","ADX_14":"participation filter"},
+    "expected_regime": "TRANSITION_TO_TREND",
+    "likely_failure_mode": "Squeeze releases may hold briefly but still stall before producing enough continuation after fees.",
+    "first_refinement_path": "If entries are acceptable but move size is weak, reduce target ambition before tightening squeeze criteria.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A modest number of release trades with front-half profits common and occasional larger persistence legs.",
+    "what_would_count_as_success": "ETH 4h plus one cross-lane show real density and positive post-cost continuation after squeeze persistence.",
+    "what_would_count_as_failure": "0 trades, sparse mirage, or held releases that still fail to continue.",
+    "density_sanity_check": {"plausible_trade_count":"moderate","contradictory_filters":"none obvious; compression, hold, and direction confirmation are sequential","event_sparsity":"managed by broad post-release persistence logic rather than exact breakout-bar perfection","asset_timeframe_mismatch":"none"}
+  },
+  "test_lanes": [
+    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Best lane for post-squeeze hold-release persistence in the allowed basket.","continue_if":"Held releases trade often enough and continue after costs.","rotate_away_if":"Release holds are sparse or fail to extend.","expected_if_right":"Compression breaks that hold and produce a second continuation leg."},
+    {"asset":"TAO","timeframe":"4h","role":"higher_beta_confirmation","why_included":"Checks whether the same post-release persistence grammar survives on a more explosive lane.","continue_if":"TAO preserves the release-hold structure with acceptable density.","rotate_away_if":"The pattern collapses under high-beta volatility.","expected_if_right":"Fewer but larger squeeze-release continuations than ETH."},
+    {"asset":"AXS","timeframe":"4h","role":"structurally_different_asset","why_included":"Tests whether the same persistence idea transfers to another structurally different asset.","continue_if":"AXS still shows clean release-hold continuation.","rotate_away_if":"AXS becomes too unstable for this pattern.","expected_if_right":"More violent but still tradable release-hold bursts."}
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","ATR_14","PLUS_DI_14","MINUS_DI_14","ADX_14"],
+  "entry_rules": {"long": ["BOLLINGER_WIDTH_20 <= 1.02 * ATR_14","Close >= EMA_20","PLUS_DI_14 >= MINUS_DI_14","ADX_14 >= 10","Low >= EMA_20 - 0.12 * ATR_14"],"short": ["BOLLINGER_WIDTH_20 <= 1.02 * ATR_14","Close <= EMA_20","MINUS_DI_14 >= PLUS_DI_14","ADX_14 >= 10","High <= EMA_20 + 0.12 * ATR_14"]},
+  "exit_rules": {"long": ["Stop loss: 0.86 * ATR_14 below entry","Take profit: 0.54 * ATR_14 on 40% size","Take profit: 0.92 * ATR_14 on 30% size","Trail remaining 30% by 0.7 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.86 * ATR_14 above entry","Take profit: 0.54 * ATR_14 on 40% size","Take profit: 0.92 * ATR_14 on 30% size","Trail remaining 30% by 0.7 * ATR_14","Final time stop: 5 bars"]}
+}

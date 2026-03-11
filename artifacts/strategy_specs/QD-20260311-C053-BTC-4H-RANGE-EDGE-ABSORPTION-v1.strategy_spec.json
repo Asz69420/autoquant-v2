@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C053-BTC-4H-RANGE-EDGE-ABSORPTION-v1",
+  "cycle_id": 53,
+  "family_name": "btc_4h_range_edge_absorption_v053",
+  "name": "BTC 4h Range Edge Absorption v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "range-edge overshoot gets absorbed back into balance and mean-reverts toward the center of the range",
+  "expected_regime": "CHOP",
+  "thesis": "BTC 4h currently reads as low-confidence chop with transition history. That makes range-edge absorption more plausible than continuation. The edge is not buying oversold or selling overbought mechanically; it is trading reacceptance after failed edge auctions.",
+  "invalidation_condition": "If BTC 4h is actually in early expansion and reacceptance prints keep failing back out through the edge, the thesis is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price extends beyond a short-term range boundary, fails to hold acceptance there, closes back inside, and rotates toward the range center.",
+    "why_edge_should_exist": "Low-ADX 4h chop often produces failed edge auctions rather than persistent expansion. Reacceptance after edge failure is a more structurally grounded signal than raw oscillator extremes.",
+    "asset_timeframe_fit": "BTC 4h is suitable because it forms visible range boundaries and tends to rotate cleanly once failed breaks are absorbed, while still offering enough distance per move to clear costs.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "range edge / failed auction detector",
+      "EMA_20": "reacceptance confirmation inside range",
+      "ATR_14": "overshoot tolerance and risk normalizer",
+      "ADX_14": "chop filter to suppress real expansion",
+      "RSI_14": "stretch qualifier, not primary trigger"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "A genuine regime transition can start from the edge, making the reacceptance close a weak fake rather than true absorption.",
+    "first_refinement_path": "If count is adequate but losses cluster during transitions, tighten the ADX veto or require a deeper close back inside the range.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than ETH 1h reclaim logic, but cleaner moves back toward mid-range with lower noise per trade.",
+    "what_would_count_as_success": "BTC 4h shows enough failed edge auctions to produce credible density and rotates materially back into range after reacceptance.",
+    "what_would_count_as_failure": "0 trades, too few edge failures, or repeated entries that immediately relaunch in breakout direction.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because failed edge auctions in chop should recur on BTC 4h",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best major-market lane in the basket for failed range-edge absorption.",
+      "continue_if": "BTC 4h provides enough reacceptance events and consistent travel back toward balance.",
+      "rotate_away_if": "BTC 4h transitions into persistent expansion or edge failures are too sparse.",
+      "expected_if_right": "Moderate participation with clean mean-reversion to the center of the range."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same 4h chop absorption behavior exists on the instructed primary lane.",
+      "continue_if": "ETH 4h shows the same failed-edge reacceptance dynamic with comparable or better density.",
+      "rotate_away_if": "ETH 4h does not respect range-edge absorption behavior.",
+      "expected_if_right": "Slightly noisier but more frequent reacceptance than BTC 4h."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Stress-tests whether the same absorption logic survives a more explosive asset without becoming chaos.",
+      "continue_if": "TAO 4h preserves failed-edge absorption with enough structure.",
+      "rotate_away_if": "TAO overshoot becomes uncontrolled trend persistence rather than absorption.",
+      "expected_if_right": "Fewer but larger reversion legs than BTC."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_20", "ATR_14", "ADX_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.18 * ATR_14",
+      "Close >= DONCHIAN_LOW_20",
+      "Close >= EMA_20 - 0.12 * ATR_14",
+      "RSI_14 >= 40",
+      "ADX_14 <= 20"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
+      "Close <= DONCHIAN_HIGH_20",
+      "Close <= EMA_20 + 0.12 * ATR_14",
+      "RSI_14 <= 60",
+      "ADX_14 <= 20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.60 * ATR_14 on 35% size",
+      "Take profit: 1.10 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.60 * ATR_14 on 35% size",
+      "Take profit: 1.10 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.80 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

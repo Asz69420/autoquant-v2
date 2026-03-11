@@ -28,7 +28,22 @@
       "critical failure",
       "blocked automation",
       "risk to live operation"
-    ]
+    ],
+    "oragorn_lane": {
+      "suppress_routine_observations": true,
+      "board_only_if": [
+        "critical failure",
+        "blocked automation",
+        "decision required",
+        "pass or promotion produced",
+        "state warning with operational impact"
+      ],
+      "keep_out_of_oragorn_lane": [
+        "repeated high gateway errors without a new failure mode",
+        "routine cycle batch summaries with no pass/promotion",
+        "repeat integrity-skip/zero-trade observations that are already visible in logs"
+      ]
+    }
   },
   "output": {
     "summary_path": "data/state/agent_feedback_summary.json"

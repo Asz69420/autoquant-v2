@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C052-AXS-EXHAUSTION-REACCEPTANCE-SCALER-v1",
+  "cycle_id": 52,
+  "family_name": "axs_exhaustion_reacceptance_scaler_v052",
+  "name": "AXS Exhaustion Reacceptance Scaler v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "exhaustion reversal only after structure reaccepts prior value, with staged profit-taking rather than all-or-nothing exits",
+  "expected_regime": "CHOP",
+  "thesis": "AXS 1h is structurally different and currently full CHOP. That makes it useful for a denser exhaustion-reacceptance test where the edge comes from overextension snapping back once value is reclaimed, while management scales out instead of demanding a single perfect reversal.",
+  "invalidation_condition": "If AXS overshoots do not normalize after reacceptance, or if thinner structure makes reversals too noisy to survive costs, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price extends into local exhaustion, reclaims prior value, and mean-reverts in stages rather than one clean continuous swing.",
+    "why_edge_should_exist": "In fully choppy 1h tapes, overshoots frequently reverse once the market re-enters prior balance. Structured scale-out lets the strategy monetize partial reversals instead of requiring large clean swings.",
+    "asset_timeframe_fit": "AXS 1h is appropriate because it exaggerates short-term overshoots, making exhaustion and reacceptance more visible than on majors.",
+    "indicator_role_map": {
+      "VWAP": "prior value / reacceptance line",
+      "BOLLINGER_BANDS_20_2": "exhaustion stretch detector",
+      "ATR_14": "overshoot threshold and stop sizing",
+      "RSI_14": "exhaustion qualifier",
+      "EMA_20": "secondary structure reference for runner exit"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "AXS may be too noisy, causing frequent reclaim prints that do not carry even to first target.",
+    "first_refinement_path": "If first target hits but runner expectancy is poor, shrink the runner and emphasize earlier scale-out rather than tightening entry.",
+    "expected_trade_density": "High relative to the other concepts in this batch.",
+    "expected_outcome_pattern": "Many small and medium reversals, with edge arising from repeated partial captures and limited runner dependence.",
+    "what_would_count_as_success": "AXS 1h trades frequently enough to matter and first two scale-out targets are reached often enough to clear costs.",
+    "what_would_count_as_failure": "0 trades, contradictory behavior versus chop thesis, or first target hit rate too low to support scale-out logic.",
+    "density_sanity_check": {
+      "plausible_trade_count": "high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low; stretch plus reacceptance should recur often on AXS 1h",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best lane in the basket for visibly exaggerated exhaustion and snap-back behavior.",
+      "continue_if": "AXS produces frequent reacceptance reversals with positive first-target capture.",
+      "rotate_away_if": "AXS noise breaks the relationship between stretch and value reclaim.",
+      "expected_if_right": "High participation with many partial-profit captures and modest runners."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "clean_major_check",
+      "why_included": "Tests whether the same exhaustion-reacceptance logic survives on a cleaner asset.",
+      "continue_if": "ETH keeps the same behavior with lower but still credible density.",
+      "rotate_away_if": "Only AXS exhibits the setup and ETH shows no real reacceptance response.",
+      "expected_if_right": "Lower count than AXS but cleaner scale-out behavior."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "adjacent_timeframe",
+      "why_included": "Checks whether the logic survives slower structure without returning to zero-trade ceremony.",
+      "continue_if": "ETH 4h still produces enough reacceptance events to validate the mechanism.",
+      "rotate_away_if": "ETH 4h becomes too sparse to matter.",
+      "expected_if_right": "Reduced count but the same staged reversal profile."
+    }
+  ],
+  "indicators": ["VWAP", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14", "EMA_20"],
+  "entry_rules": {
+    "long": [
+      "Low <= LOWER_BOLLINGER_20_2 - 0.10 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 40",
+      "RSI_14 <= 55"
+    ],
+    "short": [
+      "High >= UPPER_BOLLINGER_20_2 + 0.10 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 60",
+      "RSI_14 >= 45"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.40 * ATR_14 on 40% size",
+      "Take profit: 0.75 * ATR_14 on 35% size",
+      "Exit remaining 25% on touch of EMA_20 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.40 * ATR_14 on 40% size",
+      "Take profit: 0.75 * ATR_14 on 35% size",
+      "Exit remaining 25% on touch of EMA_20 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

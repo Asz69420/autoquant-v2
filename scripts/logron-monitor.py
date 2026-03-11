@@ -69,6 +69,17 @@ def send_critical_escalation(message):
         pass
 
 
+def should_post_health_to_oragorn(status, issues):
+    status = (status or "").lower()
+    normalized = [str(issue).lower() for issue in (issues or []) if str(issue).strip()]
+    if any("stalled" in issue or "critical" in issue or "no backtests" in issue or "recent_healthy_rows=0" in issue for issue in normalized):
+        return True
+    if status == "fail" and any("high gateway errors" not in issue for issue in normalized):
+        return True
+    return False
+
+
+
 def post_agent_message(from_agent, to_agent, msg_type, message):
     board = {"messages": []}
     if os.path.exists(BOARD_PATH):
@@ -586,7 +597,7 @@ def main():
             if prior_fail_streak >= 1:
                 send_critical_escalation("🔥 <b>Repeated critical AutoQuant failure</b>\n\nThis is not the first consecutive failed health check. Review Hades and Oragorn alerts now.")
 
-    if issues:
+    if issues and should_post_health_to_oragorn(status, issues):
         post_agent_message(
             "logron",
             "oragorn",

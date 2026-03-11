@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C051-DOGE-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 51,
+  "family_name": "doge_range_failure_reacceptance_v051",
+  "name": "DOGE Range Failure Reacceptance v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "range-failure mean reversion after displacement loses acceptance and re-enters balance",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "DOGE 4h is the best home lane for testing whether repeated balance rejections can be harvested when a displacement away from fast value fails and price re-accepts balance. The edge is not breakout prediction; it is betting that overextended moves in a chop-heavy transition regime snap back toward value often enough to survive costs.",
+  "invalidation_condition": "Abort if reacceptance events still come too infrequently, if reversion travel is too shallow after costs, or if DOGE transitions into one-sided trend persistence that punishes balance bets.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from short-term balance, fails to keep directional acceptance, closes back through fast value, and mean-reverts toward deeper balance before the next impulse.",
+    "why_edge_should_exist": "The active DOGE lane is dominated by chop with intermittent transition. In that environment, failed excursions should outnumber clean trend continuations, making balance reacceptance denser than strict breakout logic.",
+    "asset_timeframe_fit": "DOGE 4h is appropriate because it is expressive enough to overshoot balance repeatedly, but still slow enough for a multi-bar reacceptance and time-based exit to matter.",
+    "indicator_role_map": {
+      "EMA_20": "fast balance / reacceptance trigger",
+      "EMA_55": "deeper balance target reference",
+      "ATR_14": "displacement threshold and risk normalizer",
+      "RSI_14": "stretch detector rather than trend confirmer",
+      "ADX_14": "trend-strength veto to avoid betting against true expansion"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "A real trend may begin immediately after the reacceptance print, turning the supposed failure into an early continuation leg against the trade.",
+    "first_refinement_path": "If density is fine but expectancy is weak, tighten the time stop and reduce target ambition before adding more filters.",
+    "expected_trade_density": "Moderate-to-high for a 4h swing strategy.",
+    "expected_outcome_pattern": "Many small-to-medium rotations back toward balance, with edge carried by high participation and quick exits rather than long runners.",
+    "what_would_count_as_success": "Screen output shows credible density, DOGE produces repeated snap-backs toward EMA_55, and at least one cross-lane preserves the same reacceptance behavior.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated entries that immediately re-break away from balance.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low; stretch, reacceptance, and trend-strength veto are complementary",
+      "event_sparsity": "kept low by using broad displacement from EMA_20 instead of ceremonial breakout-hold choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Most natural lane for failed excursion and balance reacceptance in the allowed basket.",
+      "continue_if": "DOGE trades with credible density and shows repeatable mean reversion back toward deeper balance.",
+      "rotate_away_if": "DOGE behaves like one-way trend persistence or the reacceptance leg is too shallow after costs.",
+      "expected_if_right": "Frequent reacceptance trades with modest but repeatable travel back toward EMA_55."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the same balance-failure mechanism survives on a cleaner major rather than only on DOGE noise.",
+      "continue_if": "ETH shows the same snap-back logic with fewer but cleaner trades.",
+      "rotate_away_if": "The thesis only exists on DOGE and disappears on a cleaner lane.",
+      "expected_if_right": "Lower density than DOGE but a cleaner reversion profile."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "stress_test",
+      "why_included": "Tests whether the mechanism survives on a higher-volatility structurally different asset.",
+      "continue_if": "TAO preserves the same failure-to-balance snap-back structure without devolving into noise.",
+      "rotate_away_if": "TAO turns the setup into chaotic overshoot with no orderly reacceptance.",
+      "expected_if_right": "Fewer but larger balance snap-backs than DOGE."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.42 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 44",
+      "RSI_14 <= 58",
+      "ADX_14 <= 24"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.42 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 56",
+      "RSI_14 >= 42",
+      "ADX_14 <= 24"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.48 * ATR_14 on 55% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 15% on touch of EMA_55 or 3 bars",
+      "Final time stop: 3 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.48 * ATR_14 on 55% size",
+      "Take profit: 0.85 * ATR_14 on 30% size",
+      "Exit remaining 15% on touch of EMA_55 or 3 bars",
+      "Final time stop: 3 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}
