@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C372-ETH-STATE-CHANGE-MOMENTUM-HOLD-v1",
+  "cycle_id": 372,
+  "family_name": "eth_state_change_momentum_hold",
+  "name": "ETH State Change Momentum Hold v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {"asset": "ETH", "timeframe": "1h"},
+    {"asset": "BTC", "timeframe": "1h"}
+  ],
+  "thesis": "ETH 1h is the best-fit primary lane for testing state-change momentum after regime improvement and post-break hold. The edge should come from broad participation after a local state shift, not from a one-bar breakout guess.",
+  "edge_mechanism": "state-change momentum after hold",
+  "expected_regime": "TRANSITION_WITH_CHOP",
+  "invalidation_condition": "Abort if state-change participation remains too sparse, if post-break holds fail to produce continuation, or if the setup behaves like weak range noise after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A short-term balance shifts into directional momentum, then confirms itself by holding above reclaimed fast value rather than immediately reversing.",
+    "why_edge_should_exist": "In a mostly choppy 1h tape, the first bar alone is noisy. Requiring regime improvement and hold should capture the better state changes while staying denser than multi-stage hero triggers.",
+    "asset_timeframe_fit": "ETH 1h fits because it has enough intraday participation to make state changes visible without relying on rare extreme events.",
+    "indicator_role_map": {
+      "EMA_20": "post-break hold reference",
+      "EMA_55": "background bias anchor",
+      "ADX_14": "regime-improvement qualifier",
+      "RSI_14": "state-change qualifier",
+      "ATR_14": "risk and hold buffer"
+    },
+    "expected_regime": "TRANSITION_WITH_CHOP",
+    "likely_failure_mode": "If the market never transitions out of rotation, holds above value may just mean chop continuation rather than directional persistence.",
+    "first_refinement_path": "If the setup trades but continuation is too shallow, reduce runner ambition before tightening the hold logic.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "none obvious; regime improvement and hold are complementary",
+      "event_sparsity": "managed through continuous-state thresholds rather than rare breakout choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ADX_14", "RSI_14", "ATR_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.2 * ATR_14",
+      "EMA_20 >= EMA_55",
+      "ADX_14 >= 13",
+      "RSI_14 >= 54"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.2 * ATR_14",
+      "EMA_20 <= EMA_55",
+      "ADX_14 >= 13",
+      "RSI_14 <= 46"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.7 * ATR_14 on 40% size",
+      "Take profit: 1.15 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.6 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.7 * ATR_14 on 40% size",
+      "Take profit: 1.15 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.6 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

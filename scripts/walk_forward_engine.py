@@ -17,9 +17,11 @@ python walk_forward_engine.py --asset ETH --tf 4h --strategy-spec SPEC.json --va
 """
 
 import argparse
+import ast
 import json
 import math
 import os
+import re
 import sqlite3
 import sys
 import uuid
@@ -410,6 +412,57 @@ def choppiness_index(candles: list[dict], period: int = 14) -> list[float | None
     return out
 
 
+def bollinger_bands(values: list[float], period: int = 20, mult: float = 2.0):
+    n = len(values)
+    lower = [None] * n
+    middle = [None] * n
+    upper = [None] * n
+    for i in range(period - 1, n):
+        window = values[i - period + 1 : i + 1]
+        mean = sum(window) / period
+        variance = sum((v - mean) ** 2 for v in window) / period
+        std = math.sqrt(variance)
+        middle[i] = mean
+        upper[i] = mean + mult * std
+        lower[i] = mean - mult * std
+    return lower, middle, upper
+
+
+def directional_movement_index(candles: list[dict], period: int = 14):
+    n = len(candles)
+    plus_di = [None] * n
+    minus_di = [None] * n
+    tr_list = [0.0] * n
+    plus_dm_list = [0.0] * n
+    minus_dm_list = [0.0] * n
+    for i in range(1, n):
+        up_move = candles[i]["high"] - candles[i - 1]["high"]
+        down_move = candles[i - 1]["low"] - candles[i]["low"]
+        plus_dm_list[i] = up_move if up_move > down_move and up_move > 0 else 0.0
+        minus_dm_list[i] = down_move if down_move > up_move and down_move > 0 else 0.0
+        tr_list[i] = max(
+            candles[i]["high"] - candles[i]["low"],
+            abs(candles[i]["high"] - candles[i - 1]["close"]),
+            abs(candles[i]["low"] - candles[i - 1]["close"]),
+        )
+    if n <= period:
+        return plus_di, minus_di
+    tr_sum = sum(tr_list[1 : period + 1])
+    plus_dm_sum = sum(plus_dm_list[1 : period + 1])
+    minus_dm_sum = sum(minus_dm_list[1 : period + 1])
+    if tr_sum > 0:
+        plus_di[period] = 100.0 * (plus_dm_sum / tr_sum)
+        minus_di[period] = 100.0 * (minus_dm_sum / tr_sum)
+    for i in range(period + 1, n):
+        tr_sum = tr_sum - (tr_sum / period) + tr_list[i]
+        plus_dm_sum = plus_dm_sum - (plus_dm_sum / period) + plus_dm_list[i]
+        minus_dm_sum = minus_dm_sum - (minus_dm_sum / period) + minus_dm_list[i]
+        if tr_sum > 0:
+            plus_di[i] = 100.0 * (plus_dm_sum / tr_sum)
+            minus_di[i] = 100.0 * (minus_dm_sum / tr_sum)
+    return plus_di, minus_di
+
+
 def compute_indicators(candles: list[dict], params: dict, declared_indicators: list[str] | None = None) -> dict:
     closes = [c["close"] for c in candles]
     indicators = {"close": closes}
@@ -440,6 +493,13 @@ def compute_indicators(candles: list[dict], params: dict, declared_indicators: l
     indicators["rsi_14"] = rsi(closes, 14)
     indicators["atr_14"] = atr(candles, 14)
     indicators["cci_20"] = cci(candles, 20)
+    bb_lower_20_2, bb_middle_20_2, bb_upper_20_2 = bollinger_bands(closes, 20, 2.0)
+    indicators["bb_lower_20_2"] = bb_lower_20_2
+    indicators["bb_middle_20_2"] = bb_middle_20_2
+    indicators["bb_upper_20_2"] = bb_upper_20_2
+    plus_di_14, minus_di_14 = directional_movement_index(candles, 14)
+    indicators["plus_di_14"] = plus_di_14
+    indicators["minus_di_14"] = minus_di_14
     indicators["chop_14_1_100"] = choppiness_index(candles, 14)
     dcl_20, dcm_20, dcu_20 = donchian_channels(candles, 20)
     indicators["dcl_20_20"] = dcl_20
@@ -468,72 +528,162 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
         return True
     condition = condition.strip()
 
-    def get_value(token: str):
+    def resolve_token(token: str):
         token = token.strip()
+        if not token:
+            return None
         try:
             return float(token)
         except ValueError:
             pass
+
+        offset = 0
+        match = re.match(r"^(.*)\[(\d+)\]$", token)
+        if match:
+            token = match.group(1).strip()
+            offset = int(match.group(2))
+        pos = idx - offset
+        if pos < 0 or pos >= len(candles):
+            return None
+
         t = token.lower().replace("-", "_")
-        if t in ("close", "price"):
-            return candles[idx]["close"]
-        if t == "high":
-            return candles[idx]["high"]
-        if t == "low":
-            return candles[idx]["low"]
-        if t == "open":
-            return candles[idx]["open"]
-        if (t.startswith("sma_") or t.startswith("ema_") or t.startswith("dcl_") or t.startswith("dcm_") or t.startswith("dcu_") or t.startswith("chop_")) and t in indicators and indicators[t][idx] is not None:
-            return indicators[t][idx]
+        alias = {
+            "price": "close",
+            "upper_bollinger_20_2": "bb_upper_20_2",
+            "lower_bollinger_20_2": "bb_lower_20_2",
+            "middle_bollinger_20_2": "bb_middle_20_2",
+        }
+        t = alias.get(t, t)
+
+        candle_fields = {"close", "high", "low", "open"}
+        if t in candle_fields:
+            return candles[pos][t]
+        if t in indicators and pos < len(indicators[t]) and indicators[t][pos] is not None:
+            return indicators[t][pos]
+        if (t.startswith("sma_") or t.startswith("ema_") or t.startswith("dcl_") or t.startswith("dcm_") or t.startswith("dcu_") or t.startswith("chop_") or t.startswith("bb_") or t.startswith("plus_di_") or t.startswith("minus_di_")) and t in indicators and indicators[t][pos] is not None:
+            return indicators[t][pos]
         if t.startswith("rsi"):
-            return indicators["rsi_14"][idx]
+            return indicators.get("rsi_14", [None])[pos]
         if t.startswith("atr"):
-            return indicators["atr_14"][idx]
+            return indicators.get("atr_14", [None])[pos]
         if t.startswith("cci"):
-            return indicators["cci_20"][idx]
+            return indicators.get("cci_20", [None])[pos]
         if t in ("supertrend_direction", "st_direction", "supertrend_dir"):
             st = indicators.get("supertrend")
-            return float(st[idx][1]) if st and st[idx] else None
+            return float(st[pos][1]) if st and st[pos] else None
         if t in ("supertrend_value", "st_value", "supertrend"):
             st = indicators.get("supertrend")
-            return float(st[idx][0]) if st and st[idx] else None
+            return float(st[pos][0]) if st and st[pos] else None
         if t in ("vortex_plus", "vi_plus", "vi+", "vtxp_14"):
             vx = indicators.get("vortex")
-            return vx[idx][0] if vx and vx[idx] and vx[idx][0] is not None else None
+            return vx[pos][0] if vx and vx[pos] and vx[pos][0] is not None else None
         if t in ("vortex_minus", "vi_minus", "vi-", "vtxm_14"):
             vx = indicators.get("vortex")
-            return vx[idx][1] if vx and vx[idx] and vx[idx][1] is not None else None
+            return vx[pos][1] if vx and vx[pos] and vx[pos][1] is not None else None
         if t in ("macd_line", "macd"):
             m = indicators.get("macd")
-            return m[idx][0] if m and m[idx] and m[idx][0] is not None else None
+            return m[pos][0] if m and m[pos] and m[pos][0] is not None else None
         if t in ("macd_signal", "macd_sig"):
             m = indicators.get("macd")
-            return m[idx][1] if m and m[idx] and m[idx][1] is not None else None
+            return m[pos][1] if m and m[pos] and m[pos][1] is not None else None
         if t in ("macd_histogram", "macd_hist"):
             m = indicators.get("macd")
-            return m[idx][2] if m and m[idx] and m[idx][2] is not None else None
+            return m[pos][2] if m and m[pos] and m[pos][2] is not None else None
         if t in ("bw_close", "butterworth", "filtered_close"):
             bw = indicators.get("bw_close")
-            return bw[idx] if bw and idx < len(bw) else None
+            return bw[pos] if bw and pos < len(bw) else None
         return None
 
-    for op_str, op_fn in [
-        (">=", lambda a, b: a >= b),
-        ("<=", lambda a, b: a <= b),
-        ("==", lambda a, b: abs(a - b) < 1e-10),
-        ("!=", lambda a, b: abs(a - b) >= 1e-10),
-        (">", lambda a, b: a > b),
-        ("<", lambda a, b: a < b),
-    ]:
-        if op_str in condition:
-            left_text, right_text = condition.split(op_str, 1)
-            left = get_value(left_text)
-            right = get_value(right_text)
-            return left is not None and right is not None and op_fn(left, right)
+    def safe_eval_expr(expr: str):
+        expr = re.sub(r"\bAND\b", " and ", expr, flags=re.IGNORECASE)
+        expr = re.sub(r"\bOR\b", " or ", expr, flags=re.IGNORECASE)
+        token_map = {}
+
+        def repl(match):
+            token = match.group(0)
+            lower = token.lower()
+            if lower in {"and", "or", "not", "true", "false"}:
+                return lower
+            value = resolve_token(token)
+            if value is None:
+                return "None"
+            key = f"v{len(token_map)}"
+            token_map[key] = value
+            return key
+
+        prepared = re.sub(r"\b[A-Za-z_][A-Za-z0-9_]*(?:\[\d+\])?\b", repl, expr)
+        tree = ast.parse(prepared, mode="eval")
+
+        def eval_node(node):
+            if isinstance(node, ast.Expression):
+                return eval_node(node.body)
+            if isinstance(node, ast.Name):
+                return token_map.get(node.id)
+            if isinstance(node, ast.Constant):
+                return node.value
+            if isinstance(node, ast.Num):
+                return node.n
+            if isinstance(node, ast.UnaryOp):
+                operand = eval_node(node.operand)
+                if operand is None:
+                    return None
+                if isinstance(node.op, ast.USub):
+                    return -operand
+                if isinstance(node.op, ast.UAdd):
+                    return +operand
+                if isinstance(node.op, ast.Not):
+                    return not operand
+            if isinstance(node, ast.BinOp):
+                left = eval_node(node.left)
+                right = eval_node(node.right)
+                if left is None or right is None:
+                    return None
+                if isinstance(node.op, ast.Add):
+                    return left + right
+                if isinstance(node.op, ast.Sub):
+                    return left - right
+                if isinstance(node.op, ast.Mult):
+                    return left * right
+                if isinstance(node.op, ast.Div):
+                    return left / right if right != 0 else None
+                if isinstance(node.op, ast.Pow):
+                    return left ** right
+            if isinstance(node, ast.BoolOp):
+                vals = [eval_node(v) for v in node.values]
+                if isinstance(node.op, ast.And):
+                    return all(bool(v) for v in vals)
+                if isinstance(node.op, ast.Or):
+                    return any(bool(v) for v in vals)
+            if isinstance(node, ast.Compare):
+                left = eval_node(node.left)
+                for op, comparator in zip(node.ops, node.comparators):
+                    right = eval_node(comparator)
+                    if left is None or right is None:
+                        return False
+                    ok = False
+                    if isinstance(op, ast.GtE):
+                        ok = left >= right
+                    elif isinstance(op, ast.LtE):
+                        ok = left <= right
+                    elif isinstance(op, ast.Gt):
+                        ok = left > right
+                    elif isinstance(op, ast.Lt):
+                        ok = left < right
+                    elif isinstance(op, ast.Eq):
+                        ok = abs(left - right) < 1e-10
+                    elif isinstance(op, ast.NotEq):
+                        ok = abs(left - right) >= 1e-10
+                    if not ok:
+                        return False
+                    left = right
+                return True
+            raise ValueError(f"Unsupported expression node: {type(node).__name__}")
+
+        return eval_node(tree)
 
     lower_condition = condition.lower()
     if "crosses_above" in lower_condition or "cross_above" in lower_condition:
-        parts = lower_condition.replace("crosses_above", "|").replace("cross_above", "|").split("|")
+        parts = re.split(r"crosses_above|cross_above", condition, flags=re.IGNORECASE)
         if len(parts) == 2 and idx > 0:
             left_text = parts[0].strip()
             right_text = parts[1].strip()
@@ -541,14 +691,19 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
             curr_left = evaluate_condition(f"{left_text} > {right_text}", idx, indicators, candles)
             return prev_left and curr_left
     if "crosses_below" in lower_condition or "cross_below" in lower_condition:
-        parts = lower_condition.replace("crosses_below", "|").replace("cross_below", "|").split("|")
+        parts = re.split(r"crosses_below|cross_below", condition, flags=re.IGNORECASE)
         if len(parts) == 2 and idx > 0:
             left_text = parts[0].strip()
             right_text = parts[1].strip()
             prev_left = evaluate_condition(f"{left_text} >= {right_text}", idx - 1, indicators, candles)
             curr_left = evaluate_condition(f"{left_text} < {right_text}", idx, indicators, candles)
             return prev_left and curr_left
-    return False
+
+    try:
+        result = safe_eval_expr(condition)
+        return bool(result)
+    except Exception:
+        return False
 
 
 def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override: dict | None = None) -> dict:

@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C372-BTC-VALUE-REACCEPTANCE-EXHAUSTION-v1",
+  "cycle_id": 372,
+  "family_name": "btc_value_reacceptance_exhaustion",
+  "name": "BTC Value Reacceptance Exhaustion v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {"asset": "BTC", "timeframe": "1h"},
+    {"asset": "ETH", "timeframe": "1h"}
+  ],
+  "thesis": "BTC 1h is the best similar-asset lane for testing mean reversion from exhaustion only when structure reaccepts prior value. The edge should come from exhaustion plus value reacceptance, not from blindly fading momentum.",
+  "edge_mechanism": "exhaustion mean reversion into value reacceptance",
+  "expected_regime": "CHOP",
+  "invalidation_condition": "Abort if exhaustion-plus-reacceptance does not generate enough trades, if value re-entry fails to mean revert, or if the lane is too trend-dominated for fading to survive costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price stretches away from short-term value, exhausts, and becomes tradable only once it re-enters balance rather than continuing to trend.",
+    "why_edge_should_exist": "A mostly choppy brief should reward structured fades into value more than breakout chasing, but the reacceptance rule avoids catching every knife.",
+    "asset_timeframe_fit": "BTC 1h is a clean similar-asset lane where value reacceptance is often visible and intraday noise is lower than on high-beta alts.",
+    "indicator_role_map": {
+      "EMA_20": "prior value reference",
+      "ATR_14": "exhaustion distance and risk normalizer",
+      "RSI_14": "exhaustion qualifier",
+      "BOLLINGER_BANDS_20_2": "stretch context",
+      "PLUS_DI_14/MINUS_DI_14": "trend fade handoff"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "If BTC runs in clean directional sequences, exhaustion stretches may persist and punish the fade even after reacceptance.",
+    "first_refinement_path": "If reversion works but overextends less than expected, tighten profit-taking rather than adding more entry filters.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; stretch and value reacceptance are sequential",
+      "event_sparsity": "managed by using moderate stretch thresholds rather than extreme capitulation-only conditions",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "ATR_14", "RSI_14", "BOLLINGER_BANDS_20_2", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= EMA_20 - 0.55 * ATR_14 OR Low <= LOWER_BOLLINGER_20_2",
+      "Close >= EMA_20 - 0.05 * ATR_14",
+      "RSI_14 >= 38",
+      "RSI_14 <= 52",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ],
+    "short": [
+      "High >= EMA_20 + 0.55 * ATR_14 OR High >= UPPER_BOLLINGER_20_2",
+      "Close <= EMA_20 + 0.05 * ATR_14",
+      "RSI_14 <= 62",
+      "RSI_14 >= 48",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.6 * ATR_14 on 50% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Final 20% exits on touch of EMA_20 + 0.4 * ATR_14 or 4 bars",
+      "Final time stop: 4 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.6 * ATR_14 on 50% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Final 20% exits on touch of EMA_20 - 0.4 * ATR_14 or 4 bars",
+      "Final time stop: 4 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 4,
+    "max_concurrent_positions": 1
+  }
+}

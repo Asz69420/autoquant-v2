@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+  "cycle_id": 374,
+  "family_name": "eth_asymmetric_trend_persistence",
+  "name": "ETH Asymmetric Trend Persistence v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "ETH", "timeframe": "4h"},
+    {"asset": "BTC", "timeframe": "4h"}
+  ],
+  "thesis": "ETH 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. The edge should come from broad persistence after value hold, with asymmetric management capturing quick payoffs while still allowing a smaller persistence tail.",
+  "edge_mechanism": "broad persistence continuation with asymmetric exits",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if broad persistence entries are too sparse, if continuation legs fail to extend after value holds, or if the asymmetric exit structure cannot improve post-cost outcomes.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price remains aligned with fast value after a directional push, indicating persistence rather than immediate reversal. The trade enters on the hold, but risk and exit are managed by different components than the trigger.",
+    "why_edge_should_exist": "Separating trigger, risk, and exit roles can avoid the common mistake of one indicator doing everything. In a mixed chop/transition environment, broad persistence may still appear often enough to test honest continuation without rare breakouts.",
+    "asset_timeframe_fit": "ETH 4h is the cleaner lane for this role-separated continuation test because persistence structure is usually easier to read than on TAO.",
+    "indicator_role_map": {
+      "EMA_20": "entry trigger via post-push value hold",
+      "ATR_14": "risk placement",
+      "ADX_14": "participation qualifier",
+      "RSI_14": "secondary state qualifier",
+      "EMA_55": "exit reference for failed persistence"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If the market stays fully range-bound, value holds may produce only noise and not enough continuation to support runner logic.",
+    "first_refinement_path": "If entries trade but the back half underperforms, keep trigger logic and replace the runner with a full second target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; hold and participation qualifier are complementary",
+      "event_sparsity": "managed through broad post-push hold logic instead of exact breakout choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "ATR_14", "ADX_14", "RSI_14", "EMA_55"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.2 * ATR_14",
+      "RSI_14 >= 52",
+      "ADX_14 >= 10",
+      "EMA_20 >= EMA_55"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.2 * ATR_14",
+      "RSI_14 <= 48",
+      "ADX_14 >= 10",
+      "EMA_20 <= EMA_55"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.65 * ATR_14 on 50% size",
+      "Take profit: 1.05 * ATR_14 on 25% size",
+      "Exit remaining 25% on close below EMA_55 or 6 bars",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.65 * ATR_14 on 50% size",
+      "Take profit: 1.05 * ATR_14 on 25% size",
+      "Exit remaining 25% on close above EMA_55 or 6 bars",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

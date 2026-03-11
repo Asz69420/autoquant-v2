@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C371-DOGE-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 371,
+  "family_name": "doge_range_failure_reacceptance",
+  "name": "DOGE Range Failure Reacceptance v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "DOGE", "timeframe": "4h"},
+    {"asset": "ETH", "timeframe": "4h"}
+  ],
+  "thesis": "DOGE 4h is the best-fit primary lane for testing a range-failure reversal after a multi-bar breakout loses acceptance and re-enters balance. The edge should come from trapped breakout flow unwinding once price falls back into value, not from predicting reversals before failure is visible.",
+  "edge_mechanism": "range-failure reversal into balance reacceptance",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if breakout-failure events do not occur often enough, if failed breaks do not rotate back through value, or if post-failure movement is too shallow after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pushes beyond a local range for more than one bar, loses acceptance, and rotates back through near-term value as trapped continuation traders unwind.",
+    "why_edge_should_exist": "The live brief is mostly chop with a small transition component, which is exactly where failed continuation can create denser reversal entries than waiting for rare exhaustion extremes.",
+    "asset_timeframe_fit": "DOGE 4h fits because false breaks are common enough to create participation, while 4h smooths out the noisiest intrabar spikes.",
+    "indicator_role_map": {
+      "EMA_20": "value reacceptance reference",
+      "BOLLINGER_BANDS_20_2": "range extension context",
+      "ATR_14": "extension and risk normalizer",
+      "RSI_14": "state-shift qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "handoff from continuation to reversal"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If DOGE enters persistent directional expansion instead of failed continuation, the reversal thesis becomes wrong-regime.",
+    "first_refinement_path": "If participation is adequate but reversal follow-through is weak, simplify exits toward faster balance capture before tightening the trigger.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; extension context and value reacceptance are sequential",
+      "event_sparsity": "managed by using broad multi-bar extension plus value re-entry instead of exact candle-pattern traps",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "BOLLINGER_BANDS_20_2", "ATR_14", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "High[1] >= UPPER_BOLLINGER_20_2[1] OR High[2] >= UPPER_BOLLINGER_20_2[2]",
+      "Close <= EMA_20 + 0.2 * ATR_14",
+      "Close >= EMA_20 - 0.35 * ATR_14",
+      "RSI_14 <= 57",
+      "MINUS_DI_14 >= 0.85 * PLUS_DI_14"
+    ],
+    "short": [
+      "Low[1] <= LOWER_BOLLINGER_20_2[1] OR Low[2] <= LOWER_BOLLINGER_20_2[2]",
+      "Close >= EMA_20 - 0.2 * ATR_14",
+      "Close <= EMA_20 + 0.35 * ATR_14",
+      "RSI_14 >= 43",
+      "PLUS_DI_14 >= 0.85 * MINUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.65 * ATR_14 on 45% size",
+      "Take profit: 1.05 * ATR_14 on 35% size",
+      "Trail remaining 20% behind EMA_20 with 0.35 * ATR_14 buffer",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.65 * ATR_14 on 45% size",
+      "Take profit: 1.05 * ATR_14 on 35% size",
+      "Trail remaining 20% behind EMA_20 with 0.35 * ATR_14 buffer",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  }
+}

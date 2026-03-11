@@ -1,162 +1,71 @@
 {
-  "ts_iso": "2026-03-11T05:29:22.138840+00:00",
+  "ts_iso": "2026-03-11T06:12:51.030829+00:00",
   "type": "reflection",
-  "cycle_id": 370,
+  "cycle_id": 374,
   "mode": "explore",
   "research_direction": "explore_new",
-  "target_asset": "TAO",
+  "target_asset": "BTC",
   "target_timeframe": "4h",
   "strategy_outcomes": [
     {
-      "strategy_spec_id": "QD-20260311-C370-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-      "name": "TAO Range Failure Reacceptance v1",
-      "asset": "TAO",
+      "strategy_spec_id": "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+      "name": "BTC Value Recovery Scale-In v1",
+      "asset": "BTC",
       "timeframe": "4h",
-      "strategy_family": "tao_range_failure_reacceptance",
-      "edge_mechanism": "range-failure reversal into balance reacceptance",
-      "hypothesis": "TAO 4h is the best-fit lane for a range-failure reversal after a multi-bar breakout loses acceptance and price re-enters balance. The edge should come from trapped continuation flow unwinding back into value, not from calling tops or bottoms blindly.",
-      "indicators": [
-        "EMA_20",
-        "BOLLINGER_BANDS_20_2",
-        "ATR_14",
-        "RSI_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "High[1] >= UPPER_BOLLINGER_20_2[1]",
-          "High[2] >= UPPER_BOLLINGER_20_2[2] OR High[3] >= UPPER_BOLLINGER_20_2[3]",
-          "Close <= EMA_20 + 0.15 * ATR_14",
-          "Close >= EMA_20 - 0.35 * ATR_14",
-          "RSI_14 <= 56",
-          "MINUS_DI_14 >= 0.9 * PLUS_DI_14"
-        ],
-        "short": [
-          "Low[1] <= LOWER_BOLLINGER_20_2[1]",
-          "Low[2] <= LOWER_BOLLINGER_20_2[2] OR Low[3] <= LOWER_BOLLINGER_20_2[3]",
-          "Close >= EMA_20 - 0.15 * ATR_14",
-          "Close <= EMA_20 + 0.35 * ATR_14",
-          "RSI_14 >= 44",
-          "PLUS_DI_14 >= 0.9 * MINUS_DI_14"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 0.9 * ATR_14 below entry",
-          "Take profit: 0.75 * ATR_14 on 40% size",
-          "Take profit: 1.2 * ATR_14 on 35% size",
-          "Trail remaining 25% behind EMA_20 with 0.45 * ATR_14 buffer",
-          "Final time stop: 6 bars"
-        ],
-        "short": [
-          "Stop loss: 0.9 * ATR_14 above entry",
-          "Take profit: 0.75 * ATR_14 on 40% size",
-          "Take profit: 1.2 * ATR_14 on 35% size",
-          "Trail remaining 25% behind EMA_20 with 0.45 * ATR_14 buffer",
-          "Final time stop: 6 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
-      "queue": [
-        {
-          "queue_id": "rq_039fd7a13e1a",
-          "stage": "screen",
-          "status": "skipped",
-          "result_id": null,
-          "notes": {
-            "status": "integrity_skip",
-            "error": "integrity_skip:zero_trades_both_samples",
-            "stderr": ""
-          },
-          "queued_at": "2026-03-11T05:29:21.063121+00:00",
-          "completed_at": "2026-03-11T05:29:21.506741+00:00"
-        }
-      ],
-      "result_count": 0,
-      "latest_result": null,
-      "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
-      "allowed_next_actions": [
-        "refine",
-        "abort"
-      ],
-      "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "has_zero_trade_signal": true
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C370-ETH-TREND-RESET-CONTINUATION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-ETH-TREND-RESET-CONTINUATION-v1.strategy_spec.json",
-      "name": "ETH Trend Reset Continuation v1",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "strategy_family": "eth_trend_reset_continuation",
-      "edge_mechanism": "deeper pullback trend reset continuation",
-      "hypothesis": "ETH 4h is the cleaner similar-asset lane for a trend reset continuation after a deeper pullback instead of shallow EMA-touch logic. The edge should come from a full reset into support that restores risk/reward while preserving directional structure.",
+      "strategy_family": "btc_value_recovery_scalein",
+      "edge_mechanism": "value recovery with improved-confirmation scale-in",
+      "hypothesis": "BTC 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of a one-shot all-in entry. The edge should come from a broad reclaim of value after a flush, with size added only if the recovery persists.",
       "indicators": [
         "EMA_20",
         "EMA_55",
         "ATR_14",
-        "ADX_14",
-        "RSI_14"
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
       ],
       "entry_rules": {
         "long": [
-          "Low <= EMA_55 + 0.2 * ATR_14",
-          "Low >= EMA_55 - 0.75 * ATR_14",
+          "Low <= EMA_20 - 0.45 * ATR_14",
           "Close >= EMA_20",
-          "EMA_20 >= EMA_55",
-          "ADX_14 >= 14",
-          "RSI_14 >= 50"
+          "Close >= EMA_55 - 0.4 * ATR_14",
+          "RSI_14 >= 45",
+          "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
         ],
         "short": [
-          "High >= EMA_55 - 0.2 * ATR_14",
-          "High <= EMA_55 + 0.75 * ATR_14",
+          "High >= EMA_20 + 0.45 * ATR_14",
           "Close <= EMA_20",
-          "EMA_20 <= EMA_55",
-          "ADX_14 >= 14",
-          "RSI_14 <= 50"
+          "Close <= EMA_55 + 0.4 * ATR_14",
+          "RSI_14 <= 55",
+          "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
         ]
       },
       "exit_rules": {
         "long": [
-          "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.9 * ATR_14 on 30% size",
-          "Take profit: 1.5 * ATR_14 on 30% size",
-          "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14 by selling 20%",
-          "Trail remaining 20% by 0.8 * ATR_14",
-          "Final time stop: 8 bars"
+          "Stop loss: 0.9 * ATR_14 below average entry",
+          "Take profit: 0.7 * ATR_14 on 40% total size",
+          "Take profit: 1.1 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.65 * ATR_14",
+          "Final time stop: 6 bars"
         ],
         "short": [
-          "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.9 * ATR_14 on 30% size",
-          "Take profit: 1.5 * ATR_14 on 30% size",
-          "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14 by covering 20%",
-          "Trail remaining 20% by 0.8 * ATR_14",
-          "Final time stop: 8 bars"
+          "Stop loss: 0.9 * ATR_14 above average entry",
+          "Take profit: 0.7 * ATR_14 on 40% total size",
+          "Take profit: 1.1 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.65 * ATR_14",
+          "Final time stop: 6 bars"
         ]
       },
-      "trade_management": null,
+      "trade_management": {
+        "entry_expression": "scale_in_on_improved_confirmation",
+        "initial_size_pct": 60,
+        "add_on_size_pct": 40,
+        "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"
+      },
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_832598bfc1fe",
+          "queue_id": "rq_1c9f7d154fe9",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -165,8 +74,8 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T05:29:21.071411+00:00",
-          "completed_at": "2026-03-11T05:29:21.509576+00:00"
+          "queued_at": "2026-03-11T06:12:48.937945+00:00",
+          "completed_at": "2026-03-11T06:12:49.381454+00:00"
         }
       ],
       "result_count": 0,
@@ -195,59 +104,58 @@
       "has_zero_trade_signal": true
     },
     {
-      "strategy_spec_id": "QD-20260311-C370-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
-      "name": "AXS Compression Fakeout Reexpansion v1",
-      "asset": "AXS",
+      "strategy_spec_id": "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
+      "name": "ETH Asymmetric Trend Persistence v1",
+      "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "axs_compression_fakeout_reexpansion",
-      "edge_mechanism": "compression fakeout to re-expansion",
-      "hypothesis": "AXS 4h is the best structurally different lane for testing compression fakeout into re-expansion with directional confirmation. The edge should come from harvesting the post-fakeout directional move once the trap is revealed, not from trading raw compression alone.",
+      "strategy_family": "eth_asymmetric_trend_persistence",
+      "edge_mechanism": "broad persistence continuation with asymmetric exits",
+      "hypothesis": "ETH 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. The edge should come from broad persistence after value hold, with asymmetric management capturing quick payoffs while still allowing a smaller persistence tail.",
       "indicators": [
-        "BOLLINGER_BANDS_20_2",
-        "ATR_14",
         "EMA_20",
+        "ATR_14",
+        "ADX_14",
         "RSI_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14"
+        "EMA_55"
       ],
       "entry_rules": {
         "long": [
-          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
-          "Low[1] <= LOWER_BOLLINGER_20_2[1]",
           "Close >= EMA_20",
-          "RSI_14 >= 49",
-          "PLUS_DI_14 >= MINUS_DI_14"
+          "Low >= EMA_20 - 0.2 * ATR_14",
+          "RSI_14 >= 52",
+          "ADX_14 >= 10",
+          "EMA_20 >= EMA_55"
         ],
         "short": [
-          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
-          "High[1] >= UPPER_BOLLINGER_20_2[1]",
           "Close <= EMA_20",
-          "RSI_14 <= 51",
-          "MINUS_DI_14 >= PLUS_DI_14"
+          "High <= EMA_20 + 0.2 * ATR_14",
+          "RSI_14 <= 48",
+          "ADX_14 >= 10",
+          "EMA_20 <= EMA_55"
         ]
       },
       "exit_rules": {
         "long": [
-          "Stop loss: 0.9 * ATR_14 below entry",
-          "Take profit: 0.7 * ATR_14 on 45% size",
-          "Take profit: 1.1 * ATR_14 on 30% size",
-          "Trail remaining 25% by 0.6 * ATR_14",
-          "Final time stop: 5 bars"
+          "Stop loss: 0.85 * ATR_14 below entry",
+          "Take profit: 0.65 * ATR_14 on 50% size",
+          "Take profit: 1.05 * ATR_14 on 25% size",
+          "Exit remaining 25% on close below EMA_55 or 6 bars",
+          "Final time stop: 6 bars"
         ],
         "short": [
-          "Stop loss: 0.9 * ATR_14 above entry",
-          "Take profit: 0.7 * ATR_14 on 45% size",
-          "Take profit: 1.1 * ATR_14 on 30% size",
-          "Trail remaining 25% by 0.6 * ATR_14",
-          "Final time stop: 5 bars"
+          "Stop loss: 0.85 * ATR_14 above entry",
+          "Take profit: 0.65 * ATR_14 on 50% size",
+          "Take profit: 1.05 * ATR_14 on 25% size",
+          "Exit remaining 25% on close above EMA_55 or 6 bars",
+          "Final time stop: 6 bars"
         ]
       },
       "trade_management": null,
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_7f2b2e4731d2",
+          "queue_id": "rq_97d91183925d",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -256,8 +164,100 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T05:29:21.077370+00:00",
-          "completed_at": "2026-03-11T05:29:21.510516+00:00"
+          "queued_at": "2026-03-11T06:12:48.948866+00:00",
+          "completed_at": "2026-03-11T06:12:49.383833+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "red_flag",
+      "recommended_action": "red_flag",
+      "decision_required": true,
+      "allowed_next_actions": [
+        "refine",
+        "abort"
+      ],
+      "diagnosis_category": "too sparse",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "has_zero_trade_signal": true
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1.strategy_spec.json",
+      "name": "TAO Retest Hold Derisk v1",
+      "asset": "TAO",
+      "timeframe": "4h",
+      "strategy_family": "tao_retest_hold_derisk",
+      "edge_mechanism": "retest hold continuation with time-based derisk",
+      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough. The edge should come from broad retest holds that continue, while time-based de-risking cuts exposure when volatility does not follow through.",
+      "indicators": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14",
+        "EMA_55"
+      ],
+      "entry_rules": {
+        "long": [
+          "Close >= EMA_20",
+          "Low >= EMA_20 - 0.3 * ATR_14",
+          "RSI_14 >= 51",
+          "ADX_14 >= 9",
+          "EMA_20 >= EMA_55 * 0.995"
+        ],
+        "short": [
+          "Close <= EMA_20",
+          "High <= EMA_20 + 0.3 * ATR_14",
+          "RSI_14 <= 49",
+          "ADX_14 >= 9",
+          "EMA_20 <= EMA_55 * 1.005"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.9 * ATR_14 below entry",
+          "Take profit: 0.75 * ATR_14 on 35% size",
+          "Take profit: 1.15 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 6 bars"
+        ],
+        "short": [
+          "Stop loss: 0.9 * ATR_14 above entry",
+          "Take profit: 0.75 * ATR_14 on 35% size",
+          "Take profit: 1.15 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 6 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_754dab11e957",
+          "stage": "screen",
+          "status": "skipped",
+          "result_id": null,
+          "notes": {
+            "status": "integrity_skip",
+            "error": "integrity_skip:zero_trades_both_samples",
+            "stderr": ""
+          },
+          "queued_at": "2026-03-11T06:12:48.954481+00:00",
+          "completed_at": "2026-03-11T06:12:49.385216+00:00"
         }
       ],
       "result_count": 0,
@@ -288,155 +288,64 @@
   ],
   "recent_results": [
     {
-      "strategy_spec_id": "QD-20260311-C370-TAO-RANGE-FAILURE-REACCEPTANCE-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-TAO-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-      "name": "TAO Range Failure Reacceptance v1",
-      "asset": "TAO",
+      "strategy_spec_id": "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+      "name": "BTC Value Recovery Scale-In v1",
+      "asset": "BTC",
       "timeframe": "4h",
-      "strategy_family": "tao_range_failure_reacceptance",
-      "edge_mechanism": "range-failure reversal into balance reacceptance",
-      "hypothesis": "TAO 4h is the best-fit lane for a range-failure reversal after a multi-bar breakout loses acceptance and price re-enters balance. The edge should come from trapped continuation flow unwinding back into value, not from calling tops or bottoms blindly.",
-      "indicators": [
-        "EMA_20",
-        "BOLLINGER_BANDS_20_2",
-        "ATR_14",
-        "RSI_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14"
-      ],
-      "entry_rules": {
-        "long": [
-          "High[1] >= UPPER_BOLLINGER_20_2[1]",
-          "High[2] >= UPPER_BOLLINGER_20_2[2] OR High[3] >= UPPER_BOLLINGER_20_2[3]",
-          "Close <= EMA_20 + 0.15 * ATR_14",
-          "Close >= EMA_20 - 0.35 * ATR_14",
-          "RSI_14 <= 56",
-          "MINUS_DI_14 >= 0.9 * PLUS_DI_14"
-        ],
-        "short": [
-          "Low[1] <= LOWER_BOLLINGER_20_2[1]",
-          "Low[2] <= LOWER_BOLLINGER_20_2[2] OR Low[3] <= LOWER_BOLLINGER_20_2[3]",
-          "Close >= EMA_20 - 0.15 * ATR_14",
-          "Close <= EMA_20 + 0.35 * ATR_14",
-          "RSI_14 >= 44",
-          "PLUS_DI_14 >= 0.9 * MINUS_DI_14"
-        ]
-      },
-      "exit_rules": {
-        "long": [
-          "Stop loss: 0.9 * ATR_14 below entry",
-          "Take profit: 0.75 * ATR_14 on 40% size",
-          "Take profit: 1.2 * ATR_14 on 35% size",
-          "Trail remaining 25% behind EMA_20 with 0.45 * ATR_14 buffer",
-          "Final time stop: 6 bars"
-        ],
-        "short": [
-          "Stop loss: 0.9 * ATR_14 above entry",
-          "Take profit: 0.75 * ATR_14 on 40% size",
-          "Take profit: 1.2 * ATR_14 on 35% size",
-          "Trail remaining 25% behind EMA_20 with 0.45 * ATR_14 buffer",
-          "Final time stop: 6 bars"
-        ]
-      },
-      "trade_management": null,
-      "variants": [],
-      "queue": [
-        {
-          "queue_id": "rq_039fd7a13e1a",
-          "stage": "screen",
-          "status": "skipped",
-          "result_id": null,
-          "notes": {
-            "status": "integrity_skip",
-            "error": "integrity_skip:zero_trades_both_samples",
-            "stderr": ""
-          },
-          "queued_at": "2026-03-11T05:29:21.063121+00:00",
-          "completed_at": "2026-03-11T05:29:21.506741+00:00"
-        }
-      ],
-      "result_count": 0,
-      "latest_result": null,
-      "results": [],
-      "outcome": "red_flag",
-      "recommended_action": "red_flag",
-      "decision_required": true,
-      "allowed_next_actions": [
-        "refine",
-        "abort"
-      ],
-      "diagnosis_category": "too sparse",
-      "failure_diagnosis_categories_allowed": [
-        "bad idea",
-        "bad implementation",
-        "wrong indicator role assignment",
-        "wrong asset",
-        "wrong timeframe",
-        "wrong regime",
-        "weak exit/risk logic",
-        "too sparse",
-        "too complex / overfit"
-      ],
-      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "has_zero_trade_signal": true
-    },
-    {
-      "strategy_spec_id": "QD-20260311-C370-ETH-TREND-RESET-CONTINUATION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-ETH-TREND-RESET-CONTINUATION-v1.strategy_spec.json",
-      "name": "ETH Trend Reset Continuation v1",
-      "asset": "ETH",
-      "timeframe": "4h",
-      "strategy_family": "eth_trend_reset_continuation",
-      "edge_mechanism": "deeper pullback trend reset continuation",
-      "hypothesis": "ETH 4h is the cleaner similar-asset lane for a trend reset continuation after a deeper pullback instead of shallow EMA-touch logic. The edge should come from a full reset into support that restores risk/reward while preserving directional structure.",
+      "strategy_family": "btc_value_recovery_scalein",
+      "edge_mechanism": "value recovery with improved-confirmation scale-in",
+      "hypothesis": "BTC 4h is the best-fit primary lane for testing scale-in around value recovery when confirmation improves across bars instead of a one-shot all-in entry. The edge should come from a broad reclaim of value after a flush, with size added only if the recovery persists.",
       "indicators": [
         "EMA_20",
         "EMA_55",
         "ATR_14",
-        "ADX_14",
-        "RSI_14"
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
       ],
       "entry_rules": {
         "long": [
-          "Low <= EMA_55 + 0.2 * ATR_14",
-          "Low >= EMA_55 - 0.75 * ATR_14",
+          "Low <= EMA_20 - 0.45 * ATR_14",
           "Close >= EMA_20",
-          "EMA_20 >= EMA_55",
-          "ADX_14 >= 14",
-          "RSI_14 >= 50"
+          "Close >= EMA_55 - 0.4 * ATR_14",
+          "RSI_14 >= 45",
+          "MINUS_DI_14 >= 0.8 * PLUS_DI_14"
         ],
         "short": [
-          "High >= EMA_55 - 0.2 * ATR_14",
-          "High <= EMA_55 + 0.75 * ATR_14",
+          "High >= EMA_20 + 0.45 * ATR_14",
           "Close <= EMA_20",
-          "EMA_20 <= EMA_55",
-          "ADX_14 >= 14",
-          "RSI_14 <= 50"
+          "Close <= EMA_55 + 0.4 * ATR_14",
+          "RSI_14 <= 55",
+          "PLUS_DI_14 >= 0.8 * MINUS_DI_14"
         ]
       },
       "exit_rules": {
         "long": [
-          "Stop loss: 1.0 * ATR_14 below entry",
-          "Take profit: 0.9 * ATR_14 on 30% size",
-          "Take profit: 1.5 * ATR_14 on 30% size",
-          "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14 by selling 20%",
-          "Trail remaining 20% by 0.8 * ATR_14",
-          "Final time stop: 8 bars"
+          "Stop loss: 0.9 * ATR_14 below average entry",
+          "Take profit: 0.7 * ATR_14 on 40% total size",
+          "Take profit: 1.1 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.65 * ATR_14",
+          "Final time stop: 6 bars"
         ],
         "short": [
-          "Stop loss: 1.0 * ATR_14 above entry",
-          "Take profit: 0.9 * ATR_14 on 30% size",
-          "Take profit: 1.5 * ATR_14 on 30% size",
-          "Time-based de-risk after 3 bars if unrealized gain < 0.25 * ATR_14 by covering 20%",
-          "Trail remaining 20% by 0.8 * ATR_14",
-          "Final time stop: 8 bars"
+          "Stop loss: 0.9 * ATR_14 above average entry",
+          "Take profit: 0.7 * ATR_14 on 40% total size",
+          "Take profit: 1.1 * ATR_14 on 35% total size",
+          "Trail remaining 25% by 0.65 * ATR_14",
+          "Final time stop: 6 bars"
         ]
       },
-      "trade_management": null,
+      "trade_management": {
+        "entry_expression": "scale_in_on_improved_confirmation",
+        "initial_size_pct": 60,
+        "add_on_size_pct": 40,
+        "add_on_condition": "Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact"
+      },
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_832598bfc1fe",
+          "queue_id": "rq_1c9f7d154fe9",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -445,8 +354,8 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T05:29:21.071411+00:00",
-          "completed_at": "2026-03-11T05:29:21.509576+00:00"
+          "queued_at": "2026-03-11T06:12:48.937945+00:00",
+          "completed_at": "2026-03-11T06:12:49.381454+00:00"
         }
       ],
       "result_count": 0,
@@ -475,59 +384,58 @@
       "has_zero_trade_signal": true
     },
     {
-      "strategy_spec_id": "QD-20260311-C370-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C370-AXS-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
-      "name": "AXS Compression Fakeout Reexpansion v1",
-      "asset": "AXS",
+      "strategy_spec_id": "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1.strategy_spec.json",
+      "name": "ETH Asymmetric Trend Persistence v1",
+      "asset": "ETH",
       "timeframe": "4h",
-      "strategy_family": "axs_compression_fakeout_reexpansion",
-      "edge_mechanism": "compression fakeout to re-expansion",
-      "hypothesis": "AXS 4h is the best structurally different lane for testing compression fakeout into re-expansion with directional confirmation. The edge should come from harvesting the post-fakeout directional move once the trap is revealed, not from trading raw compression alone.",
+      "strategy_family": "eth_asymmetric_trend_persistence",
+      "edge_mechanism": "broad persistence continuation with asymmetric exits",
+      "hypothesis": "ETH 4h is the cleaner similar-asset lane for testing trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. The edge should come from broad persistence after value hold, with asymmetric management capturing quick payoffs while still allowing a smaller persistence tail.",
       "indicators": [
-        "BOLLINGER_BANDS_20_2",
-        "ATR_14",
         "EMA_20",
+        "ATR_14",
+        "ADX_14",
         "RSI_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14"
+        "EMA_55"
       ],
       "entry_rules": {
         "long": [
-          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
-          "Low[1] <= LOWER_BOLLINGER_20_2[1]",
           "Close >= EMA_20",
-          "RSI_14 >= 49",
-          "PLUS_DI_14 >= MINUS_DI_14"
+          "Low >= EMA_20 - 0.2 * ATR_14",
+          "RSI_14 >= 52",
+          "ADX_14 >= 10",
+          "EMA_20 >= EMA_55"
         ],
         "short": [
-          "BOLLINGER_WIDTH_20 <= 1.1 * ATR_14",
-          "High[1] >= UPPER_BOLLINGER_20_2[1]",
           "Close <= EMA_20",
-          "RSI_14 <= 51",
-          "MINUS_DI_14 >= PLUS_DI_14"
+          "High <= EMA_20 + 0.2 * ATR_14",
+          "RSI_14 <= 48",
+          "ADX_14 >= 10",
+          "EMA_20 <= EMA_55"
         ]
       },
       "exit_rules": {
         "long": [
-          "Stop loss: 0.9 * ATR_14 below entry",
-          "Take profit: 0.7 * ATR_14 on 45% size",
-          "Take profit: 1.1 * ATR_14 on 30% size",
-          "Trail remaining 25% by 0.6 * ATR_14",
-          "Final time stop: 5 bars"
+          "Stop loss: 0.85 * ATR_14 below entry",
+          "Take profit: 0.65 * ATR_14 on 50% size",
+          "Take profit: 1.05 * ATR_14 on 25% size",
+          "Exit remaining 25% on close below EMA_55 or 6 bars",
+          "Final time stop: 6 bars"
         ],
         "short": [
-          "Stop loss: 0.9 * ATR_14 above entry",
-          "Take profit: 0.7 * ATR_14 on 45% size",
-          "Take profit: 1.1 * ATR_14 on 30% size",
-          "Trail remaining 25% by 0.6 * ATR_14",
-          "Final time stop: 5 bars"
+          "Stop loss: 0.85 * ATR_14 above entry",
+          "Take profit: 0.65 * ATR_14 on 50% size",
+          "Take profit: 1.05 * ATR_14 on 25% size",
+          "Exit remaining 25% on close above EMA_55 or 6 bars",
+          "Final time stop: 6 bars"
         ]
       },
       "trade_management": null,
       "variants": [],
       "queue": [
         {
-          "queue_id": "rq_7f2b2e4731d2",
+          "queue_id": "rq_97d91183925d",
           "stage": "screen",
           "status": "skipped",
           "result_id": null,
@@ -536,8 +444,100 @@
             "error": "integrity_skip:zero_trades_both_samples",
             "stderr": ""
           },
-          "queued_at": "2026-03-11T05:29:21.077370+00:00",
-          "completed_at": "2026-03-11T05:29:21.510516+00:00"
+          "queued_at": "2026-03-11T06:12:48.948866+00:00",
+          "completed_at": "2026-03-11T06:12:49.383833+00:00"
+        }
+      ],
+      "result_count": 0,
+      "latest_result": null,
+      "results": [],
+      "outcome": "red_flag",
+      "recommended_action": "red_flag",
+      "decision_required": true,
+      "allowed_next_actions": [
+        "refine",
+        "abort"
+      ],
+      "diagnosis_category": "too sparse",
+      "failure_diagnosis_categories_allowed": [
+        "bad idea",
+        "bad implementation",
+        "wrong indicator role assignment",
+        "wrong asset",
+        "wrong timeframe",
+        "wrong regime",
+        "weak exit/risk logic",
+        "too sparse",
+        "too complex / overfit"
+      ],
+      "rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "has_zero_trade_signal": true
+    },
+    {
+      "strategy_spec_id": "QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1",
+      "spec_path": "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1.strategy_spec.json",
+      "name": "TAO Retest Hold Derisk v1",
+      "asset": "TAO",
+      "timeframe": "4h",
+      "strategy_family": "tao_retest_hold_derisk",
+      "edge_mechanism": "retest hold continuation with time-based derisk",
+      "hypothesis": "TAO 4h is the structurally different lane for testing retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough. The edge should come from broad retest holds that continue, while time-based de-risking cuts exposure when volatility does not follow through.",
+      "indicators": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14",
+        "EMA_55"
+      ],
+      "entry_rules": {
+        "long": [
+          "Close >= EMA_20",
+          "Low >= EMA_20 - 0.3 * ATR_14",
+          "RSI_14 >= 51",
+          "ADX_14 >= 9",
+          "EMA_20 >= EMA_55 * 0.995"
+        ],
+        "short": [
+          "Close <= EMA_20",
+          "High <= EMA_20 + 0.3 * ATR_14",
+          "RSI_14 <= 49",
+          "ADX_14 >= 9",
+          "EMA_20 <= EMA_55 * 1.005"
+        ]
+      },
+      "exit_rules": {
+        "long": [
+          "Stop loss: 0.9 * ATR_14 below entry",
+          "Take profit: 0.75 * ATR_14 on 35% size",
+          "Take profit: 1.15 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 6 bars"
+        ],
+        "short": [
+          "Stop loss: 0.9 * ATR_14 above entry",
+          "Take profit: 0.75 * ATR_14 on 35% size",
+          "Take profit: 1.15 * ATR_14 on 35% size",
+          "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 20%",
+          "Trail remaining 10% by 0.7 * ATR_14",
+          "Final time stop: 6 bars"
+        ]
+      },
+      "trade_management": null,
+      "variants": [],
+      "queue": [
+        {
+          "queue_id": "rq_754dab11e957",
+          "stage": "screen",
+          "status": "skipped",
+          "result_id": null,
+          "notes": {
+            "status": "integrity_skip",
+            "error": "integrity_skip:zero_trades_both_samples",
+            "stderr": ""
+          },
+          "queued_at": "2026-03-11T06:12:48.954481+00:00",
+          "completed_at": "2026-03-11T06:12:49.385216+00:00"
         }
       ],
       "result_count": 0,

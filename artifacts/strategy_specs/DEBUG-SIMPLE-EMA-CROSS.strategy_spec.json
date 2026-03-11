@@ -1,0 +1,22 @@
+{
+  "strategy_spec_id": "DEBUG-SIMPLE-EMA-CROSS",
+  "name": "Debug Simple EMA Cross",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "indicators": ["EMA_20"],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20"
+    ],
+    "short": [
+      "Close < EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [],
+    "short": []
+  },
+  "risk_policy": {
+    "max_holding_bars": 5
+  }
+}

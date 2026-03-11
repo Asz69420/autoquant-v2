@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C372-AXS-DELAYED-RETEST-CONTINUATION-v1",
+  "cycle_id": 372,
+  "family_name": "axs_delayed_retest_continuation",
+  "name": "AXS Delayed Retest Continuation v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "validation_targets": [
+    {"asset": "AXS", "timeframe": "1h"},
+    {"asset": "ETH", "timeframe": "1h"}
+  ],
+  "thesis": "AXS 1h is the structurally different lane for testing breakout continuation with delayed entry after retest rather than immediate trigger. The edge should come from participating after reclaimed structure proves itself, not from buying the initial spike.",
+  "edge_mechanism": "delayed retest continuation",
+  "expected_regime": "TRANSITION",
+  "invalidation_condition": "Abort if retest continuations still zero-trade, if retests fail to hold often enough, or if the delayed entry arrives after the move is already spent.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks local structure, retests the breakout zone, and continues only if the retest holds rather than fully reverting into the old range.",
+    "why_edge_should_exist": "Delayed retest logic should avoid first-bar fakeouts while remaining denser than waiting for elaborate multi-stage confirmation stacks.",
+    "asset_timeframe_fit": "AXS 1h is useful because breakout/retest behavior is more expressive on a higher-beta name, and the 1h frame gives enough trade frequency to test density honestly.",
+    "indicator_role_map": {
+      "EMA_20": "retest hold reference",
+      "EMA_55": "background bias anchor",
+      "ATR_14": "retest tolerance and risk normalizer",
+      "RSI_14": "continuation state qualifier",
+      "ADX_14": "trend participation filter"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "If AXS remains fully range-bound, delayed retests may simply mean failed breakouts with no continuation leg.",
+    "first_refinement_path": "If the setup trades but gives back too much after first target, simplify the back half into faster scale-outs before altering entry structure.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; retest, hold, and participation filter are complementary",
+      "event_sparsity": "kept manageable by broad retest-zone logic instead of exact candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["EMA_20", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.35 * ATR_14",
+      "EMA_20 >= EMA_55",
+      "RSI_14 >= 52",
+      "ADX_14 >= 11"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.35 * ATR_14",
+      "EMA_20 <= EMA_55",
+      "RSI_14 <= 48",
+      "ADX_14 >= 11"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 0.75 * ATR_14 on 35% size",
+      "Take profit: 1.2 * ATR_14 on 35% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by selling 15%",
+      "Trail remaining 15% by 0.7 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 0.75 * ATR_14 on 35% size",
+      "Take profit: 1.2 * ATR_14 on 35% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.15 * ATR_14 by covering 15%",
+      "Trail remaining 15% by 0.7 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 6,
+    "max_concurrent_positions": 1
+  }
+}

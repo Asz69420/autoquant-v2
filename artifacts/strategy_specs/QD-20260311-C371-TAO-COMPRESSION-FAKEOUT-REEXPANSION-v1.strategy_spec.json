@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260311-C371-TAO-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 371,
+  "family_name": "tao_compression_fakeout_reexpansion",
+  "name": "TAO Compression Fakeout Reexpansion v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {"asset": "TAO", "timeframe": "4h"},
+    {"asset": "DOGE", "timeframe": "4h"}
+  ],
+  "thesis": "TAO 4h is the structurally different lane for testing compression fakeout into re-expansion with directional confirmation. The edge should come from trading the move after the trap is revealed, not from trading raw compression or first-breakout noise.",
+  "edge_mechanism": "compression fakeout to re-expansion",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "invalidation_condition": "Abort if compression-plus-fakeout remains too rare, if the fakeout signal conflicts with confirmation logic, or if the re-expansion leg is too brief after costs.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, price briefly probes one side, fails to hold, and then expands through the opposite direction once the fakeout is rejected.",
+    "why_edge_should_exist": "Transitioning markets often produce false starts before the cleaner directional leg emerges. Waiting for fakeout rejection can create better asymmetry than taking the first break.",
+    "asset_timeframe_fit": "TAO 4h is suitable because trap-and-release behavior tends to be more visible on a volatile asset, while 4h still provides enough structure for compression context.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "ATR_14": "fakeout size and risk normalizer",
+      "EMA_20": "directional reclaim reference",
+      "RSI_14": "state confirmation",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff after rejection"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "If compression resolves directly instead of faking out first, this logic may still be too restrictive.",
+    "first_refinement_path": "If the trap logic engages but the follow-through is short, simplify exit ambition before widening the fakeout definition.",
+    "density_sanity_check": {
+      "plausible_trade_count": "low-to-moderate",
+      "contradictory_filters": "acceptable; compression, probe, and reclaim are staged rather than redundant",
+      "event_sparsity": "managed with moderate compression thresholds and one-bar fakeout context rather than exact multi-candle choreography",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "indicators": ["BOLLINGER_BANDS_20_2", "ATR_14", "EMA_20", "RSI_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Low[1] <= LOWER_BOLLINGER_20_2[1]",
+      "Close >= EMA_20",
+      "RSI_14 >= 48",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "High[1] >= UPPER_BOLLINGER_20_2[1]",
+      "Close <= EMA_20",
+      "RSI_14 <= 52",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.9 * ATR_14 below entry",
+      "Take profit: 0.7 * ATR_14 on 40% size",
+      "Take profit: 1.15 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.9 * ATR_14 above entry",
+      "Take profit: 0.7 * ATR_14 on 40% size",
+      "Take profit: 1.15 * ATR_14 on 35% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "risk_policy": {
+    "risk_per_trade_pct": 0.004,
+    "max_holding_bars": 5,
+    "max_concurrent_positions": 1
+  }
+}

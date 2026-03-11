@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v2",
-  "ts_iso": "2026-03-11T05:04:32.572028+00:00",
+  "ts_iso": "2026-03-11T06:14:25.090519+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -8,7 +8,7 @@
     "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
   },
   "cycle_context": {
-    "cycle_id": 369,
+    "cycle_id": 374,
     "asset": "BTC",
     "timeframe": "4h",
     "mode": "explore",
@@ -26,25 +26,25 @@
   "dimensions": {
     "what_worked": [],
     "what_failed": [
-      "QD-20260311-C369-BTC-VALUE-RECOVERY-SCALEIN-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260311-C369-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260311-C369-TAO-RETEST-HOLD-DERISK-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+      "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     ],
     "why_it_failed": [
-      "QD-20260311-C369-BTC-VALUE-RECOVERY-SCALEIN-v1: too sparse",
-      "QD-20260311-C369-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: too sparse",
-      "QD-20260311-C369-TAO-RETEST-HOLD-DERISK-v1: too sparse",
-      "QD-20260311-C368-ETH-SESSION-DRIVE-CONTINUATION-v1: too sparse",
-      "QD-20260311-C368-BTC-INVENTORY-RESET-RECLAIM-v1: too sparse",
-      "QD-20260311-C368-TAO-POST-EXPANSION-RUNNER-v1: wrong indicator role assignment"
+      "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1: too sparse",
+      "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: too sparse",
+      "QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1: too sparse",
+      "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1: too sparse",
+      "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: too sparse",
+      "QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1: too sparse"
     ],
     "iterate_next": [
-      "QD-20260311-C369-BTC-VALUE-RECOVERY-SCALEIN-v1: allowed next actions -> refine, abort",
-      "QD-20260311-C369-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: allowed next actions -> refine, abort",
-      "QD-20260311-C369-TAO-RETEST-HOLD-DERISK-v1: allowed next actions -> refine, abort",
-      "decision QD-20260311-C368-ETH-SESSION-DRIVE-CONTINUATION-v1: This broadened drive-continuation expression produced 0 trades on valid data, which is a hard red flag. Even after relaxing the session idea into a 4h-compatible drive-and-hold structure, the setup remained participation-sparse and does not justify another rescue attempt.",
-      "decision QD-20260311-C368-BTC-INVENTORY-RESET-RECLAIM-v1: The flush-and-reclaim continuation concept never engaged on valid data. In this fully choppy brief, the exact reclaim-continuation lane expression still failed to participate, so the honest diagnosis is excessive sparsity rather than something worth cosmetic refinement.",
-      "decision QD-20260311-C368-TAO-POST-EXPANSION-RUNNER-v1: This runner concept also produced 0 trades on valid data. The expansion detector plus persistence confirmation stack still assigned too much directional responsibility to overlapping components, leaving the setup over-constrained for the chosen lane."
+      "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1: allowed next actions -> refine, abort",
+      "QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: allowed next actions -> refine, abort",
+      "QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1: allowed next actions -> refine, abort",
+      "decision QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1: This BTC value-recovery scale-in concept never produced a valid-data trade. Even with a broader reclaim entry and conditional add-on, the mechanism still required too much sequential confirmation to participate on the lane, so another rescue attempt would just cosmetically loosen a dead grammar.",
+      "decision QD-20260311-C374-ETH-ASYMMETRIC-TREND-PERSISTENCE-v1: The ETH persistence continuation with asymmetric exits also hard-skipped with zero trades. Role separation improved conceptual cleanliness, but it did not solve the core problem that the entry still failed to engage often enough for honest testing.",
+      "decision QD-20260311-C374-TAO-RETEST-HOLD-DERISK-v1: This TAO retest-hold continuation also produced zero valid-data trades. Time-based de-risking never had a chance to matter because the retest-hold grammar itself remained structurally sparse, so it should be abandoned rather than diluted further."
     ],
     "abandon": [],
     "bench_for_later": [],
@@ -55,7 +55,7 @@
     ],
     "indicator_role_notes": [],
     "management_notes": [
-      "QD-20260311-C369-BTC-VALUE-RECOVERY-SCALEIN-v1: trade_management -> {\"add_on_condition\": \"Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI confirmation persists\", \"add_on_size_pct\": 40, \"entry_expression\": \"scale_in_on_improved_confirmation\", \"initial_"
+      "QD-20260311-C374-BTC-VALUE-RECOVERY-SCALEIN-v1: trade_management -> {\"add_on_condition\": \"Next bar closes in trade direction and RSI_14 improves by at least 2 points while DI handoff remains intact\", \"add_on_size_pct\": 40, \"entry_expression\": \"scale_in_on_improved_confirmation\", \"initial"
     ]
   },
   "journal_excerpt": [
