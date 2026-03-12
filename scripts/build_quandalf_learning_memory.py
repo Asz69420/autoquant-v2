@@ -136,7 +136,7 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
         if enough_evidence and item.get('allowed_next_actions'):
             iterate_next.append(f"{spec_id}: allowed next actions -> {', '.join(item.get('allowed_next_actions') or [])}")
         elif not enough_evidence:
-            iterate_next.append(f"{spec_id}: await tested evidence before deciding whether to refine or abort")
+            iterate_next.append(f"{spec_id}: await tested evidence before deciding whether the mechanism is weak, the lane is wrong, or the idea deserves refinement")
         if enough_evidence and action == 'abort':
             abandon.append(f"{spec_id}: {diagnosis}")
 

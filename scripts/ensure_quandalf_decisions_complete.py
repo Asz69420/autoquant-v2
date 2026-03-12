@@ -61,11 +61,14 @@ def normalize_legacy_decisions(reflection, decisions):
         cloned.pop("strategy_decision", None)
         spec_id = str(cloned.get("strategy_spec_id") or "").strip()
         outcome = outcomes.get(spec_id, {}) if spec_id else {}
-        if not str(cloned.get("rationale") or "").strip():
+        current_rationale = str(cloned.get("rationale") or "").strip()
+        outcome_has_results = bool((outcome.get("results") or []) or outcome.get("latest_result"))
+        stale_pending_rationale = "pending: no backtest outcome recorded yet" in current_rationale.lower()
+        if (not current_rationale) or (stale_pending_rationale and outcome_has_results):
             rationale = str(outcome.get("rationale") or outcome.get("diagnosis_category") or f"Inherited {decision or 'pending'} decision from legacy refinement format.").strip()
             cloned["rationale"] = rationale
             changed = True
-        if not str(cloned.get("diagnosis_category") or "").strip() and outcome.get("diagnosis_category"):
+        if ((not str(cloned.get("diagnosis_category") or "").strip()) or (stale_pending_rationale and outcome.get("diagnosis_category"))) and outcome.get("diagnosis_category"):
             cloned["diagnosis_category"] = outcome.get("diagnosis_category")
             changed = True
         queue_decisions = cloned.get("queue_decisions")

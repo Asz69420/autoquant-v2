@@ -1,23 +1,40 @@
 {
-  "cycle_id": 81,
-  "ts_iso": "2026-03-12T08:42:33.634700+00:00",
+  "cycle_id": 82,
+  "ts_iso": "2026-03-12T09:11:07.757841+00:00",
   "strategy_decisions": [
     {
-      "strategy_spec_id": "QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1",
+      "strategy_spec_id": "QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
       "decision": "abort",
       "rationale": "pending: no backtest outcome recorded yet",
       "diagnosis_category": "bad idea",
       "queue_decisions": []
     },
     {
-      "strategy_spec_id": "QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1",
+      "strategy_spec_id": "QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
       "decision": "abort",
-      "rationale": "pending: no backtest outcome recorded yet",
-      "diagnosis_category": "bad idea",
-      "queue_decisions": []
+      "rationale": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%",
+      "diagnosis_category": "too sparse",
+      "queue_decisions": [
+        {
+          "queue_id": "rq_68ad801bfe88",
+          "decision": "abort",
+          "rationale": "Deterministic closure inherited abort for queue row rq_68ad801bfe88 from strategy outcome QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1.",
+          "source_result_id": "wf_ab736a709891"
+        },
+        {
+          "queue_id": "rq_b7a9af2f3ac1",
+          "decision": "abort",
+          "rationale": "Deterministic closure inherited abort for queue row rq_b7a9af2f3ac1 from strategy outcome QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1."
+        },
+        {
+          "queue_id": "rq_5f762bbe6097",
+          "decision": "abort",
+          "rationale": "Deterministic closure inherited abort for queue row rq_5f762bbe6097 from strategy outcome QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1."
+        }
+      ]
     },
     {
-      "strategy_spec_id": "QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1",
+      "strategy_spec_id": "QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1",
       "decision": "abort",
       "rationale": "pending: no backtest outcome recorded yet",
       "diagnosis_category": "bad idea",

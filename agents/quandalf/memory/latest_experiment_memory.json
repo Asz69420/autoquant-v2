@@ -1,17 +1,17 @@
 {
-  "ts_iso": "2026-03-12T08:42:33.914717+00:00",
-  "cycle_id": 81,
+  "ts_iso": "2026-03-12T09:11:08.050802+00:00",
+  "cycle_id": 82,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1",
-      "hypothesis": "The timeout-managed retest idea itself is still worth one cleaner test, but the last cycle showed ETH was the wrong ownership lane and the trigger/management mix produced a bad idea. DOGE 4h is the better home because transition structure should print more accepted retests while still making the timeout logic do real work. The edge is the held retest plus strict time discipline, not passive hope.",
+      "strategy_spec_id": "QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
+      "hypothesis": "Cycle 82 still wants an explore basket inside DOGE/ETH/TAO 4h, but the last five cycles say sparse reclaim theater is dead. Session-impulse hold expansion is a denser, more tradeable transitional mechanism for DOGE 4h because it asks for a recurring control event plus a simple hold, not a rare multi-step rescue. The edge is the held session control, not the first breakout tick.",
       "chosen_lane": {
         "asset": "DOGE",
         "timeframe": "4h"
       },
       "component_roles": [
-        "DONCHIAN_20",
+        "SESSION_VWAP",
         "EMA_20",
         "ATR_14",
         "PLUS_DI_14",
@@ -32,43 +32,43 @@
       "lesson_extracted": "pending: no backtest outcome recorded yet"
     },
     {
-      "strategy_spec_id": "QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1",
-      "hypothesis": "The last five cycles say sparse continuation theater is dead and pure management experiments on weak triggers are worse. DOGE 4h remains the best live lane for a denser recovery mechanism because it is transition-heavy enough to create repeated flush-and-reclaim sequences without forcing anti-trend ETH chop or late TAO continuation. The edge is staged participation only after recovery proves itself.",
+      "strategy_spec_id": "QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
+      "hypothesis": "ETH 4h remains the cleanest pure-chop lane in the basket, so if there is still a place for reclaim logic it has to be a denser inventory-reset reacceptance, not the sparse staged-recovery family that just died on count. The edge is the reclaim after the flush, not catching the knife and not asking for rare continuation persistence.",
       "chosen_lane": {
-        "asset": "DOGE",
+        "asset": "ETH",
         "timeframe": "4h"
       },
       "component_roles": [
         "VWAP",
-        "EMA_20",
+        "EMA_55",
         "ATR_14",
         "RSI_14",
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "pending: no backtest outcome recorded yet",
+      "expected_effect": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%",
       "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
+        "trade_count": 1,
+        "profit_factor": 10.0,
+        "max_drawdown_pct": 0.0,
+        "qscore": 0.1,
         "decision": "abort"
       },
       "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pending: no backtest outcome recorded yet"
+      "diagnosis": "too sparse",
+      "lesson_extracted": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%"
     },
     {
-      "strategy_spec_id": "QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1",
-      "hypothesis": "Asymmetric continuation is still only worth testing where trend structure can plausibly support it, and that remains TAO 4h. But the last cycle showed the prior version was simply a bad idea, so this version simplifies the trigger into reset-and-reclaim instead of letting a boundary-touch pretend to be continuation. The edge is cleaner role separation plus a structurally earlier continuation location.",
+      "strategy_spec_id": "QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1",
+      "hypothesis": "The TAO asymmetric continuation family now has enough evidence to call the trigger bad, but TAO itself should not be abandoned as a lane. The better mechanism is a failed-breakdown hold: it keeps TAO's trend support while demanding a structurally cleaner entry than the prior continuation stack. The edge is the failed downside auction that gets reclaimed and held.",
       "chosen_lane": {
         "asset": "TAO",
         "timeframe": "4h"
       },
       "component_roles": [
-        "EMA_20",
-        "ATR_14",
+        "DONCHIAN_20",
         "EMA_55",
+        "ATR_14",
         "PLUS_DI_14",
         "MINUS_DI_14",
         "ADX_14"

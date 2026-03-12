@@ -1,24 +1,24 @@
 {
-  "cycle_id": 81,
-  "ts_iso": "2026-03-12T07:16:01.309083+00:00",
+  "cycle_id": 82,
+  "ts_iso": "2026-03-12T09:10:05.037473+00:00",
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "DOGE",
-  "target_timeframe": "4h",
+  "target_asset": "ETH",
+  "target_timeframe": "1h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
   "iterate_target": null,
   "current_regime": "TRANSITION",
-  "regime_confidence": 40.0,
+  "regime_confidence": 30.0,
   "regime_context": {
     "current": "TRANSITION",
-    "confidence": 40.0,
-    "adx14": 25.0409,
-    "atr14": 0.002107,
+    "confidence": 30.0,
+    "adx14": 21.5796,
+    "atr14": 21.536042,
     "distribution_20bar": {
-      "CHOP": 60.0,
-      "TRANSITION": 40.0
+      "CHOP": 70.0,
+      "TRANSITION": 30.0
     }
   },
   "external_intel": {
@@ -27,10 +27,23 @@
       "tradingview-research-watch",
       "regime-scan"
     ],
-    "recent_items": [],
-    "target_asset": "DOGE",
-    "target_timeframe": "4h",
-    "count": 0
+    "recent_items": [
+      {
+        "id": "EXT-20260310-105628-6F7F",
+        "source_id": "youtube-research-watch",
+        "category": "research_media",
+        "summary": "Stub ingest proving normalized external-intel storage is operational.",
+        "importance": "medium",
+        "asset_scope": [
+          "ETH"
+        ],
+        "normalized_path": "data\\external_intel\\normalized\\20260310\\EXT-20260310-105628-6F7F.external_intel_item.json",
+        "ts_iso": "2026-03-10T10:56:28.437858+00:00"
+      }
+    ],
+    "target_asset": "ETH",
+    "target_timeframe": "1h",
+    "count": 1
   },
   "design_axes": {
     "indicator_roles": [
@@ -65,9 +78,9 @@
   },
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "state-change momentum after regime improvement and post-break hold",
+      "mean reversion from exhaustion only when structure reaccepts prior value",
+      "breakout continuation with delayed entry after retest rather than immediate trigger"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -79,45 +92,56 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "DOGE",
-      "ETH",
-      "TAO"
+      "AXS",
+      "BTC",
+      "ETH"
     ],
     "timeframes": [
+      "1h",
       "4h"
     ]
   },
   "validation_basket": [
     {
-      "asset": "DOGE",
-      "timeframe": "4h",
+      "asset": "ETH",
+      "timeframe": "1h",
       "role": "primary"
     },
     {
       "asset": "ETH",
       "timeframe": "4h",
+      "role": "adjacent_timeframe"
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
       "role": "similar_asset"
     },
     {
-      "asset": "TAO",
-      "timeframe": "4h",
+      "asset": "AXS",
+      "timeframe": "1h",
       "role": "structurally_different_asset"
     }
   ],
   "allowed_lanes": [
     {
-      "asset": "DOGE",
-      "timeframe": "4h",
+      "asset": "ETH",
+      "timeframe": "1h",
       "role": "primary"
     },
     {
       "asset": "ETH",
       "timeframe": "4h",
+      "role": "adjacent_timeframe"
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
       "role": "similar_asset"
     },
     {
-      "asset": "TAO",
-      "timeframe": "4h",
+      "asset": "AXS",
+      "timeframe": "1h",
       "role": "structurally_different_asset"
     }
   ],
@@ -126,7 +150,7 @@
     "auto_fetch_missing_data": true,
     "instruction": "Choose the best-fit asset/timeframe based on thesis. Use the validation basket deliberately. If you need a lane inside the supported universe that is not already cached, request it through the spec and the system will prepare the candles before backtest."
   },
-  "thesis_hint": "Explore fresh DOGE 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: TRANSITION (40.0% confidence). Market transitioning between states \u2014 favor adaptive strategies that can handle regime shifts. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
+  "thesis_hint": "Explore fresh ETH 1h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: TRANSITION (30.0% confidence). Market transitioning between states \u2014 favor adaptive strategies that can handle regime shifts. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
   "stop_condition": "Write 3-4 materially different specs using the best-fit lanes from the allowed basket. At least one spec should test a meaningfully different trade-management expression, at least one should vary indicator-role assignment rather than only entry conditions, and chosen lanes must be justified by thesis.",
-  "rotation_reason": "Deterministic explore rotation away from prior lane (None / None) while preserving freedom to choose the best-fit lane from the basket."
+  "rotation_reason": "Deterministic explore rotation away from prior lane (none / none) while preserving freedom to choose the best-fit lane from the basket."
 }

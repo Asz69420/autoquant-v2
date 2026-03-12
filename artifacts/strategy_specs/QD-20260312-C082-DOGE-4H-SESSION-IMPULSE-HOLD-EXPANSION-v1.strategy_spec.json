@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
+  "cycle_id": 82,
+  "family_name": "doge_4h_session_impulse_hold_expansion_v082",
+  "name": "DOGE 4h Session Impulse Hold Expansion v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a session-window directional impulse establishes control, the first structural pullback holds, and continuation expands from that held control zone",
+  "expected_regime": "TRANSITION",
+  "thesis": "Cycle 82 still wants an explore basket inside DOGE/ETH/TAO 4h, but the last five cycles say sparse reclaim theater is dead. Session-impulse hold expansion is a denser, more tradeable transitional mechanism for DOGE 4h because it asks for a recurring control event plus a simple hold, not a rare multi-step rescue. The edge is the held session control, not the first breakout tick.",
+  "invalidation_condition": "If DOGE 4h session impulses still do not trade often enough or fail immediately after the first pullback hold, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional session impulse sets control, the first retrace holds above fast structure, and price continues into the next expansion leg.",
+    "why_edge_should_exist": "Transition markets often hand off directional control around session boundaries. If that first pullback holds, trapped countertrend inventory can fuel a second leg with better tradeability than rare reclaim setups.",
+    "asset_timeframe_fit": "DOGE 4h is the best fit because it is the live primary lane, sits in transition, and should express session-control behavior more often than ETH chop or late TAO continuation.",
+    "indicator_role_map": {
+      "SESSION_VWAP": "session control / hold line",
+      "EMA_20": "fast structure confirmation",
+      "ATR_14": "impulse significance and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional dominance confirmation",
+      "ADX_14": "participation gate"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "Entries may still be late if the impulse is already exhausted by the time the hold confirms.",
+    "first_refinement_path": "If trade count is healthy but runner contribution is weak, move more size to the first partial before changing the impulse-hold grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A modest number of impulse-hold entries, several first-target wins, and a smaller number of larger continuation bursts.",
+    "what_would_count_as_success": "DOGE 4h clears screen density and produces positive first-target expectancy with acceptable lane fit.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated impulse-hold entries that lose session control immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because the control event and hold are simple, recurring structures",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit transition lane for session impulse continuation.",
+      "continue_if": "DOGE 4h shows enough impulse-hold expansions with positive first-target expectancy.",
+      "rotate_away_if": "DOGE 4h session impulses remain too sparse or fail immediately after the hold.",
+      "expected_if_right": "Moderate count with several continuation bursts and a few larger runners."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset_control",
+      "why_included": "Checks whether the same session-hold grammar survives on a flatter similar lane.",
+      "continue_if": "ETH 4h preserves a smaller but tradable impulse-hold structure.",
+      "rotate_away_if": "ETH 4h confirms the concept needs more transition than pure chop offers.",
+      "expected_if_right": "Lower amplitude, lower count continuation than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Checks whether stronger trend contamination improves or degrades the same session-control grammar.",
+      "continue_if": "TAO 4h keeps enough impulse-hold continuation without turning into late chase entries.",
+      "rotate_away_if": "TAO 4h converts the setup into exhausted continuation buying.",
+      "expected_if_right": "Lower count, stronger carry than DOGE."
+    }
+  ],
+  "indicators": [
+    "SESSION_VWAP",
+    "EMA_20",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= SESSION_VWAP",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Close <= SESSION_VWAP",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 14"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low stays >= EMA_20 - 0.10 * ATR_14"
+    ],
+    "short": [
+      "Next bar high stays <= EMA_20 + 0.10 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.56 * ATR_14 on 35% size",
+      "Take profit: 0.98 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.56 * ATR_14 on 35% size",
+      "Take profit: 0.98 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

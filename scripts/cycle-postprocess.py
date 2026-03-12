@@ -956,7 +956,12 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
-    decisions_complete = (unresolved_queue == 0 and unresolved == 0 and (decided_total > 0 or executed_backtests == 0)) or has_closed_decisions
+    decisions_complete = has_closed_decisions or (
+        executed_backtests > 0
+        and unresolved_queue == 0
+        and unresolved == 0
+        and decided_total > 0
+    )
     if decisions_complete:
         if passed > 0:
             status_emoji = "✅"
@@ -2170,7 +2175,14 @@ def main():
             best_pf = r["profit_factor"]
 
     backtest_count = count_backtests(rows)
-    decision_required = backtest_count > 0 or int(run_state.get("queue_done", 0) or 0) > 0 or int(run_state.get("queue_skipped", 0) or 0) > 0
+    metrics_preview = build_cycle_metrics(cycle_id, rows, elapsed, backtest_count, run_state=run_state)
+    decision_required = (
+        bool(metrics_preview.get("cycle_results_present"))
+        or int(metrics_preview.get("queue_done", 0) or 0) > 0
+        or int(metrics_preview.get("queue_skipped", 0) or 0) > 0
+        or int(metrics_preview.get("queue_terminal_failures", 0) or 0) > 0
+        or int(metrics_preview.get("queue_integrity_skips", 0) or 0) > 0
+    )
     if decision_required:
         decisions_ok, decisions_payload = ensure_decision_closure(cycle_id)
         if not decisions_ok:

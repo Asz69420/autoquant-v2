@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 82,
+  "family_name": "eth_4h_inventory_reset_reclaim_v082",
+  "name": "ETH 4h Inventory Reset Reclaim v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "price flushes through short-term value, weak inventory is cleared, value is reclaimed, and price rotates away from the failed flush",
+  "expected_regime": "CHOP",
+  "thesis": "ETH 4h remains the cleanest pure-chop lane in the basket, so if there is still a place for reclaim logic it has to be a denser inventory-reset reacceptance, not the sparse staged-recovery family that just died on count. The edge is the reclaim after the flush, not catching the knife and not asking for rare continuation persistence.",
+  "invalidation_condition": "If ETH 4h flush-and-reclaim events still undertrade or fail to rotate enough after reclaim, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, weak inventory is cleared, value is reclaimed, and price rotates back toward balance.",
+    "why_edge_should_exist": "In pure chop, failed inventory flushes should recur more often than durable directional continuations. This is denser and more mechanism-faithful than the previous staged recovery concept.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because it is still the cleanest pure-chop lane and should support value-reclaim rotation better than DOGE transition or TAO trend continuation.",
+    "indicator_role_map": {
+      "VWAP": "short-term value / reclaim line",
+      "EMA_55": "balance anchor",
+      "ATR_14": "flush threshold and risk sizing",
+      "RSI_14": "reset/recovery qualifier",
+      "ADX_14": "trend-strength veto"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "The reclaim may only be a weak bounce inside unresolved directional pressure, causing repeated failure before first target.",
+    "first_refinement_path": "If density is acceptable but expectancy is thin, move profit-taking closer before changing the reclaim trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Repeated modest balance rotations, many first-target wins, and only occasional larger unwinds.",
+    "what_would_count_as_success": "ETH 4h clears screen density and produces materially better trade count than the prior sparse value-recovery family.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reclaims that fail immediately back under value.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because failed flushes in chop should recur",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit pure-chop lane for inventory-reset reclaim rotation.",
+      "continue_if": "ETH 4h shows enough reset-reclaim rotations with positive first-target expectancy.",
+      "rotate_away_if": "ETH 4h still undertrades or the moves remain too shallow after costs.",
+      "expected_if_right": "Moderate count with many balance rotations."
+    },
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same reclaim grammar survives on the transition-heavy primary lane.",
+      "continue_if": "DOGE 4h retains a tradable reset-reclaim behavior.",
+      "rotate_away_if": "DOGE 4h confirms the idea is too chop-specific.",
+      "expected_if_right": "Slightly larger but less frequent reclaim rotations than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "negative_control",
+      "why_included": "Useful control to see whether the reclaim logic is too anti-trend on a trend-capable lane.",
+      "continue_if": "TAO 4h still shows failed flushes snapping back to value cleanly.",
+      "rotate_away_if": "TAO 4h confirms the idea should remain chop-owned.",
+      "expected_if_right": "Lower count, stronger but rarer reclaim rotations than ETH."
+    }
+  ],
+  "indicators": [
+    "VWAP",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.34 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "RSI_14 >= 43",
+      "ADX_14 <= 18"
+    ],
+    "short": [
+      "High >= VWAP + 0.34 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "RSI_14 <= 57",
+      "ADX_14 <= 18"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.44 * ATR_14 on 45% size",
+      "Take profit: 0.82 * ATR_14 on 35% size",
+      "Exit remaining 20% on loss of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.44 * ATR_14 on 45% size",
+      "Take profit: 0.82 * ATR_14 on 35% size",
+      "Exit remaining 20% on reclaim of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

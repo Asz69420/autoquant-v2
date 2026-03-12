@@ -11,6 +11,7 @@ CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.j
 CURRENT_CYCLE_STATUS = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
 REFLECTION_PACKET = os.path.join(ROOT, "agents", "quandalf", "memory", "reflection_packet.json")
 RUN_STATE = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
+MIN_TRADES_FOR_VALID_JUDGMENT = 15
 
 
 def load_json(path):
@@ -92,12 +93,14 @@ def classify_result_action(result):
     pf = float(result.get("profit_factor") or 0.0)
     dd = float(result.get("max_drawdown_pct") or 0.0)
 
+    if trades <= 0:
+        return "abort", "abort: zero trades"
+    if trades < MIN_TRADES_FOR_VALID_JUDGMENT:
+        return "abort", f"abort: low trade count ({trades} < {MIN_TRADES_FOR_VALID_JUDGMENT}) with QS {qscore:.2f}, PF {pf:.2f}, DD {dd:.1f}%"
     if decision == "promote":
         return "promote", f"promote: QS {qscore:.2f}, PF {pf:.2f}, DD {dd:.1f}%, trades {trades}"
     if decision == "pass":
         return "refine", f"refine: PASS with QS {qscore:.2f}, PF {pf:.2f}, DD {dd:.1f}%, trades {trades}"
-    if trades <= 0:
-        return "abort", "abort: zero trades"
     return "abort", f"abort: {decision or 'fail'} with QS {qscore:.2f}, PF {pf:.2f}, DD {dd:.1f}%, trades {trades}"
 
 
@@ -123,6 +126,9 @@ def derive_failure_diagnosis(spec, result_rows, queue_rows):
     result_blob = json.dumps(result_rows or []).lower()
     text = queue_blob + " " + result_blob
     if "zero_trade" in text or "zero_trades" in text:
+        return "too sparse"
+    max_trades = max([int((r or {}).get("total_trades") or 0) for r in (result_rows or [])] + [0])
+    if 0 < max_trades < MIN_TRADES_FOR_VALID_JUDGMENT:
         return "too sparse"
     if (spec.get("asset") or "") and (spec.get("timeframe") or ""):
         return "bad idea"
