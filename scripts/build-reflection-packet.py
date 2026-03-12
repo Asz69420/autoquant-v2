@@ -117,7 +117,7 @@ def classify_queue_only_action(queue_rows):
     if skip_reasons:
         joined = "; ".join(skip_reasons[:3])
         if "zero_trades" in joined or "zero_trade" in joined:
-            return "red_flag", f"0 trades on valid data ({joined}) — Quandalf must explicitly choose iterate or abort."
+            return "red_flag", f"0 trades on valid data ({joined}) — treat as a sparse or invalid structure unless stronger evidence exists elsewhere in the family."
         return "fix_only", f"execution/data issue ({joined}) — fix the underlying issue before deciding strategy fate."
     return "pending", "pending: no backtest outcome recorded yet"
 
@@ -285,9 +285,10 @@ def main():
     manifest = load_json(CURRENT_CYCLE_SPECS)
     cycle_status = load_json(CURRENT_CYCLE_STATUS)
     run_state = load_json(RUN_STATE)
-    active_cycle_id = int(run_state.get("cycle_id") or manifest.get("cycle_id") or cycle_status.get("cycle_id") or 0)
+    canonical_state = load_cycle_state()
+    active_cycle_id = int(canonical_state.get("cycle_id") or run_state.get("cycle_id") or manifest.get("cycle_id") or cycle_status.get("cycle_id") or 0)
 
-    raw_spec_paths = list(manifest.get("spec_paths") or cycle_status.get("spec_paths") or [])
+    raw_spec_paths = list(canonical_state.get("spec_paths") or manifest.get("spec_paths") or cycle_status.get("spec_paths") or [])
     current_cycle_specs = []
     seen = set()
     for raw_path in raw_spec_paths:
@@ -401,6 +402,7 @@ def main():
         "result_count": sum(len(item.get("results") or []) for item in strategy_outcomes),
         "current_cycle_result_count": sum(len(item.get("results") or []) for item in strategy_outcomes),
         "current_cycle_strategy_count": len(strategy_outcomes),
+        "canonical_phase": canonical_state.get("phase") if int(canonical_state.get("cycle_id") or 0) == active_cycle_id else None,
         "external_result_count": len(external_results),
         "any_promising": any(item.get("recommended_action") in {"refine", "promote"} for item in strategy_outcomes),
         "best_pf": max(((item.get("latest_result") or {}).get("profit_factor") or 0) for item in strategy_outcomes) if strategy_outcomes else 0,

@@ -1,16 +1,20 @@
 {
-  "cycle_id": 90,
+  "cycle_id": 92,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [],
-  "specs_produced": 0,
+  "spec_paths": [
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C92-TAO-BREAKOUT-HOLD-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C92-TAO-EMA-PULLBACK-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C92-TAO-RANGE-RECLAIM-v1.strategy_spec.json"
+  ],
+  "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "trend pullback continuation after deeper value reclaim into structural support",
-      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
-      "failed breakdown reclaim that must hold before continuation entry"
+      "state-change momentum after regime improvement and post-break hold",
+      "mean reversion from exhaustion only when structure reaccepts prior value",
+      "breakout continuation with delayed entry after retest rather than immediate trigger"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -22,25 +26,28 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "BTC",
+      "AXS",
       "ETH",
       "TAO"
     ],
     "timeframes": [
-      "1h",
       "4h"
     ]
   },
   "iterate_target": null,
-  "new_families": [],
+  "new_families": [
+    "tao_ema_pullback",
+    "tao_range_reclaim",
+    "tao_breakout_hold"
+  ],
   "iterated_families": [],
   "abandoned_families": [],
-  "next_cycle_focus": "pending",
-  "rationale": "pending",
+  "next_cycle_focus": "Fallback rescue fired after 1 zero-spec cycles. Evaluate the three TAO 4h rescue families with diversified management and restore real exploration.",
+  "rationale": "Fallback cooker emitted three denser rescue specs with diversified management after 3 consecutive under-minimum cycles from Quandalf.",
   "expected_density_notes": [
-    "All three chosen mechanisms are expected to be moderate-density if the thesis is right and should not rely on rare-event 4h theater.",
-    "Any lane projecting below roughly 15 screen-stage trades should be treated as structurally too sparse for this cycle.",
-    "ETH inventory-reset and BTC state-change should trade more often than TAO continuation; TAO is included for lane-fit continuation quality, not raw count."
+    "The two intraday mechanisms should be moderate-to-high density if the thesis is right; the single TAO 4h continuation test is expected to be moderate density at best.",
+    "Any intraday lane projecting below roughly 20 screen-stage trades or any 4h lane below roughly 12-15 should be treated as structurally too sparse for this cycle.",
+    "ETH 1h inventory reset and BTC 1h state-change should trade more often than TAO continuation; TAO is included for lane-fit continuation quality, not raw count."
   ],
   "anti_patterns_avoided": [
     "ceremonial sparse confirmation chains",
@@ -48,7 +55,7 @@
     "single-bar hero entries with no management logic",
     "convenience-first lane ownership",
     "management trying to rescue a weak mechanism",
-    "reusing known-bad continuation triggers without structural repair"
+    "reusing sparse 4h event grammar in disguise"
   ],
   "thesis_basis": {
     "last_5_cycles_working_view": {
@@ -63,18 +70,18 @@
         "transition-friendly control-change structures",
         "continuation only from cleaner structural entries where regime support is real"
       ],
-      "expected_density_for_this_cycle": "moderate rather than rare-event sparse",
+      "expected_density_for_this_cycle": "moderate-to-high on 1h lanes and only moderate on the single justified 4h continuation lane",
       "likely_failure_modes": [
-        "screen-stage density below 15 trades",
-        "continuation ownership on the wrong lane",
+        "intraday noise masquerading as density",
         "management trying to rescue a dead trigger",
+        "continuation ownership on the wrong lane",
         "lane mismatch between thesis and live regime"
       ]
     },
     "evidence_sources": [
-      "briefing_packet.json cycle 89",
-      "cycle_orders.json cycle 89",
-      "reflection_packet.json cycle 88",
+      "briefing_packet.json cycle 90",
+      "cycle_orders.json cycle 90",
+      "reflection_packet.json cycle 89",
       "latest_learning_loop.json",
       "latest_experiment_memory.json",
       "latest_journal.md",
@@ -83,80 +90,151 @@
       "research_notes.md"
     ]
   },
-  "target_asset": "BTC",
+  "target_asset": "TAO",
   "target_timeframe": "4h",
   "specific_family_to_iterate": null,
   "family_kill_events": [
     {
-      "ts_iso": "2026-03-12T10:11:26.306986+00:00",
-      "family": "axs_1h_retest_hold_timeout_v088",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:11:32.042279+00:00",
-      "family": "btc_4h_value_recovery_scalein_v084",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:11:37.780500+00:00",
+      "ts_iso": "2026-03-12T10:20:07.268144+00:00",
       "family": "eth_4h_exhaustion_reacceptance_rotation_v087",
       "reason": "screen-stage density below 30 trades"
     },
     {
-      "ts_iso": "2026-03-12T10:11:43.533882+00:00",
-      "family": "tao_4h_failed_breakdown_hold_continuation_v085",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:11:49.270609+00:00",
-      "family": "eth_1h_value_recovery_scalein_v088",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:11:54.996725+00:00",
-      "family": "eth_4h_deep_value_reclaim_v085",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:12:01.092508+00:00",
-      "family": "doge_4h_state_change_hold_expansion_v087",
-      "reason": "PF/QScore too weak on first full backtest"
-    },
-    {
-      "ts_iso": "2026-03-12T10:12:06.838920+00:00",
+      "ts_iso": "2026-03-12T10:20:13.232326+00:00",
       "family": "btc_4h_retest_hold_timeout_v084",
       "reason": "screen-stage density below 30 trades"
     },
     {
-      "ts_iso": "2026-03-12T10:12:12.578357+00:00",
-      "family": "tao_4h_failed_breakdown_hold_continuation_v089",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:12:18.322536+00:00",
-      "family": "axs_4h_deep_reset_continuation_v086",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T10:12:24.061866+00:00",
-      "family": "btc_1h_asymmetric_continuation_v088",
+      "ts_iso": "2026-03-12T10:20:18.959465+00:00",
+      "family": "btc_1h_state_change_hold_expansion_v090",
       "reason": "PF/QScore too weak on first full backtest"
     },
     {
-      "ts_iso": "2026-03-12T10:12:29.802532+00:00",
-      "family": "btc_4h_state_change_hold_expansion_v089",
-      "reason": "PF/QScore too weak on first full backtest"
-    },
-    {
-      "ts_iso": "2026-03-12T10:12:35.530477+00:00",
+      "ts_iso": "2026-03-12T10:20:24.512416+00:00",
       "family": "tao_4h_delayed_retest_continuation_v087",
       "reason": "screen-stage density below 30 trades"
     },
     {
-      "ts_iso": "2026-03-12T10:12:41.280448+00:00",
+      "ts_iso": "2026-03-12T10:20:30.047429+00:00",
+      "family": "doge_4h_state_change_hold_expansion_v087",
+      "reason": "PF/QScore too weak on first full backtest"
+    },
+    {
+      "ts_iso": "2026-03-12T10:20:35.605173+00:00",
+      "family": "tao_4h_failed_breakdown_hold_continuation_v090",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:20:41.152318+00:00",
+      "family": "tao_4h_failed_breakdown_hold_continuation_v089",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:20:46.721076+00:00",
+      "family": "btc_4h_state_change_hold_expansion_v089",
+      "reason": "PF/QScore too weak on first full backtest"
+    },
+    {
+      "ts_iso": "2026-03-12T10:20:52.271913+00:00",
+      "family": "eth_1h_value_recovery_scalein_v088",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:20:57.824517+00:00",
+      "family": "axs_4h_deep_reset_continuation_v086",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:21:03.361135+00:00",
+      "family": "eth_4h_deep_value_reclaim_v085",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:21:08.972851+00:00",
+      "family": "btc_4h_value_recovery_scalein_v084",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:21:14.572791+00:00",
+      "family": "axs_1h_retest_hold_timeout_v088",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:21:20.301215+00:00",
+      "family": "btc_1h_asymmetric_continuation_v088",
+      "reason": "PF/QScore too weak on first full backtest"
+    },
+    {
+      "ts_iso": "2026-03-12T10:21:26.033811+00:00",
       "family": "eth_4h_inventory_reset_rotation_v089",
       "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:21:31.634926+00:00",
+      "family": "tao_4h_failed_breakdown_hold_continuation_v085",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:28:49.025864+00:00",
+      "family": "btc_1h_state_change_hold_expansion_v090",
+      "reason": "PF/QScore too weak on first full backtest"
+    },
+    {
+      "ts_iso": "2026-03-12T10:28:54.564062+00:00",
+      "family": "doge_4h_state_change_hold_expansion_v087",
+      "reason": "PF/QScore too weak on first full backtest"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:00.115219+00:00",
+      "family": "tao_4h_failed_breakdown_hold_continuation_v090",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:05.748176+00:00",
+      "family": "btc_4h_state_change_hold_expansion_v089",
+      "reason": "PF/QScore too weak on first full backtest"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:11.478727+00:00",
+      "family": "axs_1h_retest_hold_timeout_v088",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:17.215267+00:00",
+      "family": "tao_4h_delayed_retest_continuation_v087",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:22.960024+00:00",
+      "family": "axs_4h_deep_reset_continuation_v086",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:28.672732+00:00",
+      "family": "tao_4h_failed_breakdown_hold_continuation_v089",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:34.404783+00:00",
+      "family": "eth_4h_inventory_reset_rotation_v089",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:40.133479+00:00",
+      "family": "eth_1h_value_recovery_scalein_v088",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:45.853608+00:00",
+      "family": "eth_4h_exhaustion_reacceptance_rotation_v087",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T10:29:51.585577+00:00",
+      "family": "btc_1h_asymmetric_continuation_v088",
+      "reason": "PF/QScore too weak on first full backtest"
     }
   ],
-  "fallback_source": false
+  "fallback_source": true,
+  "canonical_phase": "designing"
 }

@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from cycle_state import PHASE_DECISIONS_READY, advance_cycle
+from cycle_state import PHASE_DECISIONS_READY, PHASE_REFLECTION_READY, load_cycle_state, advance_cycle
 
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 REFLECTION = ROOT / "agents" / "quandalf" / "memory" / "reflection_packet.json"
@@ -310,15 +310,19 @@ def deterministic_decision_for_outcome(outcome):
         return "pass"
     if "refine" in allowed and latest_qs >= 0.75 and total_trades >= 20:
         return "refine"
-    if "abort" in allowed:
-        return "abort"
+    if "abort" in allowed and "refine" in allowed:
+        if diagnosis in {"too sparse", "bad idea", "wrong regime", "wrong lane"}:
+            return "abort"
+        return "refine"
     if "refine" in allowed:
         return "refine"
+    if "abort" in allowed:
+        return "abort"
     if "pass" in allowed:
         return "pass"
     if diagnosis in {"too sparse", "bad idea", "wrong regime", "wrong lane"}:
         return "abort"
-    return "abort"
+    return "refine" if total_trades > 0 else "abort"
 
 
 def build_deterministic_decisions(reflection):
@@ -377,6 +381,12 @@ def build_deterministic_decisions(reflection):
 def main():
     reflection = load_json(REFLECTION, {})
     cycle_id = int(reflection.get("cycle_id") or 0)
+    cycle_state = load_cycle_state()
+    if cycle_id > 0 and int(cycle_state.get("cycle_id", 0) or 0) == cycle_id:
+        phase = str(cycle_state.get("phase") or "")
+        if phase not in {PHASE_REFLECTION_READY, PHASE_DECISIONS_READY, "completed"}:
+            print(json.dumps({"status": "error", "reason": "canonical_phase_not_ready_for_decisions", "cycle_id": cycle_id, "phase": phase}, indent=2))
+            return 1
     if cycle_id <= 0:
         print(json.dumps({"status": "error", "reason": "reflection_packet_missing_cycle_id"}, indent=2))
         return 1

@@ -1,41 +1,14 @@
 {
-  "ts_iso": "2026-03-12T10:12:44.433110+00:00",
-  "cycle_id": 89,
-  "count": 3,
+  "ts_iso": "2026-03-12T10:21:34.706272+00:00",
+  "cycle_id": 90,
+  "count": 2,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C089-ETH-4H-INVENTORY-RESET-ROTATION-v1",
-      "hypothesis": "The current evidence says dense reclaim/reset mechanics are still the least-broken direction, and ETH 4h remains the cleanest chop-owned lane in the allowed basket. Inventory-reset rotation is structurally clearer and denser than deep continuation or delayed-retest ideas, so it gets primary ownership here.",
-      "chosen_lane": {
-        "asset": "ETH",
-        "timeframe": "4h"
-      },
-      "component_roles": [
-        "VWAP",
-        "EMA_55",
-        "ATR_14",
-        "RSI_14",
-        "ADX_14"
-      ],
-      "mutation_surface": "reclassified_refine",
-      "expected_effect": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%",
-      "actual_effect": {
-        "trade_count": 1,
-        "profit_factor": 10.0,
-        "max_drawdown_pct": 0.0,
-        "qscore": 0.1,
-        "decision": "abort"
-      },
-      "regime_context": {},
-      "diagnosis": "too sparse",
-      "lesson_extracted": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%"
-    },
-    {
-      "strategy_spec_id": "QD-20260312-C089-BTC-4H-STATE-CHANGE-HOLD-EXPANSION-v1",
-      "hypothesis": "The last five cycles still point to transition-friendly control-change structures as one of the few promising directions, but lane fit has to be real. BTC 4h is the better owner here than ETH because it offers more transition character while staying inside the allowed basket. The grammar is deliberately simple: reclaim, one-bar hold, then expansion.",
+      "strategy_spec_id": "QD-20260312-C090-BTC-1H-STATE-CHANGE-HOLD-EXPANSION-v1",
+      "hypothesis": "BTC 4h state-change now has enough evidence to call the 4h expression a bad idea, but not enough to kill the underlying mechanism entirely. The correct research move is to test the same control-change grammar on BTC 1h, where density is materially higher and the handoff from chop to directional movement can be measured more honestly.",
       "chosen_lane": {
         "asset": "BTC",
-        "timeframe": "4h"
+        "timeframe": "1h"
       },
       "component_roles": [
         "EMA_20",
@@ -46,21 +19,21 @@
         "ADX_14"
       ],
       "mutation_surface": "reclassified_refine",
-      "expected_effect": "abort: fail with QS -0.28, PF 0.39, DD 67.4%, trades 191",
+      "expected_effect": "abort: fail with QS -0.58, PF 0.20, DD 77.9%, trades 404",
       "actual_effect": {
-        "trade_count": 191,
-        "profit_factor": 0.389,
-        "max_drawdown_pct": 67.39,
-        "qscore": -0.285,
+        "trade_count": 404,
+        "profit_factor": 0.196,
+        "max_drawdown_pct": 77.92,
+        "qscore": -0.583,
         "decision": "abort"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "abort: fail with QS -0.28, PF 0.39, DD 67.4%, trades 191"
+      "lesson_extracted": "abort: fail with QS -0.58, PF 0.20, DD 77.9%, trades 404"
     },
     {
-      "strategy_spec_id": "QD-20260312-C089-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
-      "hypothesis": "Cycle 89 still needs one continuation-family expression, but the evidence says continuation only belongs where trend contamination is real and the entry is cleaner than breakout theater. TAO 4h remains the only lane where that is true. Failed-breakdown hold keeps the continuation thesis but forces a structurally earlier, more defensible entry.",
+      "strategy_spec_id": "QD-20260312-C090-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
+      "hypothesis": "Cycle 90 still allows exactly one continuation-family expression, and TAO 4h remains the only lane where continuation is structurally justified. The failed-breakdown hold entry is retained because it is cleaner than breakout theater and remains the best structural repair the evidence supports. This is the one continuation shot the batch gets.",
       "chosen_lane": {
         "asset": "TAO",
         "timeframe": "4h"
@@ -74,17 +47,17 @@
         "ADX_14"
       ],
       "mutation_surface": "reclassified_refine",
-      "expected_effect": "abort: low trade count (11 < 15) with QS 0.69, PF 0.72, DD 3.0%",
+      "expected_effect": "abort: low trade count (10 < 15) with QS 0.11, PF 0.14, DD 3.5%",
       "actual_effect": {
-        "trade_count": 11,
-        "profit_factor": 0.717,
-        "max_drawdown_pct": 3.02,
-        "qscore": 0.687,
+        "trade_count": 10,
+        "profit_factor": 0.143,
+        "max_drawdown_pct": 3.48,
+        "qscore": 0.108,
         "decision": "abort"
       },
       "regime_context": {},
       "diagnosis": "too sparse",
-      "lesson_extracted": "abort: low trade count (11 < 15) with QS 0.69, PF 0.72, DD 3.0%"
+      "lesson_extracted": "abort: low trade count (10 < 15) with QS 0.11, PF 0.14, DD 3.5%"
     }
   ]
 }

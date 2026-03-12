@@ -76,6 +76,8 @@ def main() -> int:
 
     steps.append(run_step("fallback-cook-specs", [PY, "scripts/fallback_cook_specs.py"]))
     steps.append(run_step("capture-cycle-specs", [PY, "scripts/capture_cycle_specs.py"]))
+    steps.append(run_step("sync-manifest", [PY, "scripts/sync_manifest_from_cycle_state.py"]))
+    steps.append(run_step("sync-status-early", [PY, "scripts/sync_status_from_cycle_state.py"]))
     assert_phase(cycle_id, {PHASE_SPECS_READY}, "after capture-cycle-specs")
 
     manifest = load_json(ROOT / "data" / "state" / "current_cycle_specs.json", {})
@@ -102,6 +104,7 @@ def main() -> int:
     steps.append(run_step("cycle-postprocess", [PY, "scripts/cycle-postprocess.py"]))
     assert_phase(cycle_id, {PHASE_COMPLETED}, "after cycle-postprocess")
     steps.append(run_step("sync-run-state", [PY, "scripts/sync_run_state_from_cycle_state.py"]))
+    steps.append(run_step("sync-status", [PY, "scripts/sync_status_from_cycle_state.py"]))
 
     print(json.dumps({
         "status": "ok",

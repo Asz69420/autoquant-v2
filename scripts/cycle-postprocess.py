@@ -1021,11 +1021,17 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○────────────activity────────────")
     if decisions_complete:
-        lines.append(f"Pass: {passed}")
-        lines.append(f"Iterate: {iterated}")
-        lines.append(f"Abort: {aborted}")
+        queue_pass = int(decision_counts.get("queue_passed") or 0)
+        queue_iterate = int(decision_counts.get("queue_iterated") or 0)
+        queue_abort = int(decision_counts.get("queue_aborted") or 0)
+        lines.append(f"Pass: {queue_pass}")
+        lines.append(f"Iterate: {queue_iterate}")
+        lines.append(f"Abort: {queue_abort}")
     else:
-        lines.append(f"Generated: {generated}")
+        total_strategies = generated
+        new_strategies = len(metrics.get("new_families") or []) or total_strategies
+        lines.append(f"Total: {total_strategies}")
+        lines.append(f"New: {new_strategies}")
         lines.append(f"Training: {train_runs}")
         lines.append(f"Testing: {test_runs}")
         lines.append(f"Failed: {train_failed}")
