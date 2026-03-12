@@ -1,63 +1,87 @@
 {
-  "ts_iso": "2026-03-12T10:21:34.706272+00:00",
-  "cycle_id": 90,
-  "count": 2,
+  "ts_iso": "2026-03-12T11:10:38.585046+00:00",
+  "cycle_id": 92,
+  "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C090-BTC-1H-STATE-CHANGE-HOLD-EXPANSION-v1",
-      "hypothesis": "BTC 4h state-change now has enough evidence to call the 4h expression a bad idea, but not enough to kill the underlying mechanism entirely. The correct research move is to test the same control-change grammar on BTC 1h, where density is materially higher and the handoff from chop to directional movement can be measured more honestly.",
-      "chosen_lane": {
-        "asset": "BTC",
-        "timeframe": "1h"
-      },
-      "component_roles": [
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14",
-        "ADX_14"
-      ],
-      "mutation_surface": "reclassified_refine",
-      "expected_effect": "abort: fail with QS -0.58, PF 0.20, DD 77.9%, trades 404",
-      "actual_effect": {
-        "trade_count": 404,
-        "profit_factor": 0.196,
-        "max_drawdown_pct": 77.92,
-        "qscore": -0.583,
-        "decision": "abort"
-      },
-      "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "abort: fail with QS -0.58, PF 0.20, DD 77.9%, trades 404"
-    },
-    {
-      "strategy_spec_id": "QD-20260312-C090-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
-      "hypothesis": "Cycle 90 still allows exactly one continuation-family expression, and TAO 4h remains the only lane where continuation is structurally justified. The failed-breakdown hold entry is retained because it is cleaner than breakout theater and remains the best structural repair the evidence supports. This is the one continuation shot the batch gets.",
+      "strategy_spec_id": "QD-20260312-C92-TAO-BREAKOUT-HOLD-v1",
+      "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
       "chosen_lane": {
         "asset": "TAO",
         "timeframe": "4h"
       },
       "component_roles": [
-        "DONCHIAN_20",
+        "EMA_20",
         "EMA_55",
         "ATR_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14",
         "ADX_14"
       ],
-      "mutation_surface": "reclassified_refine",
-      "expected_effect": "abort: low trade count (10 < 15) with QS 0.11, PF 0.14, DD 3.5%",
+      "mutation_surface": "initial",
+      "expected_effect": "refine: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84",
       "actual_effect": {
-        "trade_count": 10,
-        "profit_factor": 0.143,
-        "max_drawdown_pct": 3.48,
-        "qscore": 0.108,
+        "trade_count": 84,
+        "profit_factor": 1.283,
+        "max_drawdown_pct": 33.88,
+        "qscore": 0.944,
         "decision": "abort"
       },
       "regime_context": {},
-      "diagnosis": "too sparse",
-      "lesson_extracted": "abort: low trade count (10 < 15) with QS 0.11, PF 0.14, DD 3.5%"
+      "diagnosis": "bad idea",
+      "lesson_extracted": "refine: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84"
+    },
+    {
+      "strategy_spec_id": "QD-20260312-C92-TAO-EMA-PULLBACK-v1",
+      "hypothesis": "trend pullback continuation after value reclaim",
+      "chosen_lane": {
+        "asset": "TAO",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "RSI_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "refine: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78",
+      "actual_effect": {
+        "trade_count": 78,
+        "profit_factor": 1.202,
+        "max_drawdown_pct": 35.94,
+        "qscore": 0.843,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "refine: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78"
+    },
+    {
+      "strategy_spec_id": "QD-20260312-C92-TAO-RANGE-RECLAIM-v1",
+      "hypothesis": "range reclaim continuation after false breakdown and value recovery",
+      "chosen_lane": {
+        "asset": "TAO",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "ATR_14",
+        "RSI_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "refine: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76",
+      "actual_effect": {
+        "trade_count": 76,
+        "profit_factor": 0.953,
+        "max_drawdown_pct": 31.08,
+        "qscore": 0.642,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "refine: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76"
     }
   ]
 }

@@ -47,7 +47,23 @@ try {
       break
     }
 
-    Write-Host "[autopilot] starting research cycle $(Get-Date -Format o)"
+    $statePath = Join-Path $ROOT 'data\state\current_cycle_state.json'
+    $activePhase = $null
+    $activeCycleId = $null
+    if (Test-Path $statePath) {
+      try {
+        $state = Get-Content $statePath -Raw | ConvertFrom-Json
+        $activePhase = [string]$state.phase
+        $activeCycleId = [int]($state.cycle_id)
+      } catch {}
+    }
+
+    if ($activeCycleId -gt 0 -and $activePhase -and $activePhase -ne 'completed' -and $activePhase -ne 'pending' -and $activePhase -ne 'stale_abandoned') {
+      Write-Host "[autopilot] active cycle $activeCycleId is still in phase $activePhase; resuming same cycle instead of starting a new one"
+    } else {
+      Write-Host "[autopilot] starting research cycle $(Get-Date -Format o)"
+    }
+
     python scripts\run_cycle_once.py
     $researchExit = $LASTEXITCODE
     if ($researchExit -ne 0) {

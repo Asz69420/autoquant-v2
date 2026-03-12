@@ -1,6 +1,6 @@
 {
-  "ts_iso": "2026-03-12T10:37:45.018843+00:00",
-  "cycle_id": 92,
+  "ts_iso": "2026-03-12T11:11:57.436001+00:00",
+  "cycle_id": 93,
   "search_priorities": [
     "mechanism-first research",
     "lane choice justified by thesis",
@@ -9,21 +9,26 @@
   ],
   "active_hypotheses": [
     {
-      "concept": "state-change momentum after regime improvement and post-break hold",
-      "primary_lane": "TAO/4h",
+      "concept": "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+      "primary_lane": "ETH/4h",
       "allowed_basket": [
         {
-          "asset": "TAO",
+          "asset": "ETH",
           "timeframe": "4h",
           "role": "primary"
         },
         {
           "asset": "ETH",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
+        },
+        {
+          "asset": "BTC",
           "timeframe": "4h",
           "role": "similar_asset"
         },
         {
-          "asset": "AXS",
+          "asset": "TAO",
           "timeframe": "4h",
           "role": "structurally_different_asset"
         }
@@ -32,21 +37,26 @@
       "rotation_criteria": "0-trade, wrong-regime, wrong-lane, or too-sparse diagnosis"
     },
     {
-      "concept": "mean reversion from exhaustion only when structure reaccepts prior value",
-      "primary_lane": "TAO/4h",
+      "concept": "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+      "primary_lane": "ETH/4h",
       "allowed_basket": [
         {
-          "asset": "TAO",
+          "asset": "ETH",
           "timeframe": "4h",
           "role": "primary"
         },
         {
           "asset": "ETH",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
+        },
+        {
+          "asset": "BTC",
           "timeframe": "4h",
           "role": "similar_asset"
         },
         {
-          "asset": "AXS",
+          "asset": "TAO",
           "timeframe": "4h",
           "role": "structurally_different_asset"
         }
@@ -55,21 +65,26 @@
       "rotation_criteria": "0-trade, wrong-regime, wrong-lane, or too-sparse diagnosis"
     },
     {
-      "concept": "breakout continuation with delayed entry after retest rather than immediate trigger",
-      "primary_lane": "TAO/4h",
+      "concept": "post-expansion partial-profit runner structure that keeps a core position for trend persistence",
+      "primary_lane": "ETH/4h",
       "allowed_basket": [
         {
-          "asset": "TAO",
+          "asset": "ETH",
           "timeframe": "4h",
           "role": "primary"
         },
         {
           "asset": "ETH",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
+        },
+        {
+          "asset": "BTC",
           "timeframe": "4h",
           "role": "similar_asset"
         },
         {
-          "asset": "AXS",
+          "asset": "TAO",
           "timeframe": "4h",
           "role": "structurally_different_asset"
         }
@@ -87,20 +102,25 @@
   "lane_rotation_policy": {
     "use_validation_basket": true,
     "rotate_when_concentration_high": true,
-    "current_primary_lane": "TAO/4h",
+    "current_primary_lane": "ETH/4h",
     "allowed_basket": [
       {
-        "asset": "TAO",
+        "asset": "ETH",
         "timeframe": "4h",
         "role": "primary"
       },
       {
         "asset": "ETH",
+        "timeframe": "1h",
+        "role": "adjacent_timeframe"
+      },
+      {
+        "asset": "BTC",
         "timeframe": "4h",
         "role": "similar_asset"
       },
       {
-        "asset": "AXS",
+        "asset": "TAO",
         "timeframe": "4h",
         "role": "structurally_different_asset"
       }
@@ -113,7 +133,9 @@
     "change management structure",
     "test adjacent timeframe or cross-asset robustness"
   ],
-  "diagnosis_breakdown": {},
+  "diagnosis_breakdown": {
+    "bad idea": 3
+  },
   "current_directives": [
     "Every strategy must carry a reasoning block.",
     "0 trades is a red flag that must resolve to refine or abort.",

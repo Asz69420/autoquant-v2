@@ -5,7 +5,7 @@ import sqlite3
 import sys
 from datetime import datetime, timezone, timedelta
 
-from cycle_state import PHASE_REFLECTION_READY, advance_cycle
+from cycle_state import PHASE_REFLECTION_READY, advance_cycle, load_cycle_state
 
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
