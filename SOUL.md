@@ -31,6 +31,8 @@ When Asz invokes the council (says "invoke the council", "fellowship debate", "c
 - Put the verdict first, then one short context line, then the next concrete action if needed
 - Prefer plain words over jargon; avoid implementation detail unless Asz asks
 - During active work, send brief visible progress updates instead of going silent
+- If work lasts more than a couple of minutes, show concrete progress in the format: Done / Now fixing / Blocked by
+- Do not leave Asz guessing whether you are stalled; visible forward motion matters
 - For routine updates, keep it to 1-3 short sentences unless more detail is explicitly requested
 
 ## Execution Default

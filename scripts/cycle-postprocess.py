@@ -2029,6 +2029,7 @@ def main():
 
         backtest_count = count_backtests(rows)
         log_card, metrics = build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=run_state)
+        log_card = normalize_card_decision_labels(log_card)
         write_cycle_metrics(metrics)
 
         no_current_cycle_evidence = (
@@ -2247,6 +2248,7 @@ def main():
             pass
 
     log_card, metrics = build_log_card(cycle_id, rows, elapsed, backtest_count, run_state=run_state)
+    log_card = normalize_card_decision_labels(log_card)
     write_cycle_metrics(metrics)
     log_card_sent = send_log_card(cycle_id, log_card, metrics=metrics)
 

@@ -340,7 +340,23 @@ def build_deterministic_decisions(reflection):
             continue
         decision = deterministic_decision_for_outcome(outcome)
         diagnosis = str(outcome.get("diagnosis_category") or "reviewed_outcome").strip() or "reviewed_outcome"
-        rationale = str(outcome.get("rationale") or outcome.get("hypothesis") or f"Deterministic closure chose {decision} for {spec_id} from reflection evidence.").strip()
+        latest = outcome.get("latest_result") or {}
+        latest_decision = str(latest.get("score_decision") or "").strip().lower()
+        latest_qs = float(latest.get("score_total") or 0.0)
+        latest_pf = float(latest.get("profit_factor") or 0.0)
+        latest_dd = float(latest.get("max_drawdown_pct") or 0.0)
+        latest_trades = int(latest.get("total_trades") or 0)
+        if decision == "pass":
+            rationale = f"pass: PASS with QS {latest_qs:.2f}, PF {latest_pf:.2f}, DD {latest_dd:.1f}%, trades {latest_trades}"
+        elif decision == "refine":
+            rationale = f"refine: evidence is promising but not strong enough to pass yet (QS {latest_qs:.2f}, PF {latest_pf:.2f}, DD {latest_dd:.1f}%, trades {latest_trades})"
+        elif decision == "abort":
+            if latest_trades > 0:
+                rationale = f"abort: fail with QS {latest_qs:.2f}, PF {latest_pf:.2f}, DD {latest_dd:.1f}%, trades {latest_trades}"
+            else:
+                rationale = str(outcome.get("rationale") or outcome.get("hypothesis") or f"abort: no usable evidence supported {spec_id}").strip()
+        else:
+            rationale = str(outcome.get("rationale") or outcome.get("hypothesis") or f"Deterministic closure chose {decision} for {spec_id} from reflection evidence.").strip()
         item = {
             "strategy_spec_id": spec_id,
             "decision": decision,
@@ -462,7 +478,17 @@ def main():
 
     decisions = load_json(DECISIONS, {})
     cycle_reset = int(decisions.get("cycle_id") or 0) != cycle_id
-    if cycle_reset:
+    stale_strategy_decisions = False
+    if not cycle_reset:
+        for item in (decisions.get("strategy_decisions") or []):
+            if not isinstance(item, dict):
+                continue
+            rationale = str(item.get("rationale") or "").strip().lower()
+            decision = str(item.get("decision") or "").strip().lower()
+            if ("refine: pass" in rationale and decision != "refine") or ("pass:" in rationale and decision == "abort"):
+                stale_strategy_decisions = True
+                break
+    if cycle_reset or stale_strategy_decisions:
         decisions = {"cycle_id": cycle_id, "ts_iso": reflection.get("ts_iso"), "strategy_decisions": [], "jobs": []}
         DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
     decisions, normalized = normalize_legacy_decisions(reflection, decisions)
