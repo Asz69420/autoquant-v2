@@ -680,6 +680,7 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     cycle_specs = load_json_file(CURRENT_CYCLE_SPECS_PATH)
     cycle_status = load_json_file(CURRENT_CYCLE_STATUS_PATH)
     cycle_orders = load_json_file(os.path.join(ROOT, "agents", "quandalf", "memory", "cycle_orders.json"))
+    canonical_state = load_cycle_state()
     run_state = run_state or load_run_state()
     timing = compute_timing_metrics(run_state)
 
@@ -688,13 +689,16 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     status_cycle_key = normalize_cycle_key(cycle_status.get("cycle_id", ""))
     orders_cycle_key = normalize_cycle_key(cycle_orders.get("cycle_id", cycle_id))
 
+    canonical_cycle_key = normalize_cycle_key(canonical_state.get("cycle_id", ""))
+    canonical_matches_cycle = bool(canonical_cycle_key and canonical_cycle_key == target_cycle_key)
     status_matches_cycle = bool(status_cycle_key and status_cycle_key == target_cycle_key)
     manifest_matches_cycle = bool(manifest_cycle_key and manifest_cycle_key == target_cycle_key)
     orders_match_cycle = not orders_cycle_key or orders_cycle_key == target_cycle_key
 
+    canonical_spec_paths = canonical_state.get("spec_paths") or [] if canonical_matches_cycle else []
     manifest_spec_paths = cycle_specs.get("spec_paths") or [] if manifest_matches_cycle else []
     status_spec_paths = cycle_status.get("spec_paths") or [] if status_matches_cycle else []
-    spec_paths = unique_preserve([str(p).strip() for p in (status_spec_paths or manifest_spec_paths) if str(p).strip()])
+    spec_paths = unique_preserve([str(p).strip() for p in (canonical_spec_paths or status_spec_paths or manifest_spec_paths) if str(p).strip()])
     normalized_manifest_spec_ids = {normalize_spec_id(path) for path in spec_paths if normalize_spec_id(path)}
     row_spec_ids = {normalize_spec_id(r.get("strategy_spec_id")) for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id"))}
     cycle_rows = [r for r in rows_dict if normalize_spec_id(r.get("strategy_spec_id")) in normalized_manifest_spec_ids] if normalized_manifest_spec_ids else []
@@ -702,7 +706,10 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
 
     specs_produced = len(spec_paths)
     if not specs_produced:
-        specs_produced = int(cycle_specs.get("spec_count", 0) or 0) if manifest_matches_cycle else 0
+        if canonical_matches_cycle:
+            specs_produced = int(canonical_state.get("specs_produced", 0) or len(canonical_spec_paths) or 0)
+        else:
+            specs_produced = int(cycle_specs.get("spec_count", 0) or 0) if manifest_matches_cycle else 0
 
     mode = normalize_mode(cycle_status.get("mode") or cycle_orders.get("mode") or cycle_status.get("research_direction") or cycle_orders.get("research_direction"))
     minimum_spec_count = safe_int(cycle_status.get("minimum_spec_count", cycle_orders.get("minimum_spec_count", 0)) or 0)
@@ -714,7 +721,8 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
 
     completed_backtests = len({str(r.get('id')) for r in cycle_rows if r.get('id')})
     queue_metrics = fetch_cycle_queue_metrics(cycle_id)
-    queued_backtests = int(queue_metrics.get("total") or 0) or spec_variant_job_count(manifest_spec_paths or spec_paths)
+    canonical_queue_seeded = int(canonical_state.get("queue_seeded", 0) or 0) if canonical_matches_cycle else 0
+    queued_backtests = int(queue_metrics.get("total") or 0) or canonical_queue_seeded or spec_variant_job_count(canonical_spec_paths or manifest_spec_paths or spec_paths)
     queue_done = int(queue_metrics.get("done") or 0)
     queue_skipped = int(queue_metrics.get("skipped") or 0)
     queue_running = int(queue_metrics.get("running") or 0)
@@ -740,9 +748,11 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
     )
 
     state_warning = None
-    if manifest_matches_cycle and not status_matches_cycle:
+    if canonical_matches_cycle and not manifest_matches_cycle and specs_produced > 0:
+        state_warning = f"current_cycle_specs lags canonical cycle {target_cycle_key} (canonical ready, manifest={manifest_cycle_key or 'missing'})"
+    elif manifest_matches_cycle and not status_matches_cycle and not canonical_matches_cycle:
         state_warning = f"current_cycle_status lags active cycle {target_cycle_key} (status={status_cycle_key or 'missing'}, manifest={manifest_cycle_key or 'missing'})"
-    elif manifest_matches_cycle and int(cycle_specs.get('spec_count', 0) or 0) == 0 and rows_dict:
+    elif (manifest_matches_cycle or canonical_matches_cycle) and specs_produced == 0 and rows_dict:
         state_warning = f"active cycle {target_cycle_key} has no captured specs, but {len(rows_dict)} recent off-cycle result(s) are present"
 
     metrics = {
@@ -750,9 +760,12 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
         "cycle_key": target_cycle_key,
         "manifest_cycle_id": cycle_specs.get("cycle_id"),
         "status_cycle_id": cycle_status.get("cycle_id"),
+        "canonical_cycle_id": canonical_state.get("cycle_id") if canonical_matches_cycle else None,
         "orders_cycle_id": cycle_orders.get("cycle_id") if orders_match_cycle else None,
         "status_matches_cycle": status_matches_cycle,
         "manifest_matches_cycle": manifest_matches_cycle,
+        "canonical_matches_cycle": canonical_matches_cycle,
+        "canonical_phase": canonical_state.get("phase") if canonical_matches_cycle else None,
         "state_warning": state_warning,
         "mode": mode,
         "research_direction": cycle_status.get("research_direction") or cycle_orders.get("research_direction"),
@@ -957,7 +970,9 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
-    decisions_complete = has_closed_decisions or (
+    canonical_phase = str(metrics.get("canonical_phase") or "")
+    canonical_decisions_ready = canonical_phase in {"decisions_ready", "completed"}
+    decisions_complete = canonical_decisions_ready or has_closed_decisions or (
         executed_backtests > 0
         and unresolved_queue == 0
         and unresolved == 0
@@ -2276,11 +2291,13 @@ def main():
     )
 
     if cycle_id:
+        decisions_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
+        decision_count = len(decisions_payload.get("strategy_decisions") or []) if isinstance(decisions_payload, dict) else 0
         advance_cycle(
             cycle_id,
             PHASE_COMPLETED,
             result_count=int(metrics.get("backtests_completed", 0) or 0),
-            decision_count=int((load_json_file(REFINEMENT_DECISIONS_PATH) or {}).get("strategy_decisions") and len((load_json_file(REFINEMENT_DECISIONS_PATH) or {}).get("strategy_decisions") or []) or 0),
+            decision_count=decision_count,
             log_card_sent=bool(log_card_sent),
         )
 

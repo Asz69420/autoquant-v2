@@ -48,7 +48,7 @@ try {
     }
 
     Write-Host "[autopilot] starting research cycle $(Get-Date -Format o)"
-    lobster run --mode tool pipelines/research-cycle.lobster
+    python scripts\run_cycle_once.py
     $researchExit = $LASTEXITCODE
     if ($researchExit -ne 0) {
       Write-Host "[autopilot] research cycle failed with exit $researchExit"

@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C087-DOGE-4H-STATE-CHANGE-HOLD-EXPANSION-v1",
+  "cycle_id": 87,
+  "family_name": "doge_4h_state_change_hold_expansion_v087",
+  "name": "DOGE 4h State Change Hold Expansion v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "directional improvement appears after a reset, fast structure is reclaimed, the reclaim holds on the next bar, and expansion resumes from that improved state",
+  "expected_regime": "TRANSITION",
+  "thesis": "Cycle 87 explicitly includes state-change momentum after regime improvement and post-break hold. The recent evidence says dense transition-friendly control-change structures are still among the least broken directions. DOGE 4h is the best home because it is the live primary lane and structurally more capable of recurring state-change behavior than ETH chop or late TAO continuation.",
+  "invalidation_condition": "If DOGE 4h reclaim-hold sequences remain too sparse or repeatedly fail before modest expansion, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price recovers from a reset, reclaims fast structure, holds it for one more bar, and expands as directional control improves.",
+    "why_edge_should_exist": "Transition markets often show a clean handoff from chop back into directional movement. A one-bar hold after reclaim should capture that handoff without turning the idea into ceremonial sparse logic.",
+    "asset_timeframe_fit": "DOGE 4h is the best fit because it is the cycle primary lane, transition-friendly, and more likely than ETH 4h to express recurring state-change behavior.",
+    "indicator_role_map": {
+      "EMA_20": "fast structure reclaim/hold line",
+      "EMA_55": "higher-structure anchor",
+      "ATR_14": "hold tolerance and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional improvement confirmation",
+      "ADX_14": "participation gate"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "Late reclaim entries can become local exhaustion buys if the impulse is already spent.",
+    "first_refinement_path": "If trades exist but runner contribution is poor, move more size to the first partial before changing the reclaim grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A reasonable number of reclaim-hold entries, several first-target wins, and a smaller number of stronger expansion runners.",
+    "what_would_count_as_success": "DOGE 4h clears moderate density and produces materially better participation than recent sparse continuation families.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated hold confirmations that fail before first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because the hold requirement is only one next-bar check",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit transition lane for reclaim-hold state change.",
+      "continue_if": "DOGE 4h shows enough reclaim-hold expansions with positive first-target expectancy.",
+      "rotate_away_if": "DOGE 4h entries remain too sparse or fail immediately.",
+      "expected_if_right": "Moderate count with several continuation bursts."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset_control",
+      "why_included": "Useful control to see whether pure chop suppresses or preserves the same reclaim-hold idea.",
+      "continue_if": "ETH 4h still prints a tradable but smaller version of the state-change grammar.",
+      "rotate_away_if": "ETH 4h confirms the idea needs more transition than pure chop offers.",
+      "expected_if_right": "Lower amplitude, slightly lower count continuation than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "trend_contamination_check",
+      "why_included": "Checks whether stronger trend contamination improves or degrades the same state-change hold behavior.",
+      "continue_if": "TAO 4h keeps enough reclaim-hold continuation without turning into late chase entries.",
+      "rotate_away_if": "TAO 4h converts the setup into exhausted continuation buying.",
+      "expected_if_right": "Lower count, stronger carry than DOGE."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 12"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low stays >= EMA_20 - 0.08 * ATR_14 and close remains >= EMA_20"
+    ],
+    "short": [
+      "Next bar high stays <= EMA_20 + 0.08 * ATR_14 and close remains <= EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.92 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.76 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.92 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.76 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

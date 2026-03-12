@@ -323,24 +323,28 @@ def normalize_first_person_line(text):
     if not text:
         return 'none'
     replacements = [
-        ('Quandalf must explicitly choose iterate or abort.', 'I must explicitly choose refine or abort.'),
-        ('Quandalf must explicitly choose refine or abort.', 'I must explicitly choose refine or abort.'),
-        ('allowed next actions -> refine, abort', 'I see that my legal next actions are refine or abort'),
-        ('allowed next actions -> pass, refine, abort', 'I see that my legal next actions are pass, refine, or abort'),
+        ('Quandalf must explicitly choose iterate or abort.', ''),
+        ('Quandalf must explicitly choose refine or abort.', ''),
+        ('allowed next actions -> refine, abort', 'The only legal next actions were refine or abort'),
+        ('allowed next actions -> pass, refine, abort', 'The legal next actions were pass, refine, or abort'),
         ('decision ', ''),
-        ('Both completed screen lanes ended with zero-trade integrity skips, so', 'I saw both completed screen lanes end with zero-trade integrity skips, so'),
-        ('Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so', 'I saw both completed screen lanes end in integrity_skip:zero_trades_both_samples, so'),
-        ('This strategy produced', 'I saw this strategy produce'),
-        ('The strategy produced', 'I saw the strategy produce'),
-        ('The strategy', 'I found that the strategy'),
-        ('0 trades on valid data', 'I got 0 trades on valid data'),
-        ('abort: fail with', 'I aborted it after a fail with'),
+        ('Both completed screen lanes ended with zero-trade integrity skips, so', 'Both completed screen lanes ended with zero-trade integrity skips, so'),
+        ('Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so', 'Both completed screen lanes ended in integrity_skip:zero_trades_both_samples, so'),
+        ('This strategy produced', 'This strategy produced'),
+        ('The strategy produced', 'The strategy produced'),
+        ('The strategy', 'The strategy'),
+        ('0 trades on valid data', '0 trades on valid data'),
+        ('abort: fail with', 'abort: fail with'),
     ]
     for old, new in replacements:
         text = text.replace(old, new)
+    text = ' '.join(text.split()).strip(' -')
+    if not text:
+        return 'none'
     if text.startswith('QD-') and ': ' in text:
         spec_id, rest = text.split(': ', 1)
-        return f'On {spec_id}, {rest}'
+        rest = ' '.join(str(rest).split()).strip(' -')
+        return f'On {spec_id}, {rest}' if rest else f'On {spec_id}'
     return text
 
 

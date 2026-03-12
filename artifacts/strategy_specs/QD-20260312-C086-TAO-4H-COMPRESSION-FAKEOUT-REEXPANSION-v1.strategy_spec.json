@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C086-TAO-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 86,
+  "family_name": "tao_4h_compression_fakeout_reexpansion_v086",
+  "name": "TAO 4h Compression Fakeout Re-Expansion v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression resolves one way, that move fails, and the opposite direction is entered once directional control reasserts with a simple confirmation sequence",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "Cycle 86 includes compression fakeout into re-expansion with directional confirmation. TAO 4h is the only lane in the basket where a second-leg expansion after a fake move has real structural room to run. The lesson from the recent sparse squeeze families is to keep confirmation simple and only test fakeout-to-go where trend contamination can actually carry the second move.",
+  "invalidation_condition": "If TAO 4h fakeout-to-go sequences still produce 0-1 trades or the simplified confirmation enters too late to monetize, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, one side breaks and fails, the opposite side takes control, and expansion follows.",
+    "why_edge_should_exist": "Compression often traps premature breakout participation. When the first move fails in a trend-capable lane, the second move can travel farther because trapped inventory helps fuel it.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it is the only lane in the basket where fakeout-to-go continuation has enough trend contamination to plausibly pay.",
+    "indicator_role_map": {
+      "BB_WIDTH_20": "compression detector",
+      "EMA_20": "fast directional reclaim line",
+      "ATR_14": "fakeout tolerance and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "post-fakeout directional confirmation",
+      "ADX_14": "participation pickup"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "The fakeout may not be distinct enough, causing either late entry or undertrading.",
+    "first_refinement_path": "If it trades but runners truncate, extend the trail before widening the compression detector.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than the reclaim ideas, but stronger asymmetry when the second-leg expansion is real.",
+    "what_would_count_as_success": "TAO 4h clears moderate density and the simplified fakeout confirmation produces materially more participation than recent dead persistence families.",
+    "what_would_count_as_failure": "0 trades, sub-12 trades, or fakeout-confirmation entries that reverse immediately on most occurrences.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "acceptable if confirmation stays simple and lane fit stays trend-capable",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit trend-capable lane for compression fakeout into re-expansion.",
+      "continue_if": "TAO 4h shows enough fakeout-to-go sequences with positive first-target expectancy.",
+      "rotate_away_if": "TAO 4h still returns near-zero trades or immediate reversals after confirmation.",
+      "expected_if_right": "Moderate count with a minority of stronger expansion legs carrying the expectancy."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Checks whether the same fakeout-to-go grammar survives on a weaker but still transition-capable cross-lane.",
+      "continue_if": "AXS 4h increases count while preserving fakeout-to-go structure.",
+      "rotate_away_if": "AXS 4h becomes noisy and loses the mechanism.",
+      "expected_if_right": "Higher count, smaller second-leg expansions than TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "negative_control",
+      "why_included": "Useful control to see whether the concept collapses when trend contamination disappears.",
+      "continue_if": "ETH 4h still shows some orderly fakeout-to-go patterns.",
+      "rotate_away_if": "ETH 4h confirms the concept belongs on trend-capable lanes only.",
+      "expected_if_right": "Sparse and smaller expansions than TAO."
+    }
+  ],
+  "indicators": [
+    "BB_WIDTH_20",
+    "EMA_20",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BB_WIDTH_20 <= rolling_percentile_20(BB_WIDTH_20, 70)",
+      "Low <= EMA_20 - 0.20 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "BB_WIDTH_20 <= rolling_percentile_20(BB_WIDTH_20, 70)",
+      "High >= EMA_20 + 0.20 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 12"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.80 * ATR_14",
+      "Time-based de-risk: cut 25% after 6 bars if no 0.95 ATR expansion",
+      "Final time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.80 * ATR_14",
+      "Time-based de-risk: cut 25% after 6 bars if no 0.95 ATR expansion",
+      "Final time stop: 10 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

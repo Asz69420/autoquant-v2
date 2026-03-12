@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C085-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
+  "cycle_id": 85,
+  "family_name": "tao_4h_failed_breakdown_hold_continuation_v085",
+  "name": "TAO 4h Failed Breakdown Hold Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a breakdown attempt fails, support is reclaimed and held, and continuation is entered only once that hold confirms directional reassertion",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "Cycle 85 includes failed breakdown reclaim that must hold before continuation entry. TAO 4h is still the only lane in the basket where a continuation-family idea has strong regime support. The key lesson from recent cycles is that continuation cannot be late or decorative. Failed-breakdown hold is the cleaner structural entry that preserves lane fit while avoiding prior bad triggers.",
+  "invalidation_condition": "If TAO 4h still produces weak expectancy or inadequate density even after switching to a failed-breakdown hold trigger, the continuation lane should be deprioritized again.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks below local support, rejects the move, reclaims support, holds it, and then resumes in the dominant direction.",
+    "why_edge_should_exist": "In a trend-capable lane, failed breakdowns can trap late shorts and create better continuation location than late chase entries. This is a structural entry repair, not a cosmetic tweak.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it remains the only lane in the basket where failed-breakdown continuation has strong regime support.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "local support failure/reclaim reference",
+      "EMA_55": "trend anchor",
+      "ATR_14": "reclaim tolerance and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional reassertion filter",
+      "ADX_14": "trend participation gate"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "The hold may still come too late after the move, converting the setup into local exhaustion buying.",
+    "first_refinement_path": "If entries work but drawdown is still too large, bring the first partial closer before changing the hold requirement.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than ETH reclaim rotations, but better asymmetry when the resumed leg is real.",
+    "what_would_count_as_success": "TAO 4h clears density and materially improves expectancy over the recent bad continuation families.",
+    "what_would_count_as_failure": "0 trades, sub-12 trades, or another clearly negative expectancy profile despite adequate count.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because failed breakdowns in a trend-capable lane should recur more often than delayed retest continuation",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit trend-capable lane for failed-breakdown hold continuation.",
+      "continue_if": "TAO 4h produces enough reclaim-hold resumptions with positive first-target expectancy.",
+      "rotate_away_if": "TAO 4h still shows weak expectancy or inadequate density after the cleaner trigger.",
+      "expected_if_right": "Moderate count with a few strong continuation runners."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same failed-breakdown hold works in the cycle primary transition lane even if continuation is smaller.",
+      "continue_if": "SOL 4h preserves reclaim-hold behavior with acceptable expectancy.",
+      "rotate_away_if": "SOL 4h turns it into weak chop noise.",
+      "expected_if_right": "More frequent but smaller reclaim continuations than TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "negative_control",
+      "why_included": "Useful control to test whether the thesis is too dependent on TAO trend structure.",
+      "continue_if": "ETH 4h still prints orderly reclaim-hold continuation despite chop.",
+      "rotate_away_if": "ETH 4h confirms the concept needs trend contamination.",
+      "expected_if_right": "Sparse and smaller reclaim continuations than TAO."
+    }
+  ],
+  "indicators": [
+    "DONCHIAN_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "Close >= DONCHIAN_LOW_20 + 0.18 * ATR_14",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Close <= DONCHIAN_HIGH_20 - 0.18 * ATR_14",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 12"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low remains >= DONCHIAN_LOW_20 - 0.10 * ATR_14"
+    ],
+    "short": [
+      "Next bar high remains <= DONCHIAN_HIGH_20 + 0.10 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 30% size",
+      "Trail remaining 40% by 0.84 * ATR_14",
+      "Final time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 30% size",
+      "Trail remaining 40% by 0.84 * ATR_14",
+      "Final time stop: 10 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

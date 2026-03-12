@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C088-AXS-1H-RETEST-HOLD-TIMEOUT-v1",
+  "cycle_id": 88,
+  "family_name": "axs_1h_retest_hold_timeout_v088",
+  "name": "AXS 1h Retest Hold Timeout v1",
+  "asset": "AXS",
+  "timeframe": "1h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "a structural break is retested and held, but exposure is cut by time if expansion does not appear quickly, avoiding slow-bleed continuation trades",
+  "expected_regime": "TRANSITION",
+  "thesis": "Cycle 88 still wants a retest-and-hold continuation that de-risks by time if expansion fails to appear quickly. The 4h versions kept dying on sparse count, so this idea only makes sense now on a 1h lane with enough activity to actually observe the timeout edge. AXS 1h is the best structurally different lane for that test because it is active enough to give the management logic fast feedback.",
+  "invalidation_condition": "If AXS 1h retest holds are still too chaotic or too sparse, or if time-based de-risking still cannot prevent bleed, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks a local boundary, retests that level, holds it, and should expand quickly if the continuation is real.",
+    "why_edge_should_exist": "Real continuation often shows itself quickly after an accepted retest. If expansion does not appear fast, the trade is often stale or wrong, and timeout de-risking should reduce that failure mode.",
+    "asset_timeframe_fit": "AXS 1h is the best fit because it is a noisier but active lane where timeout logic can be judged quickly instead of waiting on rare 4h events.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "breakout and retest boundary",
+      "EMA_20": "hold confirmation line",
+      "ATR_14": "retest tolerance and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional bias confirmation",
+      "ADX_14": "participation filter"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "AXS may simply be too noisy, turning retest-hold grammar into false positives even with timeout discipline.",
+    "first_refinement_path": "If entries exist but timeout is too aggressive, extend the de-risk clock slightly before loosening the retest filter.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Plenty of retest attempts, many early scratches, and a minority of fast-expanding continuations that justify the structure.",
+    "what_would_count_as_success": "AXS 1h clears moderate density and timeout de-risking materially reduces slow-bleed continuation losses.",
+    "what_would_count_as_failure": "0 trades, sub-20 trades, or a profile where retest entries still bleed despite the timeout rule.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low on 1h with simple retest-hold grammar",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit structurally different lane for testing timeout-protected retest continuation.",
+      "continue_if": "AXS 1h shows enough retest-hold events and timeout de-risking reduces bleed.",
+      "rotate_away_if": "AXS 1h remains too chaotic for the structure to matter.",
+      "expected_if_right": "High participation with quick feedback on whether continuation is real."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same timeout-protected retest grammar survives on the primary lane.",
+      "continue_if": "ETH 1h preserves enough retest-hold continuation with cleaner structure.",
+      "rotate_away_if": "ETH 1h becomes too flat or too sparse for the mechanism.",
+      "expected_if_right": "Cleaner, slightly lower-count retest continuations than AXS."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same timeout management works on a cleaner similar asset.",
+      "continue_if": "BTC 1h shows coherent retest-hold continuation with fewer slow bleeds.",
+      "rotate_away_if": "BTC 1h confirms the idea is too dependent on AXS volatility.",
+      "expected_if_right": "Lower count, cleaner timeout-managed continuations than AXS."
+    }
+  ],
+  "indicators": [
+    "DONCHIAN_20",
+    "EMA_20",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Low <= DONCHIAN_HIGH_20 + 0.12 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 11"
+    ],
+    "short": [
+      "Close <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "High >= DONCHIAN_LOW_20 - 0.12 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 11"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.46 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.72 * ATR_14",
+      "Time-based de-risk: cut 50% after 4 bars if no 0.75 ATR expansion",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.46 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.72 * ATR_14",
+      "Time-based de-risk: cut 50% after 4 bars if no 0.75 ATR expansion",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

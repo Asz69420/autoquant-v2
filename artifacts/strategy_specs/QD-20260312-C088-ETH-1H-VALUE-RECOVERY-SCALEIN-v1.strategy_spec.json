@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C088-ETH-1H-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 88,
+  "family_name": "eth_1h_value_recovery_scalein_v088",
+  "name": "ETH 1h Value Recovery Scale-In v1",
+  "asset": "ETH",
+  "timeframe": "1h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "price flushes away from short-term value, reclaims value, confirmation improves across bars, and exposure is built in stages rather than all at once",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "Cycle 88 is explicitly 1h-capable and the last five cycles make the density mandate unavoidable. ETH 1h is the best ownership lane for staged value recovery because it should print far more reclaim sequences than the dead 4h families while still being structurally cleaner than AXS. The edge is adding only as recovery proves itself, not guessing the first bounce.",
+  "invalidation_condition": "If ETH 1h still cannot clear moderate density or staged adds mostly average into failed bounces, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, reclaims it, confirms the reclaim across bars, and resumes away from the recovery zone.",
+    "why_edge_should_exist": "Intraday mixed regimes often punish one-shot bounce timing but reward adding into improving confirmation. This is a denser expression of the recovery thesis than the sparse 4h families that just failed.",
+    "asset_timeframe_fit": "ETH 1h is the best fit because it is the live primary lane, should provide recurring recovery sequences, and is less erratic than AXS 1h while still dense enough to test properly.",
+    "indicator_role_map": {
+      "VWAP": "value recovery / scale-in reference",
+      "EMA_20": "improving confirmation line",
+      "ATR_14": "flush threshold and risk sizing",
+      "RSI_14": "recovery momentum qualifier",
+      "ADX_14": "participation floor"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "Staged entries may still add into weak mean-reversion bounces if the regime slips back into flat chop without follow-through.",
+    "first_refinement_path": "If density is healthy but expectancy is weak, reduce second-add size and move the first partial closer before changing the trigger grammar.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "Repeated recovery attempts, many modest first-target wins, and fewer larger moves when recovery becomes true continuation.",
+    "what_would_count_as_success": "ETH 1h clears moderate density and staged recovery materially outperforms one-shot recovery timing.",
+    "what_would_count_as_failure": "0 trades, sub-20 trades, or repeated scale-ins that behave like averaging losers.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low",
+      "event_sparsity": "low on 1h because flush-and-recovery sequences should recur frequently enough",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit primary lane for staged intraday value recovery.",
+      "continue_if": "ETH 1h shows enough value-recovery sequences with scale-in improving net expectancy.",
+      "rotate_away_if": "ETH 1h staged entries still mostly build into failed bounces.",
+      "expected_if_right": "Moderate-to-high participation with several recovery continuations."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same staged recovery survives on a similar but slightly cleaner major.",
+      "continue_if": "BTC 1h retains a tradable staged recovery behavior with similar density.",
+      "rotate_away_if": "BTC 1h becomes too blunt or too flat to monetize.",
+      "expected_if_right": "Slightly fewer but cleaner recovery continuations than ETH."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "structurally_different_asset",
+      "why_included": "Checks whether the same recovery logic survives a noisier lane without collapsing.",
+      "continue_if": "AXS 1h preserves the recovery grammar with tolerable volatility.",
+      "rotate_away_if": "AXS 1h turns the staged logic into overtrading noise.",
+      "expected_if_right": "Higher variance, faster recovery legs than ETH."
+    }
+  ],
+  "indicators": [
+    "VWAP",
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.28 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 47",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "High >= VWAP + 0.28 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 53",
+      "ADX_14 >= 10"
+    ]
+  },
+  "scale_in_rules": {
+    "long": [
+      "Initial 60% size on first close back above VWAP",
+      "Add 40% only if next bar closes >= EMA_20 and low stays >= VWAP - 0.06 * ATR_14"
+    ],
+    "short": [
+      "Initial 60% size on first close back below VWAP",
+      "Add 40% only if next bar closes <= EMA_20 and high stays <= VWAP + 0.06 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.76 * ATR_14 below blended entry",
+      "Take profit: 0.38 * ATR_14 on 35% size",
+      "Take profit: 0.72 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.64 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.76 * ATR_14 above blended entry",
+      "Take profit: 0.38 * ATR_14 on 35% size",
+      "Take profit: 0.72 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.64 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

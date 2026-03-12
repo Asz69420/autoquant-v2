@@ -30,7 +30,6 @@
     "expected_outcome_pattern": "A moderate number of continuation attempts, with several modest first-target captures and fewer larger runner outcomes when regime improvement is real.",
     "what_would_count_as_success": "DOGE 4h produces enough hold-and-expand sequences to clear screen density, and at least one cross-lane shows the same mechanism with cleaner structure.",
     "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated hold confirmations that fail before the first target.",
-    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated hold confirmations that fail before the first target.",
     "density_sanity_check": {
       "plausible_trade_count": "moderate",
       "contradictory_filters": "low",
@@ -67,7 +66,14 @@
       "expected_if_right": "Lower count than DOGE but larger continuation legs."
     }
   ],
-  "indicators": ["EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
   "entry_rules": {
     "long": [
       "Close >= EMA_20",
@@ -106,6 +112,6 @@
       "Final time stop: 6 bars"
     ]
   },
-  "research_mode": "explore",
-  "mutation_type": "initial"
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }
