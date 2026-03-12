@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1",
+  "cycle_id": 83,
+  "family_name": "eth_4h_inventory_reset_rotation_v083",
+  "name": "ETH 4h Inventory Reset Rotation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "price flushes through short-term value, weak inventory is cleared, value is reclaimed, and price rotates back through balance in a pure chop regime",
+  "expected_regime": "CHOP",
+  "thesis": "Cycle 83 again offers session continuation, inventory reset, and runner-management concepts inside an ETH-led basket, but ETH 4h is 100% CHOP. That makes inventory-reset rotation the most structurally honest primary expression: denser than delayed continuation, more tradeable than sparse deep reclaim theater, and aligned with the market's current tendency to reject excursions and return to balance.",
+  "invalidation_condition": "If ETH 4h inventory-reset rotations still cannot clear moderate density or repeatedly fail before first target, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, weak inventory is cleared, value is reclaimed, and price rotates back toward medium balance.",
+    "why_edge_should_exist": "Pure chop should generate failed inventory flushes more often than durable directional continuations. Reclaim after the flush is the structural proof that the market is returning to balance.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because it is the primary lane, 100% chop, and therefore the cleanest home for a dense mean-reverting reclaim mechanism.",
+    "indicator_role_map": {
+      "VWAP": "short-term value / reclaim line",
+      "EMA_55": "medium balance anchor",
+      "ATR_14": "flush threshold and stop sizing",
+      "RSI_14": "reset/recovery qualifier",
+      "ADX_14": "trend-strength veto"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "A real directional break may be misread as failed inventory, causing repeated fades into actual continuation.",
+    "first_refinement_path": "If density is acceptable but expectancy is thin, tighten time exits and first profit-taking before touching the reclaim logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Repeated modest balance rotations, many first-target wins, and occasional fuller mean-reversion unwinds.",
+    "what_would_count_as_success": "ETH 4h clears screen density and materially out-trades the prior sparse reclaim family while keeping losses contained.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reclaims that fail immediately back under value.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because failed flushes in chop should recur often enough",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit pure-chop lane for inventory-reset rotation.",
+      "continue_if": "ETH 4h shows enough reset-reclaim rotations with positive first-target expectancy.",
+      "rotate_away_if": "ETH 4h still undertrades or the moves remain too shallow after costs.",
+      "expected_if_right": "Moderate count with many balance rotations."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reclaim grammar survives on a similar major with slightly more transition character.",
+      "continue_if": "BTC 4h preserves a tradable reset-reclaim behavior.",
+      "rotate_away_if": "BTC 4h transition pressure breaks the mean-reversion thesis.",
+      "expected_if_right": "Slightly larger but less frequent rotations than ETH."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism gains density on the adjacent timeframe without collapsing into noise.",
+      "continue_if": "ETH 1h increases count while preserving reset-reclaim structure.",
+      "rotate_away_if": "ETH 1h reintroduces the same intraday noise that earlier cycles failed on.",
+      "expected_if_right": "Higher count, smaller balance rotations than ETH 4h."
+    }
+  ],
+  "indicators": [
+    "VWAP",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.30 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_55 - 0.08 * ATR_14",
+      "RSI_14 >= 44",
+      "ADX_14 <= 17"
+    ],
+    "short": [
+      "High >= VWAP + 0.30 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_55 + 0.08 * ATR_14",
+      "RSI_14 <= 56",
+      "ADX_14 <= 17"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.80 * ATR_14 below entry",
+      "Take profit: 0.42 * ATR_14 on 45% size",
+      "Take profit: 0.78 * ATR_14 on 35% size",
+      "Exit remaining 20% on loss of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.80 * ATR_14 above entry",
+      "Take profit: 0.42 * ATR_14 on 45% size",
+      "Take profit: 0.78 * ATR_14 on 35% size",
+      "Exit remaining 20% on reclaim of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

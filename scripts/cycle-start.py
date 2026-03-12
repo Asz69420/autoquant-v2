@@ -5,6 +5,8 @@ import sys
 import time
 from datetime import datetime, timezone
 
+from cycle_state import start_cycle
+
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 STATE_DIR = os.path.join(ROOT, "data", "state")
 OUT_PATH = os.path.join(STATE_DIR, "research_cycle_started_at.json")
@@ -208,5 +210,7 @@ payload = {
 }
 with open(OUT_PATH, "w", encoding="utf-8") as f:
     json.dump(payload, f, indent=2)
+
+start_cycle(cycle_id, started_at_iso=started_at_iso)
 
 print(json.dumps({"status": "ok", "path": OUT_PATH, **payload}))

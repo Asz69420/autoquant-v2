@@ -5,6 +5,8 @@ import sqlite3
 import sys
 from datetime import datetime, timezone, timedelta
 
+from cycle_state import PHASE_REFLECTION_READY, advance_cycle
+
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
@@ -417,6 +419,9 @@ def main():
 
     with open(REFLECTION_PACKET, "w", encoding="utf-8") as f:
         json.dump(packet, f, indent=2)
+
+    if packet.get("cycle_id"):
+        advance_cycle(int(packet.get("cycle_id") or 0), PHASE_REFLECTION_READY, result_count=packet.get("current_cycle_result_count", 0))
 
     print(
         json.dumps(

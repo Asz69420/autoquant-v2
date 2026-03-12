@@ -7,6 +7,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from cycle_state import PHASE_DESIGNING, PHASE_SPECS_READY, append_note, advance_cycle
+
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 RUN_STATE = ROOT / "data" / "state" / "research_cycle_started_at.json"
 STATUS_PATH = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
@@ -121,6 +123,7 @@ def main() -> int:
         return 1
 
     session_id = f"quandalf-cycle-{cycle_id}"
+    advance_cycle(cycle_id, PHASE_DESIGNING)
     cmd = [
         OPENCLAW,
         "agent",
@@ -147,6 +150,7 @@ def main() -> int:
             clear_force_fallback(cycle_id)
             sync_status_with_specs(cycle_id, spec_paths)
             sync_manifest_with_specs(cycle_id, spec_paths)
+            advance_cycle(cycle_id, PHASE_SPECS_READY, specs_produced=len(spec_paths), spec_paths=spec_paths)
             print(json.dumps({
                 "status": "ok",
                 "cycle_id": cycle_id,
@@ -157,6 +161,7 @@ def main() -> int:
             }, indent=2))
             return 0
         mark_force_fallback(cycle_id, f"design_step_returncode_{proc.returncode}")
+        append_note(cycle_id, f"Design step produced no specs (returncode={proc.returncode}); fallback requested")
         print(json.dumps({
             "status": "soft_fail",
             "cycle_id": cycle_id,
@@ -174,6 +179,7 @@ def main() -> int:
             clear_force_fallback(cycle_id)
             sync_status_with_specs(cycle_id, spec_paths)
             sync_manifest_with_specs(cycle_id, spec_paths)
+            advance_cycle(cycle_id, PHASE_SPECS_READY, specs_produced=len(spec_paths), spec_paths=spec_paths)
             print(json.dumps({
                 "status": "ok",
                 "cycle_id": cycle_id,
@@ -184,6 +190,7 @@ def main() -> int:
             }, indent=2))
             return 0
         mark_force_fallback(cycle_id, "design_step_timeout")
+        append_note(cycle_id, "Design step timed out with no specs; fallback requested")
         print(json.dumps({
             "status": "soft_fail",
             "cycle_id": cycle_id,

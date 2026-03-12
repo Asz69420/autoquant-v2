@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from cycle_state import PHASE_DECISIONS_READY, advance_cycle
+
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 REFLECTION = ROOT / "agents" / "quandalf" / "memory" / "reflection_packet.json"
 DECISIONS = ROOT / "agents" / "quandalf" / "memory" / "refinement_decisions.json"
@@ -395,6 +397,8 @@ def main():
         decisions = build_deterministic_decisions(reflection)
         autofill_queue_decisions_from_strategy(reflection, decisions)
         code, payload, stdout, stderr = run_validator()
+        if code == 0:
+            advance_cycle(cycle_id, PHASE_DECISIONS_READY, decision_count=len(decisions.get("strategy_decisions") or []))
         print(json.dumps({
             "status": "ok" if code == 0 else "error",
             "cycle_id": cycle_id,
@@ -409,6 +413,7 @@ def main():
         code, payload, stdout, stderr = run_validator()
         final_validator = payload
         if code == 0:
+            advance_cycle(cycle_id, PHASE_DECISIONS_READY, decision_count=len(load_json(DECISIONS, {}).get("strategy_decisions") or []))
             print(json.dumps({
                 "status": "ok",
                 "cycle_id": cycle_id,
@@ -431,6 +436,8 @@ def main():
             decisions = load_json(DECISIONS, {})
             autofill_queue_decisions_from_strategy(reflection, decisions)
             code, payload, stdout, stderr = run_validator()
+            if code == 0:
+                advance_cycle(cycle_id, PHASE_DECISIONS_READY, decision_count=len(load_json(DECISIONS, {}).get("strategy_decisions") or []))
             print(json.dumps({
                 "status": "ok" if code == 0 else "error",
                 "cycle_id": cycle_id,
@@ -455,6 +462,8 @@ def main():
     code, payload, stdout, stderr = run_validator()
     final_validator = payload
     status = "ok" if code == 0 else "error"
+    if code == 0:
+        advance_cycle(cycle_id, PHASE_DECISIONS_READY, decision_count=len(load_json(DECISIONS, {}).get("strategy_decisions") or []))
     print(json.dumps({
         "status": status,
         "cycle_id": cycle_id,

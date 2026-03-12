@@ -1,22 +1,22 @@
-# Quandalf Journal — Cycle 82
+# Quandalf Journal — Cycle 83
 
-- ts_iso: 2026-03-12T09:11:08.138434+00:00
+- ts_iso: 2026-03-12T09:36:52.627125+00:00
 - mode: explore
-- lane: ETH / 1h
+- lane: ETH / 4h
 - research_direction: explore_new
 
 ## My Current Decision Summary
 {
   "pass": 0,
   "refine": 0,
-  "abort": 1,
-  "zero_trade": 1
+  "abort": 3,
+  "zero_trade": 2
 }
 
 ## My Current Diagnosis Breakdown
 {
-  "untested": 2,
-  "too sparse": 1
+  "too sparse": 2,
+  "bad idea": 1
 }
 
 ## Rolling Last 5 Cycles
@@ -26,19 +26,19 @@
     "cycles_considered": 5,
     "pass": 0,
     "refine": 0,
-    "abort": 13,
-    "zero_trade": 5,
+    "abort": 15,
+    "zero_trade": 6,
     "strategies": 15,
-    "queue_rows": 30,
-    "queue_rows_decided": 30,
-    "saved_results": 14
+    "queue_rows": 36,
+    "queue_rows_decided": 36,
+    "saved_results": 16
   },
   "diagnosis_breakdown": {
-    "too sparse": 6,
     "bad idea": 7,
-    "untested": 2
+    "too sparse": 8
   },
   "assets_touched": [
+    "BTC",
     "DOGE",
     "ETH",
     "TAO"
@@ -47,11 +47,11 @@
     "4h"
   ],
   "cycle_ids": [
-    78,
     79,
     80,
     81,
-    82
+    82,
+    83
   ]
 }
 
@@ -59,38 +59,48 @@
 - none
 
 ## Awaiting Evidence
-- On QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, insufficient evidence: no recorded backtest or queue outcome yet
-- On QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1, insufficient evidence: no recorded backtest or queue outcome yet
+- none
 
 ## What Failed
-- On QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1, abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%
+- On QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+- On QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1, abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%
+- On QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, I aborted it after a fail with QS 0.45, PF 0.51, DD 5.4%, trades 15
 
 ## Why I Judged It That Way
-- On QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1, too sparse
+- On QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, too sparse
+- On QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1, too sparse
+- On QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, bad idea
 
 ## What I Would Improve Next
-- On QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, pending: no backtest outcome recorded yet
-- On QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1, abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%
-- On QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1, pending: no backtest outcome recorded yet
+- On QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, I see that my legal next actions are refine or abort
+- On QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+- On QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1, abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%
+- On QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1, I aborted it after a fail with QS 0.45, PF 0.51, DD 5.4%, trades 15
 
 ## What Still Needs Testing
-- On QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1, await tested evidence before deciding whether the mechanism is weak, the lane is wrong, or the idea deserves refinement
-- On QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1, await tested evidence before deciding whether the mechanism is weak, the lane is wrong, or the idea deserves refinement
+- none
 
 ## Strategy-by-Strategy Reasons
-- QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1: asset=DOGE | timeframe=4h | decision=untested | diagnosis=untested
-  mechanism: a session-window directional impulse establishes control, the first structural pullback holds, and continuation expands from that held control zone
-  thesis: Cycle 82 still wants an explore basket inside DOGE/ETH/TAO 4h, but the last five cycles say sparse reclaim theater is dead. Session-impulse hold expansion is a denser, more tradeable transitional mechanism for DOGE 4h because it asks for a recurring control event plus a simple hold, not a rare multi-step rescue. The edge is the held session control, not the first breakout tick.
-  why: insufficient evidence: no recorded backtest or queue outcome yet
-- QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1: asset=ETH | timeframe=4h | decision=abort | diagnosis=too sparse
-  mechanism: price flushes through short-term value, weak inventory is cleared, value is reclaimed, and price rotates away from the failed flush
-  thesis: ETH 4h remains the cleanest pure-chop lane in the basket, so if there is still a place for reclaim logic it has to be a denser inventory-reset reacceptance, not the sparse staged-recovery family that just died on count. The edge is the reclaim after the flush, not catching the knife and not asking for rare continuation persistence.
+- QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1: asset=BTC | timeframe=4h | decision=abort | diagnosis=too sparse
+  mechanism: a session-window directional impulse establishes control, the first structural pullback holds, and continuation expands from that control zone
+  thesis: Session-window continuation is part of the cycle 83 concept set, but ETH 4h is the wrong ownership lane because the regime is pure chop. BTC 4h is the better fit inside the allowed basket: similar enough to the primary lane to stay relevant, but with more transition character so session-control continuation is not structurally absurd.
+  why: I got 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) — I must explicitly choose refine or abort.
+  evidence: rq_7f3f036ce996=abort (Deterministic closure inherited abort for queue row rq_7f3f036ce996 from strategy outcome QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1.)
+  evidence: rq_a35b8099f755=abort (Deterministic closure inherited abort for queue row rq_a35b8099f755 from strategy outcome QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1.)
+  evidence: rq_cf8d978f74b8=abort (Deterministic closure inherited abort for queue row rq_cf8d978f74b8 from strategy outcome QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1.)
+- QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1: asset=ETH | timeframe=4h | decision=abort | diagnosis=too sparse
+  mechanism: price flushes through short-term value, weak inventory is cleared, value is reclaimed, and price rotates back through balance in a pure chop regime
+  thesis: Cycle 83 again offers session continuation, inventory reset, and runner-management concepts inside an ETH-led basket, but ETH 4h is 100% CHOP. That makes inventory-reset rotation the most structurally honest primary expression: denser than delayed continuation, more tradeable than sparse deep reclaim theater, and aligned with the market's current tendency to reject excursions and return to balance.
   train: QS 0.1 | Sharpe 0 | PF 10.0 | DD 0% | Trades 1
   why: abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%
-  evidence: rq_68ad801bfe88=abort (Deterministic closure inherited abort for queue row rq_68ad801bfe88 from strategy outcome QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1.)
-  evidence: rq_b7a9af2f3ac1=abort (Deterministic closure inherited abort for queue row rq_b7a9af2f3ac1 from strategy outcome QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1.)
-  evidence: rq_5f762bbe6097=abort (Deterministic closure inherited abort for queue row rq_5f762bbe6097 from strategy outcome QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1.)
-- QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1: asset=TAO | timeframe=4h | decision=untested | diagnosis=untested
-  mechanism: a downside break fails, support is reclaimed and held, and the entry participates in a resumed directional leg from a cleaner location than generic continuation
-  thesis: The TAO asymmetric continuation family now has enough evidence to call the trigger bad, but TAO itself should not be abandoned as a lane. The better mechanism is a failed-breakdown hold: it keeps TAO's trend support while demanding a structurally cleaner entry than the prior continuation stack. The edge is the failed downside auction that gets reclaimed and held.
-  why: insufficient evidence: no recorded backtest or queue outcome yet
+  evidence: rq_a02e92f1a99a=abort (Deterministic closure inherited abort for queue row rq_a02e92f1a99a from strategy outcome QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1.)
+  evidence: rq_48a5a4f45b6b=abort (Deterministic closure inherited abort for queue row rq_48a5a4f45b6b from strategy outcome QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1.)
+  evidence: rq_4a5429069022=abort (Deterministic closure inherited abort for queue row rq_4a5429069022 from strategy outcome QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1.)
+- QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1: asset=TAO | timeframe=4h | decision=abort | diagnosis=bad idea
+  mechanism: after a directional expansion proves itself, partial profit is harvested quickly while a core runner is maintained for persistent trend continuation instead of full de-risking too early
+  thesis: At least one spec this cycle must genuinely test a different management expression, but management cannot rescue a dead trigger. TAO 4h is the only allowed lane where runner logic has a structural reason to exist, so the correct test is a cleaner post-expansion partial-runner expression on TAO rather than another management experiment on ETH chop. The entry is simple, the management is the variable.
+  train: QS 0.451 | Sharpe 0 | PF 0.505 | DD 5.43% | Trades 15
+  why: I aborted it after a fail with QS 0.45, PF 0.51, DD 5.4%, trades 15
+  evidence: rq_da517fde8e93=abort (Deterministic closure inherited abort for queue row rq_da517fde8e93 from strategy outcome QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1.)
+  evidence: rq_2a67229443fb=abort (Deterministic closure inherited abort for queue row rq_2a67229443fb from strategy outcome QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1.)
+  evidence: rq_987b3b6bc708=abort (Deterministic closure inherited abort for queue row rq_987b3b6bc708 from strategy outcome QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1.)

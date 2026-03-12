@@ -9,6 +9,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from cycle_state import PHASE_SPECS_READY, append_note, advance_cycle
+
 ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 STATE_DIR = ROOT / "data" / "state"
 START_MARKER = STATE_DIR / "research_cycle_started_at.json"
@@ -232,6 +234,7 @@ def main() -> int:
         }
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         MANIFEST_PATH.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        append_note(cycle_id, "Capture step found no current-cycle specs yet")
         print(json.dumps(manifest, indent=2))
         return 0
 
@@ -253,6 +256,7 @@ def main() -> int:
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    advance_cycle(cycle_id, PHASE_SPECS_READY, specs_produced=len(discovered), spec_paths=[item["path"] for item in discovered])
     print(json.dumps(manifest, indent=2))
     return 0
 

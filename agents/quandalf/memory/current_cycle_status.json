@@ -1,20 +1,20 @@
 {
-  "cycle_id": 82,
+  "cycle_id": 83,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "state-change momentum after regime improvement and post-break hold",
-      "mean reversion from exhaustion only when structure reaccepts prior value",
-      "breakout continuation with delayed entry after retest rather than immediate trigger"
+      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -26,9 +26,9 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "AXS",
       "BTC",
-      "ETH"
+      "ETH",
+      "TAO"
     ],
     "timeframes": [
       "1h",
@@ -36,27 +36,15 @@
     ]
   },
   "iterate_target": null,
-  "new_families": [
-    "doge_4h_session_impulse_hold_expansion_v082",
-    "eth_4h_inventory_reset_reclaim_v082",
-    "tao_4h_failed_breakdown_hold_v082"
-  ],
+  "new_families": [],
   "iterated_families": [],
-  "abandoned_families": [
-    "doge_4h_value_recovery_scalein_v081",
-    "doge_4h_retest_hold_timeout_v081",
-    "tao_4h_asymmetric_continuation_v081",
-    "doge_4h_retest_hold_timeout_v081",
-    "eth_4h_inventory_reset_reclaim_v082",
-    "tao_4h_asymmetric_continuation_v081",
-    "doge_4h_value_recovery_scalein_v081"
-  ],
-  "next_cycle_focus": "Keep only the mechanisms that prove moderate screen density and non-negative expectancy in their best-fit lane. If DOGE session impulse hold expansion and ETH inventory-reset reclaim both trade plausibly, refine exits and regime gating before touching trigger grammar. If only TAO failed-breakdown hold survives, focus future TAO work on cleaner structural entry quality rather than management innovation.",
-  "rationale": "Cycle 82 is a DOGE-centered 4h explore rotation, but now there is actual evidence from cycle 81 rather than just priors. The last 5 cycles are blunt: 15/15 aborts, with 6 too-sparse failures and 9 bad-idea failures. The two strongest anti-patterns are sparse 4h continuation theater and management-heavy experiments on weak triggers. Cycle 81 added a useful nuance: DOGE value-recovery and timeout-managed retest were not catastrophically wrong in concept, but they still failed the tradeability test on count; meanwhile TAO asymmetric continuation had adequate count and still lost badly, which means the trigger itself was bad. This batch therefore pivots toward denser recurring mechanisms: session impulse hold expansion on DOGE transition, inventory-reset reclaim on ETH chop, and a cleaner failed-breakdown hold on TAO to preserve trend-lane research without repeating the failed asymmetric continuation family.",
+  "abandoned_families": [],
+  "next_cycle_focus": "pending",
+  "rationale": "pending",
   "expected_density_notes": [
     "All three chosen mechanisms are expected to be moderate-density on 4h if the thesis is right.",
-    "Anything projecting below roughly 15 screen-stage trades should be treated as structurally too sparse for this cycle.",
-    "DOGE session-control and ETH failed-flush reclaim should trade more often than TAO continuation structures; TAO is included for asymmetry quality, not raw count."
+    "Any lane projecting below roughly 15 screen-stage trades should be treated as structurally too sparse for this cycle.",
+    "ETH reclaim rotation and BTC session-control continuation should trade more often than TAO runner-management tests; TAO is included for management quality, not raw count."
   ],
   "anti_patterns_avoided": [
     "ceremonial sparse confirmation chains",
@@ -64,7 +52,7 @@
     "single-bar hero entries with no management logic",
     "convenience-first lane ownership",
     "management trying to rescue a weak mechanism",
-    "reusing known-bad continuation triggers on TAO"
+    "reusing sparse 4h continuation triggers on the wrong lane"
   ],
   "thesis_basis": {
     "last_5_cycles_working_view": {
@@ -76,20 +64,21 @@
       ],
       "top_promising_structures_to_preserve": [
         "dense value-recovery / reset-reclaim mechanics",
-        "transition-friendly DOGE 4h control-change structures",
-        "continuation only where trend contamination clearly supports it and only from cleaner structural entries"
+        "transition-friendly control-change structures",
+        "management innovation only on mechanisms that should already trade"
       ],
       "expected_density_for_this_cycle": "moderate rather than rare-event sparse",
       "likely_failure_modes": [
         "screen-stage density below 15 trades",
-        "negative expectancy continuation despite adequate trade count",
-        "management attempting to rescue a dead trigger",
+        "continuation ownership on the wrong lane",
+        "management trying to rescue a dead trigger",
         "lane mismatch between thesis and live regime"
       ]
     },
     "evidence_sources": [
-      "briefing_packet.json cycle 82",
-      "reflection_packet.json cycle 81",
+      "briefing_packet.json cycle 83",
+      "cycle_orders.json cycle 83",
+      "reflection_packet.json cycle 82",
       "latest_learning_loop.json",
       "latest_experiment_memory.json",
       "latest_journal.md",
@@ -98,29 +87,29 @@
       "research_notes.md"
     ]
   },
-  "target_asset": "ETH",
-  "target_timeframe": "1h",
-  "specific_family_to_iterate": null,
+  "target_asset": "TAO",
+  "target_timeframe": "4h",
   "family_kill_events": [
     {
-      "ts_iso": "2026-03-12T09:10:48.164369+00:00",
-      "family": "doge_4h_retest_hold_timeout_v081",
-      "reason": "screen-stage density below 30 trades"
-    },
-    {
-      "ts_iso": "2026-03-12T09:10:53.733713+00:00",
+      "ts_iso": "2026-03-12T09:36:32.045615+00:00",
       "family": "eth_4h_inventory_reset_reclaim_v082",
       "reason": "screen-stage density below 30 trades"
     },
     {
-      "ts_iso": "2026-03-12T09:10:59.278845+00:00",
-      "family": "tao_4h_asymmetric_continuation_v081",
-      "reason": "PF/QScore too weak on first full backtest"
+      "ts_iso": "2026-03-12T09:36:37.813426+00:00",
+      "family": "eth_4h_inventory_reset_rotation_v083",
+      "reason": "screen-stage density below 30 trades"
     },
     {
-      "ts_iso": "2026-03-12T09:11:04.827719+00:00",
-      "family": "doge_4h_value_recovery_scalein_v081",
+      "ts_iso": "2026-03-12T09:36:43.551904+00:00",
+      "family": "tao_4h_post_expansion_partial_runner_v083",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T09:36:49.285375+00:00",
+      "family": "tao_4h_failed_breakdown_hold_v082",
       "reason": "screen-stage density below 30 trades"
     }
-  ]
+  ],
+  "specific_family_to_iterate": null
 }

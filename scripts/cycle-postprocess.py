@@ -9,6 +9,7 @@ import sys
 import time
 from datetime import datetime, timezone, timedelta
 
+from cycle_state import PHASE_COMPLETED, advance_cycle, load_cycle_state
 from text_io import read_text_best_effort
 
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
@@ -2273,6 +2274,15 @@ def main():
         pipeline="research_cycle",
         step="postprocess",
     )
+
+    if cycle_id:
+        advance_cycle(
+            cycle_id,
+            PHASE_COMPLETED,
+            result_count=int(metrics.get("backtests_completed", 0) or 0),
+            decision_count=int((load_json_file(REFINEMENT_DECISIONS_PATH) or {}).get("strategy_decisions") and len((load_json_file(REFINEMENT_DECISIONS_PATH) or {}).get("strategy_decisions") or []) or 0),
+            log_card_sent=bool(log_card_sent),
+        )
 
     if metrics.get("cycle_results_present") or int(metrics.get("queue_terminal_failures", 0) or 0) > 0 or int(metrics.get("queue_integrity_skips", 0) or 0) > 0 or int(metrics.get("queue_pending", 0) or 0) > 0 or int(metrics.get("pass_count", 0) or 0) > 0 or int(metrics.get("promote_count", 0) or 0) > 0:
         record_pipeline_completion(

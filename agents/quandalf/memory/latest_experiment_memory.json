@@ -1,13 +1,13 @@
 {
-  "ts_iso": "2026-03-12T09:11:08.050802+00:00",
-  "cycle_id": 82,
+  "ts_iso": "2026-03-12T09:36:52.542844+00:00",
+  "cycle_id": 83,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C082-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
-      "hypothesis": "Cycle 82 still wants an explore basket inside DOGE/ETH/TAO 4h, but the last five cycles say sparse reclaim theater is dead. Session-impulse hold expansion is a denser, more tradeable transitional mechanism for DOGE 4h because it asks for a recurring control event plus a simple hold, not a rare multi-step rescue. The edge is the held session control, not the first breakout tick.",
+      "strategy_spec_id": "QD-20260312-C083-BTC-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
+      "hypothesis": "Session-window continuation is part of the cycle 83 concept set, but ETH 4h is the wrong ownership lane because the regime is pure chop. BTC 4h is the better fit inside the allowed basket: similar enough to the primary lane to stay relevant, but with more transition character so session-control continuation is not structurally absurd.",
       "chosen_lane": {
-        "asset": "DOGE",
+        "asset": "BTC",
         "timeframe": "4h"
       },
       "component_roles": [
@@ -19,7 +19,7 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "pending: no backtest outcome recorded yet",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "actual_effect": {
         "trade_count": null,
         "profit_factor": null,
@@ -28,12 +28,12 @@
         "decision": "abort"
       },
       "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pending: no backtest outcome recorded yet"
+      "diagnosis": "too sparse",
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     },
     {
-      "strategy_spec_id": "QD-20260312-C082-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
-      "hypothesis": "ETH 4h remains the cleanest pure-chop lane in the basket, so if there is still a place for reclaim logic it has to be a denser inventory-reset reacceptance, not the sparse staged-recovery family that just died on count. The edge is the reclaim after the flush, not catching the knife and not asking for rare continuation persistence.",
+      "strategy_spec_id": "QD-20260312-C083-ETH-4H-INVENTORY-RESET-ROTATION-v1",
+      "hypothesis": "Cycle 83 again offers session continuation, inventory reset, and runner-management concepts inside an ETH-led basket, but ETH 4h is 100% CHOP. That makes inventory-reset rotation the most structurally honest primary expression: denser than delayed continuation, more tradeable than sparse deep reclaim theater, and aligned with the market's current tendency to reject excursions and return to balance.",
       "chosen_lane": {
         "asset": "ETH",
         "timeframe": "4h"
@@ -45,7 +45,7 @@
         "RSI_14",
         "ADX_14"
       ],
-      "mutation_surface": "initial",
+      "mutation_surface": "reclassified_refine",
       "expected_effect": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%",
       "actual_effect": {
         "trade_count": 1,
@@ -59,32 +59,32 @@
       "lesson_extracted": "abort: low trade count (1 < 15) with QS 0.10, PF 10.00, DD 0.0%"
     },
     {
-      "strategy_spec_id": "QD-20260312-C082-TAO-4H-FAILED-BREAKDOWN-HOLD-v1",
-      "hypothesis": "The TAO asymmetric continuation family now has enough evidence to call the trigger bad, but TAO itself should not be abandoned as a lane. The better mechanism is a failed-breakdown hold: it keeps TAO's trend support while demanding a structurally cleaner entry than the prior continuation stack. The edge is the failed downside auction that gets reclaimed and held.",
+      "strategy_spec_id": "QD-20260312-C083-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1",
+      "hypothesis": "At least one spec this cycle must genuinely test a different management expression, but management cannot rescue a dead trigger. TAO 4h is the only allowed lane where runner logic has a structural reason to exist, so the correct test is a cleaner post-expansion partial-runner expression on TAO rather than another management experiment on ETH chop. The entry is simple, the management is the variable.",
       "chosen_lane": {
         "asset": "TAO",
         "timeframe": "4h"
       },
       "component_roles": [
         "DONCHIAN_20",
-        "EMA_55",
+        "EMA_20",
         "ATR_14",
         "PLUS_DI_14",
         "MINUS_DI_14",
         "ADX_14"
       ],
-      "mutation_surface": "initial",
-      "expected_effect": "pending: no backtest outcome recorded yet",
+      "mutation_surface": "reclassified_refine",
+      "expected_effect": "abort: fail with QS 0.45, PF 0.51, DD 5.4%, trades 15",
       "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
+        "trade_count": 15,
+        "profit_factor": 0.505,
+        "max_drawdown_pct": 5.43,
+        "qscore": 0.451,
         "decision": "abort"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "pending: no backtest outcome recorded yet"
+      "lesson_extracted": "abort: fail with QS 0.45, PF 0.51, DD 5.4%, trades 15"
     }
   ]
 }

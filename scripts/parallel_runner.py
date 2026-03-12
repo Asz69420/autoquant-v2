@@ -12,6 +12,8 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 
+from cycle_state import PHASE_BACKTESTING, PHASE_RESULTS_READY, advance_cycle
+
 ROOT = r"C:\Users\Clamps\.openclaw\workspace-oragorn"
 DB = os.path.join(ROOT, "db", "autoquant.db")
 THROTTLE = os.path.join(ROOT, "config", "throttle.json")
@@ -1660,6 +1662,8 @@ def main():
     # If jobs are already queued for the cycle, process them even when this invocation did not seed new rows.
     cycle_queue = queue_snapshot(conn, cycle_id=cycle_id)
     queued_work = sum(int(item.get("count") or 0) for item in cycle_queue if str(item.get("status") or "") == "queued")
+    if cycle_id:
+        advance_cycle(cycle_id, PHASE_BACKTESTING, queue_seeded=len(seeded), queue_snapshot=cycle_queue)
     if not seeded and not args.job_manifest and queued_work <= 0:
         out = {"status": "no_work", "seeded": 0, "queue": cycle_queue, "cycle_id": cycle_id, "message": "No specs in this cycle; skipping backtest."}
         conn.close()
@@ -1671,6 +1675,9 @@ def main():
     run_out["max_parallel"] = max_parallel
     run_out["seeded"] = len(seeded)
     run_out["queue_after"] = queue_snapshot(conn, cycle_id=cycle_id)
+    if cycle_id:
+        completed_count = sum(int(item.get("count") or 0) for item in run_out["queue_after"] if str(item.get("status") or "") in {"done", "skipped"})
+        advance_cycle(cycle_id, PHASE_RESULTS_READY, queue_seeded=len(seeded), queue_snapshot=run_out["queue_after"], result_count=completed_count)
     conn.close()
     print(json.dumps(run_out, indent=2, default=str))
     return 0
