@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C073-DOGE-4H-INVENTORY-RESET-RECLAIM-v1",
+  "cycle_id": 73,
+  "family_name": "doge_4h_inventory_reset_reclaim_v073",
+  "name": "DOGE 4h Inventory Reset Reclaim v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "price flushes through short-term value, weak inventory is cleared, value is reclaimed, and continuation resumes away from the failed flush",
+  "expected_regime": "TRANSITION_TO_CONTINUATION",
+  "thesis": "Cycle 73 explicitly wants inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic. DOGE 4h is the right home lane because transition regimes create repeated inventory dislocations without requiring fully established trend. The edge is the reclaim after the flush, not catching the knife.",
+  "invalidation_condition": "If flush-and-reclaim events either undertrade or repeatedly fail back under value before continuation, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes below short-term value, reclaims it, and then continues as weak inventory has already been cleared.",
+    "why_edge_should_exist": "Transition markets often need a final inventory washout before continuation can resume. Requiring reclaim after the flush is materially different from naive oversold bounce logic and should improve location.",
+    "asset_timeframe_fit": "DOGE 4h is the best fit because it combines enough noise for inventory clearouts with enough amplitude for reclaimed continuation to matter.",
+    "indicator_role_map": {
+      "VWAP": "short-term value / reclaim line",
+      "EMA_55": "medium structure anchor",
+      "ATR_14": "flush threshold and stop sizing",
+      "RSI_14": "reset/recovery qualifier",
+      "PLUS_DI_14/MINUS_DI_14": "re-assertion of directional control"
+    },
+    "expected_regime": "TRANSITION_TO_CONTINUATION",
+    "likely_failure_mode": "The reclaim may still be only a weak bounce inside unresolved chop, causing continuation to fail quickly.",
+    "first_refinement_path": "If first targets hit but runners fail, de-risk faster after entry before touching the reclaim trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Several reclaimed-reset entries, many modest first-target wins, and fewer follow-through runners when the continuation is real.",
+    "what_would_count_as_success": "DOGE 4h clears density and materially outperforms static bounce behavior with post-cost first-target expectancy.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reclaim entries that fail back under value immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "low-to-moderate because flushes plus reclaims occur more often than rare trend continuations",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for transition inventory resets that can reclaim and continue.",
+      "continue_if": "DOGE 4h shows enough flush-reclaim continuations with acceptable first-target behavior.",
+      "rotate_away_if": "DOGE 4h reclaim events are too noisy or fail instantly.",
+      "expected_if_right": "Moderate participation with repeated reset continuations."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reclaim grammar survives on a cleaner chop lane.",
+      "continue_if": "ETH 4h retains enough reset-reclaim events to validate the mechanism.",
+      "rotate_away_if": "ETH 4h makes the setup too shallow to monetize.",
+      "expected_if_right": "Cleaner, smaller reclaimed continuations than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "trend_contamination_check",
+      "why_included": "Tests whether stronger trend contamination helps the reclaim continuation after a flush.",
+      "continue_if": "TAO 4h shows fewer but cleaner reset-reclaim continuations.",
+      "rotate_away_if": "TAO 4h turns the concept into late trend buying after too much recovery.",
+      "expected_if_right": "Lower count, stronger continuation carry than DOGE."
+    }
+  ],
+  "indicators": [
+    "VWAP",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.42 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "RSI_14 >= 44",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "High >= VWAP + 0.42 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "RSI_14 <= 56",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar close remains >= VWAP"
+    ],
+    "short": [
+      "Next bar close remains <= VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.50 * ATR_14 on 40% size",
+      "Take profit: 0.92 * ATR_14 on 30% size",
+      "Exit remaining 30% on loss of VWAP or 6 bars",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.50 * ATR_14 on 40% size",
+      "Take profit: 0.92 * ATR_14 on 30% size",
+      "Exit remaining 30% on reclaim of VWAP or 6 bars",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

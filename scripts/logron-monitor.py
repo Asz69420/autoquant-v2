@@ -72,7 +72,7 @@ def send_critical_escalation(message):
 def should_post_health_to_oragorn(status, issues):
     status = (status or "").lower()
     normalized = [str(issue).lower() for issue in (issues or []) if str(issue).strip()]
-    if any("stalled" in issue or "critical" in issue or "no backtests" in issue or "recent_healthy_rows=0" in issue for issue in normalized):
+    if any("stalled" in issue or "critical" in issue or "no backtests" in issue for issue in normalized):
         return True
     if status == "fail" and any("high gateway errors" not in issue for issue in normalized):
         return True
@@ -389,8 +389,6 @@ def check_health():
     if integrity.get("status") == "fail":
         for issue in integrity.get("issues", []):
             text = f"Integrity: {issue}"
-            if issue == "recent_healthy_rows=0" and backtests_24h > 0 and strategy_specs_24h > 0:
-                text = "Integrity warn: recent_healthy_rows=0"
             issues.append(text)
     elif integrity.get("status") == "error":
         issues.append("Integrity check failed to run")

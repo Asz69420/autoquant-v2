@@ -36,10 +36,6 @@ steps:
     # discover newly written strategy spec files and persist manifest to data/state/current_cycle_specs.json.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\capture_cycle_specs.py'
 
-  - id: research-card
-    # Visible evidence card only after spec capture, so Generated reflects real written specs.
-    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\emit_cycle_research_card.py'
-
   - id: prepare-cycle-lanes
     # Ensure requested asset/timeframe lanes exist locally with fresh candle data before backtesting.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\prepare_cycle_lanes.py'
@@ -49,6 +45,10 @@ steps:
     # runner seeds the SQLite research_funnel_queue from current_cycle_specs.json, then processes staged work
     # within the same cycle (screen -> full -> validation) subject to per-cycle limits.
     command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\parallel_runner.py --manifest C:\Users\Clamps\.openclaw\workspace-oragorn\data\state\current_cycle_specs.json --variant all'
+
+  - id: research-card
+    # Truthful in-flight research card from the same cycle-postprocess metrics builder used by reflection.
+    command: 'python C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\cycle-postprocess.py --send-card-only --since-minutes 180'
 
   - id: leaderboard-update
     # DB/state handoff from backtest -> leaderboard-update via backtest_results rows.

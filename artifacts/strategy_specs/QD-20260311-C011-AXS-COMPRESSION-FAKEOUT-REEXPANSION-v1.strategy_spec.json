@@ -38,11 +38,73 @@
     }
   },
   "validation_basket": [
-    {"asset":"AXS","timeframe":"4h","role":"primary","why_included":"Most expressive stress-test lane for fakeout-repair behavior in the current basket.","continue_if":"The pattern prints enough repaired expansions to justify the management structure.","rotate_away_if":"AXS only produces chaos with no repaired second leg.","expected_if_right":"Sharp fake release, fast reclaim, then a meaningful second expansion leg."},
-    {"asset":"TAO","timeframe":"4h","role":"similar_mechanism_crosscheck","why_included":"Checks whether the mechanism survives on another volatile lane rather than only AXS.","continue_if":"TAO shows the same repaired-expansion shape with acceptable structure.","rotate_away_if":"The idea only appears on AXS and disappears elsewhere.","expected_if_right":"Fewer but cleaner fakeout-repair expansions than AXS."},
-    {"asset":"ETH","timeframe":"4h","role":"cleanliness_control","why_included":"Determines whether the mechanism generalizes to a cleaner similar-asset lane.","continue_if":"ETH still produces tradable repaired expansions, even with lower amplitude.","rotate_away_if":"Mechanism fully vanishes on the cleaner lane.","expected_if_right":"Smaller but more orderly repaired expansions."}
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Most expressive stress-test lane for fakeout-repair behavior in the current basket.",
+      "continue_if": "The pattern prints enough repaired expansions to justify the management structure.",
+      "rotate_away_if": "AXS only produces chaos with no repaired second leg.",
+      "expected_if_right": "Sharp fake release, fast reclaim, then a meaningful second expansion leg."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "similar_mechanism_crosscheck",
+      "why_included": "Checks whether the mechanism survives on another volatile lane rather than only AXS.",
+      "continue_if": "TAO shows the same repaired-expansion shape with acceptable structure.",
+      "rotate_away_if": "The idea only appears on AXS and disappears elsewhere.",
+      "expected_if_right": "Fewer but cleaner fakeout-repair expansions than AXS."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleanliness_control",
+      "why_included": "Determines whether the mechanism generalizes to a cleaner similar-asset lane.",
+      "continue_if": "ETH still produces tradable repaired expansions, even with lower amplitude.",
+      "rotate_away_if": "Mechanism fully vanishes on the cleaner lane.",
+      "expected_if_right": "Smaller but more orderly repaired expansions."
+    }
   ],
-  "indicators": ["BOLLINGER_BANDS_20_2","EMA_20","ATR_14","RSI_14","ADX_14"],
-  "entry_rules": {"long": ["BOLLINGER_WIDTH_20 <= 1.15 * ATR_14","Low <= EMA_20 - 0.22 * ATR_14","Close >= EMA_20","RSI_14 >= 49","ADX_14 >= 8"],"short": ["BOLLINGER_WIDTH_20 <= 1.15 * ATR_14","High >= EMA_20 + 0.22 * ATR_14","Close <= EMA_20","RSI_14 <= 51","ADX_14 >= 8"]},
-  "exit_rules": {"long": ["Stop loss: 0.85 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Trail remaining 25% by 0.65 * ATR_14","Final time stop: 5 bars"],"short": ["Stop loss: 0.85 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 45% size","Take profit: 0.95 * ATR_14 on 30% size","Trail remaining 25% by 0.65 * ATR_14","Final time stop: 5 bars"]}
+  "indicators": [
+    "BOLLINGER_BANDS_20_2",
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "Low <= EMA_20 - 0.22 * ATR_14",
+      "Close >= EMA_20",
+      "RSI_14 >= 49",
+      "ADX_14 >= 8"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.15 * ATR_14",
+      "High >= EMA_20 + 0.22 * ATR_14",
+      "Close <= EMA_20",
+      "RSI_14 <= 51",
+      "ADX_14 >= 8"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.85 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.85 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 45% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Trail remaining 25% by 0.65 * ATR_14",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

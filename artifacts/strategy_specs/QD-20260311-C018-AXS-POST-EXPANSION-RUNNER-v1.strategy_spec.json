@@ -38,11 +38,73 @@
     }
   },
   "validation_basket": [
-    {"asset":"AXS","timeframe":"1h","role":"primary","why_included":"Best lane for testing whether the runner-management thesis matters because amplitude is large enough.","continue_if":"Density is credible, first targets realize often, and occasional runner extension adds expectancy.","rotate_away_if":"The setup barely trades or front-half exits do not monetize consistently.","expected_if_right":"Frequent first-target hits with a minority of meaningful runner extensions."},
-    {"asset":"ETH","timeframe":"1h","role":"clean_lane_control","why_included":"Determines whether the management thesis survives on a cleaner, lower-amplitude market.","continue_if":"ETH still realizes the first target often enough to justify the structure.","rotate_away_if":"The idea fully disappears on a cleaner lane.","expected_if_right":"Fewer but cleaner first-target hits and smaller runner contribution."},
-    {"asset":"BTC","timeframe":"1h","role":"similar_asset","why_included":"Tests whether the same management expression works on a liquid similar-asset lane.","continue_if":"BTC shows similar first-target behavior without collapsing into noise.","rotate_away_if":"The management edge appears too AXS-specific.","expected_if_right":"Cleaner but smaller first-target frequency, with fewer large runners than AXS."}
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best lane for testing whether the runner-management thesis matters because amplitude is large enough.",
+      "continue_if": "Density is credible, first targets realize often, and occasional runner extension adds expectancy.",
+      "rotate_away_if": "The setup barely trades or front-half exits do not monetize consistently.",
+      "expected_if_right": "Frequent first-target hits with a minority of meaningful runner extensions."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "clean_lane_control",
+      "why_included": "Determines whether the management thesis survives on a cleaner, lower-amplitude market.",
+      "continue_if": "ETH still realizes the first target often enough to justify the structure.",
+      "rotate_away_if": "The idea fully disappears on a cleaner lane.",
+      "expected_if_right": "Fewer but cleaner first-target hits and smaller runner contribution."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_asset",
+      "why_included": "Tests whether the same management expression works on a liquid similar-asset lane.",
+      "continue_if": "BTC shows similar first-target behavior without collapsing into noise.",
+      "rotate_away_if": "The management edge appears too AXS-specific.",
+      "expected_if_right": "Cleaner but smaller first-target frequency, with fewer large runners than AXS."
+    }
   ],
-  "indicators": ["EMA_20","ATR_14","ADX_14","RSI_14","EMA_55"],
-  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.15 * ATR_14","ADX_14 >= 9","RSI_14 >= 52","EMA_20 >= EMA_55 * 0.998"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.15 * ATR_14","ADX_14 >= 9","RSI_14 <= 48","EMA_20 <= EMA_55 * 1.002"]},
-  "exit_rules": {"long": ["Stop loss: 0.8 * ATR_14 below entry","Take profit: 0.5 * ATR_14 on 55% size","Take profit: 0.85 * ATR_14 on 25% size","Exit remaining 20% on close through EMA_55 or 5 bars","Final time stop: 5 bars"],"short": ["Stop loss: 0.8 * ATR_14 above entry","Take profit: 0.5 * ATR_14 on 55% size","Take profit: 0.85 * ATR_14 on 25% size","Exit remaining 20% on close through EMA_55 or 5 bars","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "ADX_14",
+    "RSI_14",
+    "EMA_55"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.15 * ATR_14",
+      "ADX_14 >= 9",
+      "RSI_14 >= 52",
+      "EMA_20 >= EMA_55 * 0.998"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.15 * ATR_14",
+      "ADX_14 >= 9",
+      "RSI_14 <= 48",
+      "EMA_20 <= EMA_55 * 1.002"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.8 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 55% size",
+      "Take profit: 0.85 * ATR_14 on 25% size",
+      "Exit remaining 20% on close through EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.8 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 55% size",
+      "Take profit: 0.85 * ATR_14 on 25% size",
+      "Exit remaining 20% on close through EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

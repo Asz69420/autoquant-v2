@@ -16,7 +16,13 @@
     "market_behavior_targeted": "Price reclaims continuation structure, starts a follow-through leg, and then either persists enough for a structure-managed exit or stalls quickly.",
     "why_edge_should_exist": "Continuation trades often fail because the same indicator is overloaded for trigger, stop, and exit. Separating roles can preserve entries while making exits respond to a different persistence signal.",
     "asset_timeframe_fit": "ETH 4h is appropriate because continuation structure is visible enough to test role separation without lower-timeframe noise overwhelming exits.",
-    "indicator_role_map": {"PLUS_DI_14/MINUS_DI_14":"directional trigger","ATR_14":"risk placement","EMA_20":"fast continuation hold reference","EMA_55":"slower persistence exit anchor","ADX_14":"participation filter"},
+    "indicator_role_map": {
+      "PLUS_DI_14/MINUS_DI_14": "directional trigger",
+      "ATR_14": "risk placement",
+      "EMA_20": "fast continuation hold reference",
+      "EMA_55": "slower persistence exit anchor",
+      "ADX_14": "participation filter"
+    },
     "expected_regime": "TRANSITION",
     "likely_failure_mode": "If the market is too range-bound, the continuation trigger may fire but persistence exits will still give back too much before the slower exit signal responds.",
     "first_refinement_path": "If entries are adequate but exit asymmetry adds no value, tighten the persistence exit before touching the trigger signal.",
@@ -24,14 +30,80 @@
     "expected_outcome_pattern": "A modest set of continuation trades with occasional larger persistence winners and many first-target-dominated outcomes.",
     "what_would_count_as_success": "ETH 4h plus one cross-lane show credible density and asymmetric exits improve net expectancy after costs.",
     "what_would_count_as_failure": "0 trades, sparse mirage, or persistence exits that simply give back gains.",
-    "density_sanity_check": {"plausible_trade_count":"moderate","contradictory_filters":"none obvious; trigger, risk, and exit roles are intentionally separated","event_sparsity":"managed by keeping entry broad and changing management rather than demanding rare perfect patterns","asset_timeframe_mismatch":"none"}
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "none obvious; trigger, risk, and exit roles are intentionally separated",
+      "event_sparsity": "managed by keeping entry broad and changing management rather than demanding rare perfect patterns",
+      "asset_timeframe_mismatch": "none"
+    }
   },
   "test_lanes": [
-    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Best lane for testing asymmetric role separation on continuation management.","continue_if":"Entries occur often enough and exit asymmetry improves expectancy after costs.","rotate_away_if":"Continuation is too sparse or exit asymmetry adds no value.","expected_if_right":"Continuation trades where a slower persistence exit keeps part of the move while fast exits monetize the common case."},
-    {"asset":"SOL","timeframe":"4h","role":"similar_high_beta_check","why_included":"Checks whether the same role-separated management survives on a higher-beta similar lane.","continue_if":"SOL preserves the pattern with acceptable density.","rotate_away_if":"The idea only works on ETH cleanliness.","expected_if_right":"More explosive but noisier persistence outcomes than ETH."},
-    {"asset":"TAO","timeframe":"4h","role":"structurally_different_asset","why_included":"Tests whether management asymmetry transfers to a more extreme asset.","continue_if":"TAO still benefits from distinct trigger/risk/exit roles.","rotate_away_if":"Volatility makes the exit asymmetry unhelpful.","expected_if_right":"Fewer but larger persistence tails than ETH."}
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane for testing asymmetric role separation on continuation management.",
+      "continue_if": "Entries occur often enough and exit asymmetry improves expectancy after costs.",
+      "rotate_away_if": "Continuation is too sparse or exit asymmetry adds no value.",
+      "expected_if_right": "Continuation trades where a slower persistence exit keeps part of the move while fast exits monetize the common case."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "similar_high_beta_check",
+      "why_included": "Checks whether the same role-separated management survives on a higher-beta similar lane.",
+      "continue_if": "SOL preserves the pattern with acceptable density.",
+      "rotate_away_if": "The idea only works on ETH cleanliness.",
+      "expected_if_right": "More explosive but noisier persistence outcomes than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether management asymmetry transfers to a more extreme asset.",
+      "continue_if": "TAO still benefits from distinct trigger/risk/exit roles.",
+      "rotate_away_if": "Volatility makes the exit asymmetry unhelpful.",
+      "expected_if_right": "Fewer but larger persistence tails than ETH."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","PLUS_DI_14","MINUS_DI_14","ADX_14"],
-  "entry_rules": {"long": ["Close >= EMA_20","PLUS_DI_14 >= MINUS_DI_14","ADX_14 >= 9","Low >= EMA_20 - 0.18 * ATR_14"],"short": ["Close <= EMA_20","MINUS_DI_14 >= PLUS_DI_14","ADX_14 >= 9","High <= EMA_20 + 0.18 * ATR_14"]},
-  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.5 * ATR_14 on 45% size","Take profit: 0.86 * ATR_14 on 25% size","Exit remaining 30% on close through EMA_55 or 5 bars","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.5 * ATR_14 on 45% size","Take profit: 0.86 * ATR_14 on 25% size","Exit remaining 30% on close through EMA_55 or 5 bars","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 9",
+      "Low >= EMA_20 - 0.18 * ATR_14"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 9",
+      "High <= EMA_20 + 0.18 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.5 * ATR_14 on 45% size",
+      "Take profit: 0.86 * ATR_14 on 25% size",
+      "Exit remaining 30% on close through EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.5 * ATR_14 on 45% size",
+      "Take profit: 0.86 * ATR_14 on 25% size",
+      "Exit remaining 30% on close through EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

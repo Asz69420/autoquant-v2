@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C077-SOL-4H-STATE-CHANGE-HOLD-EXPANSION-v1",
+  "cycle_id": 77,
+  "family_name": "sol_4h_state_change_hold_expansion_v077",
+  "name": "SOL 4h State Change Hold Expansion v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "directional improvement appears after a reset, fast structure is reclaimed, the reclaim holds on the next bar, and expansion resumes from that improved state",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "Cycle 77 explicitly calls for state-change momentum after regime improvement and post-break hold. SOL 4h is the best-fit lane because its regime is split between chop and transition, which is exactly where state-change continuation can appear without requiring full trend. The edge is the reclaim-plus-hold proof of improvement, not the first impulsive bar.",
+  "invalidation_condition": "If SOL 4h reclaim-hold sequences remain too sparse or repeatedly fail before even modest expansion, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price recovers from a reset, reclaims fast structure, holds it for one more bar, and expands as directional control improves.",
+    "why_edge_should_exist": "Transition markets often show a clear handoff from chop back into directional movement. A one-bar hold after reclaim should capture that handoff without overcomplicating the entry.",
+    "asset_timeframe_fit": "SOL 4h is the best fit because it is the primary lane and its 50/50 chop-transition split should produce more state changes than pure ETH chop.",
+    "indicator_role_map": {
+      "EMA_20": "fast structure reclaim/hold line",
+      "EMA_55": "higher-structure anchor",
+      "ATR_14": "hold tolerance and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional improvement confirmation",
+      "ADX_14": "participation gate"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "Late reclaim entries can become local exhaustion buys if the impulse is already spent.",
+    "first_refinement_path": "If trades exist but runner contribution is poor, move more size to the first partial before changing the reclaim grammar.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A reasonable number of reclaim-hold entries, several first-target wins, and a smaller number of stronger expansion runners.",
+    "what_would_count_as_success": "SOL 4h clears density and produces materially better participation than the recent sparse BTC fakeout/reclaim families.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated hold confirmations that fail before first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because the hold requirement is only one next-bar check",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit mixed chop/transition lane for reclaim-hold state change.",
+      "continue_if": "SOL 4h shows enough reclaim-hold expansions with positive first-target expectancy.",
+      "rotate_away_if": "SOL 4h entries remain too sparse or fail immediately.",
+      "expected_if_right": "Moderate count with several continuation bursts."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same state-change grammar gains density on the adjacent timeframe.",
+      "continue_if": "SOL 1h increases count without collapsing into noise.",
+      "rotate_away_if": "SOL 1h becomes shallow continuation churn.",
+      "expected_if_right": "Higher count, smaller expansion bursts than SOL 4h."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset_control",
+      "why_included": "Useful control to see whether pure chop suppresses or preserves the same reclaim-hold idea.",
+      "continue_if": "ETH 4h still prints a tradable but smaller version of the state-change grammar.",
+      "rotate_away_if": "ETH 4h confirms the idea needs more transition than pure chop offers.",
+      "expected_if_right": "Lower amplitude, slightly lower count continuation than SOL."
+    }
+  ],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.12 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.12 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 12"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low stays >= EMA_20 - 0.10 * ATR_14 and close remains >= EMA_20"
+    ],
+    "short": [
+      "Next bar high stays <= EMA_20 + 0.10 * ATR_14 and close remains <= EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.54 * ATR_14 on 35% size",
+      "Take profit: 0.98 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.54 * ATR_14 on 35% size",
+      "Take profit: 0.98 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.80 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

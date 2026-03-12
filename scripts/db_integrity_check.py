@@ -62,10 +62,9 @@ def main():
     if out["recent_sentinel_minus_half"] > 0:
         issues.append(f"recent_sentinel_minus_half={out['recent_sentinel_minus_half']}")
     if out["recent_healthy_rows"] == 0:
-        if baseline_age_minutes is not None and baseline_age_minutes < grace_minutes:
-            out["healthy_rows_grace_suppressed"] = True
-        else:
-            issues.append("recent_healthy_rows=0")
+        # Weak/losing cycles are a strategy-quality problem, not a system-integrity failure.
+        # Keep the metric for dashboards, but do not raise an integrity issue or alert from it.
+        out["healthy_rows_observation_only"] = True
     if issues:
         out["status"] = "fail"
         out["issues"] = issues

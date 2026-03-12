@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C076-TAO-4H-DEEP-RESET-CONTINUATION-v1",
+  "cycle_id": 76,
+  "family_name": "tao_4h_deep_reset_continuation_v076",
+  "name": "TAO 4h Deep Reset Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a deeper pullback resets trend pressure, value is reclaimed, and continuation resumes from a cleaner location than shallow ema-touch entries",
+  "expected_regime": "TREND_UP_TO_TRANSITION",
+  "thesis": "Cycle 76 includes trend reset continuation after a deeper pullback instead of shallow EMA-touch logic. TAO 4h is the best-fit lane because it is the only allowed lane with live trend-up contamination. That gives deeper reset continuation a real structural home instead of forcing it onto BTC or ETH chop.",
+  "invalidation_condition": "If TAO 4h deep resets are still too sparse or reclaimed resets fail to continue after entry, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back deeply enough to reset positioning, reclaims value and structure, and then continues in the dominant direction.",
+    "why_edge_should_exist": "In a trend-capable market, deeper pullbacks can clear weak hands and create better continuation location than shallow touch-and-go logic. The reclaim after reset is the structural proof.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it has the only meaningful trend-up bias in the basket, making deeper reset continuation far more plausible there than on ETH 4h chop.",
+    "indicator_role_map": {
+      "VWAP": "value reset/reclaim line",
+      "EMA_55": "trend anchor",
+      "ATR_14": "reset depth threshold and risk sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional reassertion",
+      "ADX_14": "participation floor"
+    },
+    "expected_regime": "TREND_UP_TO_TRANSITION",
+    "likely_failure_mode": "The reclaim may happen too late in the recovery, turning continuation entries into local exhaustion buys.",
+    "first_refinement_path": "If the setup trades but runners disappoint, take earlier partials before changing the reset depth logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than ETH mean-reversion ideas, but better asymmetry when trend resumes after reset.",
+    "what_would_count_as_success": "TAO 4h clears density and deep-reset continuation materially outperforms the prior failed-breakdown family.",
+    "what_would_count_as_failure": "0 trades, sub-12 trades, or repeated reset-reclaim entries that fail before first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because TAO trend contamination should create deeper resets",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit trend-capable lane for deeper reset continuation.",
+      "continue_if": "TAO 4h shows enough reset-reclaim continuations with acceptable first-target expectancy.",
+      "rotate_away_if": "TAO 4h still undertrades or reset entries fail too quickly.",
+      "expected_if_right": "Moderate count with a few larger trend-resumption legs."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same reset grammar survives on the nominal primary lane even if trend quality is lower.",
+      "continue_if": "BTC 4h retains some reset-reclaim continuation with enough density.",
+      "rotate_away_if": "BTC 4h confirms the concept needs stronger trend contamination.",
+      "expected_if_right": "Lower amplitude, more mixed continuation than TAO."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe_density_check",
+      "why_included": "Tests whether the reset idea gains count without collapsing into noisy shallow pullbacks.",
+      "continue_if": "BTC 1h increases count while preserving reset logic.",
+      "rotate_away_if": "BTC 1h turns the idea into the same weak intraday continuation noise we already killed.",
+      "expected_if_right": "Higher count, smaller reset continuations than TAO 4h."
+    }
+  ],
+  "indicators": [
+    "VWAP",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.42 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_55 - 0.12 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 13"
+    ],
+    "short": [
+      "High >= VWAP + 0.42 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_55 + 0.12 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 13"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar close remains >= VWAP"
+    ],
+    "short": [
+      "Next bar close remains <= VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.90 * ATR_14 below entry",
+      "Take profit: 0.56 * ATR_14 on 35% size",
+      "Take profit: 1.02 * ATR_14 on 30% size",
+      "Trail remaining 35% by 0.80 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.90 * ATR_14 above entry",
+      "Take profit: 0.56 * ATR_14 on 35% size",
+      "Take profit: 1.02 * ATR_14 on 30% size",
+      "Trail remaining 35% by 0.80 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C075-BTC-4H-SQUEEZE-PERSISTENCE-RELEASE-v1",
+  "cycle_id": 75,
+  "family_name": "btc_4h_squeeze_persistence_release_v075",
+  "name": "BTC 4h Squeeze Persistence Release v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "volatility compresses, a boundary is challenged, and continuation is entered only if the release persists rather than immediately failing",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "Cycle 75 explicitly includes volatility squeeze expansion confirmed by persistence instead of first breakout bar. BTC 4h is the better home lane than ETH 4h because its regime mix includes more transition, which gives persistence a better chance than pure ETH chop. The edge is the persistent release, not the initial poke.",
+  "invalidation_condition": "If BTC 4h squeeze releases either remain too sparse or fail immediately after the persistence bar, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility contracts, a local boundary is pressed, the release survives the first test, and price expands directionally.",
+    "why_edge_should_exist": "Many squeeze breaks are fake. Requiring persistence on the release should filter some traps while still entering early enough on 4h to catch genuine expansion.",
+    "asset_timeframe_fit": "BTC 4h is the best fit because it has more transition character than ETH 4h and should support persistence better without moving all the way back to noisy 1h logic.",
+    "indicator_role_map": {
+      "BB_WIDTH_20": "compression detector",
+      "DONCHIAN_20": "release boundary",
+      "EMA_20": "post-release hold line",
+      "ATR_14": "release significance and stop sizing",
+      "ADX_14": "participation improvement filter"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The persistence bar may still arrive too late, turning the trade into an exhausted breakout chase.",
+    "first_refinement_path": "If trade count is acceptable but follow-through is weak, reduce hold time and take earlier partials before widening the squeeze threshold.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than deep reclaim ideas, but cleaner continuation payoffs when the squeeze actually resolves.",
+    "what_would_count_as_success": "BTC 4h clears density and release-persistence entries outperform naive first-break logic.",
+    "what_would_count_as_failure": "0 trades, sub-12 trades, or repeated persistence entries that reverse immediately.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable on 4h with BTC transition character",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit 4h lane for squeeze release persistence under mixed chop/transition.",
+      "continue_if": "BTC 4h shows enough persistent releases with acceptable follow-through.",
+      "rotate_away_if": "BTC 4h squeezes either undertrade or fail too often after persistence.",
+      "expected_if_right": "Moderate participation with a minority of larger expansion legs carrying the result."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same persistence grammar survives the primary ETH chop lane.",
+      "continue_if": "ETH 4h still shows some coherent release-persistence behavior.",
+      "rotate_away_if": "ETH 4h confirms persistence needs more transition than pure chop offers.",
+      "expected_if_right": "Lower amplitude, lower count persistence releases than BTC."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether stronger trend contamination improves persistence instead of turning it into late chasing.",
+      "continue_if": "TAO 4h produces fewer but stronger persistence expansions.",
+      "rotate_away_if": "TAO 4h entries become late trend chase.",
+      "expected_if_right": "Lower count, stronger expansion carry than BTC."
+    }
+  ],
+  "indicators": [
+    "BB_WIDTH_20",
+    "DONCHIAN_20",
+    "EMA_20",
+    "ATR_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "BB_WIDTH_20 <= rolling_percentile_20(BB_WIDTH_20, 65)",
+      "Close >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Close >= EMA_20",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "BB_WIDTH_20 <= rolling_percentile_20(BB_WIDTH_20, 65)",
+      "Close <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "Close <= EMA_20",
+      "ADX_14 >= 12"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low stays >= DONCHIAN_HIGH_20 - 0.12 * ATR_14 and close remains >= EMA_20"
+    ],
+    "short": [
+      "Next bar high stays <= DONCHIAN_LOW_20 + 0.12 * ATR_14 and close remains <= EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.94 * ATR_14 below entry",
+      "Take profit: 0.58 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.88 * ATR_14",
+      "Time-based de-risk: cut 25% after 6 bars if no 1.1 ATR expansion",
+      "Final time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 0.94 * ATR_14 above entry",
+      "Take profit: 0.58 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.88 * ATR_14",
+      "Time-based de-risk: cut 25% after 6 bars if no 1.1 ATR expansion",
+      "Final time stop: 10 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

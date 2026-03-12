@@ -1,1 +1,1 @@
-Fix end-to-end automation chain: research -> capture -> lanes -> backtest -> reflection -> decisions -> postprocess/log card -> next cycle, and remove stale-state/manual-shove bugs.
+High-level audit + rebuild plan for Quandalf strategy brain, memory, learning loop, and truthful automation cards. Deliver: keep/cut/rewrite plan and immediate fixes.

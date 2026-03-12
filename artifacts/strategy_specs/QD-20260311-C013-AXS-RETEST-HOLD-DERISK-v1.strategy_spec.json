@@ -38,11 +38,75 @@
     }
   },
   "validation_basket": [
-    {"asset":"AXS","timeframe":"1h","role":"primary","why_included":"Stress-test lane for whether retest-hold continuation can survive on a noisy structurally different asset.","continue_if":"Trades appear with credible density and time-based derisking improves damage control.","rotate_away_if":"Noise destroys structure or derisking has no measurable value.","expected_if_right":"Frequent small scratches, some quick wins, and occasional meaningful continuations."},
-    {"asset":"ETH","timeframe":"1h","role":"clean_lane_control","why_included":"Determines whether the retest-and-derisk logic works on a cleaner lane.","continue_if":"ETH shows similar shape with better structure and less noise.","rotate_away_if":"Only AXS works, implying randomness rather than mechanism.","expected_if_right":"Cleaner retest holds and fewer scratch trades than AXS."},
-    {"asset":"BTC","timeframe":"1h","role":"similar_major_crosscheck","why_included":"Checks whether time-based derisking has cross-asset validity on a second major lane.","continue_if":"BTC shows comparable benefit from fast derisking on held retests.","rotate_away_if":"The behavior does not generalize beyond one lane.","expected_if_right":"Fewer but cleaner retest-hold continuations than AXS."}
+    {
+      "asset": "AXS",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Stress-test lane for whether retest-hold continuation can survive on a noisy structurally different asset.",
+      "continue_if": "Trades appear with credible density and time-based derisking improves damage control.",
+      "rotate_away_if": "Noise destroys structure or derisking has no measurable value.",
+      "expected_if_right": "Frequent small scratches, some quick wins, and occasional meaningful continuations."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "1h",
+      "role": "clean_lane_control",
+      "why_included": "Determines whether the retest-and-derisk logic works on a cleaner lane.",
+      "continue_if": "ETH shows similar shape with better structure and less noise.",
+      "rotate_away_if": "Only AXS works, implying randomness rather than mechanism.",
+      "expected_if_right": "Cleaner retest holds and fewer scratch trades than AXS."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "similar_major_crosscheck",
+      "why_included": "Checks whether time-based derisking has cross-asset validity on a second major lane.",
+      "continue_if": "BTC shows comparable benefit from fast derisking on held retests.",
+      "rotate_away_if": "The behavior does not generalize beyond one lane.",
+      "expected_if_right": "Fewer but cleaner retest-hold continuations than AXS."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","RSI_14","ADX_14"],
-  "entry_rules": {"long": ["Close >= EMA_20","Low >= EMA_20 - 0.22 * ATR_14","RSI_14 >= 50","ADX_14 >= 8","EMA_20 >= EMA_55 * 0.997"],"short": ["Close <= EMA_20","High <= EMA_20 + 0.22 * ATR_14","RSI_14 <= 50","ADX_14 >= 8","EMA_20 <= EMA_55 * 1.003"]},
-  "exit_rules": {"long": ["Stop loss: 0.82 * ATR_14 below entry","Take profit: 0.55 * ATR_14 on 40% size","Take profit: 0.95 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 20%","Exit remaining 10% on close below EMA_55 or 5 bars","Final time stop: 5 bars"],"short": ["Stop loss: 0.82 * ATR_14 above entry","Take profit: 0.55 * ATR_14 on 40% size","Take profit: 0.95 * ATR_14 on 30% size","Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 20%","Exit remaining 10% on close above EMA_55 or 5 bars","Final time stop: 5 bars"]}
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= EMA_20",
+      "Low >= EMA_20 - 0.22 * ATR_14",
+      "RSI_14 >= 50",
+      "ADX_14 >= 8",
+      "EMA_20 >= EMA_55 * 0.997"
+    ],
+    "short": [
+      "Close <= EMA_20",
+      "High <= EMA_20 + 0.22 * ATR_14",
+      "RSI_14 <= 50",
+      "ADX_14 >= 8",
+      "EMA_20 <= EMA_55 * 1.003"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by selling 20%",
+      "Exit remaining 10% on close below EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 40% size",
+      "Take profit: 0.95 * ATR_14 on 30% size",
+      "Time-based de-risk after 2 bars if unrealized gain < 0.12 * ATR_14 by covering 20%",
+      "Exit remaining 10% on close above EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

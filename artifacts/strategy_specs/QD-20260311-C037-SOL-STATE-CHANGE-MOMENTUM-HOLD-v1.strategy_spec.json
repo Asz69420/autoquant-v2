@@ -38,11 +38,41 @@
     }
   },
   "validation_basket": [
-    {"asset":"SOL","timeframe":"4h","role":"primary","why_included":"Best expressive lane for state-change continuation in the live basket.","continue_if":"Hold-after-break entries show enough density and post-cost continuation.","rotate_away_if":"The hold confirms too rarely or fades immediately.","expected_if_right":"Repeated state changes followed by clean continuation bursts."},
-    {"asset":"ETH","timeframe":"4h","role":"similar_asset","why_included":"Checks whether the same state-change mechanism survives on a cleaner major.","continue_if":"ETH preserves the post-break hold shape with usable density.","rotate_away_if":"The mechanism only works on SOL-style behavior.","expected_if_right":"Fewer but cleaner continuation holds than SOL."},
-    {"asset":"SOL","timeframe":"1h","role":"adjacent_timeframe","why_included":"Tests whether the same mechanism survives on a faster adjacent lane.","continue_if":"1h preserves the pattern without collapsing into noise.","rotate_away_if":"1h becomes too noisy or overtrades without edge.","expected_if_right":"More frequent but smaller state-change holds than 4h."}
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best expressive lane for state-change continuation in the live basket.",
+      "continue_if": "Hold-after-break entries show enough density and post-cost continuation.",
+      "rotate_away_if": "The hold confirms too rarely or fades immediately.",
+      "expected_if_right": "Repeated state changes followed by clean continuation bursts."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same state-change mechanism survives on a cleaner major.",
+      "continue_if": "ETH preserves the post-break hold shape with usable density.",
+      "rotate_away_if": "The mechanism only works on SOL-style behavior.",
+      "expected_if_right": "Fewer but cleaner continuation holds than SOL."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism survives on a faster adjacent lane.",
+      "continue_if": "1h preserves the pattern without collapsing into noise.",
+      "rotate_away_if": "1h becomes too noisy or overtrades without edge.",
+      "expected_if_right": "More frequent but smaller state-change holds than 4h."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ADX_14","RSI_14","ATR_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ADX_14",
+    "RSI_14",
+    "ATR_14"
+  ],
   "entry_rules": {
     "long": [
       "Close >= EMA_55 + 0.18 * ATR_14",
@@ -72,5 +102,7 @@
       "Trail remaining 20% by 0.68 * ATR_14",
       "Final time stop: 5 bars"
     ]
-  }
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

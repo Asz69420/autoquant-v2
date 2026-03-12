@@ -38,11 +38,42 @@
     }
   },
   "validation_basket": [
-    {"asset":"AXS","timeframe":"4h","role":"primary","why_included":"Best lane in the basket for visibly testing delayed retest continuation.","continue_if":"Retest entries are frequent enough and continue after costs.","rotate_away_if":"Retests are sparse or fail immediately.","expected_if_right":"Breakout, orderly retest, then a second-leg continuation push."},
-    {"asset":"TAO","timeframe":"4h","role":"higher-beta_crosscheck","why_included":"Checks whether the same delayed-retest idea survives on another expressive lane.","continue_if":"TAO preserves retest continuation behavior with acceptable density.","rotate_away_if":"TAO becomes too violent for controlled retest entries.","expected_if_right":"More explosive but less tidy retest continuations than AXS."},
-    {"asset":"ETH","timeframe":"4h","role":"clean_major_check","why_included":"Tests whether the mechanism transfers to a cleaner major lane.","continue_if":"ETH still shows the retest-and-go structure.","rotate_away_if":"The mechanism only works on high-beta lanes.","expected_if_right":"Fewer but cleaner delayed retest continuations than AXS."}
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best lane in the basket for visibly testing delayed retest continuation.",
+      "continue_if": "Retest entries are frequent enough and continue after costs.",
+      "rotate_away_if": "Retests are sparse or fail immediately.",
+      "expected_if_right": "Breakout, orderly retest, then a second-leg continuation push."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "higher-beta_crosscheck",
+      "why_included": "Checks whether the same delayed-retest idea survives on another expressive lane.",
+      "continue_if": "TAO preserves retest continuation behavior with acceptable density.",
+      "rotate_away_if": "TAO becomes too violent for controlled retest entries.",
+      "expected_if_right": "More explosive but less tidy retest continuations than AXS."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "clean_major_check",
+      "why_included": "Tests whether the mechanism transfers to a cleaner major lane.",
+      "continue_if": "ETH still shows the retest-and-go structure.",
+      "rotate_away_if": "The mechanism only works on high-beta lanes.",
+      "expected_if_right": "Fewer but cleaner delayed retest continuations than AXS."
+    }
   ],
-  "indicators": ["EMA_20","EMA_55","ATR_14","PLUS_DI_14","MINUS_DI_14","ADX_14"],
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
   "entry_rules": {
     "long": [
       "Close >= EMA_55 + 0.22 * ATR_14",
@@ -72,5 +103,7 @@
       "Scale out remaining 25% on ADX_14 rollover or 5 bars",
       "Final time stop: 5 bars"
     ]
-  }
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

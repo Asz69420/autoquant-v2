@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C080-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1",
+  "cycle_id": 80,
+  "family_name": "doge_4h_value_recovery_scalein_v080",
+  "name": "DOGE 4h Value Recovery Scale-In v1",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "price flushes away from value, reclaims value, confirmation improves across bars, and exposure is built in stages instead of one-shot timing",
+  "expected_regime": "TRANSITION",
+  "thesis": "The cycle still wants scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. DOGE 4h remains the best-fit primary lane because it is live transition and should produce repeated flush-and-recovery sequences without the anti-correlated behavior seen in prior TAO continuation families. The edge is adding only as recovery proves itself.",
+  "invalidation_condition": "If DOGE 4h value-recovery sequences still undertrade or staged adds mostly average into failed bounces, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price flushes away from short-term value, reclaims it, confirms that reclaim across successive bars, and resumes away from the recovery zone.",
+    "why_edge_should_exist": "Transition markets often punish one-shot bounce timing but reward adding into improving recovery. Scaling in after value reclaim should improve location and reduce premature full-size entries.",
+    "asset_timeframe_fit": "DOGE 4h is the best fit because it is the cycle primary lane, structurally transitional, and more likely than ETH 4h to show recovery continuation after a flush.",
+    "indicator_role_map": {
+      "VWAP": "value recovery / scale-in reference",
+      "EMA_20": "improving confirmation line",
+      "ATR_14": "flush threshold and stop sizing",
+      "RSI_14": "recovery momentum qualifier",
+      "ADX_14": "participation floor"
+    },
+    "expected_regime": "TRANSITION",
+    "likely_failure_mode": "Staged entries may still build into weak mean-reversion bounces that fail before true continuation appears.",
+    "first_refinement_path": "If count is healthy but expectancy is weak, reduce second-add size and bring the first partial closer before changing the trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Repeated recovery attempts, many modest first-target wins, and fewer larger moves when recovery becomes true continuation.",
+    "what_would_count_as_success": "DOGE 4h clears density and staged recovery materially outperforms one-shot recovery timing.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated scale-ins that behave like averaging losers.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because flush-and-recovery sequences recur in transition",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit transition lane for staged value recovery.",
+      "continue_if": "DOGE 4h shows enough value-recovery sequences with scale-in improving net expectancy.",
+      "rotate_away_if": "DOGE 4h staged entries mostly build into failed bounces.",
+      "expected_if_right": "Moderate participation with several recovery continuations."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset_control",
+      "why_included": "Checks whether the same staged recovery logic survives on a flatter similar lane.",
+      "continue_if": "ETH 4h retains a smaller but tradable recovery behavior.",
+      "rotate_away_if": "ETH 4h is too flat or too sparse to monetize.",
+      "expected_if_right": "Cleaner, smaller recovery continuations than DOGE."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether the same recovery logic survives a trend-contaminated lane without becoming late continuation buying.",
+      "continue_if": "TAO 4h retains enough recovery structure with acceptable density.",
+      "rotate_away_if": "TAO 4h confirms the concept is too transition-specific.",
+      "expected_if_right": "Lower count, stronger recovered continuations than DOGE."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_20", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.30 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 47",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "High >= VWAP + 0.30 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 53",
+      "ADX_14 >= 10"
+    ]
+  },
+  "scale_in_rules": {
+    "long": [
+      "Initial 60% size on first close back above VWAP",
+      "Add 40% only if next bar closes >= EMA_20 and low stays >= VWAP - 0.07 * ATR_14"
+    ],
+    "short": [
+      "Initial 60% size on first close back below VWAP",
+      "Add 40% only if next bar closes <= EMA_20 and high stays <= VWAP + 0.07 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below blended entry",
+      "Take profit: 0.42 * ATR_14 on 35% size",
+      "Take profit: 0.80 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.70 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above blended entry",
+      "Take profit: 0.42 * ATR_14 on 35% size",
+      "Take profit: 0.80 * ATR_14 on 35% size",
+      "Trail remaining 30% by 0.70 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

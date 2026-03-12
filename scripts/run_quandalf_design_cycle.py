@@ -11,6 +11,7 @@ ROOT = Path(r"C:\Users\Clamps\.openclaw\workspace-oragorn")
 RUN_STATE = ROOT / "data" / "state" / "research_cycle_started_at.json"
 STATUS_PATH = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
 ORDERS_PATH = ROOT / "agents" / "quandalf" / "memory" / "cycle_orders.json"
+MANIFEST_PATH = ROOT / "data" / "state" / "current_cycle_specs.json"
 FALLBACK_CONTROL_PATH = ROOT / "data" / "state" / "fallback_control.json"
 SPECS_DIR = ROOT / "artifacts" / "strategy_specs"
 OPENCLAW = r"C:\Users\Clamps\AppData\Roaming\npm\openclaw.cmd"
@@ -74,6 +75,44 @@ def sync_status_with_specs(cycle_id: int, spec_paths: list[str]) -> None:
     STATUS_PATH.write_text(json.dumps(status, indent=2), encoding="utf-8")
 
 
+def sync_manifest_with_specs(cycle_id: int, spec_paths: list[str]) -> None:
+    run_state = load_json(RUN_STATE)
+    status = load_json(STATUS_PATH)
+    orders = load_json(ORDERS_PATH)
+    specs = []
+    for raw_path in spec_paths:
+        path = Path(raw_path)
+        try:
+            stat = path.stat()
+            specs.append({
+                "path": str(path),
+                "name": path.name,
+                "spec_id": path.name.replace('.strategy_spec.json', ''),
+                "mtime_epoch": stat.st_mtime,
+                "mtime_iso": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
+                "size_bytes": stat.st_size,
+            })
+        except OSError:
+            continue
+    payload = {
+        "status": "ready" if specs else "pending",
+        "cycle_id": cycle_id,
+        "started_at_epoch": run_state.get("started_at_epoch"),
+        "started_at_iso": run_state.get("started_at_iso"),
+        "captured_at_epoch": datetime.now(timezone.utc).timestamp(),
+        "captured_at_iso": datetime.now(timezone.utc).isoformat(),
+        "status_cycle_id": status.get("cycle_id"),
+        "orders_cycle_id": orders.get("cycle_id"),
+        "spec_count": len(specs),
+        "latest_spec_path": specs[-1]["path"] if specs else None,
+        "spec_paths": [item["path"] for item in specs],
+        "spec_ids": [item["spec_id"] for item in specs],
+        "specs": specs,
+    }
+    MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    MANIFEST_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def main() -> int:
     run_state = load_json(RUN_STATE)
     cycle_id = int(run_state.get("cycle_id", 0) or 0)
@@ -107,6 +146,7 @@ def main() -> int:
         if spec_paths:
             clear_force_fallback(cycle_id)
             sync_status_with_specs(cycle_id, spec_paths)
+            sync_manifest_with_specs(cycle_id, spec_paths)
             print(json.dumps({
                 "status": "ok",
                 "cycle_id": cycle_id,
@@ -133,6 +173,7 @@ def main() -> int:
         if spec_paths:
             clear_force_fallback(cycle_id)
             sync_status_with_specs(cycle_id, spec_paths)
+            sync_manifest_with_specs(cycle_id, spec_paths)
             print(json.dumps({
                 "status": "ok",
                 "cycle_id": cycle_id,

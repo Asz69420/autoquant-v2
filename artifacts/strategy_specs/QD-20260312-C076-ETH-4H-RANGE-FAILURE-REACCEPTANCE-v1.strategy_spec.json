@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C076-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 76,
+  "family_name": "eth_4h_range_failure_reacceptance_v076",
+  "name": "ETH 4h Range Failure Reacceptance v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a multi-bar breakout loses acceptance, value is reclaimed, and price rotates back through balance instead of continuing",
+  "expected_regime": "CHOP",
+  "thesis": "Cycle 76 explicitly includes range-failure reversal after multi-bar breakout loses acceptance and re-enters balance. ETH 4h is the best-fit lane because it is 100% chop and should reward failed excursions more than continuation. The edge is the reacceptance back into value, not fading random strength blindly.",
+  "invalidation_condition": "If ETH 4h reacceptance events still undertrade or fail to rotate meaningfully after reclaiming balance, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price spends multiple bars outside a recent range, loses acceptance there, re-enters balance, and rotates back through the range.",
+    "why_edge_should_exist": "Pure chop regimes are dominated by failed excursions rather than durable breaks. Waiting for value reacceptance should provide a structurally grounded reversal instead of blind fading.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because its regime is pure chop and therefore the most natural home for a range-failure reversal thesis.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "recent range boundary",
+      "VWAP": "balance / reacceptance line",
+      "ATR_14": "failed-extension threshold and stop sizing",
+      "RSI_14": "stretch/recovery qualifier",
+      "ADX_14": "trend-strength veto"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "A real breakout can be misread as failed acceptance, causing repeated fades into trend continuation.",
+    "first_refinement_path": "If entries trade but average win size is too small, extend the runner before adding more filters.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Repeated modest balance rotations, many first-target wins, and occasional fuller unwind through the range.",
+    "what_would_count_as_success": "ETH 4h clears screen density and produces materially better post-cost behavior than recent sparse 4h reclaim families.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reacceptance entries that immediately re-break the failed side.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because failed multi-bar excursions recur in chop",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit pure-chop lane for range-failure reacceptance reversal.",
+      "continue_if": "ETH 4h shows enough reacceptance rotations with positive first-target expectancy.",
+      "rotate_away_if": "ETH 4h remains too sparse or too shallow to monetize.",
+      "expected_if_right": "Moderate count with many balance rotations."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same failed-break logic survives on a similar major with more transition character.",
+      "continue_if": "BTC 4h keeps a tradable version of the same reacceptance mechanism.",
+      "rotate_away_if": "BTC 4h transition pressure breaks the mean-reversion thesis.",
+      "expected_if_right": "Slightly larger but less frequent reversals than ETH."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same idea can gain density on the adjacent timeframe without turning into noise.",
+      "continue_if": "BTC 1h increases count while preserving failed-break reacceptance structure.",
+      "rotate_away_if": "BTC 1h collapses into noisy overtrading.",
+      "expected_if_right": "Higher count, smaller range rotations than 4h."
+    }
+  ],
+  "indicators": [
+    "DONCHIAN_20",
+    "VWAP",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.22 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 43",
+      "RSI_14 <= 58",
+      "ADX_14 <= 20"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.22 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 57",
+      "RSI_14 >= 42",
+      "ADX_14 <= 20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry",
+      "Take profit: 0.46 * ATR_14 on 45% size",
+      "Take profit: 0.86 * ATR_14 on 35% size",
+      "Exit remaining 20% on loss of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry",
+      "Take profit: 0.46 * ATR_14 on 45% size",
+      "Take profit: 0.86 * ATR_14 on 35% size",
+      "Exit remaining 20% on reclaim of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

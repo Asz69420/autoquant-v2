@@ -2000,6 +2000,25 @@ def main():
         backtest_count = count_backtests(rows)
         log_card, metrics = build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=run_state)
         write_cycle_metrics(metrics)
+
+        no_current_cycle_evidence = (
+            not metrics.get("is_completed")
+            and int(metrics.get("specs_written") or 0) == 0
+            and int(metrics.get("cycle_rows") or 0) == 0
+            and not bool(metrics.get("cycle_results_present"))
+        )
+        if no_current_cycle_evidence:
+            print(json.dumps({
+                "status": "no_current_cycle_evidence",
+                "since_minutes": a.since_minutes,
+                "cycle_id": cycle_id,
+                "rows": len(rows),
+                "backtests": backtest_count,
+                "total_in_db": total_rows,
+                "card_metrics": metrics
+            }))
+            return
+
         sent = send_log_card(cycle_id, log_card, metrics=metrics)
 
         status = "card_sent" if sent else ("state_warning" if metrics.get("state_warning") else "card_skipped_duplicate")
@@ -2112,9 +2131,8 @@ def main():
         for part in dm_parts:
             send_tg_as(f"<pre>{part}</pre>", "hades", "oragorn")
 
-    if rows_for_dm and not healthy_rows:
-        send_tg_as("<pre>🚨 Research cycle integrity alert\nCycle produced results, but none were healthy enough for reflection (need trades>=15, PF>0, WR>0). Check backtester/output integrity.</pre>", "hades", "logron")
-        send_tg_as("<pre>🚨 Research cycle integrity alert\nNo healthy rows this cycle. Reflection quality is compromised. Check Hades.</pre>", "dm", "oragorn")
+    # Suppress noisy integrity paging when a cycle has weak results but no actual engine/runtime fault.
+    # Reflection/postprocess already captures the outcome honestly; do not escalate "no healthy rows" as an alert.
 
     active_cycle_id_for_journal = cycle_id_preview
     latest_journal_entry = sync_live_journal(active_cycle_id_for_journal)

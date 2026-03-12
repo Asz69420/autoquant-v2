@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C078-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1",
+  "cycle_id": 78,
+  "family_name": "tao_4h_post_expansion_partial_runner_v078",
+  "name": "TAO 4h Post Expansion Partial Runner v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "after a directional expansion proves itself, partial profit is harvested quickly while a core runner is maintained for persistent trend continuation instead of full de-risking too early",
+  "expected_regime": "TREND_UP",
+  "thesis": "Cycle 78 explicitly asks for a post-expansion partial-profit runner structure that keeps a core position for trend persistence. TAO 4h is the only lane in the basket where that management expression has a credible structural reason to exist. The research variable here is management structure itself, not just entry timing.",
+  "invalidation_condition": "If TAO 4h post-expansion entries cannot support a runner after the first partial, or if the setup simply enters too late after the move, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A directional expansion proves itself, early profits are harvested, and a remaining core position persists if the trend stays intact.",
+    "why_edge_should_exist": "Some continuation entries are not wrong; they are simply over-de-risked. On a trend-capable asset like TAO, partial-profit plus held core can capture the minority of moves that actually persist.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because it is the only allowed lane with enough trend contamination to justify a held runner as a primary research variable.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "expansion proof / local breakout context",
+      "EMA_20": "runner hold/exit line",
+      "ATR_14": "risk sizing and partial spacing",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation",
+      "ADX_14": "trend persistence filter"
+    },
+    "expected_regime": "TREND_UP",
+    "likely_failure_mode": "The entry may still arrive after too much of the move is spent, leaving the runner to absorb the reversal.",
+    "first_refinement_path": "If the first partial works but the runner gives too much back, tighten the runner trail before changing the expansion proof.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than the inventory-reset idea, but with a management profile where a minority of runner wins matter materially.",
+    "what_would_count_as_success": "TAO 4h clears density and the runner contributes enough expectancy to justify further management-focused refinement.",
+    "what_would_count_as_failure": "0 trades, sub-12 trades, or a pattern where the runner consistently gives back more than the first partial earns.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because expansion proof is simpler than delayed retest confirmation chains",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit trend-up lane for testing runner-oriented management after confirmed expansion.",
+      "continue_if": "TAO 4h produces enough expansion entries and the held core adds meaningful expectancy.",
+      "rotate_away_if": "TAO 4h entries are consistently late and the runner becomes a liability.",
+      "expected_if_right": "Moderate count with a minority of strong runners carrying the result."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "negative_control",
+      "why_included": "Useful control to see whether a pure chop lane suppresses the value of runner-based management.",
+      "continue_if": "ETH 4h still shows some persistence after expansion.",
+      "rotate_away_if": "ETH 4h confirms the management edge depends on trend context.",
+      "expected_if_right": "Sparse runner contributions with many first-partial exits."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Checks whether the same management expression has value in a weaker cross-lane, not just TAO.",
+      "continue_if": "AXS 4h still allows partial-profit plus core persistence without giving everything back.",
+      "rotate_away_if": "AXS 4h proves the runner concept needs stronger trend contamination.",
+      "expected_if_right": "More fragile runners and more partial-driven expectancy than TAO."
+    }
+  ],
+  "indicators": [
+    "DONCHIAN_20",
+    "EMA_20",
+    "ATR_14",
+    "PLUS_DI_14",
+    "MINUS_DI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close >= DONCHIAN_HIGH_20 - 0.08 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 17"
+    ],
+    "short": [
+      "Close <= DONCHIAN_LOW_20 + 0.08 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 17"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.94 * ATR_14 below entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 20% size",
+      "Trail remaining 50% by 0.94 * ATR_14 while close remains >= EMA_20",
+      "Time-based de-risk: cut 20% more after 7 bars if no 1.3 ATR follow-through",
+      "Final time stop: 12 bars"
+    ],
+    "short": [
+      "Stop loss: 0.94 * ATR_14 above entry",
+      "Take profit: 0.62 * ATR_14 on 30% size",
+      "Take profit: 1.08 * ATR_14 on 20% size",
+      "Trail remaining 50% by 0.94 * ATR_14 while close remains <= EMA_20",
+      "Time-based de-risk: cut 20% more after 7 bars if no 1.3 ATR follow-through",
+      "Final time stop: 12 bars"
+    ]
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
+}

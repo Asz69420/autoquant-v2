@@ -1,41 +1,46 @@
 {
-  "cycle_id": 71,
+  "cycle_id": 80,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C071-SOL-4H-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C071-ETH-4H-DEEP-RESET-CONTINUATION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C071-TAO-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C080-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C080-ETH-4H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C080-TAO-4H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
-      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
-      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
-      "compression fakeout into re-expansion with directional confirmation"
+      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
+      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
+      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
     ],
     "management_styles": [
-      "fast partials plus structure exit",
-      "partial-profit plus trailing runner",
-      "trailing-stop with time-based de-risking"
+      "one-shot entry with one-shot exit",
+      "one-shot entry with partial take-profit and runner",
+      "one-shot entry with trailing-stop exit",
+      "time-based de-risking after entry",
+      "scaled-out exits after confirmation",
+      "scale-in on improved confirmation, then scale-out into expansion",
+      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
-    "assets": ["ETH", "SOL", "TAO"],
-    "timeframes": ["1h", "4h"]
+    "assets": [
+      "DOGE",
+      "ETH",
+      "TAO"
+    ],
+    "timeframes": [
+      "4h"
+    ]
   },
   "iterate_target": null,
-  "new_families": [
-    "sol_4h_range_failure_reacceptance_v071",
-    "eth_4h_deep_reset_continuation_v071",
-    "tao_4h_compression_fakeout_reexpansion_v071"
-  ],
+  "new_families": [],
   "iterated_families": [],
-  "abandoned_families": [
-    "btc_4h_deep_value_reclaim_v070",
-    "eth_4h_squeeze_persistence_release_v070",
-    "tao_4h_failed_breakdown_hold_continuation_v070"
-  ],
-  "next_cycle_focus": "Keep only the mechanisms that prove density on their best-fit lane. If SOL range-failure reacceptance and ETH deep reset both trade credibly, refine exits before touching entry grammar. If TAO fakeout re-expansion is still sparse, drop fakeout families and concentrate on denser reacceptance/reset structures in the SOL/ETH chop lanes.",
-  "rationale": "Cycle 71 is a SOL-centered explore reset after cycle 70 produced one clear bad idea and two 0-trade sparse failures. The live authority explicitly wants three mechanisms: range-failure reversal after lost acceptance, trend reset continuation after deeper pullback, and compression fakeout into re-expansion. This batch assigns each mechanism to the lane where it is most plausible rather than forcing everything onto SOL: SOL 4h carries the range-failure reacceptance thesis in the primary chop lane, ETH 4h is the cleanest fit for a deeper reset continuation that is materially different from dead shallow pullback logic, and TAO 4h remains the only lane where fakeout-to-reexpansion plausibly has room to run. The batch stays strictly inside the supported/fetchable universe, uses justified multi-lane baskets, varies indicator-role assignment and management structure, and avoids the event-sparse grammar that just failed."
+  "abandoned_families": [],
+  "next_cycle_focus": "pending",
+  "rationale": "pending",
+  "target_asset": "TAO",
+  "target_timeframe": "4h",
+  "specific_family_to_iterate": null
 }
