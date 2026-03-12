@@ -154,10 +154,13 @@ def main():
         print(json.dumps({"status": "skipped", "reason": "quandalf_produced_minimum_specs", "cycle_id": cycle_id, "produced_count": produced_count, "minimum_spec_count": minimum_spec_count}))
         return
 
+    force_fallback_cycle_id = int(state.get("force_fallback_cycle_id", 0) or 0)
+    force_fallback = force_fallback_cycle_id == cycle_id
+
     zero_spec_streak = int(state.get("zero_spec_streak", 0) or 0) + 1
     state["zero_spec_streak"] = zero_spec_streak
 
-    if zero_spec_streak < 3:
+    if zero_spec_streak < 3 and not force_fallback:
         recent_cycles.append({"cycle_id": cycle_id, "fallback_used": False, "quandalf_zero": produced_count == 0, "quandalf_under_minimum": produced_count < minimum_spec_count})
         state["recent_cycles"] = recent_cycles[-10:]
         persist_state(state)
@@ -213,11 +216,15 @@ def main():
         generated_paths.append(str(path))
     paths = list(dict.fromkeys(existing_paths + generated_paths))
 
-    recent_cycles.append({"cycle_id": cycle_id, "fallback_used": True, "quandalf_zero": True})
+    recent_cycles.append({"cycle_id": cycle_id, "fallback_used": True, "quandalf_zero": True, "force_fallback": force_fallback})
     rolling = recent_cycles[-10:]
     state["recent_cycles"] = rolling
     fallback_share = sum(1 for item in rolling if item.get("fallback_used")) / max(1, len(rolling))
     state["fallback_share_10_cycle"] = round(fallback_share, 3)
+    if force_fallback:
+        state.pop("force_fallback_cycle_id", None)
+        state.pop("force_fallback_reason", None)
+        state.pop("force_fallback_ts_iso", None)
     persist_state(state)
 
     status.update({

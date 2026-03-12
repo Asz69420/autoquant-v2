@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C070-BTC-1H-SQUEEZE-PERSISTENCE-v1",
+  "cycle_id": 70,
+  "family_name": "btc_1h_squeeze_persistence_v070",
+  "name": "BTC 1h Squeeze Persistence v1",
+  "asset": "BTC",
+  "timeframe": "1h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "1h",
+  "edge_mechanism": "volatility contracts, a boundary is pushed, and continuation is entered only if the push persists instead of failing on the first breakout bar",
+  "expected_regime": "CHOP_TO_EXPANSION",
+  "thesis": "The cycle explicitly wants volatility squeeze expansion confirmed by persistence instead of first breakout bar. BTC 1h is the best-fit lane because the same persistence grammar that was too sparse on 4h should gain density on the adjacent timeframe without leaving the allowed basket. The edge is the second-step persistence, not the first poke outside structure.",
+  "invalidation_condition": "If BTC 1h squeezes either fail to persist or produce lots of noisy overtrading after the first expansion bar, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A compressed market presses a local boundary, persists through the next bar instead of instantly mean reverting, and then expands directionally.",
+    "why_edge_should_exist": "Many first breakout bars are fake. Persistence through the next bar should filter some false expansions while still entering early enough on 1h to maintain density.",
+    "asset_timeframe_fit": "BTC 1h is the best fit because the concept needs more event frequency than BTC 4h offered in recent sparse families, but BTC still provides enough liquidity and structure to keep the signal interpretable.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "local compression boundary and breakout reference",
+      "EMA_20": "post-break directional hold line",
+      "ATR_14": "compression/expansion yardstick and stop sizing",
+      "ADX_14": "participation improvement signal",
+      "RSI_14": "directional persistence check"
+    },
+    "expected_regime": "CHOP_TO_EXPANSION",
+    "likely_failure_mode": "The setup may still buy late in exhausted micro-breakouts, especially if ADX improvement lags actual movement.",
+    "first_refinement_path": "If participation is adequate but follow-through is weak, reduce holding time and move more risk into a trailing de-risk structure before touching the trigger.",
+    "expected_trade_density": "Moderate-to-high.",
+    "expected_outcome_pattern": "More trades than 4h continuation concepts, many small wins/losses, and a minority of cleaner expansion legs carrying the result.",
+    "what_would_count_as_success": "BTC 1h produces credible screen density with better post-cost behavior than prior sparse continuation families.",
+    "what_would_count_as_failure": "0 trades, sub-20 trades, or noisy persistence entries that reverse immediately after entry on most occurrences.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate-to-high",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "low relative to recent 4h continuation failures because the same mechanism is moved to adjacent 1h",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "primary",
+      "why_included": "Best-fit lane for persistence-confirmed squeeze expansion with enough density.",
+      "continue_if": "BTC 1h shows repeated persistence expansions with acceptable post-cost behavior.",
+      "rotate_away_if": "BTC 1h turns the concept into noisy overtrading without edge.",
+      "expected_if_right": "Dense but still structured participation with several tradable expansion bursts."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "adjacent_higher_timeframe",
+      "why_included": "Checks whether the same persistence grammar survives when slowed back down.",
+      "continue_if": "BTC 4h keeps lower-count but cleaner persistence breakouts.",
+      "rotate_away_if": "BTC 4h proves the concept is still too sparse there.",
+      "expected_if_right": "Lower count, larger persistence legs than BTC 1h."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Tests whether stronger trend contamination improves persistence instead of killing it.",
+      "continue_if": "TAO 4h produces cleaner persistence breakouts with room to trail.",
+      "rotate_away_if": "TAO 4h turns the concept into late chase entries.",
+      "expected_if_right": "Fewer but stronger trend-carrying expansion legs than BTC."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_20", "ATR_14", "ADX_14", "RSI_14"],
+  "entry_rules": {
+    "long": [
+      "Close >= DONCHIAN_HIGH_20 - 0.12 * ATR_14",
+      "Close >= EMA_20",
+      "ADX_14 >= 16",
+      "RSI_14 >= 52"
+    ],
+    "short": [
+      "Close <= DONCHIAN_LOW_20 + 0.12 * ATR_14",
+      "Close <= EMA_20",
+      "ADX_14 >= 16",
+      "RSI_14 <= 48"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low stays >= DONCHIAN_HIGH_20 - 0.15 * ATR_14 and close remains >= EMA_20"
+    ],
+    "short": [
+      "Next bar high stays <= DONCHIAN_LOW_20 + 0.15 * ATR_14 and close remains <= EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.92 * ATR_14 below entry",
+      "Take profit: 0.55 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.85 * ATR_14",
+      "Time-based de-risk: cut 25% more after 8 bars if trailing stop not hit",
+      "Final time stop: 14 bars"
+    ],
+    "short": [
+      "Stop loss: 0.92 * ATR_14 above entry",
+      "Take profit: 0.55 * ATR_14 on 25% size",
+      "Trail remaining 75% by 0.85 * ATR_14",
+      "Time-based de-risk: cut 25% more after 8 bars if trailing stop not hit",
+      "Final time stop: 14 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

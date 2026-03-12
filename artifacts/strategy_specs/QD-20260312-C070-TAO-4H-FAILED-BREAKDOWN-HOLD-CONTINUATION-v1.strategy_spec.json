@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
+  "cycle_id": 70,
+  "family_name": "tao_4h_failed_breakdown_hold_continuation_v070",
+  "name": "TAO 4h Failed Breakdown Hold Continuation v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a downside break fails, price reclaims support, then holds that reclaimed structure before continuation entry into resumed trend",
+  "expected_regime": "TREND_UP_WITH_PULLBACKS",
+  "thesis": "The cycle concept set explicitly includes failed breakdown reclaim that must hold before continuation entry. TAO 4h is the best-fit lane because it is the only allowed 4h asset currently showing real trend-up contamination. The edge is not simple dip-buying. It is joining the resumed move only after the failed breakdown proves that reclaimed support can hold.",
+  "invalidation_condition": "If TAO pullbacks are actually regime deterioration rather than failed breakdowns, the hold entry will repeatedly buy into fresh downside continuation.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A downside break under local support fails, price reclaims support, that reclaimed support holds, and continuation resumes in the dominant upward structure.",
+    "why_edge_should_exist": "Failed breakdowns in trend-up regimes often trap late sellers and create strong continuation once support is reclaimed and defended.",
+    "asset_timeframe_fit": "TAO 4h fits best because it carries actual trend-up structure while still being in the allowed basket. BTC and ETH are more chop-dominant, so this specific continuation grammar is less natural there.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "local breakdown/support reference",
+      "EMA_20": "reclaimed fast support line",
+      "EMA_55": "trend anchor",
+      "ATR_14": "hold tolerance and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation after reclaim"
+    },
+    "expected_regime": "TREND_UP_WITH_PULLBACKS",
+    "likely_failure_mode": "Support reclaims may occur inside broader deterioration, causing the setup to repeatedly enter failed bounces.",
+    "first_refinement_path": "If the reclaim trades but hold failures dominate, tighten the hold definition before touching the higher-timeframe trend anchor.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Fewer trades than the reversion idea, but higher asymmetry when continuation survives the hold.",
+    "what_would_count_as_success": "TAO 4h produces enough reclaimed-support continuations to clear screen density and one cross-lane shows a weaker but visible version of the grammar.",
+    "what_would_count_as_failure": "Sparse participation, repeated failed holds, or the setup working only by accident on one lane with no portability.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because the reclaim-hold logic is compact and thesis-aligned",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit structurally different lane for failed-breakdown continuation.",
+      "continue_if": "TAO 4h shows enough reclaimed-support holds with positive continuation asymmetry.",
+      "rotate_away_if": "TAO 4h keeps treating reclaimed support as temporary bounce territory.",
+      "expected_if_right": "Moderate count and larger runner contribution than on BTC or ETH."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary_asset_check",
+      "why_included": "Checks whether the same reclaim-hold logic survives on the cycle primary lane even if it is not the best fit.",
+      "continue_if": "BTC 4h preserves some reclaimed-support continuation without collapsing into chop noise.",
+      "rotate_away_if": "BTC 4h proves the mechanism is too continuation-dependent for the current regime.",
+      "expected_if_right": "Lower count, smaller but cleaner follow-through."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Tests if the same pattern can degrade gracefully on a more range-bound major.",
+      "continue_if": "ETH 4h still produces a smaller but valid reclaim-hold continuation sample.",
+      "rotate_away_if": "ETH 4h is too chop-bound to express continuation after the hold.",
+      "expected_if_right": "Low-to-moderate count, lower asymmetry than TAO."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 + 0.15 * ATR_14",
+      "Close >= EMA_20",
+      "Close >= EMA_55 - 0.15 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 - 0.15 * ATR_14",
+      "Close <= EMA_20",
+      "Close <= EMA_55 + 0.15 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar low stays >= EMA_20 - 0.15 * ATR_14 and close remains above EMA_20"
+    ],
+    "short": [
+      "Enter only if next bar high stays <= EMA_20 + 0.15 * ATR_14 and close remains below EMA_20"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.92 * ATR_14 below entry",
+      "Scale in: add 25% if trade reaches +0.55 * ATR_14 and close remains above EMA_20",
+      "Take profit: 0.70 * ATR_14 on 35% of initial size",
+      "Take profit: 1.35 * ATR_14 on 30% of total size",
+      "Trail remaining by EMA_20 - 0.55 * ATR_14",
+      "Final time stop: 9 bars"
+    ],
+    "short": [
+      "Stop loss: 0.92 * ATR_14 above entry",
+      "Scale in: add 25% if trade reaches +0.55 * ATR_14 and close remains below EMA_20",
+      "Take profit: 0.70 * ATR_14 on 35% of initial size",
+      "Take profit: 1.35 * ATR_14 on 30% of total size",
+      "Trail remaining by EMA_20 + 0.55 * ATR_14",
+      "Final time stop: 9 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-v1",
+  "cycle_id": 70,
+  "family_name": "tao_4h_failed_breakdown_hold_v070",
+  "name": "TAO 4h Failed Breakdown Hold v1",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a breakdown attempt fails, price reclaims the broken support, holds above it, and resumes with the higher-volatility trend context rather than mean reverting all the way to balance",
+  "expected_regime": "TREND_UP_WITH_PULLBACKS",
+  "thesis": "The cycle explicitly wants failed breakdown reclaim that must hold before continuation entry. TAO 4h is the best-fit structurally different lane because it already carries live trend-up contamination. That makes failed breakdowns more likely to become trend resumptions than pure balance rotations, which gives this concept a different job than the BTC reclaim mean reversion variant.",
+  "invalidation_condition": "If TAO 4h failed breakdowns do not hold above reclaimed structure long enough to produce continuation, or the setup stays under screen density, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price breaks below local support, rejects the move, reclaims support, holds it, and then resumes in the dominant direction.",
+    "why_edge_should_exist": "In an asset with live trend-up contamination, failed breakdowns can trap late shorts and fuel a stronger continuation than ordinary range reclaims. The hold requirement is there to separate actual rejection from a one-bar bounce.",
+    "asset_timeframe_fit": "TAO 4h is the best fit because the same failed-breakdown grammar has more room to trend-resume there than in flat ETH 4h, while still staying inside the allowed basket.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "local support failure/reclaim line",
+      "EMA_55": "higher-structure directional anchor",
+      "ATR_14": "reclaim tolerance and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional resumption confirmation",
+      "ADX_14": "trend participation filter"
+    },
+    "expected_regime": "TREND_UP_WITH_PULLBACKS",
+    "likely_failure_mode": "TAO may be too extended, turning reclaim entries into late continuation buys right before a deeper pullback.",
+    "first_refinement_path": "If the entry works but drawdown is too large, add faster partial-profit extraction before reducing the hold requirement.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower count than BTC 1h, but better asymmetry when the reclaim genuinely restarts the trend leg.",
+    "what_would_count_as_success": "TAO 4h clears screen density and the reclaim-hold grammar produces at least one lane with acceptable post-cost continuation behavior.",
+    "what_would_count_as_failure": "0 trades, sub-12 trades, or repeated reclaim-hold entries that fail back through support within 1-2 bars.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but acceptable because the hold requirement is simple and the asset has larger swings",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for failed breakdowns that can resolve into trend resumption.",
+      "continue_if": "TAO 4h produces enough reclaim-hold resumptions with positive first-target behavior.",
+      "rotate_away_if": "TAO 4h reclaim-hold entries repeatedly fail back through structure.",
+      "expected_if_right": "Moderate count with a few strong continuation runners."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "major_crosscheck",
+      "why_included": "Tests whether the same failed-breakdown hold works in a less directional major.",
+      "continue_if": "BTC 4h preserves the reclaim-hold behavior even if the move resolves more modestly.",
+      "rotate_away_if": "BTC 4h turns it into weak range noise rather than continuation.",
+      "expected_if_right": "Smaller but more frequent reclaim-hold continuations than TAO."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "clean_chop_rejector",
+      "why_included": "Useful negative control to see whether the thesis depends on trend contamination.",
+      "continue_if": "ETH 4h still shows orderly reclaim-hold participation.",
+      "rotate_away_if": "ETH 4h proves the strategy is too dependent on TAO's trend structure.",
+      "expected_if_right": "Lower amplitude and more modest continuation than TAO."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 + 0.10 * ATR_14",
+      "Close >= DONCHIAN_LOW_20 + 0.20 * ATR_14",
+      "Close >= EMA_55 - 0.20 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 - 0.10 * ATR_14",
+      "Close <= DONCHIAN_HIGH_20 - 0.20 * ATR_14",
+      "Close <= EMA_55 + 0.20 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 14"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar low remains >= DONCHIAN_LOW_20 - 0.12 * ATR_14"
+    ],
+    "short": [
+      "Next bar high remains <= DONCHIAN_HIGH_20 + 0.12 * ATR_14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.00 * ATR_14 below entry",
+      "Take profit: 0.80 * ATR_14 on 30% size",
+      "Take profit: 1.50 * ATR_14 on 30% size",
+      "Trail remaining 40% by 1.00 * ATR_14",
+      "Final time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.00 * ATR_14 above entry",
+      "Take profit: 0.80 * ATR_14 on 30% size",
+      "Take profit: 1.50 * ATR_14 on 30% size",
+      "Trail remaining 40% by 1.00 * ATR_14",
+      "Final time stop: 10 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

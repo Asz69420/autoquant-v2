@@ -38,11 +38,41 @@
     }
   },
   "test_lanes": [
-    {"asset":"ETH","timeframe":"4h","role":"primary","why_included":"Cleaner lane for testing selective exhaustion reacceptance against the mixed backdrop.","continue_if":"Reacceptance fades show usable density and controlled post-cost reversions.","rotate_away_if":"Setups remain sparse or ongoing persistence overwhelms the fades.","expected_if_right":"A modest number of overshoot-and-reaccept fades that revert back toward value."},
-    {"asset":"SOL","timeframe":"4h","role":"higher_beta_check","why_included":"Tests whether the same reacceptance grammar survives on a more expressive lane.","continue_if":"SOL preserves the setup without degenerating into chaos.","rotate_away_if":"SOL becomes too noisy for controlled fades.","expected_if_right":"Bigger but less orderly exhaustion fades than ETH."},
-    {"asset":"TAO","timeframe":"4h","role":"structurally_different_asset","why_included":"Checks whether the mechanism survives outside the major-asset lane.","continue_if":"TAO still produces recognizable reacceptance-fade behavior.","rotate_away_if":"The pattern becomes too sparse or too violent.","expected_if_right":"Fewer but sharp reversions after obvious overshoots."}
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Cleaner lane for testing selective exhaustion reacceptance against the mixed backdrop.",
+      "continue_if": "Reacceptance fades show usable density and controlled post-cost reversions.",
+      "rotate_away_if": "Setups remain sparse or ongoing persistence overwhelms the fades.",
+      "expected_if_right": "A modest number of overshoot-and-reaccept fades that revert back toward value."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "higher_beta_check",
+      "why_included": "Tests whether the same reacceptance grammar survives on a more expressive lane.",
+      "continue_if": "SOL preserves the setup without degenerating into chaos.",
+      "rotate_away_if": "SOL becomes too noisy for controlled fades.",
+      "expected_if_right": "Bigger but less orderly exhaustion fades than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Checks whether the mechanism survives outside the major-asset lane.",
+      "continue_if": "TAO still produces recognizable reacceptance-fade behavior.",
+      "rotate_away_if": "The pattern becomes too sparse or too violent.",
+      "expected_if_right": "Fewer but sharp reversions after obvious overshoots."
+    }
   ],
-  "indicators": ["EMA_20","BOLLINGER_BANDS_20_2","RSI_14","ATR_14","ADX_14"],
+  "indicators": [
+    "EMA_20",
+    "BOLLINGER_BANDS_20_2",
+    "RSI_14",
+    "ATR_14",
+    "ADX_14"
+  ],
   "entry_rules": {
     "long": [
       "Low <= EMA_20 - 0.52 * ATR_14",
@@ -72,5 +102,7 @@
       "Exit remaining 20% on close through EMA_20 - 0.22 * ATR_14 or 4 bars",
       "Final time stop: 4 bars"
     ]
-  }
+  },
+  "research_mode": "refine",
+  "mutation_type": "reclassified_refine"
 }

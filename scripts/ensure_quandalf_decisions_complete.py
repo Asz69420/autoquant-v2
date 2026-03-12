@@ -293,6 +293,82 @@ def autofill_queue_decisions_from_strategy(reflection, decisions):
     return changed
 
 
+def deterministic_decision_for_outcome(outcome):
+    allowed = {str(x).strip().lower() for x in (outcome.get("allowed_next_actions") or []) if str(x).strip()}
+    diagnosis = str(outcome.get("diagnosis_category") or "").strip().lower()
+    latest = outcome.get("latest_result") or {}
+    latest_decision = str(latest.get("score_decision") or "").strip().lower()
+    latest_qs = float(latest.get("score_total") or 0.0)
+    total_trades = int(latest.get("total_trades") or 0)
+
+    if "pass" in allowed and latest_decision == "pass":
+        return "pass"
+    if "refine" in allowed and latest_qs >= 0.75 and total_trades >= 20:
+        return "refine"
+    if "abort" in allowed:
+        return "abort"
+    if "refine" in allowed:
+        return "refine"
+    if "pass" in allowed:
+        return "pass"
+    if diagnosis in {"too sparse", "bad idea", "wrong regime", "wrong lane"}:
+        return "abort"
+    return "abort"
+
+
+def build_deterministic_decisions(reflection):
+    cycle_id = int(reflection.get("cycle_id") or 0)
+    ts_iso = reflection.get("ts_iso")
+    strategy_decisions = []
+    jobs = []
+    for outcome in (reflection.get("strategy_outcomes") or []):
+        if not isinstance(outcome, dict):
+            continue
+        spec_id = str(outcome.get("strategy_spec_id") or "").strip()
+        if not spec_id:
+            continue
+        decision = deterministic_decision_for_outcome(outcome)
+        diagnosis = str(outcome.get("diagnosis_category") or "reviewed_outcome").strip() or "reviewed_outcome"
+        rationale = str(outcome.get("rationale") or outcome.get("hypothesis") or f"Deterministic closure chose {decision} for {spec_id} from reflection evidence.").strip()
+        item = {
+            "strategy_spec_id": spec_id,
+            "decision": decision,
+            "rationale": rationale,
+            "diagnosis_category": diagnosis,
+            "queue_decisions": [],
+        }
+        for q in (outcome.get("queue") or []):
+            if not isinstance(q, dict):
+                continue
+            queue_id = str(q.get("queue_id") or "").strip()
+            if not queue_id:
+                continue
+            q_item = {
+                "queue_id": queue_id,
+                "decision": decision,
+                "rationale": f"Deterministic closure inherited {decision} for queue row {queue_id} from strategy outcome {spec_id}.",
+            }
+            result_id = q.get("result_id")
+            if result_id:
+                q_item["source_result_id"] = result_id
+            item["queue_decisions"].append(q_item)
+        if decision == "refine":
+            item["iteration_intent"] = "tighten structure and improve quality after reviewed fail"
+            item["structural_change"] = "change entry density, lane selection, or management structure based on reflection evidence"
+            item["expected_effect"] = "raise quality without reverting to sparse ceremonial logic"
+            jobs.append({
+                "strategy_spec_id": spec_id,
+                "decision": "refine",
+                "rationale": rationale,
+                "spec_path": str(outcome.get("spec_path") or ""),
+                "mutation_type": "deterministic_refine",
+            })
+        strategy_decisions.append(item)
+    payload = {"cycle_id": cycle_id, "ts_iso": ts_iso, "strategy_decisions": strategy_decisions, "jobs": jobs}
+    DECISIONS.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return payload
+
+
 def main():
     reflection = load_json(REFLECTION, {})
     cycle_id = int(reflection.get("cycle_id") or 0)
@@ -311,6 +387,21 @@ def main():
 
     final_validator = None
     agent_runs = []
+
+    if not (decisions.get("strategy_decisions") or []):
+        decisions = build_deterministic_decisions(reflection)
+        autofill_queue_decisions_from_strategy(reflection, decisions)
+        code, payload, stdout, stderr = run_validator()
+        print(json.dumps({
+            "status": "ok" if code == 0 else "error",
+            "cycle_id": cycle_id,
+            "attempts": 0,
+            "deterministic_bootstrap": True,
+            "validator": payload,
+            "agent_runs": agent_runs,
+        }, indent=2))
+        return 0 if code == 0 else 1
+
     for attempt in range(1, MAX_ATTEMPTS + 1):
         code, payload, stdout, stderr = run_validator()
         final_validator = payload
@@ -333,15 +424,19 @@ def main():
             "stderr_tail": (proc.stderr or "")[-500:],
         })
         if proc.returncode != 0:
+            build_deterministic_decisions(reflection)
+            decisions = load_json(DECISIONS, {})
+            autofill_queue_decisions_from_strategy(reflection, decisions)
+            code, payload, stdout, stderr = run_validator()
             print(json.dumps({
-                "status": "error",
+                "status": "ok" if code == 0 else "error",
                 "cycle_id": cycle_id,
-                "reason": "quandalf_call_failed",
+                "reason": "quandalf_call_failed_deterministic_fallback",
                 "attempt": attempt,
                 "validator": payload,
                 "agent_runs": agent_runs,
             }, indent=2))
-            return 1
+            return 0 if code == 0 else 1
 
     decisions = load_json(DECISIONS, {})
     cycle_reset = int(decisions.get("cycle_id") or 0) != cycle_id
@@ -351,6 +446,8 @@ def main():
     decisions, normalized = normalize_legacy_decisions(reflection, decisions)
     if normalized:
         DECISIONS.write_text(json.dumps(decisions, indent=2), encoding="utf-8")
+    if not (decisions.get("strategy_decisions") or []):
+        decisions = build_deterministic_decisions(reflection)
     autofilled = autofill_queue_decisions_from_strategy(reflection, decisions)
     code, payload, stdout, stderr = run_validator()
     final_validator = payload

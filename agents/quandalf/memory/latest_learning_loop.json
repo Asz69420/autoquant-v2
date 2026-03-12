@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v3",
-  "ts_iso": "2026-03-12T03:19:32.148611+00:00",
+  "ts_iso": "2026-03-12T06:33:35.162896+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -8,8 +8,8 @@
     "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
   },
   "cycle_context": {
-    "cycle_id": 66,
-    "asset": "TAO",
+    "cycle_id": 70,
+    "asset": "BTC",
     "timeframe": "4h",
     "mode": "explore",
     "research_direction": "explore_new"
@@ -21,30 +21,30 @@
     "zero_trade": 2
   },
   "diagnosis_breakdown": {
-    "too sparse": 2,
-    "bad idea": 1
+    "bad idea": 1,
+    "too sparse": 2
   },
   "dimensions": {
     "what_worked": [],
     "what_failed": [
-      "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1: abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16"
+      "QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1: abort: fail with QS 0.17, PF 0.19, DD 1.7%, trades 6",
+      "QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     ],
     "why_it_failed": [
-      "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1: too sparse",
-      "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1: too sparse",
-      "QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1: bad idea"
+      "QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1: bad idea",
+      "QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1: too sparse",
+      "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1: too sparse"
     ],
     "iterate_next": [
-      "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1: allowed next actions -> refine, abort",
-      "decision QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1: allowed next actions -> refine, abort",
-      "decision QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "decision QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1: abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16"
+      "decision QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1: abort: fail with QS 0.17, PF 0.19, DD 1.7%, trades 6",
+      "QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1: allowed next actions -> refine, abort",
+      "decision QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1: allowed next actions -> refine, abort",
+      "decision QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1: 0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     ],
     "abandon": [
-      "QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1: bad idea"
+      "QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1: bad idea"
     ],
     "bench_for_later": [],
     "regime_notes": [],
@@ -55,118 +55,39 @@
     "management_notes": [],
     "strategy_reviews": [
       {
-        "strategy_spec_id": "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1",
-        "asset": "ETH",
+        "strategy_spec_id": "QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1",
+        "asset": "BTC",
         "timeframe": "4h",
-        "edge_mechanism": "a push beyond a local range fails to gain acceptance, price re-enters balance, and rotates back toward deeper value in a chop-heavy tape",
-        "hypothesis": "The cycle asks for a range-failure reversal after a multi-bar breakout loses acceptance. ETH 4h is the best-fit lane because it is the cleanest pure-chop regime in the basket. The edge is not fading every breakout mechanically; it is entering only after price clearly reaccepts balance following a failed edge auction.",
-        "diagnosis_category": "too sparse",
-        "decision": "abort",
-        "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-        "why_asset": "asset=ETH from chosen lane / result context",
-        "why_timeframe": "timeframe=4h from chosen lane / result context",
-        "queue_evidence": [
-          "rq_dc076dafeda0=abort (Legacy queue decision normalized for rq_dc076dafeda0: integrity_skip:zero_trades_both_samples.)",
-          "rq_cb1131c78428=abort (Legacy queue decision normalized for rq_cb1131c78428: integrity_skip:zero_trades_both_samples.)",
-          "rq_6fc4631efec1=abort (Legacy queue decision normalized for rq_6fc4631efec1: integrity_skip:zero_trades_both_samples.)"
-        ],
-        "train_result": {},
-        "test_results": [],
-        "stage_metrics": {
-          "train": {
-            "runs": 0,
-            "trades": 0,
-            "best_qscore": 0.0,
-            "best_sharpe": 0.0,
-            "best_pf": 0.0,
-            "max_dd": 0.0,
-            "best_return_pct": 0.0
-          },
-          "test": {
-            "runs": 0,
-            "trades": 0,
-            "best_qscore": 0.0,
-            "best_sharpe": 0.0,
-            "best_pf": 0.0,
-            "max_dd": 0.0,
-            "best_return_pct": 0.0
-          }
-        },
-        "latest_result": {}
-      },
-      {
-        "strategy_spec_id": "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-        "asset": "AXS",
-        "timeframe": "4h",
-        "edge_mechanism": "compression breaks one way, loses acceptance, reclaims fast structure, and expands in the opposite direction once directional pressure flips",
-        "hypothesis": "The cycle explicitly wants a compression fakeout into re-expansion with directional confirmation. AXS 4h is the best structurally different lane for this because it is transition-heavy enough to create meaningful squeezes but noisy enough that first breaks should fail more often than on a clean trend tape. The edge is the second move after the trap.",
-        "diagnosis_category": "too sparse",
-        "decision": "abort",
-        "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-        "why_asset": "asset=AXS from chosen lane / result context",
-        "why_timeframe": "timeframe=4h from chosen lane / result context",
-        "queue_evidence": [
-          "rq_d6a049a91373=abort (Legacy queue decision normalized for rq_d6a049a91373: integrity_skip:zero_trades_both_samples.)",
-          "rq_92ed84cc5d47=abort (Legacy queue decision normalized for rq_92ed84cc5d47: integrity_skip:zero_trades_both_samples.)",
-          "rq_688ced967445=abort (Legacy queue decision normalized for rq_688ced967445: integrity_skip:zero_trades_both_samples.)"
-        ],
-        "train_result": {},
-        "test_results": [],
-        "stage_metrics": {
-          "train": {
-            "runs": 0,
-            "trades": 0,
-            "best_qscore": 0.0,
-            "best_sharpe": 0.0,
-            "best_pf": 0.0,
-            "max_dd": 0.0,
-            "best_return_pct": 0.0
-          },
-          "test": {
-            "runs": 0,
-            "trades": 0,
-            "best_qscore": 0.0,
-            "best_sharpe": 0.0,
-            "best_pf": 0.0,
-            "max_dd": 0.0,
-            "best_return_pct": 0.0
-          }
-        },
-        "latest_result": {}
-      },
-      {
-        "strategy_spec_id": "QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1",
-        "asset": "TAO",
-        "timeframe": "4h",
-        "edge_mechanism": "a deeper pullback resets momentum without fully breaking medium-term structure, fast value is reclaimed, and continuation resumes",
-        "hypothesis": "The cycle explicitly wants trend-reset continuation after a deeper pullback. TAO 4h is the best-fit lane because it is the only basket member with current trend-up contamination and enough amplitude for a meaningful second leg after reset. The edge is not shallow EMA-touch continuation; it is entering only after a genuine reset and reclaim.",
+        "edge_mechanism": "mean reversion after a deeper downside displacement reclaims medium value and rotates back toward balance in a chop-dominant market",
+        "hypothesis": "BTC 4h is the cycle primary lane and current context is chop-dominant with transition contamination. The edge is not generic oversold buying. It is buying only after a meaningful downside displacement fails and price reaccepts medium value, which should create rotation back into balance when the breakdown cannot sustain.",
         "diagnosis_category": "bad idea",
         "decision": "abort",
-        "decision_rationale": "abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16",
-        "why_asset": "asset=TAO from chosen lane / result context",
+        "decision_rationale": "abort: fail with QS 0.17, PF 0.19, DD 1.7%, trades 6",
+        "why_asset": "asset=BTC from chosen lane / result context",
         "why_timeframe": "timeframe=4h from chosen lane / result context",
         "queue_evidence": [
-          "rq_01a981e55dc8=abort (Legacy queue decision normalized for rq_01a981e55dc8: ok.)",
-          "rq_83beee5fe3d3=abort (Legacy queue decision normalized for rq_83beee5fe3d3: ok.)",
-          "rq_6c41780e9a5e=abort (Legacy queue decision normalized for rq_6c41780e9a5e: screen too sparse/weak (trades=15, pf=0.929).)"
+          "rq_219c2344733e=abort (Deterministic closure inherited abort for queue row rq_219c2344733e from strategy outcome QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1.)",
+          "rq_846f704b6409=abort (Deterministic closure inherited abort for queue row rq_846f704b6409 from strategy outcome QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1.)",
+          "rq_f72d9719b73f=abort (Deterministic closure inherited abort for queue row rq_f72d9719b73f from strategy outcome QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1.)",
+          "rq_ac7d557ee25b=abort (Deterministic closure inherited abort for queue row rq_ac7d557ee25b from strategy outcome QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1.)"
         ],
         "train_result": {
-          "id": "wf_f331939445f7",
+          "id": "wf_74a97839025d",
           "variant_id": "default",
-          "asset": "ETH",
-          "timeframe": "4h",
-          "profit_factor": 0.888,
-          "max_drawdown_pct": 23.63,
-          "total_trades": 16,
-          "win_rate_pct": 31.25,
-          "total_return_pct": -9.37,
-          "score_total": 0.652,
+          "asset": "BTC",
+          "timeframe": "1h",
+          "profit_factor": 0.187,
+          "max_drawdown_pct": 1.71,
+          "total_trades": 6,
+          "win_rate_pct": 33.33333333333333,
+          "total_return_pct": -1.6,
+          "score_total": 0.17,
           "score_decision": "fail",
-          "mutation_type": "reclassified_refine",
+          "mutation_type": "initial",
           "refinement_round": 0,
           "family_generation": 1,
           "stage": "screen",
-          "strategy_family": "tao_4h_deep_reset_continuation_v066",
+          "strategy_family": "btc_4h_deep_value_reclaim_v070",
           "sharpe_ratio": null,
           "avg_trade_pct": null,
           "degradation_pct": null,
@@ -174,77 +95,70 @@
           "fold_results": [],
           "metrics": {
             "insample": {
-              "total_trades": 16,
-              "profit_factor": 0.888,
-              "max_drawdown_pct": 23.63,
-              "total_return_pct": -9.37,
-              "win_rate_pct": 31.25,
-              "avg_trade_pct": -0.384,
-              "sharpe_ratio": -0.86,
-              "qscore": 0.652,
+              "total_trades": 6,
+              "profit_factor": 0.187,
+              "max_drawdown_pct": 1.71,
+              "total_return_pct": -1.6,
+              "win_rate_pct": 33.33333333333333,
+              "avg_trade_pct": -0.267,
+              "sharpe_ratio": -9.653,
+              "qscore": 0.17,
               "decision": "fail",
-              "grade": "C",
+              "grade": "D",
               "flags": "[\"below_scoring_floor\", \"low_trade_count\"]"
             },
             "outofsample": {
-              "total_trades": 16,
-              "profit_factor": 0.888,
-              "max_drawdown_pct": 23.63,
-              "total_return_pct": -9.37,
-              "win_rate_pct": 31.25,
-              "avg_trade_pct": -0.384,
-              "sharpe_ratio": -0.86,
-              "qscore": 0.652,
+              "total_trades": 6,
+              "profit_factor": 0.187,
+              "max_drawdown_pct": 1.71,
+              "total_return_pct": -1.6,
+              "win_rate_pct": 33.33333333333333,
+              "avg_trade_pct": -0.267,
+              "sharpe_ratio": -9.653,
+              "qscore": 0.17,
               "decision": "fail",
-              "grade": "C",
+              "grade": "D",
               "flags": "[\"below_scoring_floor\", \"low_trade_count\"]"
             },
             "degradation_pct": 0.0,
             "walk_forward_config": {
               "mode": "train_gate",
-              "train_days": 240,
-              "min_train_trades": 30,
+              "train_days": 120,
+              "min_train_trades": 40,
               "train_qscore_gate": 1.0
             },
             "regime_scores": {
               "CHOP": {
-                "trade_count": 7,
-                "profit_factor": 0.34,
-                "win_rate": 14.29,
-                "avg_return": -2.7,
+                "trade_count": 4,
+                "profit_factor": 0.532,
+                "win_rate": 50.0,
+                "avg_return": -0.081,
                 "qscore": null
               },
               "TRANSITION": {
-                "trade_count": 5,
-                "profit_factor": 0.464,
-                "win_rate": 20.0,
-                "avg_return": -2.25,
-                "qscore": null
-              },
-              "TREND_DOWN": {
-                "trade_count": 4,
-                "profit_factor": 5.571,
-                "win_rate": 75.0,
-                "avg_return": 6.0,
+                "trade_count": 2,
+                "profit_factor": 0.0,
+                "win_rate": 0.0,
+                "avg_return": -0.639,
                 "qscore": null
               }
             },
-            "regime_concentration": 43.75,
+            "regime_concentration": 66.67,
             "primary_regime": "CHOP"
           },
           "regime_metrics": {},
-          "ts_iso": "2026-03-12T03:15:35.548785+00:00"
+          "ts_iso": "2026-03-12T06:33:03.507372+00:00"
         },
         "test_results": [],
         "stage_metrics": {
           "train": {
-            "runs": 2,
-            "trades": 31,
-            "best_qscore": 0.693,
+            "runs": 3,
+            "trades": 9,
+            "best_qscore": 0.235,
             "best_sharpe": 0.0,
-            "best_pf": 0.929,
-            "max_dd": 23.63,
-            "best_return_pct": 0.0
+            "best_pf": 10.0,
+            "max_dd": 1.71,
+            "best_return_pct": 0.67
           },
           "test": {
             "runs": 0,
@@ -257,22 +171,22 @@
           }
         },
         "latest_result": {
-          "id": "wf_f331939445f7",
+          "id": "wf_74a97839025d",
           "variant_id": "default",
-          "asset": "ETH",
-          "timeframe": "4h",
-          "profit_factor": 0.888,
-          "max_drawdown_pct": 23.63,
-          "total_trades": 16,
-          "win_rate_pct": 31.25,
-          "total_return_pct": -9.37,
-          "score_total": 0.652,
+          "asset": "BTC",
+          "timeframe": "1h",
+          "profit_factor": 0.187,
+          "max_drawdown_pct": 1.71,
+          "total_trades": 6,
+          "win_rate_pct": 33.33333333333333,
+          "total_return_pct": -1.6,
+          "score_total": 0.17,
           "score_decision": "fail",
-          "mutation_type": "reclassified_refine",
+          "mutation_type": "initial",
           "refinement_round": 0,
           "family_generation": 1,
           "stage": "screen",
-          "strategy_family": "tao_4h_deep_reset_continuation_v066",
+          "strategy_family": "btc_4h_deep_value_reclaim_v070",
           "sharpe_ratio": null,
           "avg_trade_pct": null,
           "degradation_pct": null,
@@ -280,75 +194,149 @@
           "fold_results": [],
           "metrics": {
             "insample": {
-              "total_trades": 16,
-              "profit_factor": 0.888,
-              "max_drawdown_pct": 23.63,
-              "total_return_pct": -9.37,
-              "win_rate_pct": 31.25,
-              "avg_trade_pct": -0.384,
-              "sharpe_ratio": -0.86,
-              "qscore": 0.652,
+              "total_trades": 6,
+              "profit_factor": 0.187,
+              "max_drawdown_pct": 1.71,
+              "total_return_pct": -1.6,
+              "win_rate_pct": 33.33333333333333,
+              "avg_trade_pct": -0.267,
+              "sharpe_ratio": -9.653,
+              "qscore": 0.17,
               "decision": "fail",
-              "grade": "C",
+              "grade": "D",
               "flags": "[\"below_scoring_floor\", \"low_trade_count\"]"
             },
             "outofsample": {
-              "total_trades": 16,
-              "profit_factor": 0.888,
-              "max_drawdown_pct": 23.63,
-              "total_return_pct": -9.37,
-              "win_rate_pct": 31.25,
-              "avg_trade_pct": -0.384,
-              "sharpe_ratio": -0.86,
-              "qscore": 0.652,
+              "total_trades": 6,
+              "profit_factor": 0.187,
+              "max_drawdown_pct": 1.71,
+              "total_return_pct": -1.6,
+              "win_rate_pct": 33.33333333333333,
+              "avg_trade_pct": -0.267,
+              "sharpe_ratio": -9.653,
+              "qscore": 0.17,
               "decision": "fail",
-              "grade": "C",
+              "grade": "D",
               "flags": "[\"below_scoring_floor\", \"low_trade_count\"]"
             },
             "degradation_pct": 0.0,
             "walk_forward_config": {
               "mode": "train_gate",
-              "train_days": 240,
-              "min_train_trades": 30,
+              "train_days": 120,
+              "min_train_trades": 40,
               "train_qscore_gate": 1.0
             },
             "regime_scores": {
               "CHOP": {
-                "trade_count": 7,
-                "profit_factor": 0.34,
-                "win_rate": 14.29,
-                "avg_return": -2.7,
+                "trade_count": 4,
+                "profit_factor": 0.532,
+                "win_rate": 50.0,
+                "avg_return": -0.081,
                 "qscore": null
               },
               "TRANSITION": {
-                "trade_count": 5,
-                "profit_factor": 0.464,
-                "win_rate": 20.0,
-                "avg_return": -2.25,
-                "qscore": null
-              },
-              "TREND_DOWN": {
-                "trade_count": 4,
-                "profit_factor": 5.571,
-                "win_rate": 75.0,
-                "avg_return": 6.0,
+                "trade_count": 2,
+                "profit_factor": 0.0,
+                "win_rate": 0.0,
+                "avg_return": -0.639,
                 "qscore": null
               }
             },
-            "regime_concentration": 43.75,
+            "regime_concentration": 66.67,
             "primary_regime": "CHOP"
           },
           "regime_metrics": {},
-          "ts_iso": "2026-03-12T03:15:35.548785+00:00"
+          "ts_iso": "2026-03-12T06:33:03.507372+00:00"
         }
+      },
+      {
+        "strategy_spec_id": "QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1",
+        "asset": "ETH",
+        "timeframe": "4h",
+        "edge_mechanism": "compression releases directionally, but entry waits for persistence above fast structure rather than the first breakout bar",
+        "hypothesis": "ETH 4h is the cleanest squeeze lane in the allowed basket because current regime is 100% chop. The edge is not the first breakout print. It is participating only once release persists beyond the initial bar, which should reduce false breaks while keeping enough density in a compressed market.",
+        "diagnosis_category": "too sparse",
+        "decision": "abort",
+        "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+        "why_asset": "asset=ETH from chosen lane / result context",
+        "why_timeframe": "timeframe=4h from chosen lane / result context",
+        "queue_evidence": [
+          "rq_c59b4062c0bf=abort (Deterministic closure inherited abort for queue row rq_c59b4062c0bf from strategy outcome QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1.)",
+          "rq_0765dac61180=abort (Deterministic closure inherited abort for queue row rq_0765dac61180 from strategy outcome QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1.)",
+          "rq_ef38a021c026=abort (Deterministic closure inherited abort for queue row rq_ef38a021c026 from strategy outcome QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1.)",
+          "rq_052540e959e0=abort (Deterministic closure inherited abort for queue row rq_052540e959e0 from strategy outcome QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1.)"
+        ],
+        "train_result": {},
+        "test_results": [],
+        "stage_metrics": {
+          "train": {
+            "runs": 0,
+            "trades": 0,
+            "best_qscore": 0.0,
+            "best_sharpe": 0.0,
+            "best_pf": 0.0,
+            "max_dd": 0.0,
+            "best_return_pct": 0.0
+          },
+          "test": {
+            "runs": 0,
+            "trades": 0,
+            "best_qscore": 0.0,
+            "best_sharpe": 0.0,
+            "best_pf": 0.0,
+            "max_dd": 0.0,
+            "best_return_pct": 0.0
+          }
+        },
+        "latest_result": {}
+      },
+      {
+        "strategy_spec_id": "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
+        "asset": "TAO",
+        "timeframe": "4h",
+        "edge_mechanism": "a downside break fails, price reclaims support, then holds that reclaimed structure before continuation entry into resumed trend",
+        "hypothesis": "The cycle concept set explicitly includes failed breakdown reclaim that must hold before continuation entry. TAO 4h is the best-fit lane because it is the only allowed 4h asset currently showing real trend-up contamination. The edge is not simple dip-buying. It is joining the resumed move only after the failed breakdown proves that reclaimed support can hold.",
+        "diagnosis_category": "too sparse",
+        "decision": "abort",
+        "decision_rationale": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+        "why_asset": "asset=TAO from chosen lane / result context",
+        "why_timeframe": "timeframe=4h from chosen lane / result context",
+        "queue_evidence": [
+          "rq_b3418136d7ac=abort (Deterministic closure inherited abort for queue row rq_b3418136d7ac from strategy outcome QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1.)",
+          "rq_336bc8cff8a8=abort (Deterministic closure inherited abort for queue row rq_336bc8cff8a8 from strategy outcome QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1.)",
+          "rq_fab0c853cc88=abort (Deterministic closure inherited abort for queue row rq_fab0c853cc88 from strategy outcome QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1.)"
+        ],
+        "train_result": {},
+        "test_results": [],
+        "stage_metrics": {
+          "train": {
+            "runs": 0,
+            "trades": 0,
+            "best_qscore": 0.0,
+            "best_sharpe": 0.0,
+            "best_pf": 0.0,
+            "max_dd": 0.0,
+            "best_return_pct": 0.0
+          },
+          "test": {
+            "runs": 0,
+            "trades": 0,
+            "best_qscore": 0.0,
+            "best_sharpe": 0.0,
+            "best_pf": 0.0,
+            "max_dd": 0.0,
+            "best_return_pct": 0.0
+          }
+        },
+        "latest_result": {}
       }
     ]
   },
   "journal_excerpt": [
-    "# Quandalf Journal \u2014 Cycle 64",
-    "- ts_iso: 2026-03-11T23:32:09.802601+00:00",
+    "# Quandalf Journal \u2014 Cycle 70",
+    "- ts_iso: 2026-03-12T06:33:05.785915+00:00",
     "- mode: explore",
-    "- lane: BTC / 1h",
+    "- lane: BTC / 4h",
     "- research_direction: explore_new",
     "## My Current Decision Summary",
     "{",
@@ -363,115 +351,6 @@
     "PASS should flow into structured refinement variants, not cosmetic tweaks."
   ],
   "rolling_recent_cycles": [
-    {
-      "cycle_id": 53,
-      "ts_iso": "2026-03-11T20:04:16.529399+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "BTC",
-        "ETH",
-        "TAO"
-      ],
-      "timeframes_touched": [
-        "1h",
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 9,
-      "queue_decided_total": 9,
-      "result_total": 0,
-      "decision_summary": {
-        "pass": 0,
-        "refine": 0,
-        "abort": 3,
-        "zero_trade": 3
-      },
-      "diagnosis_breakdown": {
-        "too sparse": 3
-      }
-    },
-    {
-      "cycle_id": 62,
-      "ts_iso": "2026-03-11T21:19:31.769580+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "AXS",
-        "ETH",
-        "TAO"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 9,
-      "queue_decided_total": 9,
-      "result_total": 0,
-      "decision_summary": {
-        "pass": 0,
-        "refine": 0,
-        "abort": 3,
-        "zero_trade": 3
-      },
-      "diagnosis_breakdown": {
-        "too sparse": 3
-      }
-    },
-    {
-      "cycle_id": 63,
-      "ts_iso": "2026-03-11T21:24:03.081956+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "DOGE",
-        "ETH",
-        "TAO"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 9,
-      "queue_decided_total": 9,
-      "result_total": 0,
-      "decision_summary": {
-        "pass": 0,
-        "refine": 0,
-        "abort": 3,
-        "zero_trade": 3
-      },
-      "diagnosis_breakdown": {
-        "too sparse": 3
-      }
-    },
-    {
-      "cycle_id": 64,
-      "ts_iso": "2026-03-11T23:32:09.802555+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "AXS",
-        "BTC",
-        "ETH"
-      ],
-      "timeframes_touched": [
-        "1h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 9,
-      "queue_decided_total": 9,
-      "result_total": 0,
-      "decision_summary": {
-        "pass": 0,
-        "refine": 0,
-        "abort": 3,
-        "zero_trade": 3
-      },
-      "diagnosis_breakdown": {
-        "too sparse": 3
-      }
-    },
     {
       "cycle_id": 66,
       "ts_iso": "2026-03-12T03:19:32.148588+00:00",
@@ -499,6 +378,112 @@
         "too sparse": 2,
         "bad idea": 1
       }
+    },
+    {
+      "cycle_id": 67,
+      "ts_iso": "2026-03-12T05:23:02.370627+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "DOGE",
+        "ETH",
+        "TAO"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 9,
+      "queue_decided_total": 9,
+      "result_total": 0,
+      "decision_summary": {
+        "pass": 0,
+        "refine": 0,
+        "abort": 3,
+        "zero_trade": 3
+      },
+      "diagnosis_breakdown": {
+        "too sparse": 3
+      }
+    },
+    {
+      "cycle_id": 68,
+      "ts_iso": "2026-03-12T06:06:31.381309+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "ETH"
+      ],
+      "timeframes_touched": [
+        "1h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 3,
+      "queue_decided_total": 3,
+      "result_total": 3,
+      "decision_summary": {
+        "pass": 0,
+        "refine": 0,
+        "abort": 3,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 3
+      }
+    },
+    {
+      "cycle_id": 69,
+      "ts_iso": "2026-03-12T06:22:25.210446+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "ETH"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 3,
+      "queue_decided_total": 3,
+      "result_total": 3,
+      "decision_summary": {
+        "pass": 0,
+        "refine": 0,
+        "abort": 3,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 3
+      }
+    },
+    {
+      "cycle_id": 70,
+      "ts_iso": "2026-03-12T06:33:35.162866+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "BTC",
+        "ETH",
+        "TAO"
+      ],
+      "timeframes_touched": [
+        "1h",
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 11,
+      "queue_decided_total": 11,
+      "result_total": 3,
+      "decision_summary": {
+        "pass": 0,
+        "refine": 0,
+        "abort": 3,
+        "zero_trade": 2
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 1,
+        "too sparse": 2
+      }
     }
   ],
   "rolling_insights": {
@@ -508,15 +493,15 @@
       "pass": 0,
       "refine": 0,
       "abort": 15,
-      "zero_trade": 14,
+      "zero_trade": 7,
       "strategies": 15,
-      "queue_rows": 45,
-      "queue_rows_decided": 45,
-      "saved_results": 2
+      "queue_rows": 35,
+      "queue_rows_decided": 35,
+      "saved_results": 11
     },
     "diagnosis_breakdown": {
-      "too sparse": 14,
-      "bad idea": 1
+      "too sparse": 7,
+      "bad idea": 8
     },
     "assets_touched": [
       "AXS",

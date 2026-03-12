@@ -393,6 +393,7 @@ def normalize_risk(spec: dict, variant: dict) -> dict:
         risk["risk_per_trade_pct"] = position_sizing["risk_per_trade_pct"]
     risk.update(risk_policy)
     risk.update(execution_policy)
+    risk.update(extract_textual_risk(spec.get("exit_rules", variant.get("exit_rules", {}))))
 
     for rule in risk_rules:
         if not isinstance(rule, str) or "=" not in rule:
@@ -441,6 +442,7 @@ def parse_strategy_spec(spec_path: str, variant_name: str = "default") -> dict:
         "variant": variant,
         "strategy_name": spec.get("name", spec.get("id", "unknown")),
         "entry_rules": normalize_directional_rules(spec.get("entry_rules", variant.get("entry_rules", []))),
+        "confirmation_rules": normalize_directional_rules(spec.get("confirmation_rules", variant.get("confirmation_rules", []))),
         "exit_rules": normalize_directional_rules(spec.get("exit_rules", variant.get("exit_rules", []))),
         "parameters": normalize_parameter_map(variant.get("parameters", spec.get("parameters", {}))),
         "risk": normalize_risk(spec, variant),
@@ -820,6 +822,7 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
         params.update(params_override)
 
     entry_rules = normalize_directional_rules(strategy.get("entry_rules", []))
+    confirmation_rules = normalize_directional_rules(strategy.get("confirmation_rules", []))
     exit_rules = normalize_directional_rules(strategy.get("exit_rules", []))
     risk = strategy.get("risk", {})
 
@@ -926,9 +929,27 @@ def run_strategy_on_candles(candles: list[dict], strategy: dict, params_override
                     if not evaluate_condition(cond, i, indicators, candles):
                         all_met = False
                         break
-                if all_met:
-                    position = {"entry_price": close, "entry_idx": i, "direction": direction}
-                    break
+                if not all_met:
+                    continue
+                confirm_rules = confirmation_rules.get(direction, [])
+                entry_idx = i
+                entry_price = close
+                if confirm_rules:
+                    next_idx = i + 1
+                    if next_idx >= len(candles):
+                        continue
+                    confirmed = True
+                    for rule in confirm_rules:
+                        cond = sanitize_confirmation_text(rule if isinstance(rule, str) else rule.get("condition", ""))
+                        if not evaluate_condition(cond, next_idx, indicators, candles):
+                            confirmed = False
+                            break
+                    if not confirmed:
+                        continue
+                    entry_idx = next_idx
+                    entry_price = candles[next_idx]["close"]
+                position = {"entry_price": entry_price, "entry_idx": entry_idx, "direction": direction}
+                break
         equity_curve.append(equity_curve[-1])
 
     if position is not None:
@@ -1097,12 +1118,10 @@ def extend_blind_window(candles: list[dict], blind_start: int, blind_end: int, s
     return blind_end
 
 
-def trim_to_recent_months(candles: list[dict], months: int = 3) -> list[dict]:
+def trim_to_recent_days(candles: list[dict], days: int, default_cpd: int = 6) -> list[dict]:
     if not candles:
         return candles
-    approx_days = max(1, months * 30)
-    timeframe_guess = str(candles[0].get("ts", ""))
-    cpd = 6
+    cpd = default_cpd
     if len(candles) > 1:
         first_ts = candles[0].get("ts")
         second_ts = candles[1].get("ts")
@@ -1112,14 +1131,17 @@ def trim_to_recent_months(candles: list[dict], months: int = 3) -> list[dict]:
             delta_minutes = max(1, int((b - a).total_seconds() // 60))
             cpd = max(1, int(round((24 * 60) / delta_minutes)))
         except Exception:
-            cpd = 6
-    keep = min(len(candles), approx_days * cpd)
+            cpd = default_cpd
+    keep = min(len(candles), max(1, int(days)) * cpd)
     return candles[-keep:]
 
 
 def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset: str = "unknown", param_grid: dict | None = None, stage: str = "full") -> dict:
     if stage == "screen":
-        screen_candles = trim_to_recent_months(candles, months=3)
+        policy = load_train_test_policy(timeframe)
+        screen_days = int(policy.get("train_days") or WINDOW_CONFIG.get(timeframe, (180, 42))[0])
+        default_cpd = {"1d": 1, "4h": 6, "1h": 24, "15m": 96, "5m": 288, "1m": 1440}.get(timeframe, 6)
+        screen_candles = trim_to_recent_days(candles, days=screen_days, default_cpd=default_cpd)
         screen_metrics = run_strategy_on_candles(screen_candles, strategy)
         regime_payload = get_regime_tags("screen", timeframe, candles=screen_candles, force=True)
         regime_scores, regime_concentration, primary_regime, regime_flags = compute_regime_scores(screen_metrics["trades"], regime_payload)
@@ -1179,7 +1201,7 @@ def run_walk_forward(candles: list[dict], strategy: dict, timeframe: str, asset:
             "screen_passed": passed,
             "walk_forward_config": {
                 "stage": "screen",
-                "months": 3,
+                "screen_days": screen_days,
                 "folds": 1,
                 "timeframe": timeframe,
                 "transaction_cost_pct": round(TOTAL_COST_PCT * 100.0, 4),

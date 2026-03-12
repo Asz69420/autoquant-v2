@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C071-ETH-4H-DEEP-RESET-CONTINUATION-v1",
+  "cycle_id": 71,
+  "family_name": "eth_4h_deep_reset_continuation_v071",
+  "name": "ETH 4h Deep Reset Continuation v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "continuation is entered only after a deeper pullback resets the move and value is reclaimed, rather than on shallow ema-touch logic",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "Cycle 71 wants trend reset continuation after a deeper pullback instead of shallow EMA-touch logic. ETH 4h is the best fit because its 100% chop state makes shallow continuation logic suspect, but deeper resets back into reclaimed value can still create tradable directional legs without requiring rare trend conditions. The edge is the reset-then-go sequence, not momentum chasing.",
+  "invalidation_condition": "If ETH 4h deeper resets still fail to produce follow-through after reclaiming value, or if the structure remains too flat to generate enough moves after costs, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pulls back deeply enough to reset positioning, reclaims value and short-term structure, then continues away from the reset zone.",
+    "why_edge_should_exist": "Deeper resets can clean out weak positioning in mixed/choppy markets. Requiring reclaimed value should improve entry location compared with shallow continuation logic that kept bleeding in prior families.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because it is the clearest chop lane where shallow continuation was already disproven, making a deeper reset interpretation the meaningful structural change.",
+    "indicator_role_map": {
+      "VWAP": "value reset/reclaim line",
+      "EMA_55": "medium-structure confirmation anchor",
+      "ATR_14": "depth threshold and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional reassertion signal",
+      "ADX_14": "participation floor to avoid dead rebounds"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The market may be so rotational that reclaimed resets only bounce briefly before folding back into balance.",
+    "first_refinement_path": "If entries exist but continuation legs are too small, keep the reset trigger and shift to faster first-profit extraction plus tighter runner logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Enough reset entries to clear screen density, with many first-target captures and fewer extended follow-through wins.",
+    "what_would_count_as_success": "ETH 4h produces credible density and better post-cost behavior than prior shallow continuation families.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reset entries that fail before reaching first target.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "lower than prior continuation families because the trigger is reset plus reclaim, not breakout persistence theater",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for proving that deeper reset continuation is meaningfully different from dead shallow pullback logic.",
+      "continue_if": "ETH 4h shows non-sparse reset-reclaim continuations with positive first-target behavior.",
+      "rotate_away_if": "ETH 4h remains too flat and every reset continuation fails quickly.",
+      "expected_if_right": "Moderate count with many modest continuation legs after reset."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary_context_crosscheck",
+      "why_included": "Checks whether the same reset idea survives on the cycle primary asset with slightly more movement.",
+      "continue_if": "SOL 4h preserves the same reset-reclaim behavior with better amplitude.",
+      "rotate_away_if": "SOL 4h turns it into false restarts rather than genuine reset continuations.",
+      "expected_if_right": "Fewer but larger reset continuations than ETH."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe_density_check",
+      "why_included": "Tests whether adjacent timeframe adds density without losing the reset mechanism.",
+      "continue_if": "SOL 1h increases count while keeping acceptable follow-through.",
+      "rotate_away_if": "SOL 1h becomes noisy shallow pullback behavior again.",
+      "expected_if_right": "Higher frequency reset continuations than 4h."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_55", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.45 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_55 - 0.10 * ATR_14",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 12"
+    ],
+    "short": [
+      "High >= VWAP + 0.45 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_55 + 0.10 * ATR_14",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 12"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar close remains >= VWAP"
+    ],
+    "short": [
+      "Next bar close remains <= VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.92 * ATR_14 below entry",
+      "Take profit: 0.52 * ATR_14 on 35% size",
+      "Take profit: 1.00 * ATR_14 on 30% size",
+      "Trail remaining 35% by 0.75 * ATR_14",
+      "Final time stop: 8 bars"
+    ],
+    "short": [
+      "Stop loss: 0.92 * ATR_14 above entry",
+      "Take profit: 0.52 * ATR_14 on 35% size",
+      "Take profit: 1.00 * ATR_14 on 30% size",
+      "Trail remaining 35% by 0.75 * ATR_14",
+      "Final time stop: 8 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

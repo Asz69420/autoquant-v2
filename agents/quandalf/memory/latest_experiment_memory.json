@@ -1,17 +1,16 @@
 {
-  "ts_iso": "2026-03-12T03:19:32.062276+00:00",
-  "cycle_id": 66,
+  "ts_iso": "2026-03-12T06:33:35.076496+00:00",
+  "cycle_id": 70,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1",
-      "hypothesis": "The cycle asks for a range-failure reversal after a multi-bar breakout loses acceptance. ETH 4h is the best-fit lane because it is the cleanest pure-chop regime in the basket. The edge is not fading every breakout mechanically; it is entering only after price clearly reaccepts balance following a failed edge auction.",
+      "strategy_spec_id": "QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1",
+      "hypothesis": "BTC 4h is the cycle primary lane and current context is chop-dominant with transition contamination. The edge is not generic oversold buying. It is buying only after a meaningful downside displacement fails and price reaccepts medium value, which should create rotation back into balance when the breakdown cannot sustain.",
       "chosen_lane": {
-        "asset": "ETH",
+        "asset": "BTC",
         "timeframe": "4h"
       },
       "component_roles": [
-        "DONCHIAN_20",
         "VWAP",
         "EMA_55",
         "ATR_14",
@@ -19,27 +18,27 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "expected_effect": "abort: fail with QS 0.17, PF 0.19, DD 1.7%, trades 6",
       "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
+        "trade_count": 6,
+        "profit_factor": 0.187,
+        "max_drawdown_pct": 1.71,
+        "qscore": 0.17,
         "decision": "abort"
       },
       "regime_context": {},
-      "diagnosis": "too sparse",
-      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+      "diagnosis": "bad idea",
+      "lesson_extracted": "abort: fail with QS 0.17, PF 0.19, DD 1.7%, trades 6"
     },
     {
-      "strategy_spec_id": "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1",
-      "hypothesis": "The cycle explicitly wants a compression fakeout into re-expansion with directional confirmation. AXS 4h is the best structurally different lane for this because it is transition-heavy enough to create meaningful squeezes but noisy enough that first breaks should fail more often than on a clean trend tape. The edge is the second move after the trap.",
+      "strategy_spec_id": "QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1",
+      "hypothesis": "ETH 4h is the cleanest squeeze lane in the allowed basket because current regime is 100% chop. The edge is not the first breakout print. It is participating only once release persists beyond the initial bar, which should reduce false breaks while keeping enough density in a compressed market.",
       "chosen_lane": {
-        "asset": "AXS",
+        "asset": "ETH",
         "timeframe": "4h"
       },
       "component_roles": [
-        "BOLLINGER_BANDS_20_2",
+        "BB_WIDTH_20",
         "EMA_20",
         "ATR_14",
         "PLUS_DI_14",
@@ -60,32 +59,32 @@
       "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     },
     {
-      "strategy_spec_id": "QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1",
-      "hypothesis": "The cycle explicitly wants trend-reset continuation after a deeper pullback. TAO 4h is the best-fit lane because it is the only basket member with current trend-up contamination and enough amplitude for a meaningful second leg after reset. The edge is not shallow EMA-touch continuation; it is entering only after a genuine reset and reclaim.",
+      "strategy_spec_id": "QD-20260312-C070-TAO-4H-FAILED-BREAKDOWN-HOLD-CONTINUATION-v1",
+      "hypothesis": "The cycle concept set explicitly includes failed breakdown reclaim that must hold before continuation entry. TAO 4h is the best-fit lane because it is the only allowed 4h asset currently showing real trend-up contamination. The edge is not simple dip-buying. It is joining the resumed move only after the failed breakdown proves that reclaimed support can hold.",
       "chosen_lane": {
         "asset": "TAO",
         "timeframe": "4h"
       },
       "component_roles": [
+        "DONCHIAN_20",
         "EMA_20",
         "EMA_55",
         "ATR_14",
         "PLUS_DI_14",
-        "MINUS_DI_14",
-        "RSI_14"
+        "MINUS_DI_14"
       ],
-      "mutation_surface": "reclassified_refine",
-      "expected_effect": "abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16",
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "actual_effect": {
-        "trade_count": 16,
-        "profit_factor": 0.888,
-        "max_drawdown_pct": 23.63,
-        "qscore": 0.652,
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
         "decision": "abort"
       },
       "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16"
+      "diagnosis": "too sparse",
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     }
   ]
 }

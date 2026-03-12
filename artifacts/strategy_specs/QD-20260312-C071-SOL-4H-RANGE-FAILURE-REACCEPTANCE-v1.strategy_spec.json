@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C071-SOL-4H-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 71,
+  "family_name": "sol_4h_range_failure_reacceptance_v071",
+  "name": "SOL 4h Range Failure Reacceptance v1",
+  "asset": "SOL",
+  "timeframe": "4h",
+  "primary_asset": "SOL",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a multi-bar breakout loses acceptance and re-enters balance, creating reversal opportunity back into the range rather than continuation",
+  "expected_regime": "CHOP",
+  "thesis": "Cycle 71 explicitly calls for range-failure reversal after a multi-bar breakout loses acceptance and re-enters balance. SOL 4h is the best-fit lane because it is split between chop and transition, so false directional excursions should still occur with enough amplitude to monetize. The edge is the failed acceptance outside range, not the breakout itself.",
+  "invalidation_condition": "If SOL 4h reacceptance events are too sparse or the reclaimed range fails to carry even to medium balance after costs, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price spends multiple bars leaning outside a recent range, fails to hold that expansion, re-enters balance, and rotates back through the range.",
+    "why_edge_should_exist": "In a chop-heavy market, failed excursions beyond balance are common. Waiting for actual reacceptance should avoid blind fading while still entering before the full rotation is over.",
+    "asset_timeframe_fit": "SOL 4h is the best fit because it is the designated primary lane, has real enough move size for failed-break rotations, and is less trend-contaminated than TAO.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "recent range boundary / failed extension reference",
+      "VWAP": "balance reacceptance line",
+      "ATR_14": "extension threshold and stop sizing",
+      "RSI_14": "stretch/recovery qualifier",
+      "ADX_14": "trend-strength veto against mature continuation"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "A real expansion may be misread as failure, causing repeated fades into actual trend continuation.",
+    "first_refinement_path": "If the mechanism trades but exits too early, widen the runner logic before adding more filters to entry.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Frequent small-to-medium rotations back toward balance, occasional runner when the failed expansion fully unwinds.",
+    "what_would_count_as_success": "SOL 4h clears density with positive first-target behavior and ETH 4h preserves a similar failed-extension rotation pattern.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reacceptance entries that immediately re-break the failed side.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because failed multi-bar excursions happen more often than rare one-bar capitulations",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "SOL",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for failed-break reacceptance reversal in a chop-heavy environment.",
+      "continue_if": "SOL 4h produces enough reacceptance rotations with positive first-target expectancy.",
+      "rotate_away_if": "SOL 4h reacceptance signals are too sparse or too easily re-broken.",
+      "expected_if_right": "Moderate count with several clean balance rotations and some larger mean-reversion follow-through."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same failed-extension grammar survives on the cleanest chop lane in the basket.",
+      "continue_if": "ETH 4h keeps density while preserving the same balance-reentry logic.",
+      "rotate_away_if": "ETH 4h becomes too flat to monetize after costs.",
+      "expected_if_right": "Cleaner but smaller rotations than SOL."
+    },
+    {
+      "asset": "SOL",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the same mechanism gains density without collapsing into noise.",
+      "continue_if": "SOL 1h increases count while keeping reversal quality acceptable.",
+      "rotate_away_if": "SOL 1h overtrades and destroys edge quality.",
+      "expected_if_right": "Higher count, smaller balance rotations than SOL 4h."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "VWAP", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.25 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 43",
+      "RSI_14 <= 58",
+      "ADX_14 <= 22"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.25 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 57",
+      "RSI_14 >= 42",
+      "ADX_14 <= 22"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.88 * ATR_14 below entry",
+      "Take profit: 0.48 * ATR_14 on 45% size",
+      "Take profit: 0.90 * ATR_14 on 30% size",
+      "Exit remaining 25% on loss of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.88 * ATR_14 above entry",
+      "Take profit: 0.48 * ATR_14 on 45% size",
+      "Take profit: 0.90 * ATR_14 on 30% size",
+      "Exit remaining 25% on reclaim of VWAP or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C070-ETH-4H-SQUEEZE-PERSISTENCE-RELEASE-v1",
+  "cycle_id": 70,
+  "family_name": "eth_4h_squeeze_persistence_release_v070",
+  "name": "ETH 4h Squeeze Persistence Release v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression releases directionally, but entry waits for persistence above fast structure rather than the first breakout bar",
+  "expected_regime": "CHOP_TO_EXPANSION",
+  "thesis": "ETH 4h is the cleanest squeeze lane in the allowed basket because current regime is 100% chop. The edge is not the first breakout print. It is participating only once release persists beyond the initial bar, which should reduce false breaks while keeping enough density in a compressed market.",
+  "invalidation_condition": "If ETH 4h keeps resolving squeezes with one-bar fakeouts and no follow-through even after a persistence filter, the mechanism fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A compressed market transitions into expansion and proves that expansion by holding above fast structure for one more bar before continuation entry.",
+    "why_edge_should_exist": "Pure chop assets spend time compressing. When volatility finally expands, persistence is more informative than the initial breakout bar, which is often noise.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because its regime is strongly chop, which is where squeezes form most naturally and persistence filters have the most value.",
+    "indicator_role_map": {
+      "BB_WIDTH_20": "compression detector",
+      "EMA_20": "post-release persistence line",
+      "ATR_14": "release sizing and stop distance",
+      "PLUS_DI_14/MINUS_DI_14": "directional confirmation after release",
+      "ADX_14": "participation gate so expansion is not totally inert"
+    },
+    "expected_regime": "CHOP_TO_EXPANSION",
+    "likely_failure_mode": "The persistence bar may arrive too late and convert decent breakouts into poor-location entries.",
+    "first_refinement_path": "If entries exist but late-entry drag dominates, reduce the persistence tolerance before adding more trend filters.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Lower trade count than a raw breakout system, but cleaner expansions and fewer immediate reversals.",
+    "what_would_count_as_success": "ETH 4h produces non-sparse squeeze releases with better post-entry hold quality than prior breakout families.",
+    "what_would_count_as_failure": "Sparse signals, frequent late entries into exhausted moves, or PF still below cost drag.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "acceptable because squeeze plus one-bar persistence is simpler than prior ceremonial confirmation chains",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit chop lane for compression and release behavior.",
+      "continue_if": "ETH 4h shows enough squeeze releases and the persistence rule improves quality over raw breakout behavior.",
+      "rotate_away_if": "ETH 4h remains stuck in fakeout-heavy compression with no sustained release.",
+      "expected_if_right": "Moderate trade count and cleaner follow-through than first-break systems."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary_asset_crosscheck",
+      "why_included": "Checks whether the same persistence logic survives on the cycle primary lane.",
+      "continue_if": "BTC 4h preserves squeeze-release behavior with similar hold quality.",
+      "rotate_away_if": "BTC 4h is too transition-heavy and turns squeezes into random churn.",
+      "expected_if_right": "Slightly lower density, larger expansions than ETH."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_density_check",
+      "why_included": "Adjacent timeframe test to see if the same release grammar gains density without losing all quality.",
+      "continue_if": "BTC 1h raises participation and preserves post-persistence continuation.",
+      "rotate_away_if": "BTC 1h turns the concept into overtraded breakout noise.",
+      "expected_if_right": "Higher density, smaller average follow-through."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "structural_difference_check",
+      "why_included": "Tests whether the same squeeze logic survives in a structurally more directional asset.",
+      "continue_if": "TAO 4h shows fewer but stronger persistence releases.",
+      "rotate_away_if": "TAO 4h proves the setup is redundant in an already trending market.",
+      "expected_if_right": "Low-to-moderate count, higher asymmetry on winners."
+    }
+  ],
+  "indicators": ["BB_WIDTH_20", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BB_WIDTH_20 <= rolling_percentile_20(BB_WIDTH_20, 80)",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= MINUS_DI_14",
+      "ADX_14 >= 13"
+    ],
+    "short": [
+      "BB_WIDTH_20 <= rolling_percentile_20(BB_WIDTH_20, 80)",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= PLUS_DI_14",
+      "ADX_14 >= 13"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Enter only if next bar closes >= EMA_20 and high exceeds prior bar high"
+    ],
+    "short": [
+      "Enter only if next bar closes <= EMA_20 and low breaks prior bar low"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.00 * ATR_14 below entry",
+      "Take profit: 0.70 * ATR_14 on 30% size",
+      "Trail remaining 70% by 0.95 * ATR_14",
+      "Time-based de-risk: cut 20% more after 6 bars if no 1.0 ATR expansion",
+      "Final time stop: 10 bars"
+    ],
+    "short": [
+      "Stop loss: 1.00 * ATR_14 above entry",
+      "Take profit: 0.70 * ATR_14 on 30% size",
+      "Trail remaining 70% by 0.95 * ATR_14",
+      "Time-based de-risk: cut 20% more after 6 bars if no 1.0 ATR expansion",
+      "Final time stop: 10 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

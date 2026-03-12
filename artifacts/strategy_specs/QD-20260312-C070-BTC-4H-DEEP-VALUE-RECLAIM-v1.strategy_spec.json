@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C070-BTC-4H-DEEP-VALUE-RECLAIM-v1",
+  "cycle_id": 70,
+  "family_name": "btc_4h_deep_value_reclaim_v070",
+  "name": "BTC 4h Deep Value Reclaim v1",
+  "asset": "BTC",
+  "timeframe": "4h",
+  "primary_asset": "BTC",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a deeper selloff into structural support reclaims value and resumes away from the failed downside auction",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "BTC 4h is nominally chop but the recent distribution is transition-heavy, which is exactly where deeper reclaim logic can work better than simple breakout chasing. The edge is not buying every dip. It is waiting for a failed downside auction to reclaim medium value and then participating only once that reclaim proves it can hold above the support/value zone.",
+  "invalidation_condition": "If deep reclaim attempts mostly stall back under medium value or the setup remains too sparse to clear screen density, the thesis fails.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "A downside sweep extends too far, price reclaims value and structural support, then rotates upward as trapped shorts unwind.",
+    "why_edge_should_exist": "In chop-to-transition conditions, failed downside auctions often mean revert harder than shallow pullbacks. Requiring value reclaim plus hold should avoid pure falling-knife entries while still catching the reset leg.",
+    "asset_timeframe_fit": "BTC 4h is the best fit because the cycle primary lane is chop/transition rather than strong trend, and deeper resets are more credible there than on the already-trending TAO lane.",
+    "indicator_role_map": {
+      "VWAP": "value reclaim line",
+      "EMA_55": "medium structure support/resistance anchor",
+      "ATR_14": "overshoot threshold and stop sizing",
+      "RSI_14": "reset exhaustion and recovery qualifier",
+      "ADX_14": "trend-exhaustion veto to avoid chasing mature trend"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "What looks like a reclaim may actually be a weak bounce inside a real trend-down continuation.",
+    "first_refinement_path": "If the setup trades but expectancy is weak, tighten time-based de-risking and bring the first scale-out closer before changing the reclaim logic.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Several modest reclaim rotations, some scratch trades, and occasional larger follow-through when the failed breakdown genuinely resolves upward.",
+    "what_would_count_as_success": "Screen stage clears density with positive post-cost first-target behavior on BTC 4h and at least one cross-lane shows the same reclaim mechanism.",
+    "what_would_count_as_failure": "0 trades, sub-15 trades, or repeated reclaim entries that lose VWAP/EMA_55 before reaching first scale-out.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "acceptable because the trigger is deep excursion plus reclaim, not a multi-step ceremony",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "BTC",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit lane for deep value reclaim in a chop/transition major.",
+      "continue_if": "BTC 4h shows enough reclaim rotations with positive first-target expectancy.",
+      "rotate_away_if": "BTC 4h reclaim attempts are too sparse or collapse back under value immediately.",
+      "expected_if_right": "Moderate participation with a mix of quick balance rotations and a few multi-bar recovery legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "similar_asset",
+      "why_included": "Checks whether the same reclaim logic survives on an even cleaner chop lane.",
+      "continue_if": "ETH 4h keeps non-sparse reclaim behavior after costs.",
+      "rotate_away_if": "ETH 4h turns too flat and the move size is too small to monetize.",
+      "expected_if_right": "Cleaner but smaller reclaim rotations than BTC."
+    },
+    {
+      "asset": "BTC",
+      "timeframe": "1h",
+      "role": "adjacent_timeframe",
+      "why_included": "Tests whether the mechanism gains density without becoming pure noise.",
+      "continue_if": "BTC 1h increases count without destroying expectancy.",
+      "rotate_away_if": "BTC 1h becomes hyperactive and turns the reclaim into overtrading noise.",
+      "expected_if_right": "Higher count, smaller reclaim rotations than BTC 4h."
+    }
+  ],
+  "indicators": ["VWAP", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= VWAP - 0.55 * ATR_14",
+      "Close >= VWAP",
+      "Close >= EMA_55 - 0.15 * ATR_14",
+      "RSI_14 >= 44",
+      "RSI_14 <= 58",
+      "ADX_14 <= 24"
+    ],
+    "short": [
+      "High >= VWAP + 0.55 * ATR_14",
+      "Close <= VWAP",
+      "Close <= EMA_55 + 0.15 * ATR_14",
+      "RSI_14 <= 56",
+      "RSI_14 >= 42",
+      "ADX_14 <= 24"
+    ]
+  },
+  "confirmation_rules": {
+    "long": [
+      "Next bar close remains >= VWAP"
+    ],
+    "short": [
+      "Next bar close remains <= VWAP"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.95 * ATR_14 below entry",
+      "Take profit: 0.70 * ATR_14 on 35% size",
+      "Take profit: 1.25 * ATR_14 on 35% size",
+      "Exit remaining 30% on close below VWAP or 6 bars",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.95 * ATR_14 above entry",
+      "Take profit: 0.70 * ATR_14 on 35% size",
+      "Take profit: 1.25 * ATR_14 on 35% size",
+      "Exit remaining 30% on close above VWAP or 6 bars",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}
