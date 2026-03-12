@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v3",
-  "ts_iso": "2026-03-12T07:38:20.267481+00:00",
+  "ts_iso": "2026-03-12T08:43:59.043837+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -8,7 +8,7 @@
     "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
   },
   "cycle_context": {
-    "cycle_id": 79,
+    "cycle_id": 81,
     "asset": "TAO",
     "timeframe": "4h",
     "mode": "explore",
@@ -17,28 +17,31 @@
   "decision_summary": {
     "pass": 0,
     "refine": 0,
-    "abort": 3,
+    "abort": 0,
     "zero_trade": 0
   },
   "diagnosis_breakdown": {
-    "bad idea": 3
+    "untested": 3
   },
   "dimensions": {
     "what_worked": [],
     "what_failed": [
-      "QD-20260312-C079-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: pending: no backtest outcome recorded yet",
-      "QD-20260312-C079-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: pending: no backtest outcome recorded yet",
-      "QD-20260312-C079-TAO-4H-ASYMMETRIC-CONTINUATION-v1: pending: no backtest outcome recorded yet"
+      "QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: insufficient evidence: no recorded backtest or queue outcome yet",
+      "QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: insufficient evidence: no recorded backtest or queue outcome yet",
+      "QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1: insufficient evidence: no recorded backtest or queue outcome yet"
     ],
     "why_it_failed": [
-      "QD-20260312-C079-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: bad idea",
-      "QD-20260312-C079-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: bad idea",
-      "QD-20260312-C079-TAO-4H-ASYMMETRIC-CONTINUATION-v1: bad idea"
+      "QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: untested",
+      "QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: untested",
+      "QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1: untested"
     ],
     "iterate_next": [
-      "decision QD-20260312-C079-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: pending: no backtest outcome recorded yet",
-      "decision QD-20260312-C079-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: pending: no backtest outcome recorded yet",
-      "decision QD-20260312-C079-TAO-4H-ASYMMETRIC-CONTINUATION-v1: pending: no backtest outcome recorded yet"
+      "QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: await tested evidence before deciding whether to refine or abort",
+      "decision QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1: pending: no backtest outcome recorded yet",
+      "QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: await tested evidence before deciding whether to refine or abort",
+      "decision QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1: pending: no backtest outcome recorded yet",
+      "QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1: await tested evidence before deciding whether to refine or abort",
+      "decision QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1: pending: no backtest outcome recorded yet"
     ],
     "abandon": [],
     "bench_for_later": [],
@@ -50,14 +53,14 @@
     "management_notes": [],
     "strategy_reviews": [
       {
-        "strategy_spec_id": "QD-20260312-C079-DOGE-4H-RETEST-HOLD-TIMEOUT-v1",
+        "strategy_spec_id": "QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1",
         "asset": "DOGE",
         "timeframe": "4h",
-        "edge_mechanism": "a structural break is retested and held, but exposure is cut by time if expansion does not appear quickly, avoiding slow bleed continuation trades",
-        "hypothesis": "Cycle 79 explicitly asks for retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough. DOGE 4h is the best-fit lane because transition structure should produce retests with enough activity to test timeout discipline without forcing 1h noise. The edge is the held retest plus strict time discipline, not passive hope.",
-        "diagnosis_category": "bad idea",
-        "decision": "abort",
-        "decision_rationale": "pending: no backtest outcome recorded yet",
+        "edge_mechanism": "a structural break is retested and held, but exposure is cut by time if expansion does not appear quickly, reducing slow-bleed continuation trades",
+        "hypothesis": "The timeout-managed retest idea itself is still worth one cleaner test, but the last cycle showed ETH was the wrong ownership lane and the trigger/management mix produced a bad idea. DOGE 4h is the better home because transition structure should print more accepted retests while still making the timeout logic do real work. The edge is the held retest plus strict time discipline, not passive hope.",
+        "diagnosis_category": "untested",
+        "decision": "untested",
+        "decision_rationale": "insufficient evidence: no recorded backtest or queue outcome yet",
         "why_asset": "asset=DOGE from chosen lane / result context",
         "why_timeframe": "timeframe=4h from chosen lane / result context",
         "queue_evidence": [],
@@ -86,14 +89,14 @@
         "latest_result": {}
       },
       {
-        "strategy_spec_id": "QD-20260312-C079-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1",
+        "strategy_spec_id": "QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1",
         "asset": "DOGE",
         "timeframe": "4h",
-        "edge_mechanism": "price recovers short-term value after a flush, confirmation improves across bars, and exposure is built in stages instead of one-shot timing",
-        "hypothesis": "Cycle 79 explicitly asks for scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing. DOGE 4h is the best-fit lane because the regime is live transition and should produce more flush-and-recovery sequences than TAO trend-up or ETH pure chop. The edge is adding only as recovery proves itself, not guessing the first bounce.",
-        "diagnosis_category": "bad idea",
-        "decision": "abort",
-        "decision_rationale": "pending: no backtest outcome recorded yet",
+        "edge_mechanism": "price flushes away from short-term value, reclaims value, confirmation improves across bars, and exposure is built in stages instead of all at once",
+        "hypothesis": "The last five cycles say sparse continuation theater is dead and pure management experiments on weak triggers are worse. DOGE 4h remains the best live lane for a denser recovery mechanism because it is transition-heavy enough to create repeated flush-and-reclaim sequences without forcing anti-trend ETH chop or late TAO continuation. The edge is staged participation only after recovery proves itself.",
+        "diagnosis_category": "untested",
+        "decision": "untested",
+        "decision_rationale": "insufficient evidence: no recorded backtest or queue outcome yet",
         "why_asset": "asset=DOGE from chosen lane / result context",
         "why_timeframe": "timeframe=4h from chosen lane / result context",
         "queue_evidence": [],
@@ -122,14 +125,14 @@
         "latest_result": {}
       },
       {
-        "strategy_spec_id": "QD-20260312-C079-TAO-4H-ASYMMETRIC-CONTINUATION-v1",
+        "strategy_spec_id": "QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1",
         "asset": "TAO",
         "timeframe": "4h",
-        "edge_mechanism": "continuation is entered after directional reset, but trigger, risk, and exit roles are deliberately separated so the trade can survive noise while preserving asymmetric payoff",
-        "hypothesis": "Cycle 79 explicitly wants trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles. TAO 4h is the best-fit lane because it is the only allowed lane with enough trend contamination to justify asymmetric continuation. The research variable is role separation: trigger, risk, and exit must do different jobs instead of collapsing into one indicator stack.",
-        "diagnosis_category": "bad idea",
-        "decision": "abort",
-        "decision_rationale": "pending: no backtest outcome recorded yet",
+        "edge_mechanism": "continuation is entered after a reset-and-reclaim sequence, but trigger, risk, and exit roles are kept deliberately separate so winners have room to pay for losers",
+        "hypothesis": "Asymmetric continuation is still only worth testing where trend structure can plausibly support it, and that remains TAO 4h. But the last cycle showed the prior version was simply a bad idea, so this version simplifies the trigger into reset-and-reclaim instead of letting a boundary-touch pretend to be continuation. The edge is cleaner role separation plus a structurally earlier continuation location.",
+        "diagnosis_category": "untested",
+        "decision": "untested",
+        "decision_rationale": "insufficient evidence: no recorded backtest or queue outcome yet",
         "why_asset": "asset=TAO from chosen lane / result context",
         "why_timeframe": "timeframe=4h from chosen lane / result context",
         "queue_evidence": [],
@@ -160,8 +163,8 @@
     ]
   },
   "journal_excerpt": [
-    "# Quandalf Journal \u2014 Cycle 78",
-    "- ts_iso: 2026-03-12T07:15:54.685689+00:00",
+    "# Quandalf Journal \u2014 Cycle 81",
+    "- ts_iso: 2026-03-12T08:42:33.998243+00:00",
     "- mode: explore",
     "- lane: TAO / 4h",
     "- research_direction: explore_new",
@@ -169,7 +172,7 @@
     "{",
     "\"pass\": 0,",
     "\"refine\": 0,",
-    "\"abort\": 3,"
+    "\"abort\": 0,"
   ],
   "learning_requirements": [
     "Every cycle must yield diagnosis, lesson extraction, and durable learning update.",
@@ -178,61 +181,6 @@
     "PASS should flow into structured refinement variants, not cosmetic tweaks."
   ],
   "rolling_recent_cycles": [
-    {
-      "cycle_id": 75,
-      "ts_iso": "2026-03-12T07:02:22.065076+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "BTC",
-        "ETH",
-        "TAO"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 9,
-      "queue_decided_total": 9,
-      "result_total": 3,
-      "decision_summary": {
-        "pass": 0,
-        "refine": 0,
-        "abort": 3,
-        "zero_trade": 2
-      },
-      "diagnosis_breakdown": {
-        "too sparse": 2,
-        "bad idea": 1
-      }
-    },
-    {
-      "cycle_id": 76,
-      "ts_iso": "2026-03-12T07:06:32.880048+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "BTC",
-        "ETH",
-        "TAO"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 9,
-      "queue_decided_total": 9,
-      "result_total": 1,
-      "decision_summary": {
-        "pass": 0,
-        "refine": 0,
-        "abort": 3,
-        "zero_trade": 3
-      },
-      "diagnosis_breakdown": {
-        "too sparse": 3
-      }
-    },
     {
       "cycle_id": 77,
       "ts_iso": "2026-03-12T07:11:07.422069+00:00",
@@ -314,6 +262,60 @@
       "diagnosis_breakdown": {
         "bad idea": 3
       }
+    },
+    {
+      "cycle_id": 80,
+      "ts_iso": "2026-03-12T08:29:41.989394+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "DOGE",
+        "ETH",
+        "TAO"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 9,
+      "queue_decided_total": 9,
+      "result_total": 5,
+      "decision_summary": {
+        "pass": 0,
+        "refine": 0,
+        "abort": 3,
+        "zero_trade": 1
+      },
+      "diagnosis_breakdown": {
+        "too sparse": 1,
+        "bad idea": 2
+      }
+    },
+    {
+      "cycle_id": 81,
+      "ts_iso": "2026-03-12T08:43:59.043798+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "DOGE",
+        "TAO"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 0,
+      "queue_decided_total": 0,
+      "result_total": 0,
+      "decision_summary": {
+        "pass": 0,
+        "refine": 0,
+        "abort": 0,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "untested": 3
+      }
     }
   ],
   "rolling_insights": {
@@ -322,19 +324,19 @@
       "cycles_considered": 5,
       "pass": 0,
       "refine": 0,
-      "abort": 15,
-      "zero_trade": 8,
+      "abort": 12,
+      "zero_trade": 4,
       "strategies": 15,
-      "queue_rows": 36,
-      "queue_rows_decided": 36,
-      "saved_results": 12
+      "queue_rows": 27,
+      "queue_rows_decided": 27,
+      "saved_results": 13
     },
     "diagnosis_breakdown": {
-      "too sparse": 8,
-      "bad idea": 7
+      "bad idea": 8,
+      "too sparse": 4,
+      "untested": 3
     },
     "assets_touched": [
-      "BTC",
       "DOGE",
       "ETH",
       "SOL",
@@ -343,6 +345,7 @@
     "timeframes_touched": [
       "1h",
       "4h"
-    ]
+    ],
+    "note": "untested items are tracked separately and must not be treated as strategic failure judgments"
   }
 }

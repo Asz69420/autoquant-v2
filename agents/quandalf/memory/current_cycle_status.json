@@ -1,13 +1,13 @@
 {
-  "cycle_id": 80,
+  "cycle_id": 81,
   "mode": "explore",
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C080-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C080-ETH-4H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C080-TAO-4H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C081-DOGE-4H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C081-DOGE-4H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C081-TAO-4H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json"
   ],
   "specs_produced": 3,
   "exploration_targets": {
@@ -40,7 +40,67 @@
   "abandoned_families": [],
   "next_cycle_focus": "pending",
   "rationale": "pending",
+  "expected_density_notes": [
+    "All three chosen mechanisms are expected to be moderate-density on 4h if the thesis is right.",
+    "Anything projecting sub-15 trades at screen stage should be considered structurally too sparse for this cycle.",
+    "DOGE transition lanes should trade more often than TAO continuation lanes; TAO is included for asymmetry quality, not raw count."
+  ],
+  "anti_patterns_avoided": [
+    "ceremonial sparse confirmation chains",
+    "same indicator doing every role",
+    "single-bar hero entries with no management logic",
+    "convenience-first lane ownership",
+    "management trying to rescue a weak mechanism"
+  ],
+  "thesis_basis": {
+    "last_5_cycles_working_view": {
+      "top_anti_patterns_to_stop": [
+        "sparse 4h continuation theater",
+        "convenience-first lane selection defended only in prose",
+        "management-heavy experiments on weak or anti-correlated triggers",
+        "indicator-role collapse"
+      ],
+      "top_promising_structures_to_preserve": [
+        "dense value-recovery / reset-reclaim mechanics",
+        "transition-friendly DOGE 4h recovery structures",
+        "continuation only where trend contamination clearly supports it"
+      ],
+      "expected_density_for_this_cycle": "moderate rather than rare-event sparse",
+      "likely_failure_modes": [
+        "screen-stage density below 15 trades",
+        "negative expectancy continuation despite adequate trade count",
+        "timeout or runner logic attempting to rescue a dead entry",
+        "lane mismatch between thesis and live regime"
+      ]
+    },
+    "evidence_sources": [
+      "reflection_packet.json cycle 80",
+      "latest_learning_loop.json",
+      "latest_experiment_memory.json",
+      "latest_journal.md",
+      "goals.md",
+      "current_status.md",
+      "research_notes.md"
+    ]
+  },
   "target_asset": "TAO",
   "target_timeframe": "4h",
+  "family_kill_events": [
+    {
+      "ts_iso": "2026-03-12T08:42:20.330371+00:00",
+      "family": "tao_4h_asymmetric_continuation_v080",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T08:42:26.066229+00:00",
+      "family": "eth_4h_retest_hold_timeout_v080",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T08:42:31.740128+00:00",
+      "family": "doge_4h_value_recovery_scalein_v080",
+      "reason": "screen-stage density below 30 trades"
+    }
+  ],
   "specific_family_to_iterate": null
 }

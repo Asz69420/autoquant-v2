@@ -106,20 +106,38 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
         if item.get('has_zero_trade_signal'):
             decision_summary['zero_trade'] += 1
 
-        diagnosis = str(item.get('diagnosis_category') or 'unknown').strip() or 'unknown'
-        diagnosis_breakdown[diagnosis] = diagnosis_breakdown.get(diagnosis, 0) + 1
+        train_result = item.get('train_result') or {}
+        test_results = item.get('test_results') or []
+        latest_result = item.get('latest_result') or {}
+        queue_evidence_present = bool(item.get('queue') or [])
+        result_evidence_present = bool(results or latest_result)
+        enough_evidence = result_evidence_present or queue_evidence_present
 
+        diagnosis = str(item.get('diagnosis_category') or 'unknown').strip() or 'unknown'
         rationale = str(item.get('rationale') or '').strip()
         action = str(item.get('recommended_action') or item.get('outcome') or 'unknown').strip().lower()
+
+        if not enough_evidence:
+            diagnosis = 'untested'
+            action = 'untested'
+            rationale = 'insufficient evidence: no recorded backtest or queue outcome yet'
+
+        diagnosis_breakdown[diagnosis] = diagnosis_breakdown.get(diagnosis, 0) + 1
+
         if action in ('pass', 'refine'):
             what_worked.append(f"{spec_id}: {rationale}")
+        elif action == 'untested':
+            what_failed.append(f"{spec_id}: {rationale}")
+            why_it_failed.append(f"{spec_id}: untested")
         else:
             what_failed.append(f"{spec_id}: {rationale}")
             why_it_failed.append(f"{spec_id}: {diagnosis}")
 
-        if item.get('allowed_next_actions'):
+        if enough_evidence and item.get('allowed_next_actions'):
             iterate_next.append(f"{spec_id}: allowed next actions -> {', '.join(item.get('allowed_next_actions') or [])}")
-        if action == 'abort':
+        elif not enough_evidence:
+            iterate_next.append(f"{spec_id}: await tested evidence before deciding whether to refine or abort")
+        if enough_evidence and action == 'abort':
             abandon.append(f"{spec_id}: {diagnosis}")
 
         for variant in item.get('variants') or []:
@@ -130,13 +148,13 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
 
         matched_decision = decision_by_spec.get(spec_id) or {}
         decision = str(matched_decision.get('decision') or '').strip().lower()
-        if decision in ('pass', 'refine', 'abort'):
+        if enough_evidence and decision in ('pass', 'refine', 'abort'):
             decision_summary[decision] += 1
         queue_decisions = matched_decision.get('queue_decisions') or []
         if isinstance(queue_decisions, list):
             decided_queue_total += len(queue_decisions)
         diag = str(matched_decision.get('diagnosis_category') or '').strip()
-        if diag:
+        if enough_evidence and diag:
             why_it_failed.append(f"{spec_id}: {diag}")
         decision_rationale = str(matched_decision.get('rationale') or '').strip()
         if decision_rationale:
@@ -152,19 +170,16 @@ def summarize_current_cycle(reflection, decisions, status, journal_text):
             if queue_id and (qdecision or qrationale):
                 queue_evidence.append(f"{queue_id}={qdecision or 'n/a'} ({qrationale or 'no rationale'})")
 
-        train_result = item.get('train_result') or {}
-        test_results = item.get('test_results') or []
         stage_metrics = item.get('stage_metrics') or {}
-        latest_result = item.get('latest_result') or {}
         strategy_reviews.append({
             'strategy_spec_id': spec_id,
             'asset': item.get('asset'),
             'timeframe': item.get('timeframe'),
             'edge_mechanism': item.get('edge_mechanism'),
             'hypothesis': item.get('hypothesis'),
-            'diagnosis_category': diag or diagnosis,
-            'decision': decision or action,
-            'decision_rationale': decision_rationale or rationale,
+            'diagnosis_category': ('untested' if not enough_evidence else (diag or diagnosis)),
+            'decision': ('untested' if not enough_evidence else (decision or action)),
+            'decision_rationale': ('insufficient evidence: no recorded backtest or queue outcome yet' if not enough_evidence else (decision_rationale or rationale)),
             'why_asset': f"asset={item.get('asset') or 'unknown'} from chosen lane / result context",
             'why_timeframe': f"timeframe={item.get('timeframe') or 'unknown'} from chosen lane / result context",
             'queue_evidence': queue_evidence,
@@ -299,6 +314,7 @@ def build_rolling_insights(recent_cycles):
         'diagnosis_breakdown': diagnosis_totals,
         'assets_touched': sorted(assets),
         'timeframes_touched': sorted(timeframes),
+        'note': 'untested items are tracked separately and must not be treated as strategic failure judgments',
     }
 
 
@@ -360,12 +376,22 @@ def build_journal_text(payload):
         "## What Worked",
     ]
     journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('what_worked', [])] or ["- none"])
+    awaiting = [x for x in (dims.get('what_failed', []) or []) if 'insufficient evidence' in str(x).lower() or 'untested' in str(x).lower()]
+    failed = [x for x in (dims.get('what_failed', []) or []) if x not in awaiting]
+    judged = [x for x in (dims.get('why_it_failed', []) or []) if 'untested' not in str(x).lower()]
+    awaiting_next = [x for x in (dims.get('iterate_next', []) or []) if 'await tested evidence' in str(x).lower()]
+    improve_next = [x for x in (dims.get('iterate_next', []) or []) if x not in awaiting_next]
+
+    journal_lines.extend(["", "## Awaiting Evidence"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in awaiting] or ["- none"])
     journal_lines.extend(["", "## What Failed"])
-    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('what_failed', [])] or ["- none"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in failed] or ["- none"])
     journal_lines.extend(["", "## Why I Judged It That Way"])
-    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('why_it_failed', [])] or ["- none"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in judged] or ["- none"])
     journal_lines.extend(["", "## What I Would Improve Next"])
-    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in dims.get('iterate_next', [])] or ["- none"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in improve_next] or ["- none"])
+    journal_lines.extend(["", "## What Still Needs Testing"])
+    journal_lines.extend([f"- {normalize_first_person_line(x)}" for x in awaiting_next] or ["- none"])
     journal_lines.extend(["", "## Strategy-by-Strategy Reasons"])
     reviews = dims.get('strategy_reviews') or []
     if reviews:
