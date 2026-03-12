@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -16,6 +17,9 @@ SPECS_DIR = ROOT / "artifacts" / "strategy_specs"
 BRIEFING_PATH = ROOT / "agents" / "quandalf" / "memory" / "briefing_packet.json"
 STATUS_PATH = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
 ORDERS_PATH = ROOT / "agents" / "quandalf" / "memory" / "cycle_orders.json"
+REFLECTION_PATH = ROOT / "agents" / "quandalf" / "memory" / "reflection_packet.json"
+CAPTURE_WAIT_SECONDS = 150
+CAPTURE_POLL_SECONDS = 3
 
 
 def load_json(path: Path) -> dict:
@@ -62,6 +66,16 @@ def spec_matches_orders(path: Path, target_asset: str, target_timeframe: str, al
     if target_timeframe and timeframe != target_timeframe:
         return False
     return True
+
+
+def maybe_refresh_reflection(cycle_id: int) -> None:
+    try:
+        payload = load_json(REFLECTION_PATH)
+        if int(payload.get("cycle_id", 0) or 0) == int(cycle_id):
+            return
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "build-reflection-packet.py")], capture_output=True, text=True, timeout=60)
+    except Exception:
+        pass
 
 
 def main() -> int:

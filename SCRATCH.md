@@ -1,1 +1,1 @@
-Build train->test chain in one cycle: train gate with QS/trade thresholds, staged 3-window tests, fail-fast progression, result recording, and corrected cycle/log-card semantics.
+Fix end-to-end automation chain: research -> capture -> lanes -> backtest -> reflection -> decisions -> postprocess/log card -> next cycle, and remove stale-state/manual-shove bugs.
