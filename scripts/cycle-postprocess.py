@@ -476,6 +476,13 @@ def normalize_spec_id(value):
     return base
 
 
+def normalize_card_decision_labels(text):
+    value = str(text or "")
+    if not value:
+        return value
+    return value
+
+
 def unique_preserve(seq):
     seen = set()
     out = []
@@ -2124,6 +2131,28 @@ def main():
                 ),
                 task_ids=["TASK-0004"],
             )
+
+        cycle_state = load_cycle_state()
+        cycle_phase = str(cycle_state.get("phase") or "")
+        queue_pending = int(metrics.get("queue_pending", 0) or 0)
+        queue_running = int(metrics.get("queue_running", 0) or 0)
+        queue_terminal_failures = int(metrics.get("queue_terminal_failures", 0) or 0)
+        queue_integrity_skips = int(metrics.get("queue_integrity_skips", 0) or 0)
+        canonical_phase = str(metrics.get("canonical_phase") or "")
+        decisions_closed = canonical_phase in {"decisions_ready", "completed"} or cycle_phase in {"decisions_ready", "completed"}
+        run_finished = str(run_state.get("status") or "") == "completed"
+        if cycle_id and decisions_closed and run_finished and queue_pending == 0 and queue_running == 0:
+            decisions_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
+            decision_count = len(decisions_payload.get("strategy_decisions") or []) if isinstance(decisions_payload, dict) else 0
+            advance_cycle(
+                cycle_id,
+                PHASE_COMPLETED,
+                result_count=int(metrics.get("backtests_completed", 0) or 0),
+                decision_count=decision_count,
+                log_card_sent=bool(sent),
+                notes=list(cycle_state.get("notes") or []),
+            )
+
         print(json.dumps({"status": "card_sent_waiting" if sent else "no_new_results", "since_minutes": a.since_minutes, "total_in_db": total_rows, "new_backtests": new_backtests, "cycle_id": cycle_id, "run_state": run_state, "card_metrics": metrics}))
         return
 
