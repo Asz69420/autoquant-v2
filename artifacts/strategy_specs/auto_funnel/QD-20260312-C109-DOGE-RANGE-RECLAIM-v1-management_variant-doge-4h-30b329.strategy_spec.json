@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260312-C109-DOGE-RANGE-RECLAIM-v1-management_variant-doge-4h-30b329",
+  "ts_iso": "2026-03-12T23:17:43.390114+00:00",
+  "thesis_id": "qd-20260312-c109-doge-range-reclaim-v1_thesis",
+  "name": "DOGE Range Reclaim v1 [management_variant DOGE/4h]",
+  "version": "1.0",
+  "asset": "DOGE",
+  "timeframe": "4h",
+  "family_name": "doge_range_reclaim",
+  "thesis": "range reclaim continuation after false breakdown and value recovery",
+  "primary_asset": "DOGE",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "DOGE",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "range reclaim continuation after false breakdown and value recovery",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If doge_range_reclaim cannot clear the trade floor or PF > 1 after costs on DOGE 4h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "ATR_14",
+    "RSI_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "RSI_14 >= 46",
+      "ADX_14 <= 28"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "RSI_14 <= 54",
+      "ADX_14 <= 28"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.0 * ATR_14 below entry",
+      "Take profit: 2.0 * ATR_14 above entry",
+      "Exit if Close crosses_below EMA_20"
+    ],
+    "short": [
+      "Stop loss: 1.0 * ATR_14 above entry",
+      "Take profit: 2.0 * ATR_14 below entry",
+      "Exit if Close crosses_above EMA_20"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "trade_management": {
+    "entry_style": "one_shot",
+    "exit_style": "trailing",
+    "position_stages": [
+      {
+        "action": "entry",
+        "trigger": "signal",
+        "size_pct": 100
+      },
+      {
+        "action": "exit",
+        "trigger": "trailing_stop",
+        "size_pct": 100
+      }
+    ],
+    "risk_management": {
+      "initial_stop": "1.0 ATR",
+      "trailing_stop": "1.5 ATR",
+      "time_stop_bars": null,
+      "breakeven_trigger": "0.5R",
+      "partial_tp_levels": []
+    }
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple DOGE 4h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "doge_range_reclaim_v1_trailing",
+      "template_name": "range_reclaim",
+      "parameters": [
+        {
+          "name": "ema_anchor",
+          "value": 20
+        },
+        {
+          "name": "adx_cap",
+          "value": 28
+        },
+        {
+          "name": "rsi_mid",
+          "value": 50
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.0,
+        "tp_type": "open",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 20
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "funnel_autobranch",
+  "fallback_source": true,
+  "research_mode": "fallback",
+  "parent_id": "wf_322ad74df24a",
+  "mutation_type": "management_variant",
+  "family_generation": 2
+}

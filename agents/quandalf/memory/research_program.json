@@ -1,6 +1,6 @@
 {
-  "ts_iso": "2026-03-12T23:10:35.778122+00:00",
-  "cycle_id": 109,
+  "ts_iso": "2026-03-12T23:41:16.436904+00:00",
+  "cycle_id": 113,
   "search_priorities": [
     "mechanism-first research",
     "lane choice justified by thesis",
@@ -9,13 +9,18 @@
   ],
   "active_hypotheses": [
     {
-      "concept": "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "primary_lane": "DOGE/4h",
+      "concept": "opening-range or session-window continuation when a specific session structurally dominates follow-through",
+      "primary_lane": "SOL/4h",
       "allowed_basket": [
         {
-          "asset": "DOGE",
+          "asset": "SOL",
           "timeframe": "4h",
           "role": "primary"
+        },
+        {
+          "asset": "SOL",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
         },
         {
           "asset": "ETH",
@@ -32,13 +37,18 @@
       "rotation_criteria": "0-trade, wrong-regime, wrong-lane, or too-sparse diagnosis"
     },
     {
-      "concept": "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "primary_lane": "DOGE/4h",
+      "concept": "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
+      "primary_lane": "SOL/4h",
       "allowed_basket": [
         {
-          "asset": "DOGE",
+          "asset": "SOL",
           "timeframe": "4h",
           "role": "primary"
+        },
+        {
+          "asset": "SOL",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
         },
         {
           "asset": "ETH",
@@ -55,13 +65,18 @@
       "rotation_criteria": "0-trade, wrong-regime, wrong-lane, or too-sparse diagnosis"
     },
     {
-      "concept": "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough",
-      "primary_lane": "DOGE/4h",
+      "concept": "post-expansion partial-profit runner structure that keeps a core position for trend persistence",
+      "primary_lane": "SOL/4h",
       "allowed_basket": [
         {
-          "asset": "DOGE",
+          "asset": "SOL",
           "timeframe": "4h",
           "role": "primary"
+        },
+        {
+          "asset": "SOL",
+          "timeframe": "1h",
+          "role": "adjacent_timeframe"
         },
         {
           "asset": "ETH",
@@ -87,12 +102,17 @@
   "lane_rotation_policy": {
     "use_validation_basket": true,
     "rotate_when_concentration_high": true,
-    "current_primary_lane": "DOGE/4h",
+    "current_primary_lane": "SOL/4h",
     "allowed_basket": [
       {
-        "asset": "DOGE",
+        "asset": "SOL",
         "timeframe": "4h",
         "role": "primary"
+      },
+      {
+        "asset": "SOL",
+        "timeframe": "1h",
+        "role": "adjacent_timeframe"
       },
       {
         "asset": "ETH",
