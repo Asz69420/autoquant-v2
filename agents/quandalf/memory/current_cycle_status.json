@@ -1,26 +1,50 @@
 {
-  "cycle_id": 65,
-  "mode": "pending",
-  "research_direction": "pending",
+  "cycle_id": 66,
+  "mode": "explore",
+  "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-ETH-1H-VALUE-RECOVERY-SCALEIN-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-BTC-1H-ASYMMETRIC-CONTINUATION-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-AXS-1H-RETEST-HOLD-TIMEOUT-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-ETH-1H-FAILED-AUCTION-REACCEPTANCE-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-BTC-1H-RESET-THEN-GO-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C064-AXS-1H-EXPANSION-FAILURE-ROTATION-v1.strategy_spec.json"
-  ],
-  "specs_produced": 6,
-  "exploration_targets": {},
+  "spec_paths": [],
+  "specs_produced": 0,
+  "exploration_targets": {
+    "concepts": [
+      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+      "compression fakeout into re-expansion with directional confirmation"
+    ],
+    "management_styles": [
+      "one-shot entry with one-shot exit",
+      "one-shot entry with partial take-profit and runner",
+      "one-shot entry with trailing-stop exit",
+      "time-based de-risking after entry",
+      "scaled-out exits after confirmation",
+      "scale-in on improved confirmation, then scale-out into expansion",
+      "partial-profit first target with runner managed by structure instead of fixed take-profit only"
+    ],
+    "assets": [
+      "AXS",
+      "ETH",
+      "TAO"
+    ],
+    "timeframes": [
+      "4h"
+    ]
+  },
   "iterate_target": null,
-  "new_families": [],
+  "new_families": [
+    "eth_4h_range_failure_reacceptance_v066",
+    "tao_4h_deep_reset_continuation_v066",
+    "axs_4h_compression_fakeout_reexpansion_v066"
+  ],
   "iterated_families": [],
-  "abandoned_families": [],
-  "next_cycle_focus": "pending",
-  "rationale": "pending",
-  "target_asset": "BTC",
-  "target_timeframe": "1h",
+  "abandoned_families": [
+    "tao_4h_state_change_hold_expansion_v062",
+    "eth_4h_exhaustion_reacceptance_rotation_v062",
+    "axs_4h_delayed_retest_continuation_v062"
+  ],
+  "next_cycle_focus": "Keep only mechanisms that prove non-sparse participation on their best-fit lane. If deep-reset continuation is still too thin on TAO, rotate away from continuation and lean harder into reacceptance and failed-auction families. If ETH range-failure and AXS fakeout re-expansion both trade credibly, refine management before altering base trigger grammar.",
+  "rationale": "Cycle 66 is an explore cycle inside a strict AXS/ETH/TAO 4h basket with explicit concept targets: range-failure reversal, deeper pullback reset continuation, and compression fakeout re-expansion. The live authority files also explicitly warn against sparse decorative logic and permit best-fit lane choice across the basket. This batch therefore assigns each mechanism to the lane where it is most plausible: ETH 4h for failed-auction reacceptance in pure chop, TAO 4h for deeper reset continuation because it is the only lane with live trend-up contamination, and AXS 4h for fakeout-reexpansion because it is the transition-heavy structurally different lane. The three specs are materially distinct by mechanism, indicator role assignment, and exit structure while remaining strictly inside the supported/fetchable universe.",
+  "target_asset": "TAO",
+  "target_timeframe": "4h",
   "specific_family_to_iterate": null
 }

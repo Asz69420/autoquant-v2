@@ -1519,22 +1519,38 @@ def run_parallel_cycle(conn, cycle_id=None, dry_run=False, parent_run_id=None, m
         current_bucket_used = {k: 0 for k in quotas}
         stage_progress = {"screen": len(screen_jobs), "full": len(full_jobs), "validation": len(validation_jobs)}
     else:
-        screen_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, {k: 0 for k in quotas}, {"screen": 0, "full": 0, "validation": 0}, allow_bucket_override=False))
-        mark_running(conn, screen_jobs)
-        finalize_results(run_stage_jobs(screen_jobs, concurrency=min(SCREEN_CONCURRENCY_CAP, max_parallel or SCREEN_CONCURRENCY_CAP)))
-
         current_bucket_used = {k: 0 for k in quotas}
-        for item in screen_jobs:
-            current_bucket_used[item["bucket"]] += 1
-        stage_progress = {"screen": len(screen_jobs), "full": 0, "validation": 0}
+        stage_progress = {"screen": 0, "full": 0, "validation": 0}
+        screen_jobs = []
+        full_jobs = []
+        validation_jobs = []
 
-        full_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=False))
-        mark_running(conn, full_jobs)
-        finalize_results(run_stage_jobs(full_jobs, concurrency=min(FULL_CONCURRENCY_CAP, max_parallel or FULL_CONCURRENCY_CAP)))
+        while True:
+            loop_progress = 0
 
-        validation_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=False))
-        mark_running(conn, validation_jobs)
-        finalize_results(run_stage_jobs(validation_jobs, concurrency=min(VALIDATION_CONCURRENCY_CAP, max_parallel or VALIDATION_CONCURRENCY_CAP)))
+            next_screen_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="screen"), "screen", quotas, current_bucket_used, stage_progress, allow_bucket_override=True))
+            if next_screen_jobs:
+                screen_jobs.extend(next_screen_jobs)
+                mark_running(conn, next_screen_jobs)
+                finalize_results(run_stage_jobs(next_screen_jobs, concurrency=min(SCREEN_CONCURRENCY_CAP, max_parallel or SCREEN_CONCURRENCY_CAP)))
+                loop_progress += len(next_screen_jobs)
+
+            next_full_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="full"), "full", quotas, current_bucket_used, stage_progress, allow_bucket_override=True))
+            if next_full_jobs:
+                full_jobs.extend(next_full_jobs)
+                mark_running(conn, next_full_jobs)
+                finalize_results(run_stage_jobs(next_full_jobs, concurrency=min(FULL_CONCURRENCY_CAP, max_parallel or FULL_CONCURRENCY_CAP)))
+                loop_progress += len(next_full_jobs)
+
+            next_validation_jobs = clip_jobs(pick_stage_batch(conn, fetch_candidates(conn, cycle_id=cycle_id, stage="validation"), "validation", quotas, current_bucket_used, stage_progress, allow_bucket_override=True))
+            if next_validation_jobs:
+                validation_jobs.extend(next_validation_jobs)
+                mark_running(conn, next_validation_jobs)
+                finalize_results(run_stage_jobs(next_validation_jobs, concurrency=min(VALIDATION_CONCURRENCY_CAP, max_parallel or VALIDATION_CONCURRENCY_CAP)))
+                loop_progress += len(next_validation_jobs)
+
+            if loop_progress <= 0:
+                break
 
     used_summary = {
         "screen": len(screen_jobs),

@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1",
+  "cycle_id": 66,
+  "family_name": "eth_4h_range_failure_reacceptance_v066",
+  "name": "ETH 4h Range Failure Reacceptance v1",
+  "asset": "ETH",
+  "timeframe": "4h",
+  "primary_asset": "ETH",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "a push beyond a local range fails to gain acceptance, price re-enters balance, and rotates back toward deeper value in a chop-heavy tape",
+  "expected_regime": "CHOP",
+  "thesis": "The cycle asks for a range-failure reversal after a multi-bar breakout loses acceptance. ETH 4h is the best-fit lane because it is the cleanest pure-chop regime in the basket. The edge is not fading every breakout mechanically; it is entering only after price clearly reaccepts balance following a failed edge auction.",
+  "invalidation_condition": "If failed edge auctions do not occur often enough, or if reacceptance still fails to generate enough move toward balance after costs, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Price pushes beyond a local range edge, cannot hold there, closes back into balance, and rotates toward the range center / deeper value.",
+    "why_edge_should_exist": "In a 100% chop environment, failed directional edge auctions should outnumber genuine breakouts. Reacceptance after the failed push is a structural expression of that behavior.",
+    "asset_timeframe_fit": "ETH 4h is the best fit because it is the cleanest chop lane in the basket and should offer enough distance per move to clear costs without relying on large runners.",
+    "indicator_role_map": {
+      "DONCHIAN_20": "range edge detector",
+      "VWAP": "reacceptance / value line",
+      "EMA_55": "deeper balance target",
+      "ATR_14": "overshoot threshold and stop normalization",
+      "RSI_14": "stretch qualifier",
+      "ADX_14": "trend-strength veto"
+    },
+    "expected_regime": "CHOP",
+    "likely_failure_mode": "What looks like failed acceptance may actually be a brief pause before a genuine breakout continuation.",
+    "first_refinement_path": "If density is healthy but expectancy is weak, reduce target ambition and shorten the holding window before changing the trigger.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "Regular first-target captures, fewer full rotations to deeper balance, low reliance on runners.",
+    "what_would_count_as_success": "Screen shows non-sparse failed-edge reacceptance trades and at least one cross-lane preserves the same structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trade screen output, or repeated entries that immediately relaunch in breakout direction.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low",
+      "event_sparsity": "moderate but denser than ceremonial continuation logic because the setup is overshoot plus reacceptance",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "validation_basket": [
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit pure-chop lane for failed-range reacceptance.",
+      "continue_if": "ETH 4h shows enough failed-edge reacceptance events with post-cost first-target behavior.",
+      "rotate_away_if": "ETH 4h still treats range edges as genuine breakouts too often.",
+      "expected_if_right": "Moderate participation with repeated balance recoveries and occasional deeper rotations."
+    },
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "structurally_different_asset",
+      "why_included": "Checks whether the same failed-auction logic survives on a noisier lane.",
+      "continue_if": "AXS 4h still shows failed edge reacceptance with enough structure.",
+      "rotate_away_if": "AXS 4h turns the concept into noise.",
+      "expected_if_right": "Higher amplitude, noisier reacceptance than ETH."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "trend_contamination_check",
+      "why_included": "Tests whether the same failed-auction idea survives on the lane with some trend-up contamination.",
+      "continue_if": "TAO 4h still shows failed edge reversions with enough structure.",
+      "rotate_away_if": "TAO 4h confirms that the mechanism is too anti-trend there.",
+      "expected_if_right": "Lower count, larger mean-reversion legs than ETH."
+    }
+  ],
+  "indicators": ["DONCHIAN_20", "VWAP", "EMA_55", "ATR_14", "RSI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "Low <= DONCHIAN_LOW_20 - 0.18 * ATR_14",
+      "Close >= VWAP",
+      "RSI_14 >= 42",
+      "RSI_14 <= 58",
+      "ADX_14 <= 23"
+    ],
+    "short": [
+      "High >= DONCHIAN_HIGH_20 + 0.18 * ATR_14",
+      "Close <= VWAP",
+      "RSI_14 <= 58",
+      "RSI_14 >= 42",
+      "ADX_14 <= 23"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.86 * ATR_14 below entry",
+      "Take profit: 0.46 * ATR_14 on 45% size",
+      "Take profit: 0.82 * ATR_14 on 35% size",
+      "Exit remaining 20% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ],
+    "short": [
+      "Stop loss: 0.86 * ATR_14 above entry",
+      "Take profit: 0.46 * ATR_14 on 45% size",
+      "Take profit: 0.82 * ATR_14 on 35% size",
+      "Exit remaining 20% on touch of EMA_55 or 5 bars",
+      "Final time stop: 5 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}

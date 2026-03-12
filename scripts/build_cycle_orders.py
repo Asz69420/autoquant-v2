@@ -11,6 +11,8 @@ METRICS = ROOT / "data" / "state" / "current_cycle_metrics.json"
 ROTATION_HISTORY = ROOT / "data" / "state" / "rotation_history.json"
 REGIME_SUMMARY = ROOT / "data" / "state" / "regime_summary.json"
 EXTERNAL_INTEL_INDEX = ROOT / "data" / "external_intel" / "index.json"
+RUN_STATE = ROOT / "data" / "state" / "research_cycle_started_at.json"
+CYCLE_COUNTER = ROOT / "data" / "state" / "cycle_counter.json"
 
 DEFAULT_ASSET_ORDER = ["ETH", "BTC", "SOL", "TAO", "AVAX", "LINK", "DOGE", "ARB", "OP", "INJ"]
 DEFAULT_TF_ORDER = ["4h", "1h", "1d", "15m"]
@@ -236,6 +238,18 @@ def pick_concept_pack(cycle_id: int, prior_status: dict) -> list[str]:
     return CONCEPT_PACKS[start_idx]
 
 
+def resolve_active_cycle_id(briefing: dict) -> int:
+    run_state = load_json(RUN_STATE, {})
+    cycle_id = int(run_state.get("cycle_id", 0) or 0)
+    if cycle_id > 0:
+        return cycle_id
+    counter = load_json(CYCLE_COUNTER, {})
+    cycle_id = int(counter.get("last_cycle_id", 0) or 0)
+    if cycle_id > 0:
+        return cycle_id
+    return int(briefing.get("cycle_id", 0) or 0)
+
+
 def sync_metrics_to_orders(cycle_id: int, orders: dict):
     metrics = load_json(METRICS, {})
     if not isinstance(metrics, dict):
@@ -305,7 +319,7 @@ def sync_status_to_orders(cycle_id: int, orders: dict):
 def main():
     briefing = load_json(BRIEFING, {})
     prior_status = load_json(STATUS, {})
-    cycle_id = int(briefing.get("cycle_id", 0) or 0)
+    cycle_id = resolve_active_cycle_id(briefing)
     universe = briefing.get("supported_backtest_universe") or {}
     asset, timeframe = pick_asset_timeframe(universe, prior_status)
     concept_pack = pick_concept_pack(cycle_id, prior_status)

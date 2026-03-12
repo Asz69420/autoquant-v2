@@ -84,6 +84,12 @@ def main() -> int:
     orders_payload = load_json(ORDERS_PATH)
     status_cycle_id = int(status_payload.get("cycle_id", 0) or 0)
     orders_cycle_id = int(orders_payload.get("cycle_id", 0) or 0)
+    if status_cycle_id and status_cycle_id != cycle_id:
+        print(json.dumps({"status": "error", "message": f"current_cycle_status cycle_id mismatch: start={cycle_id} status={status_cycle_id}", "cycle_id": cycle_id, "status_cycle_id": status_cycle_id, "orders_cycle_id": orders_cycle_id}))
+        return 1
+    if orders_cycle_id and orders_cycle_id != cycle_id:
+        print(json.dumps({"status": "error", "message": f"cycle_orders cycle_id mismatch: start={cycle_id} orders={orders_cycle_id}", "cycle_id": cycle_id, "status_cycle_id": status_cycle_id, "orders_cycle_id": orders_cycle_id}))
+        return 1
     target_asset = str(orders_payload.get("target_asset") or status_payload.get("target_asset") or "").strip().upper()
     target_timeframe = str(orders_payload.get("target_timeframe") or status_payload.get("target_timeframe") or "").strip()
     allowed_lanes = set()
@@ -143,6 +149,18 @@ def main() -> int:
             if stat.st_mtime + 1 < started_at_epoch:
                 continue
             add_path(path)
+
+    invalid_cycle_specs = [item for item in discovered if not spec_matches_cycle(Path(item["path"]), cycle_id)]
+    if invalid_cycle_specs:
+        print(json.dumps({
+            "status": "error",
+            "message": f"discovered specs do not belong to active cycle {cycle_id}",
+            "cycle_id": cycle_id,
+            "invalid_spec_paths": [item["path"] for item in invalid_cycle_specs],
+            "status_cycle_id": status_cycle_id,
+            "orders_cycle_id": orders_cycle_id,
+        }, indent=2))
+        return 1
 
     discovered.sort(key=lambda item: (item["mtime_epoch"], item["name"]))
     if not discovered:

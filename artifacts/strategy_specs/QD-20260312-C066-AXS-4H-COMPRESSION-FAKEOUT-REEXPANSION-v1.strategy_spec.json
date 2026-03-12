@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "strategy_spec_id": "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+  "cycle_id": 66,
+  "family_name": "axs_4h_compression_fakeout_reexpansion_v066",
+  "name": "AXS 4h Compression Fakeout Re-Expansion v1",
+  "asset": "AXS",
+  "timeframe": "4h",
+  "primary_asset": "AXS",
+  "primary_timeframe": "4h",
+  "edge_mechanism": "compression breaks one way, loses acceptance, reclaims fast structure, and expands in the opposite direction once directional pressure flips",
+  "expected_regime": "CHOP_TO_TRANSITION",
+  "thesis": "The cycle explicitly wants a compression fakeout into re-expansion with directional confirmation. AXS 4h is the best structurally different lane for this because it is transition-heavy enough to create meaningful squeezes but noisy enough that first breaks should fail more often than on a clean trend tape. The edge is the second move after the trap.",
+  "invalidation_condition": "If fakeouts remain too sparse, or if reclaiming value after the fakeout still fails to produce enough opposite-direction expansion, the mechanism is invalid.",
+  "pre_submit_reasoning": {
+    "market_behavior_targeted": "Volatility compresses, price probes one way, loses that direction, reclaims fast value, and expands the other way as trapped positioning unwinds.",
+    "why_edge_should_exist": "Chop-to-transition regimes often produce failed first breaks. AXS should exaggerate that behavior enough to make a trap-unwind sequence testable at 4h.",
+    "asset_timeframe_fit": "AXS 4h is the best fit because it is the basket's structurally different transition lane and should offer more fakeout amplitude than ETH while avoiding TAO's cleaner directional contamination.",
+    "indicator_role_map": {
+      "BOLLINGER_BANDS_20_2": "compression detector",
+      "EMA_20": "value reclaim line after the fakeout",
+      "ATR_14": "fakeout depth and stop sizing",
+      "PLUS_DI_14/MINUS_DI_14": "directional handoff into re-expansion",
+      "ADX_14": "participation gate"
+    },
+    "expected_regime": "CHOP_TO_TRANSITION",
+    "likely_failure_mode": "The first break may still be the real move, making the reclaim bar a bad fade rather than a genuine trap unwind.",
+    "first_refinement_path": "If entries exist but second-leg follow-through is weak, strengthen the directional handoff requirement before loosening compression width.",
+    "expected_trade_density": "Moderate.",
+    "expected_outcome_pattern": "A moderate number of trades, several small losses on true breaks, and a subset of clean trap-and-reexpand winners that carry expectancy.",
+    "what_would_count_as_success": "AXS 4h produces credible fakeout density with positive second-leg profile, and at least one slower/cross lane preserves the same structure.",
+    "what_would_count_as_failure": "0 trades, sub-10 trades, or reclaims that behave like dead-cat bounces with no opposite-direction expansion.",
+    "density_sanity_check": {
+      "plausible_trade_count": "moderate",
+      "contradictory_filters": "low-to-moderate",
+      "event_sparsity": "moderate but acceptable because the lane is transition-heavy and the sequence is simplified to squeeze, reclaim, handoff",
+      "asset_timeframe_mismatch": "none"
+    }
+  },
+  "test_lanes": [
+    {
+      "asset": "AXS",
+      "timeframe": "4h",
+      "role": "primary",
+      "why_included": "Best-fit transition lane for compression fakeout and opposite-direction re-expansion.",
+      "continue_if": "AXS 4h shows enough fakeout-reclaim-handoff sequences with positive post-cost behavior.",
+      "rotate_away_if": "AXS 4h remains too noisy or too sparse for the mechanism.",
+      "expected_if_right": "Moderate count with several clean trap unwinds and occasional larger second legs."
+    },
+    {
+      "asset": "ETH",
+      "timeframe": "4h",
+      "role": "cleaner_crosscheck",
+      "why_included": "Checks whether the same fakeout logic survives on the cleanest chop lane.",
+      "continue_if": "ETH 4h preserves the same reclaim-and-handoff structure with cleaner execution.",
+      "rotate_away_if": "ETH 4h confirms the mechanism is too sparse there.",
+      "expected_if_right": "Lower amplitude, cleaner fakeout unwinds than AXS."
+    },
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "role": "trend_contamination_check",
+      "why_included": "Tests whether the same fakeout sequence survives on the lane with trend-up contamination.",
+      "continue_if": "TAO 4h still shows meaningful fakeout unwinds with enough structure.",
+      "rotate_away_if": "TAO 4h confirms the mechanism is too anti-trend there.",
+      "expected_if_right": "Lower count, larger unwinds than ETH."
+    }
+  ],
+  "indicators": ["BOLLINGER_BANDS_20_2", "EMA_20", "ATR_14", "PLUS_DI_14", "MINUS_DI_14", "ADX_14"],
+  "entry_rules": {
+    "long": [
+      "BOLLINGER_WIDTH_20 <= 1.20 * ATR_14",
+      "Low <= EMA_20 - 0.16 * ATR_14",
+      "Close >= EMA_20",
+      "PLUS_DI_14 >= 0.95 * MINUS_DI_14",
+      "ADX_14 >= 10"
+    ],
+    "short": [
+      "BOLLINGER_WIDTH_20 <= 1.20 * ATR_14",
+      "High >= EMA_20 + 0.16 * ATR_14",
+      "Close <= EMA_20",
+      "MINUS_DI_14 >= 0.95 * PLUS_DI_14",
+      "ADX_14 >= 10"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 0.82 * ATR_14 below entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.92 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.74 * ATR_14",
+      "Final time stop: 6 bars"
+    ],
+    "short": [
+      "Stop loss: 0.82 * ATR_14 above entry",
+      "Take profit: 0.50 * ATR_14 on 35% size",
+      "Take profit: 0.92 * ATR_14 on 25% size",
+      "Trail remaining 40% by 0.74 * ATR_14",
+      "Final time stop: 6 bars"
+    ]
+  },
+  "research_mode": "explore",
+  "mutation_type": "initial"
+}
