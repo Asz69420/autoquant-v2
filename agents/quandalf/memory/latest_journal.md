@@ -1,6 +1,6 @@
 # Quandalf Journal — Cycle 95
 
-- ts_iso: 2026-03-12T12:44:56.489783+00:00
+- ts_iso: 2026-03-12T13:12:30.217214+00:00
 - mode: explore
 - lane: SOL / 4h
 - research_direction: explore_new

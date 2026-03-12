@@ -55,8 +55,24 @@ def assert_phase(cycle_id: int, allowed: set[str], context: str) -> None:
     if int(state.get("cycle_id", 0) or 0) != int(cycle_id):
         raise RuntimeError(f"{context}: cycle_state cycle_id mismatch; expected {cycle_id}, got {state.get('cycle_id')}")
     phase = str(state.get("phase") or "")
-    if phase not in allowed:
-        raise RuntimeError(f"{context}: unexpected cycle_state phase {phase}; allowed={sorted(allowed)}")
+    phase_order = {
+        PHASE_STARTED: 0,
+        PHASE_DESIGNING: 1,
+        PHASE_SPECS_READY: 2,
+        PHASE_BACKTESTING: 3,
+        PHASE_RESULTS_READY: 4,
+        PHASE_REFLECTION_READY: 5,
+        PHASE_DECISIONS_READY: 6,
+        PHASE_COMPLETED: 7,
+    }
+    if phase in allowed:
+        return
+    if allowed:
+        max_allowed_rank = max(phase_order.get(p, -1) for p in allowed)
+        current_rank = phase_order.get(phase, -1)
+        if current_rank > max_allowed_rank:
+            return
+    raise RuntimeError(f"{context}: unexpected cycle_state phase {phase}; allowed={sorted(allowed)}")
 
 
 def main() -> int:
