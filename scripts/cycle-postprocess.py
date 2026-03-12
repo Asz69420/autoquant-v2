@@ -1038,28 +1038,7 @@ def write_cycle_metrics(metrics):
         pass
 
 
-def should_send_card(cycle_id, card_kind, card_text):
-    fingerprint = hashlib.sha256(card_text.encode("utf-8")).hexdigest()
-    state = {}
-    try:
-        if os.path.exists(CARD_STATE_PATH):
-            with open(CARD_STATE_PATH, "r", encoding="utf-8") as f:
-                state = json.load(f)
-    except Exception:
-        state = {}
-
-    cards = state.get("cards") if isinstance(state, dict) else None
-    if not isinstance(cards, dict):
-        cards = {}
-    key = f"{int(cycle_id)}:{str(card_kind or 'research')}"
-    last = cards.get(key)
-    if isinstance(last, dict) and last.get("fingerprint") == fingerprint:
-        return False, fingerprint
-    return True, fingerprint
-
-
-def remember_card_send(cycle_id, card_kind, card_text, fingerprint):
-    os.makedirs(os.path.dirname(CARD_STATE_PATH), exist_ok=True)
+def load_card_state():
     state = {}
     try:
         if os.path.exists(CARD_STATE_PATH):
@@ -1080,6 +1059,26 @@ def remember_card_send(cycle_id, card_kind, card_text, fingerprint):
                 "sent_at_iso": legacy.get("sent_at_iso"),
                 "preview": legacy.get("preview") or [],
             }
+    return {"cards": cards}
+
+
+def should_send_card(cycle_id, card_kind, card_text):
+    fingerprint = hashlib.sha256(card_text.encode("utf-8")).hexdigest()
+    state = load_card_state()
+    cards = state.get("cards") or {}
+    key = f"{int(cycle_id)}:{str(card_kind or 'research')}"
+    last = cards.get(key)
+    if not isinstance(last, dict):
+        return True, fingerprint
+    if last.get("fingerprint") == fingerprint:
+        return False, fingerprint
+    return True, fingerprint
+
+
+def remember_card_send(cycle_id, card_kind, card_text, fingerprint):
+    os.makedirs(os.path.dirname(CARD_STATE_PATH), exist_ok=True)
+    state = load_card_state()
+    cards = state.get("cards") or {}
     key = f"{int(cycle_id)}:{str(card_kind or 'research')}"
     cards[key] = {
         "cycle_id": int(cycle_id),
