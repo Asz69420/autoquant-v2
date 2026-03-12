@@ -547,27 +547,44 @@ def fetch_cycle_queue_metrics(cycle_id):
         "retryable_failures": 0,
         "done_ok": 0,
         "done_terminal": 0,
+        "orphan_discards": 0,
+        "completed_attempts": 0,
         "by_stage": {},
     }
     for stage, status, notes in rows:
         stage_key = str(stage or "unknown")
         status_key = str(status or "unknown")
         note_text = str(notes or "").lower()
-        bucket = out["by_stage"].setdefault(stage_key, {"queued": 0, "running": 0, "done": 0})
+        bucket = out["by_stage"].setdefault(stage_key, {"queued": 0, "running": 0, "done": 0, "skipped": 0, "completed_attempts": 0})
         bucket[status_key] = bucket.get(status_key, 0) + 1
         out[status_key] = out.get(status_key, 0) + 1
         out["total"] += 1
+
+        is_terminal = '"status": "terminal_fail"' in note_text
+        is_integrity_skip = '"status": "integrity_skip"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text)
+        is_orphan_discard = '"status": "orphan_discarded"' in note_text
+
         if status_key == "done":
-            if '"status": "terminal_fail"' in note_text:
+            if is_terminal:
                 out["terminal_failures"] += 1
                 out["done_terminal"] += 1
-            elif '"status": "integrity_skip"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
+                out["completed_attempts"] += 1
+                bucket["completed_attempts"] += 1
+            elif is_integrity_skip:
                 out["integrity_skips"] += 1
+                out["completed_attempts"] += 1
+                bucket["completed_attempts"] += 1
+            elif is_orphan_discard:
+                out["orphan_discards"] += 1
             else:
                 out["done_ok"] += 1
+                out["completed_attempts"] += 1
+                bucket["completed_attempts"] += 1
         elif status_key == "skipped":
-            if '"status": "integrity_skip"' in note_text or ('integrity_skip:' in note_text and 'zero_' in note_text):
+            if is_integrity_skip:
                 out["integrity_skips"] += 1
+            out["completed_attempts"] += 1
+            bucket["completed_attempts"] += 1
         elif status_key == "queued" and '"status": "retry"' in note_text:
             out["retryable_failures"] += 1
     return out
@@ -777,11 +794,12 @@ def build_cycle_metrics(cycle_id, rows, elapsed_seconds, backtest_count, run_sta
             "queue_skipped": queue_skipped,
             "queue_integrity_skips": queue_integrity_skips,
             "queue_terminal_failures": queue_terminal_failures,
+            "queue_orphan_discards": int(queue_metrics.get("orphan_discards") or 0),
             "db_results": completed_backtests,
             "pass": pass_count,
             "promote": promote_count,
-            "train_runs": int(queue_metrics.get("done") or 0) + int(queue_metrics.get("skipped") or 0),
-            "test_runs": 0
+            "train_runs": int((queue_metrics.get("by_stage") or {}).get("screen", {}).get("completed_attempts") or 0),
+            "test_runs": int((queue_metrics.get("by_stage") or {}).get("full", {}).get("completed_attempts") or 0)
         },
         "pass_count": pass_count,
         "fail_count": fail_count,
@@ -904,11 +922,10 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     active_families = metrics.get("active_families", 0)
     family_aborted = len(metrics.get("abandoned_families") or [])
     integrity_zero_trades = int(metrics.get("queue_integrity_skips") or 0)
-    queue_done = int(metrics.get("queue_done") or 0)
-    queue_skipped = int(metrics.get("queue_skipped") or 0)
     train_runs = int(metrics.get("stage_kpis", {}).get("train_runs") or 0)
     test_runs = int(metrics.get("stage_kpis", {}).get("test_runs") or 0)
-    executed_backtests = queue_done + queue_skipped
+    completed_attempts = train_runs + test_runs
+    executed_backtests = completed_attempts
     decided_total = int(decision_counts.get("decision_count") or 0)
     queue_decided_total = int(decision_counts.get("queue_decision_count") or 0)
     expected_queue_total = int(decision_counts.get("expected_queue_count") or 0)
@@ -918,7 +935,13 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     queue_passed = int(decision_counts.get("queue_passed") or 0)
     queue_iterated = int(decision_counts.get("queue_iterated") or 0)
     queue_aborted = int(decision_counts.get("queue_aborted") or 0)
-    if backtests > 0:
+    decision_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
+    has_closed_decisions = int(decision_payload.get("cycle_id") or 0) == int(metrics.get("cycle_id") or 0) and bool(decision_payload.get("strategy_decisions"))
+    if has_closed_decisions or decided_total > 0:
+        passed = strategy_passed
+        iterated = strategy_iterated
+        aborted = int(decision_counts.get("aborted") or family_aborted)
+    elif backtests > 0:
         passed = queue_passed
         iterated = queue_iterated
         aborted = queue_aborted
@@ -932,8 +955,6 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
-    decision_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
-    has_closed_decisions = int(decision_payload.get("cycle_id") or 0) == int(metrics.get("cycle_id") or 0) and bool(decision_payload.get("strategy_decisions"))
     decisions_complete = (unresolved_queue == 0 and unresolved == 0 and (decided_total > 0 or executed_backtests == 0)) or has_closed_decisions
     if decisions_complete:
         if passed > 0:
@@ -957,7 +978,7 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
         if passed > 0 and best_qs > 0:
             note_candidates.append(f"This {mode} cycle found real traction, with best QS {best_qs:.2f} and the strongest families now earning another round of refinement or validation.")
         if integrity_zero_trades > 0 and executed_backtests > 0:
-            note_candidates.append(f"This {mode} cycle completed {train_runs} train run{'s' if train_runs != 1 else ''} and {test_runs} test run{'s' if test_runs != 1 else ''}. {aborted} row{'s' if aborted != 1 else ''} resolved to abort after red-flag outcomes, and {iterated} resolved to refine.")
+            note_candidates.append(f"This {mode} cycle completed {train_runs} train run{'s' if train_runs != 1 else ''} and {test_runs} test run{'s' if test_runs != 1 else ''}. {aborted} strateg{'ies' if aborted != 1 else 'y'} resolved to abort after red-flag outcomes, and {iterated} resolved to refine.")
         if executed_backtests > 0 and passed == 0 and generated > 0 and integrity_zero_trades == 0:
             note_candidates.append(f"This {mode} cycle tested fresh ideas but none cleared the evidence gate, so the right move is to abandon these mechanisms and try a different concept or management style.")
         if family_aborted > 0 and best_qs > 0:
