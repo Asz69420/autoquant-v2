@@ -1,44 +1,17 @@
 {
-  "ts_iso": "2026-03-11T21:24:03.013373+00:00",
-  "cycle_id": 63,
+  "ts_iso": "2026-03-12T03:19:32.062276+00:00",
+  "cycle_id": 66,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C063-DOGE-4H-SESSION-IMPULSE-HOLD-EXPANSION-v1",
-      "hypothesis": "DOGE 4h is the cycle primary lane and the active hypotheses explicitly call for testing session-window continuation. In a 90% chop / 10% transition tape, the right expression is not first-break chasing; it is session-led impulse plus post-impulse hold confirmation so the strategy only participates when the move shows evidence of escaping chop.",
-      "chosen_lane": {
-        "asset": "DOGE",
-        "timeframe": "4h"
-      },
-      "component_roles": [
-        "SESSION_OPEN",
-        "EMA_20",
-        "ATR_14",
-        "PLUS_DI_14",
-        "MINUS_DI_14",
-        "ADX_14"
-      ],
-      "mutation_surface": "initial",
-      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
-      "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
-        "decision": "abort"
-      },
-      "regime_context": {},
-      "diagnosis": "too sparse",
-      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
-    },
-    {
-      "strategy_spec_id": "QD-20260312-C063-ETH-4H-INVENTORY-RESET-RECLAIM-v1",
-      "hypothesis": "The cycle wants an inventory-reset continuation idea, but the best-fit lane is ETH 4h because it is the cleanest chop environment in the basket. The edge is not a static oversold bounce; it is the market resetting offside inventory and rotating back once value is reclaimed.",
+      "strategy_spec_id": "QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1",
+      "hypothesis": "The cycle asks for a range-failure reversal after a multi-bar breakout loses acceptance. ETH 4h is the best-fit lane because it is the cleanest pure-chop regime in the basket. The edge is not fading every breakout mechanically; it is entering only after price clearly reaccepts balance following a failed edge auction.",
       "chosen_lane": {
         "asset": "ETH",
         "timeframe": "4h"
       },
       "component_roles": [
+        "DONCHIAN_20",
         "VWAP",
         "EMA_55",
         "ATR_14",
@@ -46,7 +19,7 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
       "actual_effect": {
         "trade_count": null,
         "profit_factor": null,
@@ -56,35 +29,63 @@
       },
       "regime_context": {},
       "diagnosis": "too sparse",
-      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
     },
     {
-      "strategy_spec_id": "QD-20260312-C063-TAO-4H-POST-EXPANSION-PARTIAL-RUNNER-v1",
-      "hypothesis": "The cycle explicitly asks for a post-expansion partial-profit runner structure. TAO 4h is the best-fit lane because it has enough amplitude for a small retained core to matter, while still being transition-heavy enough that immediate follow-through must be proven rather than assumed.",
+      "strategy_spec_id": "QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1",
+      "hypothesis": "The cycle explicitly wants a compression fakeout into re-expansion with directional confirmation. AXS 4h is the best structurally different lane for this because it is transition-heavy enough to create meaningful squeezes but noisy enough that first breaks should fail more often than on a clean trend tape. The edge is the second move after the trap.",
+      "chosen_lane": {
+        "asset": "AXS",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "BOLLINGER_BANDS_20_2",
+        "EMA_20",
+        "ATR_14",
+        "PLUS_DI_14",
+        "MINUS_DI_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "actual_effect": {
+        "trade_count": null,
+        "profit_factor": null,
+        "max_drawdown_pct": null,
+        "qscore": null,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "too sparse",
+      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+    },
+    {
+      "strategy_spec_id": "QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1",
+      "hypothesis": "The cycle explicitly wants trend-reset continuation after a deeper pullback. TAO 4h is the best-fit lane because it is the only basket member with current trend-up contamination and enough amplitude for a meaningful second leg after reset. The edge is not shallow EMA-touch continuation; it is entering only after a genuine reset and reclaim.",
       "chosen_lane": {
         "asset": "TAO",
         "timeframe": "4h"
       },
       "component_roles": [
         "EMA_20",
+        "EMA_55",
         "ATR_14",
         "PLUS_DI_14",
         "MINUS_DI_14",
-        "ADX_14",
-        "TIME_STOP"
+        "RSI_14"
       ],
-      "mutation_surface": "initial",
-      "expected_effect": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort.",
+      "mutation_surface": "reclassified_refine",
+      "expected_effect": "abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16",
       "actual_effect": {
-        "trade_count": null,
-        "profit_factor": null,
-        "max_drawdown_pct": null,
-        "qscore": null,
+        "trade_count": 16,
+        "profit_factor": 0.888,
+        "max_drawdown_pct": 23.63,
+        "qscore": 0.652,
         "decision": "abort"
       },
       "regime_context": {},
-      "diagnosis": "too sparse",
-      "lesson_extracted": "0 trades on valid data (integrity_skip:zero_trades_both_samples; integrity_skip:zero_trades_both_samples) \u2014 Quandalf must explicitly choose iterate or abort."
+      "diagnosis": "bad idea",
+      "lesson_extracted": "abort: fail with QS 0.65, PF 0.89, DD 23.6%, trades 16"
     }
   ]
 }

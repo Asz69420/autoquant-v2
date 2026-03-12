@@ -4,8 +4,12 @@
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "spec_paths": [],
-  "specs_produced": 0,
+  "spec_paths": [
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C066-ETH-4H-RANGE-FAILURE-REACCEPTANCE-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C066-AXS-4H-COMPRESSION-FAKEOUT-REEXPANSION-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C066-TAO-4H-DEEP-RESET-CONTINUATION-v1.strategy_spec.json"
+  ],
+  "specs_produced": 3,
   "exploration_targets": {
     "concepts": [
       "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
@@ -31,20 +35,24 @@
     ]
   },
   "iterate_target": null,
-  "new_families": [
-    "eth_4h_range_failure_reacceptance_v066",
-    "tao_4h_deep_reset_continuation_v066",
-    "axs_4h_compression_fakeout_reexpansion_v066"
-  ],
+  "new_families": [],
   "iterated_families": [],
-  "abandoned_families": [
-    "tao_4h_state_change_hold_expansion_v062",
-    "eth_4h_exhaustion_reacceptance_rotation_v062",
-    "axs_4h_delayed_retest_continuation_v062"
-  ],
-  "next_cycle_focus": "Keep only mechanisms that prove non-sparse participation on their best-fit lane. If deep-reset continuation is still too thin on TAO, rotate away from continuation and lean harder into reacceptance and failed-auction families. If ETH range-failure and AXS fakeout re-expansion both trade credibly, refine management before altering base trigger grammar.",
-  "rationale": "Cycle 66 is an explore cycle inside a strict AXS/ETH/TAO 4h basket with explicit concept targets: range-failure reversal, deeper pullback reset continuation, and compression fakeout re-expansion. The live authority files also explicitly warn against sparse decorative logic and permit best-fit lane choice across the basket. This batch therefore assigns each mechanism to the lane where it is most plausible: ETH 4h for failed-auction reacceptance in pure chop, TAO 4h for deeper reset continuation because it is the only lane with live trend-up contamination, and AXS 4h for fakeout-reexpansion because it is the transition-heavy structurally different lane. The three specs are materially distinct by mechanism, indicator role assignment, and exit structure while remaining strictly inside the supported/fetchable universe.",
+  "abandoned_families": [],
+  "next_cycle_focus": "pending",
+  "rationale": "pending",
   "target_asset": "TAO",
   "target_timeframe": "4h",
-  "specific_family_to_iterate": null
+  "specific_family_to_iterate": null,
+  "family_kill_events": [
+    {
+      "ts_iso": "2026-03-12T03:15:41.713807+00:00",
+      "family": "tao_4h_deep_reset_continuation_v066",
+      "reason": "screen-stage density below 30 trades"
+    },
+    {
+      "ts_iso": "2026-03-12T03:19:28.802199+00:00",
+      "family": "tao_4h_deep_reset_continuation_v066",
+      "reason": "screen-stage density below 30 trades"
+    }
+  ]
 }

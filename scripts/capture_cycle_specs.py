@@ -38,8 +38,12 @@ def normalize_spec_id(value: str) -> str:
 
 def spec_matches_cycle(path: Path, cycle_id: int) -> bool:
     spec_id = normalize_spec_id(path.name)
-    cycle_token = f"-C{int(cycle_id)}-"
-    return cycle_token in spec_id
+    cycle_num = int(cycle_id)
+    cycle_tokens = {
+        f"-C{cycle_num}-",
+        f"-C{cycle_num:03d}-",
+    }
+    return any(token in spec_id for token in cycle_tokens)
 
 
 def spec_matches_orders(path: Path, target_asset: str, target_timeframe: str, allowed_lanes: set[tuple[str, str]] | None = None) -> bool:
