@@ -932,7 +932,9 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     best_qs = metrics.get("best_qscore") or 0
     mode = metrics.get("mode") or "cycle"
 
-    decisions_complete = unresolved_queue == 0 and unresolved == 0 and (decided_total > 0 or executed_backtests == 0)
+    decision_payload = load_json_file(REFINEMENT_DECISIONS_PATH) or {}
+    has_closed_decisions = int(decision_payload.get("cycle_id") or 0) == int(metrics.get("cycle_id") or 0) and bool(decision_payload.get("strategy_decisions"))
+    decisions_complete = (unresolved_queue == 0 and unresolved == 0 and (decided_total > 0 or executed_backtests == 0)) or has_closed_decisions
     if decisions_complete:
         if passed > 0:
             status_emoji = "✅"
