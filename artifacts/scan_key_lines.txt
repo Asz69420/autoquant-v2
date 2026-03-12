@@ -1,0 +1,15 @@
+
+FILE scripts/build_quandalf_learning_memory.py
+
+FILE scripts/build_quandalf_experiment_memory.py
+
+FILE scripts/research-cycle.py
+217:     cycle_id = int(run_state.get("cycle_id", 0) or 0)
+
+FILE scripts/build_cycle_orders.py
+14: RUN_STATE = ROOT / "data" / "state" / "research_cycle_started_at.json"
+241: def resolve_active_cycle_id(briefing: dict) -> int:
+242:     run_state = load_json(RUN_STATE, {})
+243:     cycle_id = int(run_state.get("cycle_id", 0) or 0)
+247:     cycle_id = int(counter.get("last_cycle_id", 0) or 0)
+322:     cycle_id = resolve_active_cycle_id(briefing)

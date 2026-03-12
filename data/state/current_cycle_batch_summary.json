@@ -1,10 +1,10 @@
 {
-  "cycle_id": 92,
-  "cycle_key": "92",
-  "manifest_cycle_id": 92,
-  "status_cycle_id": 92,
-  "canonical_cycle_id": 92,
-  "orders_cycle_id": 92,
+  "cycle_id": 95,
+  "cycle_key": "95",
+  "manifest_cycle_id": 95,
+  "status_cycle_id": 95,
+  "canonical_cycle_id": 95,
+  "orders_cycle_id": 95,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "canonical_matches_cycle": true,
@@ -14,14 +14,14 @@
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "ETH",
-  "target_timeframe": "1h",
+  "target_asset": "SOL",
+  "target_timeframe": "4h",
   "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "state-change momentum after regime improvement and post-break hold",
-      "mean reversion from exhaustion only when structure reaccepts prior value",
-      "breakout continuation with delayed entry after retest rather than immediate trigger"
+      "trend pullback continuation after deeper value reclaim into structural support",
+      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
+      "failed breakdown reclaim that must hold before continuation entry"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -33,9 +33,9 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "AXS",
-      "BTC",
-      "ETH"
+      "ETH",
+      "SOL",
+      "TAO"
     ],
     "timeframes": [
       "1h",
@@ -43,26 +43,30 @@
     ]
   },
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C92-TAO-BREAKOUT-HOLD-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C92-TAO-EMA-PULLBACK-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C92-TAO-RANGE-RECLAIM-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C95-SOL-BREAKOUT-HOLD-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C95-SOL-EMA-PULLBACK-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260312-C95-SOL-RANGE-RECLAIM-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260312-C92-TAO-BREAKOUT-HOLD-v1",
-    "QD-20260312-C92-TAO-EMA-PULLBACK-v1",
-    "QD-20260312-C92-TAO-RANGE-RECLAIM-v1"
+    "QD-20260312-C95-SOL-BREAKOUT-HOLD-v1",
+    "QD-20260312-C95-SOL-EMA-PULLBACK-v1",
+    "QD-20260312-C95-SOL-RANGE-RECLAIM-v1"
   ],
   "specs_produced": 3,
   "specs_written": 3,
   "new_families": [],
   "iterated_families": [],
-  "abandoned_families": [],
+  "abandoned_families": [
+    "eth_range_reclaim",
+    "eth_breakout_hold",
+    "eth_ema_pullback"
+  ],
   "active_families": 0,
-  "all_recent_rows": 3,
+  "all_recent_rows": 9,
   "cycle_rows": 3,
-  "external_rows": 0,
+  "external_rows": 6,
   "cycle_results_present": true,
-  "external_results_present": false,
+  "external_results_present": true,
   "backtests_queued": 3,
   "backtests_completed": 3,
   "backtests": 3,
@@ -96,23 +100,23 @@
   "promote_count": 0,
   "promotions": 0,
   "best_result": {
-    "strategy_spec_id": "QD-20260312-C92-TAO-BREAKOUT-HOLD-v1",
-    "variant_id": "tao_breakout_hold_v1",
-    "asset": "TAO",
+    "strategy_spec_id": "QD-20260312-C95-SOL-EMA-PULLBACK-v1",
+    "variant_id": "sol_ema_pullback_v1",
+    "asset": "SOL",
     "timeframe": "4h",
-    "qscore": 0.944,
-    "profit_factor": 1.283,
-    "total_trades": 84,
+    "qscore": 0.802,
+    "profit_factor": 1.047,
+    "total_trades": 107,
     "decision": "pass"
   },
-  "best_qscore": 0.944,
+  "best_qscore": 0.802,
   "next_cycle_focus": "Abort 3 sparse strategyies and rotate to a new lane.",
-  "rationale": "QD-20260312-C92-TAO-BREAKOUT-HOLD-v1: abort \u2014 refine: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84 | QD-20260312-C92-TAO-EMA-PULLBACK-v1: abort \u2014 refine: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78 | QD-20260312-C92-TAO-RANGE-RECLAIM-v1: abort \u2014 refine: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76",
+  "rationale": "QD-20260312-C95-SOL-BREAKOUT-HOLD-v1: abort \u2014 refine: PASS with QS 0.71, PF 1.01, DD 30.1%, trades 109 | QD-20260312-C95-SOL-EMA-PULLBACK-v1: abort \u2014 refine: PASS with QS 0.80, PF 1.05, DD 24.5%, trades 107 | QD-20260312-C95-SOL-RANGE-RECLAIM-v1: abort \u2014 refine: PASS with QS 0.65, PF 0.94, DD 28.4%, trades 120",
   "has_reflection_note": true,
-  "elapsed_seconds": 1976.4,
-  "run_elapsed_seconds": 1976.4,
-  "report_delay_seconds": 0.0,
+  "elapsed_seconds": 459.0,
+  "run_elapsed_seconds": 459.0,
+  "report_delay_seconds": 63.4,
   "is_completed": true,
-  "started_at_epoch": 1773311861.922513,
-  "ended_at_epoch": 1773313838.2897577
+  "started_at_epoch": 1773315329.706968,
+  "ended_at_epoch": 1773315788.677352
 }

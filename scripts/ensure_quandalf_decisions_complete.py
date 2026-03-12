@@ -306,7 +306,9 @@ def deterministic_decision_for_outcome(outcome):
     latest_qs = float(latest.get("score_total") or 0.0)
     total_trades = int(latest.get("total_trades") or 0)
 
-    if "pass" in allowed and latest_decision == "pass":
+    if latest_decision in {"promote", "pass"}:
+        return "pass"
+    if "pass" in allowed and latest_qs >= 1.0 and total_trades >= 15:
         return "pass"
     if "refine" in allowed and latest_qs >= 0.75 and total_trades >= 20:
         return "refine"

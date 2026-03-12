@@ -1024,9 +1024,12 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
         queue_pass = int(decision_counts.get("queue_passed") or 0)
         queue_iterate = int(decision_counts.get("queue_iterated") or 0)
         queue_abort = int(decision_counts.get("queue_aborted") or 0)
-        lines.append(f"Pass: {queue_pass}")
-        lines.append(f"Iterate: {queue_iterate}")
-        lines.append(f"Abort: {queue_abort}")
+        strategy_pass = int(decision_counts.get("passed") or 0)
+        strategy_iterate = int(decision_counts.get("iterated") or 0)
+        strategy_abort = int(decision_counts.get("aborted") or 0)
+        lines.append(f"Pass: {queue_pass} ({strategy_pass} strategy)")
+        lines.append(f"Iterate: {queue_iterate} ({strategy_iterate} strategy)")
+        lines.append(f"Abort: {queue_abort} ({strategy_abort} strategy)")
     else:
         total_strategies = generated
         new_strategies = len(metrics.get("new_families") or []) or total_strategies

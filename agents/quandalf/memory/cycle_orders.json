@@ -1,23 +1,24 @@
 {
-  "cycle_id": 93,
-  "ts_iso": "2026-03-12T11:11:57.325676+00:00",
+  "cycle_id": 95,
+  "ts_iso": "2026-03-12T11:35:32.673200+00:00",
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "ETH",
+  "target_asset": "SOL",
   "target_timeframe": "4h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
   "iterate_target": null,
   "current_regime": "CHOP",
-  "regime_confidence": 100.0,
+  "regime_confidence": 50.0,
   "regime_context": {
     "current": "CHOP",
-    "confidence": 100.0,
-    "adx14": 11.1511,
-    "atr14": 41.494539,
+    "confidence": 50.0,
+    "adx14": 13.5678,
+    "atr14": 1.84943,
     "distribution_20bar": {
-      "CHOP": 100.0
+      "TRANSITION": 50.0,
+      "CHOP": 50.0
     }
   },
   "external_intel": {
@@ -26,23 +27,10 @@
       "tradingview-research-watch",
       "regime-scan"
     ],
-    "recent_items": [
-      {
-        "id": "EXT-20260310-105628-6F7F",
-        "source_id": "youtube-research-watch",
-        "category": "research_media",
-        "summary": "Stub ingest proving normalized external-intel storage is operational.",
-        "importance": "medium",
-        "asset_scope": [
-          "ETH"
-        ],
-        "normalized_path": "data\\external_intel\\normalized\\20260310\\EXT-20260310-105628-6F7F.external_intel_item.json",
-        "ts_iso": "2026-03-10T10:56:28.437858+00:00"
-      }
-    ],
-    "target_asset": "ETH",
+    "recent_items": [],
+    "target_asset": "SOL",
     "target_timeframe": "4h",
-    "count": 1
+    "count": 0
   },
   "design_axes": {
     "indicator_roles": [
@@ -77,9 +65,9 @@
   },
   "exploration_targets": {
     "concepts": [
-      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
-      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
-      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
+      "trend pullback continuation after deeper value reclaim into structural support",
+      "volatility squeeze expansion confirmed by persistence instead of first breakout bar",
+      "failed breakdown reclaim that must hold before continuation entry"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -91,8 +79,8 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "BTC",
       "ETH",
+      "SOL",
       "TAO"
     ],
     "timeframes": [
@@ -102,17 +90,17 @@
   },
   "validation_basket": [
     {
-      "asset": "ETH",
+      "asset": "SOL",
       "timeframe": "4h",
       "role": "primary"
     },
     {
-      "asset": "ETH",
+      "asset": "SOL",
       "timeframe": "1h",
       "role": "adjacent_timeframe"
     },
     {
-      "asset": "BTC",
+      "asset": "ETH",
       "timeframe": "4h",
       "role": "similar_asset"
     },
@@ -124,17 +112,17 @@
   ],
   "allowed_lanes": [
     {
-      "asset": "ETH",
+      "asset": "SOL",
       "timeframe": "4h",
       "role": "primary"
     },
     {
-      "asset": "ETH",
+      "asset": "SOL",
       "timeframe": "1h",
       "role": "adjacent_timeframe"
     },
     {
-      "asset": "BTC",
+      "asset": "ETH",
       "timeframe": "4h",
       "role": "similar_asset"
     },
@@ -149,7 +137,7 @@
     "auto_fetch_missing_data": true,
     "instruction": "Choose the best-fit asset/timeframe based on thesis. Use the validation basket deliberately. If you need a lane inside the supported universe that is not already cached, request it through the spec and the system will prepare the candles before backtest."
   },
-  "thesis_hint": "Explore fresh ETH 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: CHOP (100.0% confidence). Market is choppy/ranging \u2014 favor mean reversion and range-bound strategies, avoid trend-following. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
+  "thesis_hint": "Explore fresh SOL 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: CHOP (50.0% confidence). Market is choppy/ranging \u2014 favor mean reversion and range-bound strategies, avoid trend-following. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
   "stop_condition": "Write 3-4 materially different specs using the best-fit lanes from the allowed basket. At least one spec should test a meaningfully different trade-management expression, at least one should vary indicator-role assignment rather than only entry conditions, and chosen lanes must be justified by thesis.",
   "rotation_reason": "Deterministic explore rotation away from prior lane (None / None) while preserving freedom to choose the best-fit lane from the basket."
 }

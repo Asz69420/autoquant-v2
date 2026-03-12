@@ -1,0 +1,24 @@
+FILE scripts/build_quandalf_experiment_memory.py
+FILE scripts/build_quandalf_learning_memory.py
+10: STATUS = ROOT / 'agents' / 'quandalf' / 'memory' / 'current_cycle_status.json'
+FILE scripts/leaderboard_render.py
+FILE scripts/research-cycle.py
+95:     path = ROOT / "data" / "state" / "research_cycle_started_at.json"
+103:     status_path = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
+FILE scripts/build_cycle_orders.py
+9: STATUS = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
+14: RUN_STATE = ROOT / "data" / "state" / "research_cycle_started_at.json"
+FILE scripts/build-reflection-packet.py
+12: CURRENT_CYCLE_SPECS = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
+13: CURRENT_CYCLE_STATUS = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
+15: RUN_STATE = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
+FILE scripts/capture_cycle_specs.py
+16: START_MARKER = STATE_DIR / "research_cycle_started_at.json"
+17: MANIFEST_PATH = STATE_DIR / "current_cycle_specs.json"
+20: STATUS_PATH = ROOT / "agents" / "quandalf" / "memory" / "current_cycle_status.json"
+FILE scripts/cycle-postprocess.py
+29: CURRENT_CYCLE_SPECS_PATH = os.path.join(ROOT, "data", "state", "current_cycle_specs.json")
+30: CURRENT_CYCLE_STATUS_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "current_cycle_status.json")
+35: RUN_STATE_PATH = os.path.join(ROOT, "data", "state", "research_cycle_started_at.json")
+326:     """Ensure current_cycle_status.json carries coherent data for the active cycle.
+2327:                 "agents/quandalf/memory/current_cycle_status.json",

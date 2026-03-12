@@ -49,6 +49,8 @@ def main() -> int:
         "spec_ids": [item["spec_id"] for item in specs],
         "specs": specs,
         "canonical_phase": canonical.get("phase"),
+        "queue_seeded": canonical.get("queue_seeded", 0),
+        "result_count": canonical.get("result_count", 0),
     }
 
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
