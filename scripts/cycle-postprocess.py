@@ -971,22 +971,21 @@ def build_log_card(cycle_id, rows, elapsed_seconds, backtest_count, run_state=No
     if len(note) > 350:
         note = f"This {mode} cycle is still building evidence, with best QS {best_qs:.2f} and the next decision waiting on cleaner current-cycle results." if best_qs > 0 else f"This {mode} cycle is still building evidence, and the next decision is waiting on cleaner current-cycle backtest results."
 
+    train_failed = integrity_zero_trades if integrity_zero_trades > 0 else max(0, train_runs - test_runs)
+
     lines = []
     lines.append("🧪 Research" if not decisions_complete else "🔮 Reflection")
     lines.append(f"{status_emoji} | ▶️ {elapsed_str} | 🆔 {metrics['cycle_id']}")
     lines.append("○────────────activity────────────")
-    lines.append(f"Generated: {generated}")
-    lines.append(f"Train: {train_runs}")
-    if test_runs > 0:
-        lines.append(f"Test: {test_runs}")
     if decisions_complete:
-        lines.append(f"Passed: {passed}")
-        lines.append(f"Iterated: {iterated}")
-        lines.append(f"Aborted: {aborted}")
+        lines.append(f"Pass: {passed}")
+        lines.append(f"Iterate: {iterated}")
+        lines.append(f"Abort: {aborted}")
     else:
-        lines.append(f"Awaiting judgment: {unresolved_queue if unresolved_queue > 0 else unresolved}")
-        lines.append(f"Decision phase: in progress")
-        lines.append(f"Final verdicts: pending")
+        lines.append(f"Generated: {generated}")
+        lines.append(f"Training: {train_runs}")
+        lines.append(f"Testing: {test_runs}")
+        lines.append(f"Failed: {train_failed}")
     lines.append("○─────────────note─────────────")
     lines.append(note)
 
@@ -1109,7 +1108,8 @@ def send_log_card(cycle_id, log_card, metrics=None):
         return False
 
     log_card_formatted = f"<pre>{log_card}</pre>"
-    banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", "cooking.jpg")
+    banner_name = "refinement.jpg" if card_kind == "reflection" else "cooking.jpg"
+    banner_path = os.path.join(r"C:\Users\Clamps\.openclaw\workspace-oragorn\assets\banners", banner_name)
     sent_ok = False
     if os.path.exists(banner_path):
         proc = subprocess.run(
