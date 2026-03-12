@@ -1,14 +1,40 @@
 {
-  "ts_iso": "2026-03-12T22:09:44.308413+00:00",
-  "cycle_id": 100,
+  "ts_iso": "2026-03-12T22:39:58.191680+00:00",
+  "cycle_id": 104,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260312-C100-BTC-EMA-PULLBACK-v1",
+      "strategy_spec_id": "QD-20260312-C104-ETH-BREAKOUT-HOLD-v1",
+      "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
+      "chosen_lane": {
+        "asset": "ETH",
+        "timeframe": "1h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78",
+      "actual_effect": {
+        "trade_count": 78,
+        "profit_factor": 0.634,
+        "max_drawdown_pct": 35.35,
+        "qscore": 0.28,
+        "decision": "abort"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78"
+    },
+    {
+      "strategy_spec_id": "QD-20260312-C104-ETH-EMA-PULLBACK-v1",
       "hypothesis": "trend pullback continuation after value reclaim",
       "chosen_lane": {
-        "asset": "BTC",
-        "timeframe": "4h"
+        "asset": "ETH",
+        "timeframe": "1h"
       },
       "component_roles": [
         "EMA_20",
@@ -19,24 +45,24 @@
         "MINUS_DI_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "refine: PASS with QS 0.77, PF 0.98, DD 21.6%, trades 116",
+      "expected_effect": "abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78",
       "actual_effect": {
-        "trade_count": 116,
-        "profit_factor": 0.985,
-        "max_drawdown_pct": 21.64,
-        "qscore": 0.769,
-        "decision": "pass"
+        "trade_count": 78,
+        "profit_factor": 0.707,
+        "max_drawdown_pct": 32.72,
+        "qscore": 0.38,
+        "decision": "abort"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "pass: PASS with QS 0.77, PF 0.98, DD 21.6%, trades 116"
+      "lesson_extracted": "abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78"
     },
     {
-      "strategy_spec_id": "QD-20260312-C100-BTC-RANGE-RECLAIM-v1",
+      "strategy_spec_id": "QD-20260312-C104-ETH-RANGE-RECLAIM-v1",
       "hypothesis": "range reclaim continuation after false breakdown and value recovery",
       "chosen_lane": {
-        "asset": "BTC",
-        "timeframe": "4h"
+        "asset": "ETH",
+        "timeframe": "1h"
       },
       "component_roles": [
         "EMA_20",
@@ -45,43 +71,17 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "refine: PASS with QS 0.97, PF 1.09, DD 11.2%, trades 99",
+      "expected_effect": "refine: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71",
       "actual_effect": {
-        "trade_count": 99,
-        "profit_factor": 1.086,
-        "max_drawdown_pct": 11.2,
-        "qscore": 0.974,
+        "trade_count": 71,
+        "profit_factor": 0.984,
+        "max_drawdown_pct": 12.1,
+        "qscore": 0.863,
         "decision": "pass"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "pass: PASS with QS 0.97, PF 1.09, DD 11.2%, trades 99"
-    },
-    {
-      "strategy_spec_id": "QD-20260312-C100-BTC-BREAKOUT-HOLD-v1",
-      "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
-      "chosen_lane": {
-        "asset": "BTC",
-        "timeframe": "4h"
-      },
-      "component_roles": [
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "ADX_14"
-      ],
-      "mutation_surface": "initial",
-      "expected_effect": "refine: PASS with QS 0.79, PF 1.01, DD 21.2%, trades 107",
-      "actual_effect": {
-        "trade_count": 107,
-        "profit_factor": 1.006,
-        "max_drawdown_pct": 21.24,
-        "qscore": 0.794,
-        "decision": "pass"
-      },
-      "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pass: PASS with QS 0.79, PF 1.01, DD 21.2%, trades 107"
+      "lesson_extracted": "pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71"
     }
   ]
 }
