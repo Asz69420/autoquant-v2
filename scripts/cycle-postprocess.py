@@ -19,6 +19,7 @@ JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "latest_journa
 DAILY_JOURNAL_PATH = os.path.join(ROOT, "agents", "quandalf", "memory", "daily_journal.md")
 JOURNAL_ARCHIVE_DIR = os.path.join(ROOT, "agents", "quandalf", "memory", "journal")
 DECISION_COMPLETION_SCRIPT = os.path.join(ROOT, "scripts", "ensure_quandalf_decisions_complete.py")
+REFLECTION_REFRESH_SCRIPT = os.path.join(ROOT, "scripts", "build-reflection-packet.py")
 BACKTESTER = os.path.join(ROOT, "scripts", "walk_forward_engine.py")
 BALROG = r"C:\Users\Clamps\.openclaw\workspace-oragorn\scripts\balrog-validate.py"
 SPECS_DIR = os.path.join(ROOT, "artifacts", "strategy_specs")
@@ -1241,7 +1242,18 @@ def sync_live_journal(cycle_id=None):
 def ensure_decision_closure(cycle_id, timeout_seconds=180):
     reflection_payload = load_json_file(REFLECTION_PACKET_PATH) or {}
     if int(reflection_payload.get("cycle_id") or -1) != int(cycle_id):
-        return False, {"status": "error", "reason": "reflection_cycle_mismatch", "reflection_cycle_id": reflection_payload.get("cycle_id"), "cycle_id": cycle_id}
+        try:
+            subprocess.run(
+                [sys.executable, REFLECTION_REFRESH_SCRIPT],
+                capture_output=True,
+                text=True,
+                timeout=min(timeout_seconds, 90),
+            )
+        except Exception:
+            pass
+        reflection_payload = load_json_file(REFLECTION_PACKET_PATH) or {}
+        if int(reflection_payload.get("cycle_id") or -1) != int(cycle_id):
+            return False, {"status": "error", "reason": "reflection_cycle_mismatch", "reflection_cycle_id": reflection_payload.get("cycle_id"), "cycle_id": cycle_id}
     try:
         proc = subprocess.run(
             [sys.executable, DECISION_COMPLETION_SCRIPT],

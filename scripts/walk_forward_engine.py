@@ -335,6 +335,48 @@ def normalize_directional_rules(raw_rules) -> dict:
     return {"long": [], "short": []}
 
 
+def extract_textual_risk(exit_rules: dict) -> dict:
+    risk = {}
+    directional = normalize_directional_rules(exit_rules)
+    stop_atr = []
+    tp_atr = []
+    time_stops = []
+    for rules in directional.values():
+        for rule in rules:
+            text = str(rule if isinstance(rule, str) else rule.get("condition", "")).strip()
+            lower = text.lower()
+            m_stop = re.search(r"stop\s*loss\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*\*\s*atr(?:_?14)?", lower)
+            if m_stop:
+                stop_atr.append(float(m_stop.group(1)))
+            m_tp = re.search(r"take\s*profit\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*\*\s*atr(?:_?14)?", lower)
+            if m_tp:
+                tp_atr.append(float(m_tp.group(1)))
+            m_time = re.search(r"(?:final\s+)?time\s*stop\s*:\s*(\d+)\s*bars?", lower)
+            if m_time:
+                time_stops.append(int(m_time.group(1)))
+            if " on touch of " in lower and " or " in lower:
+                m_touch_time = re.search(r"or\s*(\d+)\s*bars?", lower)
+                if m_touch_time:
+                    time_stops.append(int(m_touch_time.group(1)))
+    if stop_atr:
+        risk["stop_atr_mult"] = min(stop_atr)
+    if tp_atr:
+        risk["tp_atr_mult"] = min(tp_atr)
+    if time_stops:
+        risk["max_holding_bars"] = min(time_stops)
+    return risk
+
+
+def sanitize_confirmation_text(text: str) -> str:
+    cleaned = str(text or "").strip()
+    cleaned = re.sub(r"^enter\s+only\s+if\s+", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bnext\s+bar\b", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bstays\b", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bremains\b", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned
+
+
 def normalize_risk(spec: dict, variant: dict) -> dict:
     risk = {}
     if isinstance(spec.get("risk"), dict):
@@ -458,9 +500,11 @@ def directional_movement_index(candles: list[dict], period: int = 14):
     n = len(candles)
     plus_di = [None] * n
     minus_di = [None] * n
+    adx_vals = [None] * n
     tr_list = [0.0] * n
     plus_dm_list = [0.0] * n
     minus_dm_list = [0.0] * n
+    dx_series = [None] * n
     for i in range(1, n):
         up_move = candles[i]["high"] - candles[i - 1]["high"]
         down_move = candles[i - 1]["low"] - candles[i]["low"]
@@ -472,13 +516,16 @@ def directional_movement_index(candles: list[dict], period: int = 14):
             abs(candles[i]["low"] - candles[i - 1]["close"]),
         )
     if n <= period:
-        return plus_di, minus_di
+        return plus_di, minus_di, adx_vals
     tr_sum = sum(tr_list[1 : period + 1])
     plus_dm_sum = sum(plus_dm_list[1 : period + 1])
     minus_dm_sum = sum(minus_dm_list[1 : period + 1])
     if tr_sum > 0:
         plus_di[period] = 100.0 * (plus_dm_sum / tr_sum)
         minus_di[period] = 100.0 * (minus_dm_sum / tr_sum)
+        denom = (plus_di[period] or 0.0) + (minus_di[period] or 0.0)
+        if denom > 0:
+            dx_series[period] = 100.0 * abs((plus_di[period] or 0.0) - (minus_di[period] or 0.0)) / denom
     for i in range(period + 1, n):
         tr_sum = tr_sum - (tr_sum / period) + tr_list[i]
         plus_dm_sum = plus_dm_sum - (plus_dm_sum / period) + plus_dm_list[i]
@@ -486,7 +533,33 @@ def directional_movement_index(candles: list[dict], period: int = 14):
         if tr_sum > 0:
             plus_di[i] = 100.0 * (plus_dm_sum / tr_sum)
             minus_di[i] = 100.0 * (minus_dm_sum / tr_sum)
-    return plus_di, minus_di
+            denom = (plus_di[i] or 0.0) + (minus_di[i] or 0.0)
+            if denom > 0:
+                dx_series[i] = 100.0 * abs((plus_di[i] or 0.0) - (minus_di[i] or 0.0)) / denom
+    seed = [v for v in dx_series[period : period * 2] if v is not None]
+    if len(seed) >= period:
+        adx_vals[period * 2 - 1] = sum(seed[:period]) / period
+        for i in range(period * 2, n):
+            prev = adx_vals[i - 1]
+            curr_dx = dx_series[i]
+            if prev is not None and curr_dx is not None:
+                adx_vals[i] = ((prev * (period - 1)) + curr_dx) / period
+    return plus_di, minus_di, adx_vals
+
+
+def vwap(candles: list[dict]) -> list[float | None]:
+    out = [None] * len(candles)
+    cum_pv = 0.0
+    cum_vol = 0.0
+    for i, c in enumerate(candles):
+        typical_price = (c["high"] + c["low"] + c["close"]) / 3.0
+        volume = float(c.get("volume") or 0.0)
+        if volume <= 0:
+            volume = 1.0
+        cum_pv += typical_price * volume
+        cum_vol += volume
+        out[i] = (cum_pv / cum_vol) if cum_vol > 0 else typical_price
+    return out
 
 
 def compute_indicators(candles: list[dict], params: dict, declared_indicators: list[str] | None = None) -> dict:
@@ -523,14 +596,19 @@ def compute_indicators(candles: list[dict], params: dict, declared_indicators: l
     indicators["bb_lower_20_2"] = bb_lower_20_2
     indicators["bb_middle_20_2"] = bb_middle_20_2
     indicators["bb_upper_20_2"] = bb_upper_20_2
-    plus_di_14, minus_di_14 = directional_movement_index(candles, 14)
+    plus_di_14, minus_di_14, adx_14 = directional_movement_index(candles, 14)
     indicators["plus_di_14"] = plus_di_14
     indicators["minus_di_14"] = minus_di_14
+    indicators["adx_14"] = adx_14
+    indicators["vwap"] = vwap(candles)
     indicators["chop_14_1_100"] = choppiness_index(candles, 14)
     dcl_20, dcm_20, dcu_20 = donchian_channels(candles, 20)
     indicators["dcl_20_20"] = dcl_20
     indicators["dcm_20_20"] = dcm_20
     indicators["dcu_20_20"] = dcu_20
+    indicators["donchian_low_20"] = dcl_20
+    indicators["donchian_mid_20"] = dcm_20
+    indicators["donchian_high_20"] = dcu_20
     dcl_10, dcm_10, dcu_10 = donchian_channels(candles, 10)
     indicators["dcl_10_10"] = dcl_10
     indicators["dcm_10_10"] = dcm_10
@@ -578,6 +656,11 @@ def evaluate_condition(condition: str, idx: int, indicators: dict, candles: list
             "upper_bollinger_20_2": "bb_upper_20_2",
             "lower_bollinger_20_2": "bb_lower_20_2",
             "middle_bollinger_20_2": "bb_middle_20_2",
+            "vwap": "vwap",
+            "adx_14": "adx_14",
+            "donchian_high_20": "donchian_high_20",
+            "donchian_low_20": "donchian_low_20",
+            "donchian_mid_20": "donchian_mid_20",
         }
         t = alias.get(t, t)
 

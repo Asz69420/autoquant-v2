@@ -1,25 +1,24 @@
 {
-  "cycle_id": 66,
-  "ts_iso": "2026-03-12T02:57:46.120306+00:00",
+  "cycle_id": 67,
+  "ts_iso": "2026-03-12T04:46:13.417777+00:00",
   "mode": "explore",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "TAO",
+  "target_asset": "DOGE",
   "target_timeframe": "4h",
   "research_direction": "explore_new",
   "specific_family_to_iterate": null,
   "iterate_target": null,
-  "current_regime": "TREND_UP",
-  "regime_confidence": 20.0,
+  "current_regime": "TRANSITION",
+  "regime_confidence": 10.0,
   "regime_context": {
-    "current": "TREND_UP",
-    "confidence": 20.0,
-    "adx14": 28.3376,
-    "atr14": 6.180245,
+    "current": "TRANSITION",
+    "confidence": 10.0,
+    "adx14": 21.5549,
+    "atr14": 0.00236,
     "distribution_20bar": {
-      "CHOP": 60.0,
-      "TRANSITION": 20.0,
-      "TREND_UP": 20.0
+      "CHOP": 90.0,
+      "TRANSITION": 10.0
     }
   },
   "external_intel": {
@@ -29,7 +28,7 @@
       "regime-scan"
     ],
     "recent_items": [],
-    "target_asset": "TAO",
+    "target_asset": "DOGE",
     "target_timeframe": "4h",
     "count": 0
   },
@@ -66,9 +65,9 @@
   },
   "exploration_targets": {
     "concepts": [
-      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
-      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
-      "compression fakeout into re-expansion with directional confirmation"
+      "state-change momentum after regime improvement and post-break hold",
+      "mean reversion from exhaustion only when structure reaccepts prior value",
+      "breakout continuation with delayed entry after retest rather than immediate trigger"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -80,7 +79,7 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
-      "AXS",
+      "DOGE",
       "ETH",
       "TAO"
     ],
@@ -90,7 +89,7 @@
   },
   "validation_basket": [
     {
-      "asset": "TAO",
+      "asset": "DOGE",
       "timeframe": "4h",
       "role": "primary"
     },
@@ -100,14 +99,14 @@
       "role": "similar_asset"
     },
     {
-      "asset": "AXS",
+      "asset": "TAO",
       "timeframe": "4h",
       "role": "structurally_different_asset"
     }
   ],
   "allowed_lanes": [
     {
-      "asset": "TAO",
+      "asset": "DOGE",
       "timeframe": "4h",
       "role": "primary"
     },
@@ -117,7 +116,7 @@
       "role": "similar_asset"
     },
     {
-      "asset": "AXS",
+      "asset": "TAO",
       "timeframe": "4h",
       "role": "structurally_different_asset"
     }
@@ -127,7 +126,7 @@
     "auto_fetch_missing_data": true,
     "instruction": "Choose the best-fit asset/timeframe based on thesis. Use the validation basket deliberately. If you need a lane inside the supported universe that is not already cached, request it through the spec and the system will prepare the candles before backtest."
   },
-  "thesis_hint": "Explore fresh TAO 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: TREND_UP (20.0% confidence). Market is trending up \u2014 favor continuation and pullback entries over mean reversion. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
+  "thesis_hint": "Explore fresh DOGE 4h structures as the primary lane, but you are allowed to choose lanes from the validation basket when the thesis fits better. Current regime: TRANSITION (10.0% confidence). Market transitioning between states \u2014 favor adaptive strategies that can handle regime shifts. Prioritize dense concepts over ceremonial sparse logic. Use mechanism-first reasoning and vary indicator roles, lane choice, and management logic, not just entry triggers.",
   "stop_condition": "Write 3-4 materially different specs using the best-fit lanes from the allowed basket. At least one spec should test a meaningfully different trade-management expression, at least one should vary indicator-role assignment rather than only entry conditions, and chosen lanes must be justified by thesis.",
   "rotation_reason": "Deterministic explore rotation away from prior lane (None / None) while preserving freedom to choose the best-fit lane from the basket."
 }

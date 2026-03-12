@@ -181,9 +181,39 @@ def main() -> int:
         return 1
 
     discovered.sort(key=lambda item: (item["mtime_epoch"], item["name"]))
+    wait_deadline = time.time() + CAPTURE_WAIT_SECONDS
+    while not discovered and time.time() < wait_deadline:
+        status_payload = load_json(STATUS_PATH)
+        status_cycle_id = int(status_payload.get("cycle_id", 0) or 0)
+        announced_paths = [Path(str(p)) for p in (status_payload.get("spec_paths") or []) if str(p).strip()]
+        announced_count = max(int(status_payload.get("specs_produced", 0) or 0), len(announced_paths))
+        refreshed = []
+        for path in announced_paths:
+            if spec_matches_cycle(path, cycle_id) and spec_matches_orders(path, target_asset, target_timeframe, allowed_lanes=allowed_lanes):
+                try:
+                    if path.exists() and path.is_file():
+                        stat = path.stat()
+                        refreshed.append({
+                            "path": str(path.resolve()),
+                            "name": path.name,
+                            "spec_id": normalize_spec_id(path.name),
+                            "mtime_epoch": stat.st_mtime,
+                            "mtime_iso": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat(),
+                            "size_bytes": stat.st_size,
+                        })
+                except OSError:
+                    pass
+        if refreshed:
+            discovered = refreshed
+            break
+        if announced_count > 0:
+            time.sleep(CAPTURE_POLL_SECONDS)
+            continue
+        time.sleep(CAPTURE_POLL_SECONDS)
+
+    discovered.sort(key=lambda item: (item["mtime_epoch"], item["name"]))
     if not discovered:
-        # No new specs in this cycle — this is allowed (agent may not have completed, dry-run, or no orders issued).
-        # Return empty manifest so pipeline can continue. Backtest step will be skipped.
+        maybe_refresh_reflection(cycle_id)
         manifest = {
             "status": "empty",
             "message": "no new strategy specs in this cycle",
