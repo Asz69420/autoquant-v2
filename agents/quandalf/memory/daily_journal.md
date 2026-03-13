@@ -1,15 +1,15 @@
-# Quandalf Journal — Cycle 167
+# Quandalf Journal — Cycle 170
 
-- ts_iso: 2026-03-13T07:12:45.448399+00:00
+- ts_iso: 2026-03-13T07:36:56.523828+00:00
 - mode: explore
-- lane: SOL / 4h
+- lane: ETH / 1h
 - research_direction: explore_new
 
 ## My Current Decision Summary
 {
-  "pass": 3,
+  "pass": 1,
   "refine": 0,
-  "abort": 0,
+  "abort": 2,
   "zero_trade": 0
 }
 
@@ -23,13 +23,13 @@
   "window_size": 5,
   "totals": {
     "cycles_considered": 5,
-    "pass": 12,
+    "pass": 13,
     "refine": 0,
-    "abort": 3,
+    "abort": 2,
     "zero_trade": 0,
     "strategies": 15,
-    "queue_rows": 15,
-    "queue_rows_decided": 15,
+    "queue_rows": 16,
+    "queue_rows_decided": 16,
     "saved_results": 15
   },
   "diagnosis_breakdown": {
@@ -39,61 +39,61 @@
     "BTC",
     "DOGE",
     "ETH",
-    "SOL"
+    "SOL",
+    "TAO"
   ],
   "timeframes_touched": [
     "1h",
     "4h"
   ],
   "cycle_ids": [
-    163,
-    164,
-    165,
     166,
-    167
+    167,
+    168,
+    169,
+    170
   ]
 }
 
 ## What Worked
-- On QD-20260313-C167-SOL-BREAKOUT-HOLD-v1, refine: PASS with QS 0.69, PF 0.99, DD 30.1%, trades 79
-- On QD-20260313-C167-SOL-EMA-PULLBACK-v1, refine: PASS with QS 0.88, PF 1.11, DD 22.9%, trades 76
-- On QD-20260313-C167-SOL-RANGE-RECLAIM-v1, refine: PASS with QS 0.53, PF 0.82, DD 29.0%, trades 86
+- On QD-20260313-C170-ETH-RANGE-RECLAIM-v1, refine: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71
 
 ## Awaiting Evidence
 - none
 
 ## What Failed
-- none
+- On QD-20260313-C170-ETH-EMA-PULLBACK-v1, abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78
+- On QD-20260313-C170-ETH-BREAKOUT-HOLD-v1, abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78
 
 ## Why I Judged It That Way
-- On QD-20260313-C167-SOL-BREAKOUT-HOLD-v1, bad idea
-- On QD-20260313-C167-SOL-EMA-PULLBACK-v1, bad idea
-- On QD-20260313-C167-SOL-RANGE-RECLAIM-v1, bad idea
+- On QD-20260313-C170-ETH-EMA-PULLBACK-v1, bad idea
+- On QD-20260313-C170-ETH-BREAKOUT-HOLD-v1, bad idea
+- On QD-20260313-C170-ETH-RANGE-RECLAIM-v1, bad idea
 
 ## What I Would Improve Next
-- On QD-20260313-C167-SOL-BREAKOUT-HOLD-v1, pass: PASS with QS 0.69, PF 0.99, DD 30.1%, trades 79
-- On QD-20260313-C167-SOL-EMA-PULLBACK-v1, pass: PASS with QS 0.88, PF 1.11, DD 22.9%, trades 76
-- On QD-20260313-C167-SOL-RANGE-RECLAIM-v1, pass: PASS with QS 0.53, PF 0.82, DD 29.0%, trades 86
+- On QD-20260313-C170-ETH-EMA-PULLBACK-v1, abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78
+- On QD-20260313-C170-ETH-BREAKOUT-HOLD-v1, abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78
+- On QD-20260313-C170-ETH-RANGE-RECLAIM-v1, pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71
 
 ## What Still Needs Testing
 - none
 
 ## Strategy-by-Strategy Reasons
-- QD-20260313-C167-SOL-BREAKOUT-HOLD-v1: asset=SOL | timeframe=4h | decision=pass | diagnosis=bad idea
-  mechanism: breakout continuation after hold above broken structure with volatility expansion
-  thesis: breakout continuation after hold above broken structure with volatility expansion
-  train: QS 0.693 | Sharpe 0 | PF 0.994 | DD 30.13% | Trades 79
-  why: pass: PASS with QS 0.69, PF 0.99, DD 30.1%, trades 79
-  evidence: rq_a35b5dbcee3e=pass (Deterministic closure inherited pass for queue row rq_a35b5dbcee3e from strategy outcome QD-20260313-C167-SOL-BREAKOUT-HOLD-v1.)
-- QD-20260313-C167-SOL-EMA-PULLBACK-v1: asset=SOL | timeframe=4h | decision=pass | diagnosis=bad idea
+- QD-20260313-C170-ETH-EMA-PULLBACK-v1: asset=ETH | timeframe=1h | decision=abort | diagnosis=bad idea
   mechanism: trend pullback continuation after value reclaim
   thesis: trend pullback continuation after value reclaim
-  train: QS 0.879 | Sharpe 0 | PF 1.108 | DD 22.93% | Trades 76
-  why: pass: PASS with QS 0.88, PF 1.11, DD 22.9%, trades 76
-  evidence: rq_a640dd65fa4c=pass (Deterministic closure inherited pass for queue row rq_a640dd65fa4c from strategy outcome QD-20260313-C167-SOL-EMA-PULLBACK-v1.)
-- QD-20260313-C167-SOL-RANGE-RECLAIM-v1: asset=SOL | timeframe=4h | decision=pass | diagnosis=bad idea
+  train: QS 0.38 | Sharpe 0 | PF 0.707 | DD 32.72% | Trades 78
+  why: abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78
+  evidence: rq_3b8f81384ff1=abort (Deterministic closure inherited abort for queue row rq_3b8f81384ff1 from strategy outcome QD-20260313-C170-ETH-EMA-PULLBACK-v1.)
+- QD-20260313-C170-ETH-BREAKOUT-HOLD-v1: asset=ETH | timeframe=1h | decision=abort | diagnosis=bad idea
+  mechanism: breakout continuation after hold above broken structure with volatility expansion
+  thesis: breakout continuation after hold above broken structure with volatility expansion
+  train: QS 0.28 | Sharpe 0 | PF 0.634 | DD 35.35% | Trades 78
+  why: abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78
+  evidence: rq_e0ec26378f8b=abort (Deterministic closure inherited abort for queue row rq_e0ec26378f8b from strategy outcome QD-20260313-C170-ETH-BREAKOUT-HOLD-v1.)
+- QD-20260313-C170-ETH-RANGE-RECLAIM-v1: asset=ETH | timeframe=1h | decision=pass | diagnosis=bad idea
   mechanism: range reclaim continuation after false breakdown and value recovery
   thesis: range reclaim continuation after false breakdown and value recovery
-  train: QS 0.534 | Sharpe 0 | PF 0.824 | DD 28.99% | Trades 86
-  why: pass: PASS with QS 0.53, PF 0.82, DD 29.0%, trades 86
-  evidence: rq_f53042e5db0d=pass (Deterministic closure inherited pass for queue row rq_f53042e5db0d from strategy outcome QD-20260313-C167-SOL-RANGE-RECLAIM-v1.)
+  train: QS 0.863 | Sharpe 0 | PF 0.984 | DD 12.1% | Trades 71
+  why: pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71
+  evidence: rq_ca07e56abdcd=pass (Deterministic closure inherited pass for queue row rq_ca07e56abdcd from strategy outcome QD-20260313-C170-ETH-RANGE-RECLAIM-v1.)
