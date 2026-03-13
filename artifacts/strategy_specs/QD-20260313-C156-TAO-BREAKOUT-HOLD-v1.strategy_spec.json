@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "id": "QD-20260313-C156-TAO-BREAKOUT-HOLD-v1",
+  "ts_iso": "2026-03-13T05:42:56Z",
+  "thesis_id": "qd-20260313-c156-tao-breakout-hold-v1_thesis",
+  "name": "TAO Breakout Hold v1",
+  "version": "1.0",
+  "asset": "TAO",
+  "timeframe": "4h",
+  "family_name": "tao_breakout_hold",
+  "thesis": "breakout continuation after hold above broken structure with volatility expansion",
+  "primary_asset": "TAO",
+  "primary_timeframe": "4h",
+  "validation_targets": [
+    {
+      "asset": "TAO",
+      "timeframe": "4h",
+      "purpose": "walk_forward_screen"
+    }
+  ],
+  "edge_mechanism": "breakout continuation after hold above broken structure with volatility expansion",
+  "expected_regime": "trending and transitional",
+  "invalidation_condition": "If tao_breakout_hold cannot clear the trade floor or PF > 1 after costs on TAO 4h, retire the family.",
+  "indicators": [
+    "EMA_20",
+    "EMA_55",
+    "ATR_14",
+    "ADX_14"
+  ],
+  "entry_rules": {
+    "long": [
+      "Close > EMA_20",
+      "EMA_20 > EMA_55",
+      "ADX_14 >= 14"
+    ],
+    "short": [
+      "Close < EMA_20",
+      "EMA_20 < EMA_55",
+      "ADX_14 >= 14"
+    ]
+  },
+  "exit_rules": {
+    "long": [
+      "Stop loss: 1.2 * ATR_14 below entry",
+      "Take profit: 2.8 * ATR_14 above entry",
+      "Trailing stop: 1.0 * ATR_14"
+    ],
+    "short": [
+      "Stop loss: 1.2 * ATR_14 above entry",
+      "Take profit: 2.8 * ATR_14 below entry",
+      "Trailing stop: 1.0 * ATR_14"
+    ]
+  },
+  "position_sizing": {
+    "risk_per_trade_pct": 0.004
+  },
+  "trade_management": {
+    "entry_style": "one_shot",
+    "exit_style": "trailing_time_mix",
+    "position_stages": [
+      {
+        "action": "entry",
+        "trigger": "signal",
+        "size_pct": 100
+      },
+      {
+        "action": "de_risk",
+        "trigger": "8 bars in trade",
+        "size_pct": 40
+      },
+      {
+        "action": "exit",
+        "trigger": "trailing_stop_or_exit_rules",
+        "size_pct": 60
+      }
+    ],
+    "risk_management": {
+      "initial_stop": "1.2 ATR",
+      "trailing_stop": "1.0 ATR",
+      "time_stop_bars": 14,
+      "breakeven_trigger": null,
+      "partial_tp_levels": []
+    }
+  },
+  "regime_filter": {
+    "allowed_regimes": [
+      "trending",
+      "transitional"
+    ],
+    "detection_method": "Simple TAO 4h trend/transition filter."
+  },
+  "variants": [
+    {
+      "name": "tao_breakout_hold_v1",
+      "template_name": "breakout_hold",
+      "parameters": [
+        {
+          "name": "ema_fast",
+          "value": 20
+        },
+        {
+          "name": "ema_anchor",
+          "value": 55
+        },
+        {
+          "name": "adx_floor",
+          "value": 14
+        }
+      ],
+      "risk_policy": {
+        "stop_type": "atr",
+        "stop_atr_mult": 1.1,
+        "tp_type": "atr",
+        "tp_atr_mult": 2.4,
+        "risk_per_trade_pct": 0.004,
+        "max_concurrent_positions": 1,
+        "max_holding_bars": 10
+      },
+      "execution_policy": {
+        "entry_fill": "bar_close",
+        "tie_break": "worst_case",
+        "allow_reverse": true,
+        "slippage_bps": 8,
+        "fee_bps": 6
+      },
+      "risk_rules": [
+        "cooldown_bars=0"
+      ]
+    }
+  ],
+  "complexity_score": 1.4,
+  "status": "ready_to_test",
+  "source": "fallback_cooker",
+  "fallback_source": true,
+  "research_mode": "fallback"
+}

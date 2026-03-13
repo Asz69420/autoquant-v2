@@ -1,15 +1,15 @@
-# Quandalf Journal — Cycle 152
+# Quandalf Journal — Cycle 156
 
-- ts_iso: 2026-03-13T05:10:13.368615+00:00
+- ts_iso: 2026-03-13T05:43:01.720117+00:00
 - mode: explore
-- lane: ETH / 1h
+- lane: TAO / 4h
 - research_direction: explore_new
 
 ## My Current Decision Summary
 {
-  "pass": 1,
+  "pass": 3,
   "refine": 0,
-  "abort": 2,
+  "abort": 0,
   "zero_trade": 0
 }
 
@@ -23,9 +23,9 @@
   "window_size": 5,
   "totals": {
     "cycles_considered": 5,
-    "pass": 13,
+    "pass": 12,
     "refine": 0,
-    "abort": 2,
+    "abort": 3,
     "zero_trade": 0,
     "strategies": 15,
     "queue_rows": 16,
@@ -37,7 +37,6 @@
   },
   "assets_touched": [
     "BTC",
-    "DOGE",
     "ETH",
     "SOL",
     "TAO"
@@ -47,53 +46,55 @@
     "4h"
   ],
   "cycle_ids": [
-    148,
-    149,
-    150,
-    151,
-    152
+    152,
+    153,
+    154,
+    155,
+    156
   ]
 }
 
 ## What Worked
-- On QD-20260313-C152-ETH-RANGE-RECLAIM-v1, refine: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71
+- On QD-20260313-C156-TAO-BREAKOUT-HOLD-v1, refine: PASS with QS 1.01, PF 1.35, DD 33.9%, trades 85
+- On QD-20260313-C156-TAO-EMA-PULLBACK-v1, refine: PASS with QS 0.93, PF 1.29, DD 35.9%, trades 80
+- On QD-20260313-C156-TAO-RANGE-RECLAIM-v1, refine: PASS with QS 0.59, PF 0.90, DD 31.1%, trades 77
 
 ## Awaiting Evidence
 - none
 
 ## What Failed
-- On QD-20260313-C152-ETH-BREAKOUT-HOLD-v1, abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78
-- On QD-20260313-C152-ETH-EMA-PULLBACK-v1, abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78
+- none
 
 ## Why I Judged It That Way
-- On QD-20260313-C152-ETH-BREAKOUT-HOLD-v1, bad idea
-- On QD-20260313-C152-ETH-EMA-PULLBACK-v1, bad idea
-- On QD-20260313-C152-ETH-RANGE-RECLAIM-v1, bad idea
+- On QD-20260313-C156-TAO-BREAKOUT-HOLD-v1, bad idea
+- On QD-20260313-C156-TAO-EMA-PULLBACK-v1, bad idea
+- On QD-20260313-C156-TAO-RANGE-RECLAIM-v1, bad idea
 
 ## What I Would Improve Next
-- On QD-20260313-C152-ETH-BREAKOUT-HOLD-v1, abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78
-- On QD-20260313-C152-ETH-EMA-PULLBACK-v1, abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78
-- On QD-20260313-C152-ETH-RANGE-RECLAIM-v1, pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71
+- On QD-20260313-C156-TAO-BREAKOUT-HOLD-v1, pass: PASS with QS 1.01, PF 1.35, DD 33.9%, trades 85
+- On QD-20260313-C156-TAO-EMA-PULLBACK-v1, pass: PASS with QS 0.93, PF 1.29, DD 35.9%, trades 80
+- On QD-20260313-C156-TAO-RANGE-RECLAIM-v1, pass: PASS with QS 0.59, PF 0.90, DD 31.1%, trades 77
 
 ## What Still Needs Testing
 - none
 
 ## Strategy-by-Strategy Reasons
-- QD-20260313-C152-ETH-BREAKOUT-HOLD-v1: asset=ETH | timeframe=1h | decision=abort | diagnosis=bad idea
+- QD-20260313-C156-TAO-BREAKOUT-HOLD-v1: asset=TAO | timeframe=4h | decision=pass | diagnosis=bad idea
   mechanism: breakout continuation after hold above broken structure with volatility expansion
   thesis: breakout continuation after hold above broken structure with volatility expansion
-  train: QS 0.28 | Sharpe 0 | PF 0.634 | DD 35.35% | Trades 78
-  why: abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78
-  evidence: rq_21293e5e41bf=abort (Deterministic closure inherited abort for queue row rq_21293e5e41bf from strategy outcome QD-20260313-C152-ETH-BREAKOUT-HOLD-v1.)
-- QD-20260313-C152-ETH-EMA-PULLBACK-v1: asset=ETH | timeframe=1h | decision=abort | diagnosis=bad idea
+  train: QS 1.009 | Sharpe 0 | PF 1.348 | DD 33.88% | Trades 85
+  why: pass: PASS with QS 1.01, PF 1.35, DD 33.9%, trades 85
+  evidence: rq_87c00e551635=pass (Deterministic closure inherited pass for queue row rq_87c00e551635 from strategy outcome QD-20260313-C156-TAO-BREAKOUT-HOLD-v1.)
+  evidence: rq_e7d5fe2c7bfe=pass (Deterministic closure inherited pass for queue row rq_e7d5fe2c7bfe from strategy outcome QD-20260313-C156-TAO-BREAKOUT-HOLD-v1.)
+- QD-20260313-C156-TAO-EMA-PULLBACK-v1: asset=TAO | timeframe=4h | decision=pass | diagnosis=bad idea
   mechanism: trend pullback continuation after value reclaim
   thesis: trend pullback continuation after value reclaim
-  train: QS 0.38 | Sharpe 0 | PF 0.707 | DD 32.72% | Trades 78
-  why: abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78
-  evidence: rq_55b7c5274066=abort (Deterministic closure inherited abort for queue row rq_55b7c5274066 from strategy outcome QD-20260313-C152-ETH-EMA-PULLBACK-v1.)
-- QD-20260313-C152-ETH-RANGE-RECLAIM-v1: asset=ETH | timeframe=1h | decision=pass | diagnosis=bad idea
+  train: QS 0.93 | Sharpe 0 | PF 1.289 | DD 35.94% | Trades 80
+  why: pass: PASS with QS 0.93, PF 1.29, DD 35.9%, trades 80
+  evidence: rq_bfd6f394b91e=pass (Deterministic closure inherited pass for queue row rq_bfd6f394b91e from strategy outcome QD-20260313-C156-TAO-EMA-PULLBACK-v1.)
+- QD-20260313-C156-TAO-RANGE-RECLAIM-v1: asset=TAO | timeframe=4h | decision=pass | diagnosis=bad idea
   mechanism: range reclaim continuation after false breakdown and value recovery
   thesis: range reclaim continuation after false breakdown and value recovery
-  train: QS 0.863 | Sharpe 0 | PF 0.984 | DD 12.1% | Trades 71
-  why: pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71
-  evidence: rq_859b4d69aab0=pass (Deterministic closure inherited pass for queue row rq_859b4d69aab0 from strategy outcome QD-20260313-C152-ETH-RANGE-RECLAIM-v1.)
+  train: QS 0.588 | Sharpe 0 | PF 0.899 | DD 31.08% | Trades 77
+  why: pass: PASS with QS 0.59, PF 0.90, DD 31.1%, trades 77
+  evidence: rq_c7ecdcffde18=pass (Deterministic closure inherited pass for queue row rq_c7ecdcffde18 from strategy outcome QD-20260313-C156-TAO-RANGE-RECLAIM-v1.)
