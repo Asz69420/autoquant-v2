@@ -1,10 +1,10 @@
 {
-  "cycle_id": 148,
-  "cycle_key": "148",
-  "manifest_cycle_id": 148,
-  "status_cycle_id": 148,
-  "canonical_cycle_id": 148,
-  "orders_cycle_id": 148,
+  "cycle_id": 152,
+  "cycle_key": "152",
+  "manifest_cycle_id": 152,
+  "status_cycle_id": 152,
+  "canonical_cycle_id": 152,
+  "orders_cycle_id": 152,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "canonical_matches_cycle": true,
@@ -14,14 +14,14 @@
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "BTC",
-  "target_timeframe": "4h",
+  "target_asset": "ETH",
+  "target_timeframe": "1h",
   "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "opening-range or session-window continuation when a specific session structurally dominates follow-through",
-      "inventory-reset continuation after flush-and-reclaim rather than static oversold bounce logic",
-      "post-expansion partial-profit runner structure that keeps a core position for trend persistence"
+      "state-change momentum after regime improvement and post-break hold",
+      "mean reversion from exhaustion only when structure reaccepts prior value",
+      "breakout continuation with delayed entry after retest rather than immediate trigger"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -33,9 +33,9 @@
       "partial-profit first target with runner managed by structure instead of fixed take-profit only"
     ],
     "assets": [
+      "AXS",
       "BTC",
-      "ETH",
-      "TAO"
+      "ETH"
     ],
     "timeframes": [
       "1h",
@@ -43,14 +43,14 @@
     ]
   },
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C148-BTC-EMA-PULLBACK-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C148-BTC-BREAKOUT-HOLD-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C148-BTC-RANGE-RECLAIM-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C152-ETH-BREAKOUT-HOLD-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C152-ETH-EMA-PULLBACK-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C152-ETH-RANGE-RECLAIM-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260313-C148-BTC-BREAKOUT-HOLD-v1",
-    "QD-20260313-C148-BTC-EMA-PULLBACK-v1",
-    "QD-20260313-C148-BTC-RANGE-RECLAIM-v1"
+    "QD-20260313-C152-ETH-BREAKOUT-HOLD-v1",
+    "QD-20260313-C152-ETH-EMA-PULLBACK-v1",
+    "QD-20260313-C152-ETH-RANGE-RECLAIM-v1"
   ],
   "specs_produced": 3,
   "specs_written": 3,
@@ -58,14 +58,14 @@
   "iterated_families": [],
   "abandoned_families": [
     "eth_range_reclaim",
-    "eth_ema_pullback",
     "eth_breakout_hold",
+    "eth_ema_pullback",
     "doge_range_reclaim"
   ],
   "active_families": 0,
-  "all_recent_rows": 13,
+  "all_recent_rows": 12,
   "cycle_rows": 3,
-  "external_rows": 10,
+  "external_rows": 9,
   "cycle_results_present": true,
   "external_results_present": true,
   "backtests_queued": 3,
@@ -91,33 +91,33 @@
     "queue_terminal_failures": 0,
     "queue_orphan_discards": 0,
     "db_results": 3,
-    "pass": 3,
+    "pass": 1,
     "promote": 0,
     "train_runs": 3,
     "test_runs": 0
   },
-  "pass_count": 3,
-  "fail_count": 0,
+  "pass_count": 1,
+  "fail_count": 2,
   "promote_count": 0,
   "promotions": 0,
   "best_result": {
-    "strategy_spec_id": "QD-20260313-C148-BTC-RANGE-RECLAIM-v1",
-    "variant_id": "btc_range_reclaim_v1",
-    "asset": "BTC",
-    "timeframe": "4h",
-    "qscore": 0.99,
-    "profit_factor": 1.102,
-    "total_trades": 73,
+    "strategy_spec_id": "QD-20260313-C152-ETH-RANGE-RECLAIM-v1",
+    "variant_id": "eth_range_reclaim_v1",
+    "asset": "ETH",
+    "timeframe": "1h",
+    "qscore": 0.863,
+    "profit_factor": 0.984,
+    "total_trades": 71,
     "decision": "pass"
   },
-  "best_qscore": 0.99,
-  "next_cycle_focus": "Promote 3 strategyies to the candidate library and continue validation.",
-  "rationale": "QD-20260313-C148-BTC-EMA-PULLBACK-v1: pass \u2014 pass: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83 | QD-20260313-C148-BTC-BREAKOUT-HOLD-v1: pass \u2014 pass: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78 | QD-20260313-C148-BTC-RANGE-RECLAIM-v1: pass \u2014 pass: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73",
+  "best_qscore": 0.863,
+  "next_cycle_focus": "Promote 1 strategy to the candidate library and continue validation.",
+  "rationale": "QD-20260313-C152-ETH-BREAKOUT-HOLD-v1: abort \u2014 abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78 | QD-20260313-C152-ETH-EMA-PULLBACK-v1: abort \u2014 abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78 | QD-20260313-C152-ETH-RANGE-RECLAIM-v1: pass \u2014 pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71",
   "has_reflection_note": true,
-  "elapsed_seconds": 458.7,
-  "run_elapsed_seconds": 458.7,
+  "elapsed_seconds": 458.8,
+  "run_elapsed_seconds": 458.8,
   "report_delay_seconds": 0.0,
   "is_completed": true,
-  "started_at_epoch": 1773376230.804993,
-  "ended_at_epoch": 1773376689.4802184
+  "started_at_epoch": 1773378180.8396177,
+  "ended_at_epoch": 1773378639.5896351
 }
