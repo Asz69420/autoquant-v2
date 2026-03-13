@@ -1,10 +1,10 @@
 {
-  "cycle_id": 124,
-  "cycle_key": "124",
-  "manifest_cycle_id": 124,
-  "status_cycle_id": 124,
-  "canonical_cycle_id": 124,
-  "orders_cycle_id": 124,
+  "cycle_id": 141,
+  "cycle_key": "141",
+  "manifest_cycle_id": 141,
+  "status_cycle_id": 141,
+  "canonical_cycle_id": 141,
+  "orders_cycle_id": 141,
   "status_matches_cycle": true,
   "manifest_matches_cycle": true,
   "canonical_matches_cycle": true,
@@ -14,14 +14,14 @@
   "research_direction": "explore_new",
   "minimum_spec_count": 3,
   "maximum_spec_count": 4,
-  "target_asset": "BTC",
+  "target_asset": "ETH",
   "target_timeframe": "4h",
   "iterate_target": null,
   "exploration_targets": {
     "concepts": [
-      "scale-in around value recovery when confirmation improves across bars instead of one-shot all-in timing",
-      "trend continuation with asymmetric exit logic where trigger, risk, and exit indicators play different roles",
-      "retest-and-hold continuation that de-risks by time if expansion fails to appear fast enough"
+      "range-failure reversal after multi-bar breakout loses acceptance and re-enters balance",
+      "trend reset continuation after a deeper pullback instead of shallow ema-touch logic",
+      "compression fakeout into re-expansion with directional confirmation"
     ],
     "management_styles": [
       "one-shot entry with one-shot exit",
@@ -43,14 +43,14 @@
     ]
   },
   "spec_paths": [
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C124-BTC-EMA-PULLBACK-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C124-BTC-RANGE-RECLAIM-v1.strategy_spec.json",
-    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C124-BTC-BREAKOUT-HOLD-v1.strategy_spec.json"
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C141-ETH-EMA-PULLBACK-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C141-ETH-RANGE-RECLAIM-v1.strategy_spec.json",
+    "C:\\Users\\Clamps\\.openclaw\\workspace-oragorn\\artifacts\\strategy_specs\\QD-20260313-C141-ETH-BREAKOUT-HOLD-v1.strategy_spec.json"
   ],
   "spec_ids": [
-    "QD-20260313-C124-BTC-BREAKOUT-HOLD-v1",
-    "QD-20260313-C124-BTC-EMA-PULLBACK-v1",
-    "QD-20260313-C124-BTC-RANGE-RECLAIM-v1"
+    "QD-20260313-C141-ETH-BREAKOUT-HOLD-v1",
+    "QD-20260313-C141-ETH-EMA-PULLBACK-v1",
+    "QD-20260313-C141-ETH-RANGE-RECLAIM-v1"
   ],
   "specs_produced": 3,
   "specs_written": 3,
@@ -58,8 +58,8 @@
   "iterated_families": [],
   "abandoned_families": [
     "eth_range_reclaim",
-    "eth_breakout_hold",
     "eth_ema_pullback",
+    "eth_breakout_hold",
     "doge_range_reclaim"
   ],
   "active_families": 0,
@@ -91,33 +91,33 @@
     "queue_terminal_failures": 0,
     "queue_orphan_discards": 0,
     "db_results": 3,
-    "pass": 3,
+    "pass": 2,
     "promote": 0,
     "train_runs": 3,
     "test_runs": 0
   },
-  "pass_count": 3,
-  "fail_count": 0,
+  "pass_count": 2,
+  "fail_count": 1,
   "promote_count": 0,
   "promotions": 0,
   "best_result": {
-    "strategy_spec_id": "QD-20260313-C124-BTC-RANGE-RECLAIM-v1",
-    "variant_id": "btc_range_reclaim_v1",
-    "asset": "BTC",
+    "strategy_spec_id": "QD-20260313-C141-ETH-EMA-PULLBACK-v1",
+    "variant_id": "eth_ema_pullback_v1",
+    "asset": "ETH",
     "timeframe": "4h",
-    "qscore": 0.99,
-    "profit_factor": 1.102,
-    "total_trades": 73,
+    "qscore": 0.93,
+    "profit_factor": 1.131,
+    "total_trades": 76,
     "decision": "pass"
   },
-  "best_qscore": 0.99,
-  "next_cycle_focus": "Promote 3 strategyies to the candidate library and continue validation.",
-  "rationale": "QD-20260313-C124-BTC-EMA-PULLBACK-v1: pass \u2014 pass: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83 | QD-20260313-C124-BTC-RANGE-RECLAIM-v1: pass \u2014 pass: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73 | QD-20260313-C124-BTC-BREAKOUT-HOLD-v1: pass \u2014 pass: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78",
+  "best_qscore": 0.93,
+  "next_cycle_focus": "Promote 2 strategyies to the candidate library and continue validation.",
+  "rationale": "QD-20260313-C141-ETH-EMA-PULLBACK-v1: pass \u2014 pass: PASS with QS 0.93, PF 1.13, DD 20.1%, trades 76 | QD-20260313-C141-ETH-RANGE-RECLAIM-v1: abort \u2014 abort: fail with QS 0.38, PF 0.70, DD 31.6%, trades 83 | QD-20260313-C141-ETH-BREAKOUT-HOLD-v1: pass \u2014 pass: PASS with QS 0.85, PF 1.06, DD 20.9%, trades 75",
   "has_reflection_note": true,
-  "elapsed_seconds": 459.9,
-  "run_elapsed_seconds": 459.9,
-  "report_delay_seconds": 0.1,
+  "elapsed_seconds": 459.6,
+  "run_elapsed_seconds": 459.6,
+  "report_delay_seconds": 0.0,
   "is_completed": true,
-  "started_at_epoch": 1773363924.1990514,
-  "ended_at_epoch": 1773364384.0501957
+  "started_at_epoch": 1773372813.4075892,
+  "ended_at_epoch": 1773373272.9577754
 }
