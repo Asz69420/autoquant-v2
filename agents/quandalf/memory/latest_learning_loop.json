@@ -1,6 +1,6 @@
 {
   "version": "quandalf-learning-loop-v3",
-  "ts_iso": "2026-03-13T00:42:25.129905+00:00",
+  "ts_iso": "2026-03-13T01:13:04.431934+00:00",
   "sources": {
     "reflection_packet": "agents\\quandalf\\memory\\reflection_packet.json",
     "refinement_decisions": "agents\\quandalf\\memory\\refinement_decisions.json",
@@ -8,8 +8,8 @@
     "latest_journal": "agents\\quandalf\\memory\\latest_journal.md"
   },
   "cycle_context": {
-    "cycle_id": 120,
-    "asset": "TAO",
+    "cycle_id": 124,
+    "asset": "BTC",
     "timeframe": "4h",
     "mode": "explore",
     "research_direction": "explore_new"
@@ -25,69 +25,69 @@
   },
   "dimensions": {
     "what_worked": [
-      "QD-20260313-C120-TAO-BREAKOUT-HOLD-v1: refine: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84",
-      "QD-20260313-C120-TAO-EMA-PULLBACK-v1: refine: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78",
-      "QD-20260313-C120-TAO-RANGE-RECLAIM-v1: refine: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76"
+      "QD-20260313-C124-BTC-EMA-PULLBACK-v1: refine: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83",
+      "QD-20260313-C124-BTC-RANGE-RECLAIM-v1: refine: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73",
+      "QD-20260313-C124-BTC-BREAKOUT-HOLD-v1: refine: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78"
     ],
     "what_failed": [],
     "why_it_failed": [
-      "QD-20260313-C120-TAO-BREAKOUT-HOLD-v1: bad idea",
-      "QD-20260313-C120-TAO-EMA-PULLBACK-v1: bad idea",
-      "QD-20260313-C120-TAO-RANGE-RECLAIM-v1: bad idea"
+      "QD-20260313-C124-BTC-EMA-PULLBACK-v1: bad idea",
+      "QD-20260313-C124-BTC-RANGE-RECLAIM-v1: bad idea",
+      "QD-20260313-C124-BTC-BREAKOUT-HOLD-v1: bad idea"
     ],
     "iterate_next": [
-      "decision QD-20260313-C120-TAO-BREAKOUT-HOLD-v1: pass: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84",
-      "decision QD-20260313-C120-TAO-EMA-PULLBACK-v1: pass: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78",
-      "decision QD-20260313-C120-TAO-RANGE-RECLAIM-v1: pass: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76"
+      "decision QD-20260313-C124-BTC-EMA-PULLBACK-v1: pass: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83",
+      "decision QD-20260313-C124-BTC-RANGE-RECLAIM-v1: pass: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73",
+      "decision QD-20260313-C124-BTC-BREAKOUT-HOLD-v1: pass: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78"
     ],
     "abandon": [],
     "bench_for_later": [],
     "regime_notes": [],
     "strategy_family_notes": [
       "[]",
-      "[\"eth_breakout_hold\", \"eth_ema_pullback\", \"eth_range_reclaim\"]"
+      "[\"eth_range_reclaim\", \"eth_breakout_hold\", \"eth_ema_pullback\", \"doge_range_reclaim\"]"
     ],
     "indicator_role_notes": [],
     "management_notes": [
-      "QD-20260313-C120-TAO-BREAKOUT-HOLD-v1: risk/management -> {\"max_concurrent_positions\": 1, \"max_holding_bars\": 10, \"risk_per_trade_pct\": 0.004, \"stop_atr_mult\": 1.1, \"stop_type\": \"atr\", \"tp_atr_mult\": 2.4, \"tp_type\": \"atr\"}",
-      "QD-20260313-C120-TAO-BREAKOUT-HOLD-v1: trade_management -> {\"entry_style\": \"one_shot\", \"exit_style\": \"trailing_time_mix\", \"position_stages\": [{\"action\": \"entry\", \"size_pct\": 100, \"trigger\": \"signal\"}, {\"action\": \"de_risk\", \"size_pct\": 40, \"trigger\": \"8 bars in trade\"}, {\"action\": \"exit\", \"size_pct\"",
-      "QD-20260313-C120-TAO-EMA-PULLBACK-v1: risk/management -> {\"max_concurrent_positions\": 1, \"max_holding_bars\": 10, \"risk_per_trade_pct\": 0.004, \"stop_atr_mult\": 1.1, \"stop_type\": \"atr\", \"tp_atr_mult\": 2.4, \"tp_type\": \"atr\"}",
-      "QD-20260313-C120-TAO-EMA-PULLBACK-v1: trade_management -> {\"entry_style\": \"one_shot\", \"exit_style\": \"one_shot\", \"position_stages\": [{\"action\": \"entry\", \"size_pct\": 100, \"trigger\": \"signal\"}, {\"action\": \"exit\", \"size_pct\": 100, \"trigger\": \"exit_rules\"}], \"risk_management\": {\"breakeven_trigger\": nul",
-      "QD-20260313-C120-TAO-RANGE-RECLAIM-v1: risk/management -> {\"max_concurrent_positions\": 1, \"max_holding_bars\": 10, \"risk_per_trade_pct\": 0.004, \"stop_atr_mult\": 1.1, \"stop_type\": \"atr\", \"tp_atr_mult\": 2.4, \"tp_type\": \"atr\"}",
-      "QD-20260313-C120-TAO-RANGE-RECLAIM-v1: trade_management -> {\"entry_style\": \"one_shot\", \"exit_style\": \"partial_runner\", \"position_stages\": [{\"action\": \"entry\", \"size_pct\": 100, \"trigger\": \"signal\"}, {\"action\": \"take_profit\", \"size_pct\": 50, \"trigger\": \"1.2 ATR\"}, {\"action\": \"runner_exit\", \"size_pct\""
+      "QD-20260313-C124-BTC-EMA-PULLBACK-v1: risk/management -> {\"max_concurrent_positions\": 1, \"max_holding_bars\": 10, \"risk_per_trade_pct\": 0.004, \"stop_atr_mult\": 1.1, \"stop_type\": \"atr\", \"tp_atr_mult\": 2.4, \"tp_type\": \"atr\"}",
+      "QD-20260313-C124-BTC-EMA-PULLBACK-v1: trade_management -> {\"entry_style\": \"one_shot\", \"exit_style\": \"one_shot\", \"position_stages\": [{\"action\": \"entry\", \"size_pct\": 100, \"trigger\": \"signal\"}, {\"action\": \"exit\", \"size_pct\": 100, \"trigger\": \"exit_rules\"}], \"risk_management\": {\"breakeven_trigger\": nul",
+      "QD-20260313-C124-BTC-RANGE-RECLAIM-v1: risk/management -> {\"max_concurrent_positions\": 1, \"max_holding_bars\": 10, \"risk_per_trade_pct\": 0.004, \"stop_atr_mult\": 1.1, \"stop_type\": \"atr\", \"tp_atr_mult\": 2.4, \"tp_type\": \"atr\"}",
+      "QD-20260313-C124-BTC-RANGE-RECLAIM-v1: trade_management -> {\"entry_style\": \"one_shot\", \"exit_style\": \"partial_runner\", \"position_stages\": [{\"action\": \"entry\", \"size_pct\": 100, \"trigger\": \"signal\"}, {\"action\": \"take_profit\", \"size_pct\": 50, \"trigger\": \"1.2 ATR\"}, {\"action\": \"runner_exit\", \"size_pct\"",
+      "QD-20260313-C124-BTC-BREAKOUT-HOLD-v1: risk/management -> {\"max_concurrent_positions\": 1, \"max_holding_bars\": 10, \"risk_per_trade_pct\": 0.004, \"stop_atr_mult\": 1.1, \"stop_type\": \"atr\", \"tp_atr_mult\": 2.4, \"tp_type\": \"atr\"}",
+      "QD-20260313-C124-BTC-BREAKOUT-HOLD-v1: trade_management -> {\"entry_style\": \"one_shot\", \"exit_style\": \"trailing_time_mix\", \"position_stages\": [{\"action\": \"entry\", \"size_pct\": 100, \"trigger\": \"signal\"}, {\"action\": \"de_risk\", \"size_pct\": 40, \"trigger\": \"8 bars in trade\"}, {\"action\": \"exit\", \"size_pct\""
     ],
     "strategy_reviews": [
       {
-        "strategy_spec_id": "QD-20260313-C120-TAO-BREAKOUT-HOLD-v1",
-        "asset": "TAO",
+        "strategy_spec_id": "QD-20260313-C124-BTC-EMA-PULLBACK-v1",
+        "asset": "BTC",
         "timeframe": "4h",
-        "edge_mechanism": "breakout continuation after hold above broken structure with volatility expansion",
-        "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
+        "edge_mechanism": "trend pullback continuation after value reclaim",
+        "hypothesis": "trend pullback continuation after value reclaim",
         "diagnosis_category": "bad idea",
         "decision": "pass",
-        "decision_rationale": "pass: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84",
-        "why_asset": "asset=TAO from chosen lane / result context",
+        "decision_rationale": "pass: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83",
+        "why_asset": "asset=BTC from chosen lane / result context",
         "why_timeframe": "timeframe=4h from chosen lane / result context",
         "queue_evidence": [
-          "rq_f6b5b4b94497=pass (Deterministic closure inherited pass for queue row rq_f6b5b4b94497 from strategy outcome QD-20260313-C120-TAO-BREAKOUT-HOLD-v1.)"
+          "rq_4d6e32db3489=pass (Deterministic closure inherited pass for queue row rq_4d6e32db3489 from strategy outcome QD-20260313-C124-BTC-EMA-PULLBACK-v1.)"
         ],
         "train_result": {
-          "id": "wf_e16cdd59aaea",
-          "variant_id": "tao_breakout_hold_v1",
-          "asset": "TAO",
+          "id": "wf_8d3c0f8267f8",
+          "variant_id": "btc_ema_pullback_v1",
+          "asset": "BTC",
           "timeframe": "4h",
-          "profit_factor": 1.283,
-          "max_drawdown_pct": 33.88,
-          "total_trades": 84,
-          "win_rate_pct": 47.61904761904761,
-          "total_return_pct": 43.09,
-          "score_total": 0.944,
+          "profit_factor": 0.976,
+          "max_drawdown_pct": 21.64,
+          "total_trades": 83,
+          "win_rate_pct": 36.144578313253014,
+          "total_return_pct": -4.39,
+          "score_total": 0.76,
           "score_decision": "pass",
           "mutation_type": "initial",
           "refinement_round": 0,
           "family_generation": 1,
           "stage": "screen",
-          "strategy_family": "tao_breakout_hold",
+          "strategy_family": "btc_ema_pullback",
           "sharpe_ratio": null,
           "avg_trade_pct": null,
           "degradation_pct": null,
@@ -95,30 +95,30 @@
           "fold_results": [],
           "metrics": {
             "insample": {
-              "total_trades": 84,
-              "profit_factor": 1.283,
-              "max_drawdown_pct": 33.88,
-              "total_return_pct": 43.09,
-              "win_rate_pct": 47.61904761904761,
-              "avg_trade_pct": 0.559,
-              "sharpe_ratio": 1.702,
-              "qscore": 0.944,
+              "total_trades": 83,
+              "profit_factor": 0.976,
+              "max_drawdown_pct": 21.64,
+              "total_return_pct": -4.39,
+              "win_rate_pct": 36.144578313253014,
+              "avg_trade_pct": -0.025,
+              "sharpe_ratio": -0.164,
+              "qscore": 0.76,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"robust_across_regimes\", \"valuable_in_chop\"]"
             },
             "outofsample": {
-              "total_trades": 84,
-              "profit_factor": 1.283,
-              "max_drawdown_pct": 33.88,
-              "total_return_pct": 43.09,
-              "win_rate_pct": 47.61904761904761,
-              "avg_trade_pct": 0.559,
-              "sharpe_ratio": 1.702,
-              "qscore": 0.944,
+              "total_trades": 83,
+              "profit_factor": 0.976,
+              "max_drawdown_pct": 21.64,
+              "total_return_pct": -4.39,
+              "win_rate_pct": 36.144578313253014,
+              "avg_trade_pct": -0.025,
+              "sharpe_ratio": -0.164,
+              "qscore": 0.76,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"robust_across_regimes\", \"valuable_in_chop\"]"
             },
             "degradation_pct": 0.0,
             "walk_forward_config": {
@@ -128,51 +128,51 @@
               "train_qscore_gate": 1.0
             },
             "regime_scores": {
+              "TREND_DOWN": {
+                "trade_count": 22,
+                "profit_factor": 1.363,
+                "win_rate": 45.45,
+                "avg_return": 0.333,
+                "qscore": 1.363
+              },
               "TRANSITION": {
-                "trade_count": 15,
-                "profit_factor": 2.01,
-                "win_rate": 53.33,
-                "avg_return": 1.894,
-                "qscore": 2.01
+                "trade_count": 26,
+                "profit_factor": 0.707,
+                "win_rate": 26.92,
+                "avg_return": -0.353,
+                "qscore": 0.707
               },
               "CHOP": {
                 "trade_count": 27,
-                "profit_factor": 0.853,
-                "win_rate": 40.74,
-                "avg_return": -0.313,
-                "qscore": 0.853
+                "profit_factor": 1.271,
+                "win_rate": 44.44,
+                "avg_return": 0.266,
+                "qscore": 1.271
               },
               "TREND_UP": {
-                "trade_count": 15,
-                "profit_factor": 0.873,
-                "win_rate": 46.67,
-                "avg_return": -0.295,
-                "qscore": 0.873
-              },
-              "TREND_DOWN": {
-                "trade_count": 27,
-                "profit_factor": 1.695,
-                "win_rate": 51.85,
-                "avg_return": 1.163,
-                "qscore": 1.695
+                "trade_count": 8,
+                "profit_factor": 0.212,
+                "win_rate": 12.5,
+                "avg_return": -0.926,
+                "qscore": null
               }
             },
-            "regime_concentration": 32.14,
+            "regime_concentration": 32.53,
             "primary_regime": "CHOP"
           },
           "regime_metrics": {},
-          "ts_iso": "2026-03-13T00:42:00.312427+00:00"
+          "ts_iso": "2026-03-13T01:12:34.395245+00:00"
         },
         "test_results": [],
         "stage_metrics": {
           "train": {
             "runs": 1,
-            "trades": 84,
-            "best_qscore": 0.944,
+            "trades": 83,
+            "best_qscore": 0.76,
             "best_sharpe": 0.0,
-            "best_pf": 1.283,
-            "max_dd": 33.88,
-            "best_return_pct": 43.09
+            "best_pf": 0.976,
+            "max_dd": 21.64,
+            "best_return_pct": 0.0
           },
           "test": {
             "runs": 0,
@@ -185,22 +185,22 @@
           }
         },
         "latest_result": {
-          "id": "wf_e16cdd59aaea",
-          "variant_id": "tao_breakout_hold_v1",
-          "asset": "TAO",
+          "id": "wf_8d3c0f8267f8",
+          "variant_id": "btc_ema_pullback_v1",
+          "asset": "BTC",
           "timeframe": "4h",
-          "profit_factor": 1.283,
-          "max_drawdown_pct": 33.88,
-          "total_trades": 84,
-          "win_rate_pct": 47.61904761904761,
-          "total_return_pct": 43.09,
-          "score_total": 0.944,
+          "profit_factor": 0.976,
+          "max_drawdown_pct": 21.64,
+          "total_trades": 83,
+          "win_rate_pct": 36.144578313253014,
+          "total_return_pct": -4.39,
+          "score_total": 0.76,
           "score_decision": "pass",
           "mutation_type": "initial",
           "refinement_round": 0,
           "family_generation": 1,
           "stage": "screen",
-          "strategy_family": "tao_breakout_hold",
+          "strategy_family": "btc_ema_pullback",
           "sharpe_ratio": null,
           "avg_trade_pct": null,
           "degradation_pct": null,
@@ -208,30 +208,30 @@
           "fold_results": [],
           "metrics": {
             "insample": {
-              "total_trades": 84,
-              "profit_factor": 1.283,
-              "max_drawdown_pct": 33.88,
-              "total_return_pct": 43.09,
-              "win_rate_pct": 47.61904761904761,
-              "avg_trade_pct": 0.559,
-              "sharpe_ratio": 1.702,
-              "qscore": 0.944,
+              "total_trades": 83,
+              "profit_factor": 0.976,
+              "max_drawdown_pct": 21.64,
+              "total_return_pct": -4.39,
+              "win_rate_pct": 36.144578313253014,
+              "avg_trade_pct": -0.025,
+              "sharpe_ratio": -0.164,
+              "qscore": 0.76,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"robust_across_regimes\", \"valuable_in_chop\"]"
             },
             "outofsample": {
-              "total_trades": 84,
-              "profit_factor": 1.283,
-              "max_drawdown_pct": 33.88,
-              "total_return_pct": 43.09,
-              "win_rate_pct": 47.61904761904761,
-              "avg_trade_pct": 0.559,
-              "sharpe_ratio": 1.702,
-              "qscore": 0.944,
+              "total_trades": 83,
+              "profit_factor": 0.976,
+              "max_drawdown_pct": 21.64,
+              "total_return_pct": -4.39,
+              "win_rate_pct": 36.144578313253014,
+              "avg_trade_pct": -0.025,
+              "sharpe_ratio": -0.164,
+              "qscore": 0.76,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"robust_across_regimes\", \"valuable_in_chop\"]"
             },
             "degradation_pct": 0.0,
             "walk_forward_config": {
@@ -241,73 +241,73 @@
               "train_qscore_gate": 1.0
             },
             "regime_scores": {
+              "TREND_DOWN": {
+                "trade_count": 22,
+                "profit_factor": 1.363,
+                "win_rate": 45.45,
+                "avg_return": 0.333,
+                "qscore": 1.363
+              },
               "TRANSITION": {
-                "trade_count": 15,
-                "profit_factor": 2.01,
-                "win_rate": 53.33,
-                "avg_return": 1.894,
-                "qscore": 2.01
+                "trade_count": 26,
+                "profit_factor": 0.707,
+                "win_rate": 26.92,
+                "avg_return": -0.353,
+                "qscore": 0.707
               },
               "CHOP": {
                 "trade_count": 27,
-                "profit_factor": 0.853,
-                "win_rate": 40.74,
-                "avg_return": -0.313,
-                "qscore": 0.853
+                "profit_factor": 1.271,
+                "win_rate": 44.44,
+                "avg_return": 0.266,
+                "qscore": 1.271
               },
               "TREND_UP": {
-                "trade_count": 15,
-                "profit_factor": 0.873,
-                "win_rate": 46.67,
-                "avg_return": -0.295,
-                "qscore": 0.873
-              },
-              "TREND_DOWN": {
-                "trade_count": 27,
-                "profit_factor": 1.695,
-                "win_rate": 51.85,
-                "avg_return": 1.163,
-                "qscore": 1.695
+                "trade_count": 8,
+                "profit_factor": 0.212,
+                "win_rate": 12.5,
+                "avg_return": -0.926,
+                "qscore": null
               }
             },
-            "regime_concentration": 32.14,
+            "regime_concentration": 32.53,
             "primary_regime": "CHOP"
           },
           "regime_metrics": {},
-          "ts_iso": "2026-03-13T00:42:00.312427+00:00"
+          "ts_iso": "2026-03-13T01:12:34.395245+00:00"
         }
       },
       {
-        "strategy_spec_id": "QD-20260313-C120-TAO-EMA-PULLBACK-v1",
-        "asset": "TAO",
+        "strategy_spec_id": "QD-20260313-C124-BTC-RANGE-RECLAIM-v1",
+        "asset": "BTC",
         "timeframe": "4h",
-        "edge_mechanism": "trend pullback continuation after value reclaim",
-        "hypothesis": "trend pullback continuation after value reclaim",
+        "edge_mechanism": "range reclaim continuation after false breakdown and value recovery",
+        "hypothesis": "range reclaim continuation after false breakdown and value recovery",
         "diagnosis_category": "bad idea",
         "decision": "pass",
-        "decision_rationale": "pass: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78",
-        "why_asset": "asset=TAO from chosen lane / result context",
+        "decision_rationale": "pass: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73",
+        "why_asset": "asset=BTC from chosen lane / result context",
         "why_timeframe": "timeframe=4h from chosen lane / result context",
         "queue_evidence": [
-          "rq_e63ba7d2f452=pass (Deterministic closure inherited pass for queue row rq_e63ba7d2f452 from strategy outcome QD-20260313-C120-TAO-EMA-PULLBACK-v1.)"
+          "rq_48127730cf03=pass (Deterministic closure inherited pass for queue row rq_48127730cf03 from strategy outcome QD-20260313-C124-BTC-RANGE-RECLAIM-v1.)"
         ],
         "train_result": {
-          "id": "wf_99d9ccc166bd",
-          "variant_id": "tao_ema_pullback_v1",
-          "asset": "TAO",
+          "id": "wf_cf9c966bc3f8",
+          "variant_id": "btc_range_reclaim_v1",
+          "asset": "BTC",
           "timeframe": "4h",
-          "profit_factor": 1.202,
-          "max_drawdown_pct": 35.94,
-          "total_trades": 78,
-          "win_rate_pct": 46.15384615384615,
-          "total_return_pct": 23.95,
-          "score_total": 0.843,
+          "profit_factor": 1.102,
+          "max_drawdown_pct": 11.2,
+          "total_trades": 73,
+          "win_rate_pct": 49.31506849315068,
+          "total_return_pct": 4.5,
+          "score_total": 0.99,
           "score_decision": "pass",
           "mutation_type": "initial",
           "refinement_round": 0,
           "family_generation": 1,
           "stage": "screen",
-          "strategy_family": "tao_ema_pullback",
+          "strategy_family": "btc_range_reclaim",
           "sharpe_ratio": null,
           "avg_trade_pct": null,
           "degradation_pct": null,
@@ -315,30 +315,30 @@
           "fold_results": [],
           "metrics": {
             "insample": {
-              "total_trades": 78,
-              "profit_factor": 1.202,
-              "max_drawdown_pct": 35.94,
-              "total_return_pct": 23.95,
-              "win_rate_pct": 46.15384615384615,
-              "avg_trade_pct": 0.39,
-              "sharpe_ratio": 1.275,
-              "qscore": 0.843,
+              "total_trades": 73,
+              "profit_factor": 1.102,
+              "max_drawdown_pct": 11.2,
+              "total_return_pct": 4.5,
+              "win_rate_pct": 49.31506849315068,
+              "avg_trade_pct": 0.077,
+              "sharpe_ratio": 0.666,
+              "qscore": 0.99,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"valuable_in_chop\"]"
             },
             "outofsample": {
-              "total_trades": 78,
-              "profit_factor": 1.202,
-              "max_drawdown_pct": 35.94,
-              "total_return_pct": 23.95,
-              "win_rate_pct": 46.15384615384615,
-              "avg_trade_pct": 0.39,
-              "sharpe_ratio": 1.275,
-              "qscore": 0.843,
+              "total_trades": 73,
+              "profit_factor": 1.102,
+              "max_drawdown_pct": 11.2,
+              "total_return_pct": 4.5,
+              "win_rate_pct": 49.31506849315068,
+              "avg_trade_pct": 0.077,
+              "sharpe_ratio": 0.666,
+              "qscore": 0.99,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"valuable_in_chop\"]"
             },
             "degradation_pct": 0.0,
             "walk_forward_config": {
@@ -348,51 +348,271 @@
               "train_qscore_gate": 1.0
             },
             "regime_scores": {
-              "CHOP": {
-                "trade_count": 25,
-                "profit_factor": 0.749,
-                "win_rate": 36.0,
-                "avg_return": -0.525,
-                "qscore": 0.749
-              },
-              "TREND_UP": {
-                "trade_count": 15,
-                "profit_factor": 1.067,
-                "win_rate": 53.33,
-                "avg_return": 0.139,
-                "qscore": 1.067
-              },
-              "TRANSITION": {
-                "trade_count": 14,
-                "profit_factor": 1.507,
-                "win_rate": 42.86,
-                "avg_return": 0.999,
+              "TREND_DOWN": {
+                "trade_count": 6,
+                "profit_factor": 0.2,
+                "win_rate": 16.67,
+                "avg_return": -0.781,
                 "qscore": null
               },
-              "TREND_DOWN": {
-                "trade_count": 24,
-                "profit_factor": 1.693,
-                "win_rate": 54.17,
-                "avg_return": 1.143,
-                "qscore": 1.693
+              "TRANSITION": {
+                "trade_count": 29,
+                "profit_factor": 0.407,
+                "win_rate": 37.93,
+                "avg_return": -0.669,
+                "qscore": 0.407
+              },
+              "CHOP": {
+                "trade_count": 37,
+                "profit_factor": 2.847,
+                "win_rate": 64.86,
+                "avg_return": 0.81,
+                "qscore": 2.847
+              },
+              "TREND_UP": {
+                "trade_count": 1,
+                "profit_factor": 0.0,
+                "win_rate": 0.0,
+                "avg_return": -0.263,
+                "qscore": null
               }
             },
-            "regime_concentration": 32.05,
+            "regime_concentration": 50.68,
             "primary_regime": "CHOP"
           },
           "regime_metrics": {},
-          "ts_iso": "2026-03-13T00:42:00.328223+00:00"
+          "ts_iso": "2026-03-13T01:12:34.427333+00:00"
+        },
+        "test_results": [],
+        "stage_metrics": {
+          "train": {
+            "runs": 1,
+            "trades": 73,
+            "best_qscore": 0.99,
+            "best_sharpe": 0.0,
+            "best_pf": 1.102,
+            "max_dd": 11.2,
+            "best_return_pct": 4.5
+          },
+          "test": {
+            "runs": 0,
+            "trades": 0,
+            "best_qscore": 0.0,
+            "best_sharpe": 0.0,
+            "best_pf": 0.0,
+            "max_dd": 0.0,
+            "best_return_pct": 0.0
+          }
+        },
+        "latest_result": {
+          "id": "wf_cf9c966bc3f8",
+          "variant_id": "btc_range_reclaim_v1",
+          "asset": "BTC",
+          "timeframe": "4h",
+          "profit_factor": 1.102,
+          "max_drawdown_pct": 11.2,
+          "total_trades": 73,
+          "win_rate_pct": 49.31506849315068,
+          "total_return_pct": 4.5,
+          "score_total": 0.99,
+          "score_decision": "pass",
+          "mutation_type": "initial",
+          "refinement_round": 0,
+          "family_generation": 1,
+          "stage": "screen",
+          "strategy_family": "btc_range_reclaim",
+          "sharpe_ratio": null,
+          "avg_trade_pct": null,
+          "degradation_pct": null,
+          "walk_forward_config": {},
+          "fold_results": [],
+          "metrics": {
+            "insample": {
+              "total_trades": 73,
+              "profit_factor": 1.102,
+              "max_drawdown_pct": 11.2,
+              "total_return_pct": 4.5,
+              "win_rate_pct": 49.31506849315068,
+              "avg_trade_pct": 0.077,
+              "sharpe_ratio": 0.666,
+              "qscore": 0.99,
+              "decision": "pass",
+              "grade": "B",
+              "flags": "[\"valuable_in_chop\"]"
+            },
+            "outofsample": {
+              "total_trades": 73,
+              "profit_factor": 1.102,
+              "max_drawdown_pct": 11.2,
+              "total_return_pct": 4.5,
+              "win_rate_pct": 49.31506849315068,
+              "avg_trade_pct": 0.077,
+              "sharpe_ratio": 0.666,
+              "qscore": 0.99,
+              "decision": "pass",
+              "grade": "B",
+              "flags": "[\"valuable_in_chop\"]"
+            },
+            "degradation_pct": 0.0,
+            "walk_forward_config": {
+              "mode": "train_gate",
+              "train_days": 240,
+              "min_train_trades": 30,
+              "train_qscore_gate": 1.0
+            },
+            "regime_scores": {
+              "TREND_DOWN": {
+                "trade_count": 6,
+                "profit_factor": 0.2,
+                "win_rate": 16.67,
+                "avg_return": -0.781,
+                "qscore": null
+              },
+              "TRANSITION": {
+                "trade_count": 29,
+                "profit_factor": 0.407,
+                "win_rate": 37.93,
+                "avg_return": -0.669,
+                "qscore": 0.407
+              },
+              "CHOP": {
+                "trade_count": 37,
+                "profit_factor": 2.847,
+                "win_rate": 64.86,
+                "avg_return": 0.81,
+                "qscore": 2.847
+              },
+              "TREND_UP": {
+                "trade_count": 1,
+                "profit_factor": 0.0,
+                "win_rate": 0.0,
+                "avg_return": -0.263,
+                "qscore": null
+              }
+            },
+            "regime_concentration": 50.68,
+            "primary_regime": "CHOP"
+          },
+          "regime_metrics": {},
+          "ts_iso": "2026-03-13T01:12:34.427333+00:00"
+        }
+      },
+      {
+        "strategy_spec_id": "QD-20260313-C124-BTC-BREAKOUT-HOLD-v1",
+        "asset": "BTC",
+        "timeframe": "4h",
+        "edge_mechanism": "breakout continuation after hold above broken structure with volatility expansion",
+        "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
+        "diagnosis_category": "bad idea",
+        "decision": "pass",
+        "decision_rationale": "pass: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78",
+        "why_asset": "asset=BTC from chosen lane / result context",
+        "why_timeframe": "timeframe=4h from chosen lane / result context",
+        "queue_evidence": [
+          "rq_88f33df501b5=pass (Deterministic closure inherited pass for queue row rq_88f33df501b5 from strategy outcome QD-20260313-C124-BTC-BREAKOUT-HOLD-v1.)"
+        ],
+        "train_result": {
+          "id": "wf_0150f1198d6a",
+          "variant_id": "btc_breakout_hold_v1",
+          "asset": "BTC",
+          "timeframe": "4h",
+          "profit_factor": 0.921,
+          "max_drawdown_pct": 21.24,
+          "total_trades": 78,
+          "win_rate_pct": 38.46153846153847,
+          "total_return_pct": -9.71,
+          "score_total": 0.709,
+          "score_decision": "pass",
+          "mutation_type": "initial",
+          "refinement_round": 0,
+          "family_generation": 1,
+          "stage": "screen",
+          "strategy_family": "btc_breakout_hold",
+          "sharpe_ratio": null,
+          "avg_trade_pct": null,
+          "degradation_pct": null,
+          "walk_forward_config": {},
+          "fold_results": [],
+          "metrics": {
+            "insample": {
+              "total_trades": 78,
+              "profit_factor": 0.921,
+              "max_drawdown_pct": 21.24,
+              "total_return_pct": -9.71,
+              "win_rate_pct": 38.46153846153847,
+              "avg_trade_pct": -0.094,
+              "sharpe_ratio": -0.54,
+              "qscore": 0.709,
+              "decision": "pass",
+              "grade": "B",
+              "flags": "[\"valuable_in_chop\"]"
+            },
+            "outofsample": {
+              "total_trades": 78,
+              "profit_factor": 0.921,
+              "max_drawdown_pct": 21.24,
+              "total_return_pct": -9.71,
+              "win_rate_pct": 38.46153846153847,
+              "avg_trade_pct": -0.094,
+              "sharpe_ratio": -0.54,
+              "qscore": 0.709,
+              "decision": "pass",
+              "grade": "B",
+              "flags": "[\"valuable_in_chop\"]"
+            },
+            "degradation_pct": 0.0,
+            "walk_forward_config": {
+              "mode": "train_gate",
+              "train_days": 240,
+              "min_train_trades": 30,
+              "train_qscore_gate": 1.0
+            },
+            "regime_scores": {
+              "TREND_DOWN": {
+                "trade_count": 32,
+                "profit_factor": 0.939,
+                "win_rate": 37.5,
+                "avg_return": -0.082,
+                "qscore": 0.939
+              },
+              "CHOP": {
+                "trade_count": 19,
+                "profit_factor": 1.734,
+                "win_rate": 57.89,
+                "avg_return": 0.69,
+                "qscore": 1.734
+              },
+              "TREND_UP": {
+                "trade_count": 7,
+                "profit_factor": 0.275,
+                "win_rate": 14.29,
+                "avg_return": -0.888,
+                "qscore": null
+              },
+              "TRANSITION": {
+                "trade_count": 20,
+                "profit_factor": 0.5,
+                "win_rate": 30.0,
+                "avg_return": -0.58,
+                "qscore": 0.5
+              }
+            },
+            "regime_concentration": 41.03,
+            "primary_regime": "TREND_DOWN"
+          },
+          "regime_metrics": {},
+          "ts_iso": "2026-03-13T01:12:34.390220+00:00"
         },
         "test_results": [],
         "stage_metrics": {
           "train": {
             "runs": 1,
             "trades": 78,
-            "best_qscore": 0.843,
+            "best_qscore": 0.709,
             "best_sharpe": 0.0,
-            "best_pf": 1.202,
-            "max_dd": 35.94,
-            "best_return_pct": 23.95
+            "best_pf": 0.921,
+            "max_dd": 21.24,
+            "best_return_pct": 0.0
           },
           "test": {
             "runs": 0,
@@ -405,22 +625,22 @@
           }
         },
         "latest_result": {
-          "id": "wf_99d9ccc166bd",
-          "variant_id": "tao_ema_pullback_v1",
-          "asset": "TAO",
+          "id": "wf_0150f1198d6a",
+          "variant_id": "btc_breakout_hold_v1",
+          "asset": "BTC",
           "timeframe": "4h",
-          "profit_factor": 1.202,
-          "max_drawdown_pct": 35.94,
+          "profit_factor": 0.921,
+          "max_drawdown_pct": 21.24,
           "total_trades": 78,
-          "win_rate_pct": 46.15384615384615,
-          "total_return_pct": 23.95,
-          "score_total": 0.843,
+          "win_rate_pct": 38.46153846153847,
+          "total_return_pct": -9.71,
+          "score_total": 0.709,
           "score_decision": "pass",
           "mutation_type": "initial",
           "refinement_round": 0,
           "family_generation": 1,
           "stage": "screen",
-          "strategy_family": "tao_ema_pullback",
+          "strategy_family": "btc_breakout_hold",
           "sharpe_ratio": null,
           "avg_trade_pct": null,
           "degradation_pct": null,
@@ -429,29 +649,29 @@
           "metrics": {
             "insample": {
               "total_trades": 78,
-              "profit_factor": 1.202,
-              "max_drawdown_pct": 35.94,
-              "total_return_pct": 23.95,
-              "win_rate_pct": 46.15384615384615,
-              "avg_trade_pct": 0.39,
-              "sharpe_ratio": 1.275,
-              "qscore": 0.843,
+              "profit_factor": 0.921,
+              "max_drawdown_pct": 21.24,
+              "total_return_pct": -9.71,
+              "win_rate_pct": 38.46153846153847,
+              "avg_trade_pct": -0.094,
+              "sharpe_ratio": -0.54,
+              "qscore": 0.709,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"valuable_in_chop\"]"
             },
             "outofsample": {
               "total_trades": 78,
-              "profit_factor": 1.202,
-              "max_drawdown_pct": 35.94,
-              "total_return_pct": 23.95,
-              "win_rate_pct": 46.15384615384615,
-              "avg_trade_pct": 0.39,
-              "sharpe_ratio": 1.275,
-              "qscore": 0.843,
+              "profit_factor": 0.921,
+              "max_drawdown_pct": 21.24,
+              "total_return_pct": -9.71,
+              "win_rate_pct": 38.46153846153847,
+              "avg_trade_pct": -0.094,
+              "sharpe_ratio": -0.54,
+              "qscore": 0.709,
               "decision": "pass",
               "grade": "B",
-              "flags": "[\"robust_across_regimes\"]"
+              "flags": "[\"valuable_in_chop\"]"
             },
             "degradation_pct": 0.0,
             "walk_forward_config": {
@@ -461,269 +681,49 @@
               "train_qscore_gate": 1.0
             },
             "regime_scores": {
+              "TREND_DOWN": {
+                "trade_count": 32,
+                "profit_factor": 0.939,
+                "win_rate": 37.5,
+                "avg_return": -0.082,
+                "qscore": 0.939
+              },
               "CHOP": {
-                "trade_count": 25,
-                "profit_factor": 0.749,
-                "win_rate": 36.0,
-                "avg_return": -0.525,
-                "qscore": 0.749
+                "trade_count": 19,
+                "profit_factor": 1.734,
+                "win_rate": 57.89,
+                "avg_return": 0.69,
+                "qscore": 1.734
               },
               "TREND_UP": {
-                "trade_count": 15,
-                "profit_factor": 1.067,
-                "win_rate": 53.33,
-                "avg_return": 0.139,
-                "qscore": 1.067
+                "trade_count": 7,
+                "profit_factor": 0.275,
+                "win_rate": 14.29,
+                "avg_return": -0.888,
+                "qscore": null
               },
               "TRANSITION": {
-                "trade_count": 14,
-                "profit_factor": 1.507,
-                "win_rate": 42.86,
-                "avg_return": 0.999,
-                "qscore": null
-              },
-              "TREND_DOWN": {
-                "trade_count": 24,
-                "profit_factor": 1.693,
-                "win_rate": 54.17,
-                "avg_return": 1.143,
-                "qscore": 1.693
+                "trade_count": 20,
+                "profit_factor": 0.5,
+                "win_rate": 30.0,
+                "avg_return": -0.58,
+                "qscore": 0.5
               }
             },
-            "regime_concentration": 32.05,
-            "primary_regime": "CHOP"
+            "regime_concentration": 41.03,
+            "primary_regime": "TREND_DOWN"
           },
           "regime_metrics": {},
-          "ts_iso": "2026-03-13T00:42:00.328223+00:00"
-        }
-      },
-      {
-        "strategy_spec_id": "QD-20260313-C120-TAO-RANGE-RECLAIM-v1",
-        "asset": "TAO",
-        "timeframe": "4h",
-        "edge_mechanism": "range reclaim continuation after false breakdown and value recovery",
-        "hypothesis": "range reclaim continuation after false breakdown and value recovery",
-        "diagnosis_category": "bad idea",
-        "decision": "pass",
-        "decision_rationale": "pass: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76",
-        "why_asset": "asset=TAO from chosen lane / result context",
-        "why_timeframe": "timeframe=4h from chosen lane / result context",
-        "queue_evidence": [
-          "rq_686d30fbfc0a=pass (Deterministic closure inherited pass for queue row rq_686d30fbfc0a from strategy outcome QD-20260313-C120-TAO-RANGE-RECLAIM-v1.)"
-        ],
-        "train_result": {
-          "id": "wf_6ad678575f63",
-          "variant_id": "tao_range_reclaim_v1",
-          "asset": "TAO",
-          "timeframe": "4h",
-          "profit_factor": 0.953,
-          "max_drawdown_pct": 31.08,
-          "total_trades": 76,
-          "win_rate_pct": 38.15789473684211,
-          "total_return_pct": -13.43,
-          "score_total": 0.642,
-          "score_decision": "pass",
-          "mutation_type": "initial",
-          "refinement_round": 0,
-          "family_generation": 1,
-          "stage": "screen",
-          "strategy_family": "tao_range_reclaim",
-          "sharpe_ratio": null,
-          "avg_trade_pct": null,
-          "degradation_pct": null,
-          "walk_forward_config": {},
-          "fold_results": [],
-          "metrics": {
-            "insample": {
-              "total_trades": 76,
-              "profit_factor": 0.953,
-              "max_drawdown_pct": 31.08,
-              "total_return_pct": -13.43,
-              "win_rate_pct": 38.15789473684211,
-              "avg_trade_pct": -0.092,
-              "sharpe_ratio": -0.325,
-              "qscore": 0.642,
-              "decision": "pass",
-              "grade": "B",
-              "flags": "[]"
-            },
-            "outofsample": {
-              "total_trades": 76,
-              "profit_factor": 0.953,
-              "max_drawdown_pct": 31.08,
-              "total_return_pct": -13.43,
-              "win_rate_pct": 38.15789473684211,
-              "avg_trade_pct": -0.092,
-              "sharpe_ratio": -0.325,
-              "qscore": 0.642,
-              "decision": "pass",
-              "grade": "B",
-              "flags": "[]"
-            },
-            "degradation_pct": 0.0,
-            "walk_forward_config": {
-              "mode": "train_gate",
-              "train_days": 240,
-              "min_train_trades": 30,
-              "train_qscore_gate": 1.0
-            },
-            "regime_scores": {
-              "CHOP": {
-                "trade_count": 37,
-                "profit_factor": 0.703,
-                "win_rate": 32.43,
-                "avg_return": -0.592,
-                "qscore": 0.703
-              },
-              "TRANSITION": {
-                "trade_count": 30,
-                "profit_factor": 1.424,
-                "win_rate": 46.67,
-                "avg_return": 0.77,
-                "qscore": 1.424
-              },
-              "TREND_UP": {
-                "trade_count": 5,
-                "profit_factor": 0.136,
-                "win_rate": 20.0,
-                "avg_return": -2.437,
-                "qscore": null
-              },
-              "TREND_DOWN": {
-                "trade_count": 4,
-                "profit_factor": 1.544,
-                "win_rate": 50.0,
-                "avg_return": 1.001,
-                "qscore": null
-              }
-            },
-            "regime_concentration": 48.68,
-            "primary_regime": "CHOP"
-          },
-          "regime_metrics": {},
-          "ts_iso": "2026-03-13T00:42:00.305066+00:00"
-        },
-        "test_results": [],
-        "stage_metrics": {
-          "train": {
-            "runs": 1,
-            "trades": 76,
-            "best_qscore": 0.642,
-            "best_sharpe": 0.0,
-            "best_pf": 0.953,
-            "max_dd": 31.08,
-            "best_return_pct": 0.0
-          },
-          "test": {
-            "runs": 0,
-            "trades": 0,
-            "best_qscore": 0.0,
-            "best_sharpe": 0.0,
-            "best_pf": 0.0,
-            "max_dd": 0.0,
-            "best_return_pct": 0.0
-          }
-        },
-        "latest_result": {
-          "id": "wf_6ad678575f63",
-          "variant_id": "tao_range_reclaim_v1",
-          "asset": "TAO",
-          "timeframe": "4h",
-          "profit_factor": 0.953,
-          "max_drawdown_pct": 31.08,
-          "total_trades": 76,
-          "win_rate_pct": 38.15789473684211,
-          "total_return_pct": -13.43,
-          "score_total": 0.642,
-          "score_decision": "pass",
-          "mutation_type": "initial",
-          "refinement_round": 0,
-          "family_generation": 1,
-          "stage": "screen",
-          "strategy_family": "tao_range_reclaim",
-          "sharpe_ratio": null,
-          "avg_trade_pct": null,
-          "degradation_pct": null,
-          "walk_forward_config": {},
-          "fold_results": [],
-          "metrics": {
-            "insample": {
-              "total_trades": 76,
-              "profit_factor": 0.953,
-              "max_drawdown_pct": 31.08,
-              "total_return_pct": -13.43,
-              "win_rate_pct": 38.15789473684211,
-              "avg_trade_pct": -0.092,
-              "sharpe_ratio": -0.325,
-              "qscore": 0.642,
-              "decision": "pass",
-              "grade": "B",
-              "flags": "[]"
-            },
-            "outofsample": {
-              "total_trades": 76,
-              "profit_factor": 0.953,
-              "max_drawdown_pct": 31.08,
-              "total_return_pct": -13.43,
-              "win_rate_pct": 38.15789473684211,
-              "avg_trade_pct": -0.092,
-              "sharpe_ratio": -0.325,
-              "qscore": 0.642,
-              "decision": "pass",
-              "grade": "B",
-              "flags": "[]"
-            },
-            "degradation_pct": 0.0,
-            "walk_forward_config": {
-              "mode": "train_gate",
-              "train_days": 240,
-              "min_train_trades": 30,
-              "train_qscore_gate": 1.0
-            },
-            "regime_scores": {
-              "CHOP": {
-                "trade_count": 37,
-                "profit_factor": 0.703,
-                "win_rate": 32.43,
-                "avg_return": -0.592,
-                "qscore": 0.703
-              },
-              "TRANSITION": {
-                "trade_count": 30,
-                "profit_factor": 1.424,
-                "win_rate": 46.67,
-                "avg_return": 0.77,
-                "qscore": 1.424
-              },
-              "TREND_UP": {
-                "trade_count": 5,
-                "profit_factor": 0.136,
-                "win_rate": 20.0,
-                "avg_return": -2.437,
-                "qscore": null
-              },
-              "TREND_DOWN": {
-                "trade_count": 4,
-                "profit_factor": 1.544,
-                "win_rate": 50.0,
-                "avg_return": 1.001,
-                "qscore": null
-              }
-            },
-            "regime_concentration": 48.68,
-            "primary_regime": "CHOP"
-          },
-          "regime_metrics": {},
-          "ts_iso": "2026-03-13T00:42:00.305066+00:00"
+          "ts_iso": "2026-03-13T01:12:34.390220+00:00"
         }
       }
     ]
   },
   "journal_excerpt": [
-    "# Quandalf Journal \u2014 Cycle 120",
-    "- ts_iso: 2026-03-13T00:42:04.328825+00:00",
+    "# Quandalf Journal \u2014 Cycle 124",
+    "- ts_iso: 2026-03-13T01:12:37.878813+00:00",
     "- mode: explore",
-    "- lane: TAO / 4h",
+    "- lane: BTC / 4h",
     "- research_direction: explore_new",
     "## My Current Decision Summary",
     "{",
@@ -738,106 +738,6 @@
     "PASS should flow into structured refinement variants, not cosmetic tweaks."
   ],
   "rolling_recent_cycles": [
-    {
-      "cycle_id": 116,
-      "ts_iso": "2026-03-13T00:11:37.992800+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "ETH"
-      ],
-      "timeframes_touched": [
-        "1h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 3,
-      "queue_decided_total": 3,
-      "result_total": 3,
-      "decision_summary": {
-        "pass": 1,
-        "refine": 0,
-        "abort": 2,
-        "zero_trade": 0
-      },
-      "diagnosis_breakdown": {
-        "bad idea": 3
-      }
-    },
-    {
-      "cycle_id": 117,
-      "ts_iso": "2026-03-13T00:19:22.341773+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "ETH"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 3,
-      "queue_decided_total": 3,
-      "result_total": 3,
-      "decision_summary": {
-        "pass": 2,
-        "refine": 0,
-        "abort": 1,
-        "zero_trade": 0
-      },
-      "diagnosis_breakdown": {
-        "bad idea": 3
-      }
-    },
-    {
-      "cycle_id": 118,
-      "ts_iso": "2026-03-13T00:27:06.972435+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "BTC"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 3,
-      "queue_decided_total": 3,
-      "result_total": 3,
-      "decision_summary": {
-        "pass": 3,
-        "refine": 0,
-        "abort": 0,
-        "zero_trade": 0
-      },
-      "diagnosis_breakdown": {
-        "bad idea": 3
-      }
-    },
-    {
-      "cycle_id": 119,
-      "ts_iso": "2026-03-13T00:34:46.901846+00:00",
-      "mode": "explore",
-      "research_direction": "explore_new",
-      "assets_touched": [
-        "SOL"
-      ],
-      "timeframes_touched": [
-        "4h"
-      ],
-      "strategy_count": 3,
-      "queue_total": 3,
-      "queue_decided_total": 3,
-      "result_total": 3,
-      "decision_summary": {
-        "pass": 3,
-        "refine": 0,
-        "abort": 0,
-        "zero_trade": 0
-      },
-      "diagnosis_breakdown": {
-        "bad idea": 3
-      }
-    },
     {
       "cycle_id": 120,
       "ts_iso": "2026-03-13T00:42:25.129871+00:00",
@@ -862,28 +762,128 @@
       "diagnosis_breakdown": {
         "bad idea": 3
       }
+    },
+    {
+      "cycle_id": 121,
+      "ts_iso": "2026-03-13T00:49:53.132187+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "DOGE"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 4,
+      "queue_decided_total": 4,
+      "result_total": 4,
+      "decision_summary": {
+        "pass": 2,
+        "refine": 0,
+        "abort": 1,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 3
+      }
+    },
+    {
+      "cycle_id": 122,
+      "ts_iso": "2026-03-13T00:57:36.025306+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "ETH"
+      ],
+      "timeframes_touched": [
+        "1h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 3,
+      "queue_decided_total": 3,
+      "result_total": 3,
+      "decision_summary": {
+        "pass": 1,
+        "refine": 0,
+        "abort": 2,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 3
+      }
+    },
+    {
+      "cycle_id": 123,
+      "ts_iso": "2026-03-13T01:05:21.154938+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "ETH"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 3,
+      "queue_decided_total": 3,
+      "result_total": 3,
+      "decision_summary": {
+        "pass": 2,
+        "refine": 0,
+        "abort": 1,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 3
+      }
+    },
+    {
+      "cycle_id": 124,
+      "ts_iso": "2026-03-13T01:13:04.431904+00:00",
+      "mode": "explore",
+      "research_direction": "explore_new",
+      "assets_touched": [
+        "BTC"
+      ],
+      "timeframes_touched": [
+        "4h"
+      ],
+      "strategy_count": 3,
+      "queue_total": 3,
+      "queue_decided_total": 3,
+      "result_total": 3,
+      "decision_summary": {
+        "pass": 3,
+        "refine": 0,
+        "abort": 0,
+        "zero_trade": 0
+      },
+      "diagnosis_breakdown": {
+        "bad idea": 3
+      }
     }
   ],
   "rolling_insights": {
     "window_size": 5,
     "totals": {
       "cycles_considered": 5,
-      "pass": 12,
+      "pass": 11,
       "refine": 0,
-      "abort": 3,
+      "abort": 4,
       "zero_trade": 0,
       "strategies": 15,
-      "queue_rows": 15,
-      "queue_rows_decided": 15,
-      "saved_results": 15
+      "queue_rows": 16,
+      "queue_rows_decided": 16,
+      "saved_results": 16
     },
     "diagnosis_breakdown": {
       "bad idea": 15
     },
     "assets_touched": [
       "BTC",
+      "DOGE",
       "ETH",
-      "SOL",
       "TAO"
     ],
     "timeframes_touched": [
