@@ -1,39 +1,13 @@
 {
-  "ts_iso": "2026-03-13T04:13:33.620958+00:00",
-  "cycle_id": 145,
+  "ts_iso": "2026-03-13T04:38:09.719158+00:00",
+  "cycle_id": 148,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260313-C145-DOGE-BREAKOUT-HOLD-v1",
-      "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
-      "chosen_lane": {
-        "asset": "DOGE",
-        "timeframe": "4h"
-      },
-      "component_roles": [
-        "EMA_20",
-        "EMA_55",
-        "ATR_14",
-        "ADX_14"
-      ],
-      "mutation_surface": "initial",
-      "expected_effect": "refine: PASS with QS 0.87, PF 1.04, DD 16.6%, trades 77",
-      "actual_effect": {
-        "trade_count": 77,
-        "profit_factor": 1.039,
-        "max_drawdown_pct": 16.56,
-        "qscore": 0.873,
-        "decision": "pass"
-      },
-      "regime_context": {},
-      "diagnosis": "bad idea",
-      "lesson_extracted": "pass: PASS with QS 0.87, PF 1.04, DD 16.6%, trades 77"
-    },
-    {
-      "strategy_spec_id": "QD-20260313-C145-DOGE-EMA-PULLBACK-v1",
+      "strategy_spec_id": "QD-20260313-C148-BTC-EMA-PULLBACK-v1",
       "hypothesis": "trend pullback continuation after value reclaim",
       "chosen_lane": {
-        "asset": "DOGE",
+        "asset": "BTC",
         "timeframe": "4h"
       },
       "component_roles": [
@@ -45,23 +19,49 @@
         "MINUS_DI_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "refine: PASS with QS 0.73, PF 0.92, DD 19.3%, trades 79",
+      "expected_effect": "refine: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83",
       "actual_effect": {
-        "trade_count": 79,
-        "profit_factor": 0.922,
-        "max_drawdown_pct": 19.31,
-        "qscore": 0.729,
+        "trade_count": 83,
+        "profit_factor": 0.976,
+        "max_drawdown_pct": 21.64,
+        "qscore": 0.76,
         "decision": "pass"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "pass: PASS with QS 0.73, PF 0.92, DD 19.3%, trades 79"
+      "lesson_extracted": "pass: PASS with QS 0.76, PF 0.98, DD 21.6%, trades 83"
     },
     {
-      "strategy_spec_id": "QD-20260313-C145-DOGE-RANGE-RECLAIM-v1",
+      "strategy_spec_id": "QD-20260313-C148-BTC-BREAKOUT-HOLD-v1",
+      "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
+      "chosen_lane": {
+        "asset": "BTC",
+        "timeframe": "4h"
+      },
+      "component_roles": [
+        "EMA_20",
+        "EMA_55",
+        "ATR_14",
+        "ADX_14"
+      ],
+      "mutation_surface": "initial",
+      "expected_effect": "refine: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78",
+      "actual_effect": {
+        "trade_count": 78,
+        "profit_factor": 0.921,
+        "max_drawdown_pct": 21.24,
+        "qscore": 0.709,
+        "decision": "pass"
+      },
+      "regime_context": {},
+      "diagnosis": "bad idea",
+      "lesson_extracted": "pass: PASS with QS 0.71, PF 0.92, DD 21.2%, trades 78"
+    },
+    {
+      "strategy_spec_id": "QD-20260313-C148-BTC-RANGE-RECLAIM-v1",
       "hypothesis": "range reclaim continuation after false breakdown and value recovery",
       "chosen_lane": {
-        "asset": "DOGE",
+        "asset": "BTC",
         "timeframe": "4h"
       },
       "component_roles": [
@@ -71,17 +71,17 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "abort: fail with QS 0.84, PF 1.06, DD 21.6%, trades 32",
+      "expected_effect": "refine: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73",
       "actual_effect": {
-        "trade_count": 32,
-        "profit_factor": 1.06,
-        "max_drawdown_pct": 21.64,
-        "qscore": 0.844,
-        "decision": "abort"
+        "trade_count": 73,
+        "profit_factor": 1.102,
+        "max_drawdown_pct": 11.2,
+        "qscore": 0.99,
+        "decision": "pass"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "abort: fail with QS 0.84, PF 1.06, DD 21.6%, trades 32"
+      "lesson_extracted": "pass: PASS with QS 0.99, PF 1.10, DD 11.2%, trades 73"
     }
   ]
 }
