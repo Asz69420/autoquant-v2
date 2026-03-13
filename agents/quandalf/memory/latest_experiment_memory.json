@@ -1,14 +1,14 @@
 {
-  "ts_iso": "2026-03-13T00:11:37.909335+00:00",
-  "cycle_id": 116,
+  "ts_iso": "2026-03-13T00:42:25.038819+00:00",
+  "cycle_id": 120,
   "count": 3,
   "experiments": [
     {
-      "strategy_spec_id": "QD-20260313-C116-ETH-BREAKOUT-HOLD-v1",
+      "strategy_spec_id": "QD-20260313-C120-TAO-BREAKOUT-HOLD-v1",
       "hypothesis": "breakout continuation after hold above broken structure with volatility expansion",
       "chosen_lane": {
-        "asset": "ETH",
-        "timeframe": "1h"
+        "asset": "TAO",
+        "timeframe": "4h"
       },
       "component_roles": [
         "EMA_20",
@@ -17,24 +17,24 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78",
+      "expected_effect": "refine: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84",
       "actual_effect": {
-        "trade_count": 78,
-        "profit_factor": 0.634,
-        "max_drawdown_pct": 35.35,
-        "qscore": 0.28,
-        "decision": "abort"
+        "trade_count": 84,
+        "profit_factor": 1.283,
+        "max_drawdown_pct": 33.88,
+        "qscore": 0.944,
+        "decision": "pass"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "abort: fail with QS 0.28, PF 0.63, DD 35.4%, trades 78"
+      "lesson_extracted": "pass: PASS with QS 0.94, PF 1.28, DD 33.9%, trades 84"
     },
     {
-      "strategy_spec_id": "QD-20260313-C116-ETH-EMA-PULLBACK-v1",
+      "strategy_spec_id": "QD-20260313-C120-TAO-EMA-PULLBACK-v1",
       "hypothesis": "trend pullback continuation after value reclaim",
       "chosen_lane": {
-        "asset": "ETH",
-        "timeframe": "1h"
+        "asset": "TAO",
+        "timeframe": "4h"
       },
       "component_roles": [
         "EMA_20",
@@ -45,24 +45,24 @@
         "MINUS_DI_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78",
+      "expected_effect": "refine: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78",
       "actual_effect": {
         "trade_count": 78,
-        "profit_factor": 0.707,
-        "max_drawdown_pct": 32.72,
-        "qscore": 0.38,
-        "decision": "abort"
+        "profit_factor": 1.202,
+        "max_drawdown_pct": 35.94,
+        "qscore": 0.843,
+        "decision": "pass"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "abort: fail with QS 0.38, PF 0.71, DD 32.7%, trades 78"
+      "lesson_extracted": "pass: PASS with QS 0.84, PF 1.20, DD 35.9%, trades 78"
     },
     {
-      "strategy_spec_id": "QD-20260313-C116-ETH-RANGE-RECLAIM-v1",
+      "strategy_spec_id": "QD-20260313-C120-TAO-RANGE-RECLAIM-v1",
       "hypothesis": "range reclaim continuation after false breakdown and value recovery",
       "chosen_lane": {
-        "asset": "ETH",
-        "timeframe": "1h"
+        "asset": "TAO",
+        "timeframe": "4h"
       },
       "component_roles": [
         "EMA_20",
@@ -71,17 +71,17 @@
         "ADX_14"
       ],
       "mutation_surface": "initial",
-      "expected_effect": "refine: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71",
+      "expected_effect": "refine: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76",
       "actual_effect": {
-        "trade_count": 71,
-        "profit_factor": 0.984,
-        "max_drawdown_pct": 12.1,
-        "qscore": 0.863,
+        "trade_count": 76,
+        "profit_factor": 0.953,
+        "max_drawdown_pct": 31.08,
+        "qscore": 0.642,
         "decision": "pass"
       },
       "regime_context": {},
       "diagnosis": "bad idea",
-      "lesson_extracted": "pass: PASS with QS 0.86, PF 0.98, DD 12.1%, trades 71"
+      "lesson_extracted": "pass: PASS with QS 0.64, PF 0.95, DD 31.1%, trades 76"
     }
   ]
 }
